@@ -8,6 +8,8 @@ import {
   type ClockWorkerScope,
 } from "../clock/clock.types.js";
 import type { MatchStore } from "./match-store.js";
+import type { MatchOutcome, MatchView } from "./match.types.js";
+import { INACTIVITY_GRACE_MS, INACTIVITY_PROMPT_MS } from "./inactivity.js";
 import { uuid } from "./position-codec.js";
 
 /**
@@ -50,7 +52,11 @@ export async function earliestDisconnect(
   roomId: string,
   redId: string,
   blackId: string,
-): Promise<{ deadline: number; loser: Side } | null> {
+): Promise<{
+  deadline: number;
+  deadlineMicros: bigint;
+  loser: Side | null;
+} | null> {
   const room = (
     await client.query<{ invite_code: string | null }>(
       "SELECT invite_code FROM public.rooms WHERE id=$1",
@@ -67,7 +73,7 @@ export async function earliestDisconnect(
       connected: boolean;
     }>(
       `
- SELECT p.user_id,p.side,n.kind, (extract(epoch FROM (p.disconnected_at+interval '60 seconds'))*1000)::text deadline,
+ SELECT p.user_id,p.side,n.kind, (extract(epoch FROM (p.disconnected_at+interval '60 seconds'))*1000000)::bigint::text deadline,
  EXISTS(SELECT 1 FROM xiangqi_room.presence q WHERE q.room_id=p.room_id AND q.user_id=p.user_id AND q.connected) connected
  FROM public.room_members p JOIN xiangqi_auth.principals n ON n.id=p.user_id
  WHERE p.room_id=$1 AND p.role='PLAYER' ORDER BY p.user_id FOR UPDATE OF p`,
@@ -80,20 +86,80 @@ export async function earliestDisconnect(
     !rows.some((r) => r.user_id === blackId && r.side === "BLACK")
   )
     throw new ClockError("CLOCK_INVALID_STATE");
-  // Equal disconnection timestamps: lexicographically smaller UUID loses, regardless of worker order.
   const offline = rows
     .filter((r) => r.deadline !== null && !r.connected)
-    .sort(
-      (a, b) =>
-        Number(a.deadline) - Number(b.deadline) ||
-        a.user_id.localeCompare(b.user_id),
+    .sort((a, b) =>
+      BigInt(a.deadline!) < BigInt(b.deadline!)
+        ? -1
+        : BigInt(a.deadline!) > BigInt(b.deadline!)
+          ? 1
+          : 0,
     );
   const first = offline[0];
   if (!first) return null;
-  const deadline = Number(first.deadline);
-  if (!Number.isFinite(deadline) || deadline < 0)
-    throw new ClockError("CLOCK_INVALID_STATE");
-  return { deadline, loser: first.side === "RED" ? "red" : "black" };
+  const deadlineMicros = BigInt(first.deadline!);
+  if (deadlineMicros < 0n) throw new ClockError("CLOCK_INVALID_STATE");
+  return {
+    deadline: Number(deadlineMicros) / 1000,
+    deadlineMicros,
+    loser:
+      offline[1]?.deadline === first.deadline
+        ? null
+        : first.side === "RED"
+          ? "red"
+          : "black",
+  };
+}
+
+/** Caller holds both actor locks and the room lock. */
+export async function adjudicateDeadline(
+  client: PoolClient,
+  roomId: string,
+  redId: string,
+  blackId: string,
+  match: MatchView,
+  sampledAt?: Date,
+): Promise<{ outcome: MatchOutcome; at: Date } | null> {
+  const disconnect = await earliestDisconnect(client, roomId, redId, blackId);
+  const clockDeadline =
+    match.clock.runningSinceEpochMs +
+    (match.unlimited
+      ? INACTIVITY_PROMPT_MS + INACTIVITY_GRACE_MS
+      : match.turn === "red"
+        ? match.clock.redMs
+        : match.clock.blackMs);
+  const clockMicros = BigInt(clockDeadline) * 1000n;
+  const useDisconnect =
+    disconnect &&
+    (match.unlimited
+      ? disconnect.deadlineMicros <= clockMicros
+      : disconnect.deadlineMicros < clockMicros);
+  const deadline = useDisconnect ? disconnect.deadlineMicros : clockMicros;
+  const now = sampledAt
+    ? BigInt(sampledAt.getTime()) * 1000n
+    : BigInt(
+        (
+          await client.query<{ us: string }>(
+            "SELECT (extract(epoch FROM clock_timestamp())*1000000)::bigint::text us",
+          )
+        ).rows[0]!.us,
+      );
+  if (deadline > now) return null;
+  const loser = useDisconnect ? disconnect.loser : match.turn;
+  return {
+    outcome:
+      useDisconnect && loser === null
+        ? { reason: "DRAW_SIMULTANEOUS_DISCONNECT", winner: null }
+        : {
+            reason: useDisconnect
+              ? "DISCONNECT"
+              : match.unlimited
+                ? "INACTIVITY"
+                : "TIMEOUT",
+            winner: loser === "red" ? "black" : "red",
+          },
+    at: new Date(Number(now / 1000n)),
+  };
 }
 /**
  * Tiến trình nền tự động quét và xử lý kết thúc ván cờ khi có người chơi ngắt kết nối quá hạn.
@@ -163,48 +229,24 @@ export class DisconnectWorker {
       )
     ).rows[0];
     if (!row) return;
-    if (row.red_kind !== "member" || row.black_kind !== "member")
-      throw new ClockError("CLOCK_INVALID_STATE");
     if (
       !scope.lockedActorIds.has(row.red_user_id) ||
       !scope.lockedActorIds.has(row.black_user_id)
     )
       throw new ClockError("CLOCK_LOCK_REQUIRED");
-    const disconnect = await earliestDisconnect(
-      scope.client,
-      candidate.roomId,
-      row.red_user_id,
-      row.black_user_id,
-    );
-    if (!disconnect) return;
-    const at = new Date(
-      Number(
-        (
-          await scope.client.query<{ ms: string }>(
-            "SELECT floor(extract(epoch FROM clock_timestamp())*1000)::bigint ms",
-          )
-        ).rows[0]!.ms,
-      ),
-    );
-    if (disconnect.deadline > at.getTime()) return;
     const match = await this.matches.snapshot(
       scope.client,
       candidate.roomId,
       candidate.matchId,
     );
-    const clockDeadline =
-      match.clock.runningSinceEpochMs +
-      (match.turn === "red" ? match.clock.redMs : match.clock.blackMs);
-    // Clock wins exact ties. A late maintenance batch must preserve the earlier actual deadline.
-    const timeout = !match.unlimited && clockDeadline <= disconnect.deadline;
-    await this.matches.finish(scope.client, {
-      ...candidate,
-      outcome: {
-        reason: timeout ? "TIMEOUT" : "DISCONNECT",
-        winner:
-          (timeout ? match.turn : disconnect.loser) === "red" ? "black" : "red",
-      },
-      at,
-    });
+    const decision = await adjudicateDeadline(
+      scope.client,
+      candidate.roomId,
+      row.red_user_id,
+      row.black_user_id,
+      match,
+    );
+    if (decision)
+      await this.matches.finish(scope.client, { ...candidate, ...decision });
   }
 }

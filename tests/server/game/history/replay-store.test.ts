@@ -162,6 +162,11 @@ describe.skipIf(!databaseUrl)("ReplayStore actual synthetic PostgreSQL", () => {
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+    await apply("supabase/migrations/20261103000005_match_aborted.sql");
+    await apply("supabase/migrations/20261103000006_online_undo.sql");
+    await apply(
+      "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+    );
   });
   afterAll(() => pool.end());
   it("returns only effective canonical branch for both player colors, omits private IDs and discarded moves", async () => {
@@ -212,6 +217,15 @@ describe.skipIf(!databaseUrl)("ReplayStore actual synthetic PostgreSQL", () => {
         code: "REPLAY_NOT_FOUND",
         status: 404,
       });
+  });
+  it("returns 404 for an aborted match so it has no Replay, FEN or PGN (AC-YC5-RV-06)", async () => {
+    const a = await member(),
+      b = await member(),
+      g = await game(a, b, { status: "INTERRUPTED", reason: "ABORTED" });
+    await expect(read(a, g.id)).rejects.toMatchObject({
+      code: "REPLAY_NOT_FOUND",
+      status: 404,
+    });
   });
   it("denies guest, forged member kind and missing actor lock", async () => {
     const a = await member(),

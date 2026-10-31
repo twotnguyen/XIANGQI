@@ -67,9 +67,15 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
     await apply("supabase/migrations/20261011000008_room_modes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+    await apply("supabase/migrations/20261103000005_match_aborted.sql");
+    await apply("supabase/migrations/20261103000006_online_undo.sql");
+    await apply(
+      "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+    );
   });
   it("serializes simultaneous changes so only one wins the version CAS", async () => {
     const { host, entry, view } = await room(true);
@@ -109,6 +115,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
     const owner = await actor(),
       id = randomUUID();
@@ -124,6 +131,11 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     ).rows[0].value;
     await apply("supabase/migrations/20261011000008_room_modes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+    await apply("supabase/migrations/20261103000005_match_aborted.sql");
+    await apply("supabase/migrations/20261103000006_online_undo.sql");
+    await apply(
+      "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+    );
     expect(
       (
         await pool.query(
@@ -138,6 +150,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     await apply("supabase/migrations/20261011000006_rooms.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
     const client = await pool.connect();
     try {
@@ -165,6 +178,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     await apply("supabase/migrations/20261011000006_rooms.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
     const client = await pool.connect();
     try {

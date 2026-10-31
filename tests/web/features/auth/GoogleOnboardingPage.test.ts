@@ -57,7 +57,11 @@ it("renders verified readonly metadata without an exit button and completes with
     username: "KyThuGoogle",
     password: "Password123",
   });
-  expect(storage).not.toHaveBeenCalled();
+  expect(
+    storage.mock.calls.every(
+      ([key, value]) => key === "xiangqi.tab" && /^[a-f0-9-]{36}$/.test(value),
+    ),
+  ).toBe(true);
 });
 it("rejects forbidden username immediately and keeps collided username focused without exposing provider text", async () => {
   const request = vi
@@ -130,6 +134,37 @@ it("preserves entered credentials after a completion outage, and ignores a late 
   await act(async () => resolve(reply({ kind: "member" })));
   expect(complete).not.toHaveBeenCalled();
 });
+it("checks Unicode password limits before completing Google onboarding", async () => {
+  const request = vi.fn().mockResolvedValue(reply({ kind: "member" }));
+  vi.stubGlobal("fetch", request);
+  render(createElement(GoogleOnboardingPage, { pending, onResult: vi.fn() }));
+  fill();
+  for (const password of ["🙂".repeat(7), "🙂".repeat(19)]) {
+    fireEvent.change(screen.getByLabelText("Mật khẩu dự phòng"), {
+      target: { value: password },
+    });
+    fireEvent.change(screen.getByLabelText("Nhập lại mật khẩu"), {
+      target: { value: password },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Hoàn tất thiết lập" }));
+    expect(request).not.toHaveBeenCalled();
+  }
+  expect(screen.getByRole("alert").textContent).toContain(
+    "Mật khẩu tối đa 72 byte (chữ có dấu tính nhiều byte)",
+  );
+  const password = "🙂".repeat(18);
+  fireEvent.change(screen.getByLabelText("Mật khẩu dự phòng"), {
+    target: { value: password },
+  });
+  fireEvent.change(screen.getByLabelText("Nhập lại mật khẩu"), {
+    target: { value: password },
+  });
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Hoàn tất thiết lập" }));
+  });
+  expect(request).toHaveBeenCalledOnce();
+});
+
 it("rejects short or mismatched passwords before sending completion", () => {
   const request = vi.fn();
   vi.stubGlobal("fetch", request);

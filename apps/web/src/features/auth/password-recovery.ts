@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from "../../shared/api.js";
+import { tabSessionFetch } from "../../shared/tab-session.js";
 
 export interface RecoveryWindow {
   requestId: string;
@@ -50,7 +51,7 @@ export async function post<T>(
   body: object,
   parse: (value: unknown) => T,
 ): Promise<T> {
-  const response = await fetch(`${getApiBaseUrl()}${path}`, {
+  const response = await tabSessionFetch(`${getApiBaseUrl()}${path}`, {
     method: "POST",
     credentials: "include",
     redirect: "error",

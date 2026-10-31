@@ -1,6 +1,10 @@
 import { randomUUID } from "node:crypto";
 import type { AddressInfo } from "node:net";
-import type { CommandAcknowledgement, RoomSnapshot } from "@xiangqi/shared";
+import type {
+  CommandAcknowledgement,
+  RoomAction,
+  RoomSnapshot,
+} from "@xiangqi/shared";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { io, type Socket } from "socket.io-client";
 import { createApp } from "@server/app.js";
@@ -146,7 +150,9 @@ async function fixture() {
     return {
       socket,
       latest: () => latest,
-      ready: () =>
+      ready: (
+        action: RoomAction = { type: "room.ready", payload: { ready: true } },
+      ) =>
         new Promise<CommandAcknowledgement>((resolve) =>
           socket.emit(
             "room.command",
@@ -154,7 +160,7 @@ async function fixture() {
               commandId: randomUUID(),
               roomId: entry.roomId,
               expectedVersion: latest!.version,
-              action: { type: "room.ready", payload: { ready: true } },
+              action,
             },
             resolve,
           ),
@@ -270,12 +276,14 @@ describe.skipIf(!databaseUrl)(
           async () => red.latest(),
           (s) => Boolean(s?.room.connected.red && s.room.connected.black),
         );
-        expect((await red.ready()).status).toBe("ok");
-        await waitFor(
-          async () => black.latest(),
-          (s) => s?.room.ready.red === true,
-        );
         expect((await black.ready()).status).toBe("ok");
+        await waitFor(
+          async () => red.latest(),
+          (s) => s?.room.ready.black === true,
+        );
+        expect(
+          (await red.ready({ type: "room.start", payload: {} })).status,
+        ).toBe("ok");
         const started = await waitFor(
           async () => red.latest(),
           (s) => s?.match?.status === "ACTIVE",

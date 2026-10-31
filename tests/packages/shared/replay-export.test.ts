@@ -58,6 +58,12 @@ describe("replay export", () => {
       pgnResult({ ...source, result: { reason: "DRAW", winner: null } }),
     ).toBe("1/2-1/2");
     expect(
+      buildPgn({
+        ...source,
+        result: { reason: "DRAW_SIMULTANEOUS_DISCONNECT", winner: null },
+      }),
+    ).toContain('[Result "1/2-1/2"]');
+    expect(
       pgnResult({ ...source, result: { reason: "TIMEOUT", winner: "black" } }),
     ).toBe("0-1");
     expect(pgnResult({ ...source, result: undefined })).toBe("*");

@@ -22,6 +22,8 @@ export interface PasswordRecovery {
   expiresAt: Date;
   attempts: number;
   resetHash: string | null;
+  resetExpiresAt: Date | null;
+  resetOperationHash: string | null;
   consumedAt: Date | null;
 }
 
@@ -45,6 +47,6 @@ export function invalidRecovery(): PasswordError {
 export function recoveryUnavailable(): PasswordError {
   return new PasswordError(
     "PASSWORD_RECOVERY_UNAVAILABLE",
-    "Tài khoản không có Gmail đã xác minh nên không thể khôi phục mật khẩu.",
+    "Tài khoản không có email đã xác minh nên không thể khôi phục mật khẩu.",
   );
 }

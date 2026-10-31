@@ -24,7 +24,11 @@ MOVE event and move rows are inserted in one data-modifying CTE, with the move d
 
 ## History and compatibility
 
-Positions persist as a 90-cell board with uppercase RED/BLACK turn and core counters. START version0 includes encoding, token, room/seat IDs and the initial board. Moves use `{from:{x,y},to:{x,y}}`, linked by parent IDs. `active_move_ids` selects the effective branch, including after a future undo. Replay checks unique IDs, parent chain, expected side, corresponding MOVE event, increasing event versions, legal moves, no continuation after a result, and exact board/counters. Terminal RESULT payload/version/time must agree with the immutable match; core outcomes must agree with adjudication.
+Positions persist as a 90-cell board with uppercase RED/BLACK turn and core counters. START version0 includes encoding, token, room/seat IDs and the initial board. Moves use `{from:{x,y},to:{x,y}}`, linked by parent IDs. `active_move_ids` selects the effective branch after an accepted online undo; the discarded moves remain audit records and do not participate in replay or adjudication. Replay checks unique IDs, parent chain, expected side, corresponding MOVE event, increasing event versions, legal moves, no continuation after a result, and exact board/counters. Terminal RESULT payload/version/time must agree with the immutable match; core outcomes must agree with adjudication.
+
+Online undo offers expire after 30 seconds; sender and receiver actions run under the existing room/match locks and receipt transaction. Accepted offers rewind to before the sender's latest move and count toward that sender's three-use limit. Declined and expired offers impose a three-own-move cooldown; the counts use durable MOVE events, not the rewindable branch. Timed clocks are not refunded; unlimited games start a new inactivity interval without resetting confirmations. Sender moves are blocked while pending; receiver moves decline the offer.
+
+Action, reconnect and worker paths arbitrate the earliest elapsed deadline, with ties ordered TIMEOUT, DISCONNECT, INACTIVITY. Exact equal disconnect timestamps result in `DRAW_SIMULTANEOUS_DISCONNECT`; terminal timestamps are persisted at millisecond precision.
 
 Migration000007 preserves legacy REPETITION/AGREED_DRAW and other prior outcomes. It adds DRAW_REPETITION, DRAW_NO_CAPTURE, DRAW_AGREEMENT and PERPETUAL_CHECK (including null winner for both sides continuously checking), plus a partial unique managed START-token index. It changes no table ACL, owner, RLS, FK or terminal trigger. The existing NOT VALID active-list constraint is not validated against old data. Rollback refuses managed START/new outcome writes or altered migration metadata.
 
@@ -52,3 +56,13 @@ The SQL callback and clock are fixture ports. Actual room/realtime receipt/publi
 Undo, resign, drop and close cancel the pending retry timer and abort any running search. Epoch and version fences keep late callbacks from installing output into a newer game or a replacement reservation.
 
 Retention is bounded: each owner keeps at most one terminal AI game, readable for a 30-minute grace window, and the next game or terminal result supersedes it. ACTIVE and FINALIZING games are never pruned. Each live game holds at most one retained completion and one retry timer.
+
+## YC5: Undo online và đề nghị
+
+`match.undo.offer/withdraw/respond` dùng cùng envelope/receipt với lệnh ván. `MatchUndoStore` giữ đề nghị bền 30 giây, tối đa 3 lần chấp nhận mỗi bên; Từ chối/hết hạn chờ 3 MOVE của người gửi. Bộ đếm dựa trên event bền, không quay lui theo nhánh hiệu lực. Mỗi người chỉ có một đề nghị đang chờ giữa Xin hòa và Xin đi lại.
+
+Người gửi Undo không đi trong lúc chờ; người nhận đi thì đề nghị bị Từ chối. Chấp nhận lùi 1 hoặc 2 ply về trước nước gần nhất của người xin bằng `active_move_ids`, giữ Match ID và lịch sử audit; giờ đã dùng không được hoàn. Không giới hạn mở cửa sổ 3 phút mới, giữ `inactivity_extensions`. Event/version và outbox cập nhật trong cùng transaction; Replay/PGN/lặp thế chỉ dùng nhánh hiệu lực.
+
+`canAbort` trong snapshot kiểm cả MOVE bền: Undo về 0 ply không mở lại Hủy ván. `ABORTED` là kết quả trung tính, không Replay/export. Migration `20261103000006_online_undo` phải được áp trước runtime mới; `20261103000007_match_simultaneous_disconnect` thêm hòa thật và cập nhật guard History. Rollback từ chối khi còn dữ liệu tính năng, không xóa lịch sử để ép quay lui.
+
+Reconnect người chơi gọi `settleDeadlines` dưới khóa actor/phòng trước khi xóa `disconnected_at`; không để socket đến muộn cứu ván quá hạn. Action và worker dùng cùng phân xử deadline; timestamp disconnect so ở độ chính xác microsecond trong SQL, wire `endedAt` vẫn là ISO millisecond.

@@ -137,6 +137,29 @@ describe("profile page", () => {
     ).toBeTruthy();
     expect(onSaved).not.toHaveBeenCalled();
   });
+  it("rejects disallowed name characters and submits normalized allowed names", async () => {
+    const user = userEvent.setup();
+    const c = client();
+    render(
+      createElement(ProfilePage, {
+        client: c,
+        guest: false,
+        authorizedFetch: authorizedFetchStub(),
+        onSaved: vi.fn(),
+        onLogout: vi.fn(),
+      }),
+    );
+    const input = await screen.findByRole("textbox", { name: "Tên hiển thị" });
+    await user.clear(input);
+    await user.type(input, "Kỳ thủ🙂");
+    await user.click(screen.getByRole("button", { name: "Lưu tên hiển thị" }));
+    expect(c.updateDisplayName).not.toHaveBeenCalled();
+    await user.clear(input);
+    await user.type(input, "  O'Brien   Kỳ  ");
+    await user.click(screen.getByRole("button", { name: "Lưu tên hiển thị" }));
+    expect(c.updateDisplayName).toHaveBeenCalledWith("O'Brien Kỳ");
+  });
+
   it("requires confirmation before logging out during an online match", async () => {
     const user = userEvent.setup();
     const onLogout = vi.fn();

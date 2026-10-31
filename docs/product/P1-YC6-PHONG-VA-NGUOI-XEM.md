@@ -347,7 +347,7 @@ Không còn câu hỏi chờ cho ba quyết định này. Quyền Kick của c�
 
 ## 17. Quyết định PO khi rà soát YC6 — 31/10/2026
 
-**Chưa triển khai**; code và test hiện còn theo trạng thái cũ. Bổ sung hoặc sửa mục 2, 3, 7, 8, 12.
+**Đã triển khai trên `develop` (01/11/2026)**, xem mục 18 cho bằng chứng và giới hạn. Bổ sung hoặc sửa mục 2, 3, 7, 8, 12.
 
 | # | Quyết định | AC bổ sung |
 |---|---|---|
@@ -388,9 +388,32 @@ Không còn câu hỏi chờ cho ba quyết định này. Quyền Kick của c�
 
 **PO xác nhận 31/10/2026:** (a) Mời rời ghế không có cooldown (Host có thể khóa phòng để chặn vào lại); (b) bộ lọc Sảnh áp lên 50 phòng mới nhất ở phía client, không truy vấn thêm phòng ngoài 50; (c) Xin ngồi ghế và lời mời của Host có thể cùng chờ trong một phòng.
 
-### 17.4 Tác động triển khai (chưa làm)
+### 17.4 Tác động triển khai (đã làm, xem mục 18)
 
 - Hai lệnh phòng mới (Mời rời ghế, Xin ngồi ghế/Trả lời yêu cầu) trong `RoomStore` đúng lớp (`RoomViewerStore`), qua `withRoom`, có `commandId`; hợp đồng `realtime.ts`, `SpectatorsPanel`, `RoomPage`, `RoomLobby`/bộ lọc Sảnh.
 - Cần bảng/cột lưu yêu cầu Xin ngồi (người xin, hạn, cooldown) — có thể cần migration kèm rollback.
 - Panel Người xem: danh sách tên cho mọi vai trò, hàng yêu cầu cho Host.
 - Bằng chứng ở mục 14 là trước các thay đổi này; không kế thừa PASS.
+
+## 18. Triển khai và bằng chứng (01/11/2026)
+
+### 18.1 Đã làm
+
+- **Lời mời xuống ghế (AC-06.3.5, BA 0.24):** `respondDown` gắn `offerId`; hồi đáp cho lời mời cũ bị từ chối, không chạm lời mời mới. Hết hạn tính bằng giờ DB sau khi khóa; trả lời muộn đóng `EXPIRED` và giữ vai trò xem. Kiểm vị trí khác (kể cả AI) trước khi đổi vai, trả `ALREADY_SEATED` thay vì lỗi SQL. Cooldown 10 giây theo cặp `(Host, phòng)`, mốc là phản hồi của server (Từ chối) hoặc hạn gốc (hết hạn); đóng do ghế/phòng đổi không tính. UI có đếm ngược, ẩn khi hết hạn, nút Mời khóa kèm lý do. Hết hạn không có sự kiện nào đẩy snapshot, nên UI tự tính 10 giây chờ từ hạn gốc để nút khóa đúng lúc (server vẫn kiểm lại khi gửi).
+- **Xin ngồi ghế (AC-YC6-RV-04…07):** bảng `seat_requests` (migration `20261103000008`, có rollback), tối đa một yêu cầu đang chờ mỗi người xem, 30 giây, cooldown 10 giây theo người xin. Host Đồng ý thì người xin ngồi ngay sau khi kiểm lại dưới khóa (còn hạn, vẫn là người xem, ghế trống, WAITING không đếm ngược, không giữ vị trí khác); các yêu cầu và lời mời còn lại tự đóng không tính cooldown. Mỗi người chỉ thấy yêu cầu của mình, Host thấy tất cả.
+- **Mời rời ghế (AC-YC6-RV-01, 02):** `inviteLeave`, không ghi block, thu hồi media qua outbox, người bị gỡ nhận “Chủ phòng đã mời bạn rời ghế” và về Sảnh. Hộp xác nhận nêu tên người chơi (snapshot có `seatPlayers`).
+- **Danh sách tên người xem (AC-YC6-RV-03):** mọi vai thấy tên và nhãn Khách; Đuổi chỉ hiện cho người chơi. Người bị Đuổi nhận thông báo riêng và về Sảnh; vào lại bị `ROOM_BLOCKED`. Nút Xin ngồi ghế dùng quyền HTTP của chính tab người xem (tab này luôn `readonly/not_allowed`), khóa kèm lý do khi đang giữ vị trí khác (`occupiedElsewhere`), người xin biết khi bị từ chối, hết hạn hoặc ghế đã có người.
+- **Bộ lọc Sảnh (AC-YC6-RV-08):** Đang chờ và Còn chỗ xem, lọc phía client trên ≤50 phòng, giữ thứ tự, có trạng thái rỗng giải thích.
+
+### 18.2 Kiểm đã chạy (Node 22, Postgres 17 cô lập, môi trường local)
+
+- Server toàn bộ: 182 file / 1.950 test đạt. Mới: `room-seat-requests.test.ts` (17 ca trên SQL thật: quyền thấy yêu cầu, ngồi ngay và đóng yêu cầu khác, cooldown trước/sau mốc, hạn gốc khi worker trễ, vị trí AI/đã rời, Mời rời ghế không block, cooldown lời mời, `offerId` cũ, cờ Khách, tên hai ghế, vị trí giữ nơi khác, FK principal, yêu cầu quá hạn qua trigger, `membersPresent`) và `game.runtime.seats.test.ts` (HTTP + Socket.IO + worker: xin ngồi, Host duyệt, snapshot, Đuổi và Mời rời ghế gửi đúng thông báo, vào lại).
+- Web + packages: 116 file / 1.320 test đạt (RoomPage với tab người xem readonly/not_allowed như thật, khóa chờ cục bộ khi hết hạn, thông báo từ chối, SpectatorsPanel, Lobby, client HTTP). Typecheck, ESLint toàn repo và Prettier đạt.
+
+### 18.3 Chưa kiểm / giới hạn
+
+- Chưa xem giao diện ở trình duyệt thật (desktop 1366×768, mobile 360 px, sáng/tối), chưa kiểm bàn phím/trợ năng ngoài test React.
+- Chưa đo ≤2 giây của feed Sảnh sau lọc qua mạng thật, chưa thử media LiveKit thật (chỉ xác nhận sự kiện thu hồi vào outbox); GATE-MEDIA, thiết bị/mạng thật và Supabase Cloud chưa chạy.
+- Migration `20261103000008` chưa áp lên Supabase Cloud. Thứ tự triển khai: áp migration, deploy server, rồi web. Server mới có nhánh bỏ qua bảng thiếu (Xin ngồi báo chưa sẵn sàng, nhận ra bảng khi có mà không cần restart; chưa chạy thử trên schema cũ). Cửa sổ lẫn phiên bản: tab web cũ gửi `respond-down` không có `offerId` sẽ nhận 400 và không nhận thông báo `room.closed` kiểu bị gỡ, nên người dùng cần tải lại trang; web mới trên server cũ chỉ thiếu `request-seat` (404).
+- `room.removed` bỏ qua người đã vào lại trước khi sự kiện tới; người đang offline lúc bị Đuổi/Mời rời ghế chỉ thấy phòng không còn khả dụng khi nối lại.
+- Không đổi quyết định BA; không đánh dấu Jira Done hay PO nghiệm thu.

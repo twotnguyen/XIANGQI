@@ -67,6 +67,8 @@ export async function setupPasswords(): Promise<PasswordFixture> {
   await reset();
   await apply("supabase/migrations/20261029000001_username_account_email.sql");
   await apply("supabase/migrations/20261030000001_password_recovery.sql");
+  await apply("supabase/migrations/20261103000002_yc1_account_rules.sql");
+  await apply("supabase/migrations/20261103000003_password_reset_grant.sql");
   let time = Date.now();
   const now = () => new Date(time);
   const provider = await startAuthFixture(pool, now);
@@ -152,6 +154,9 @@ export async function setupPasswords(): Promise<PasswordFixture> {
           await emails.verify(userId, { otp: messages.at(-1)!.otp });
       }
     }
+    await pool.query("DELETE FROM xiangqi_auth.otp_sends WHERE user_id=$1", [
+      userId,
+    ]);
     await auth.setPassword(userId, oldPassword);
     const proof = await auth.signInPassword(credentialEmail, oldPassword);
     const session = await sessions.issue(userId);

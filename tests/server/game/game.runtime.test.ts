@@ -583,16 +583,15 @@ describe.skipIf(!databaseUrl)(
           );
         };
         expect(
-          (await command(0, { type: "room.ready", payload: { ready: true } }))
+          (await command(1, { type: "room.ready", payload: { ready: true } }))
             .status,
         ).toBe("ok");
         await waitFor(
-          async () => snapshots.get(b.id),
-          (s) => s?.room.ready.red === true,
+          async () => snapshots.get(a.id),
+          (s) => s?.room.ready.black === true,
         );
         expect(
-          (await command(1, { type: "room.ready", payload: { ready: true } }))
-            .status,
+          (await command(0, { type: "room.start", payload: {} })).status,
         ).toBe("ok");
         const started = await waitFor(
           async () => snapshots.get(a.id),

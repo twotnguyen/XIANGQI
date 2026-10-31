@@ -32,6 +32,7 @@ import {
   PostgresLoginStore,
 } from "../login/postgres-login-store.js";
 import { SessionService } from "../login/session.service.js";
+import { readDeviceEnforcement } from "../login/device.js";
 import { SessionModule } from "../session/session.module.js";
 import { UsernameRegistrationController } from "./username-registration.controller.js";
 import { UsernameRegistrationService } from "./username-registration.service.js";
@@ -252,7 +253,7 @@ export async function createRegistrationRuntime(
   let schemaReady = true;
   try {
     const schema = await pool.query(
-      "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AND to_regclass('xiangqi_auth.username_accounts') IS NOT NULL AND to_regclass('xiangqi_auth.password_recoveries') IS NOT NULL AND to_regclass('xiangqi_auth.username_challenges') IS NOT NULL AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.username_challenges') AND attname IN ('pending_request_hash','pending_otp_hash','last_issue_at') AND NOT attisdropped)=3 AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.app_sessions') AND attname IN ('device_hash','password_change_hash') AND NOT attisdropped)=2 AS \"loginReady\"",
+      "SELECT to_regclass('xiangqi_auth.registration_intents') IS NOT NULL AS ready, pg_has_role(current_user, 'app_server', 'SET') AS \"canAssumeRole\", to_regclass('xiangqi_auth.app_sessions') IS NOT NULL AND to_regclass('xiangqi_auth.login_attempts') IS NOT NULL AND to_regclass('xiangqi_auth.username_accounts') IS NOT NULL AND to_regclass('xiangqi_auth.password_recoveries') IS NOT NULL AND to_regclass('xiangqi_auth.username_challenges') IS NOT NULL AND to_regclass('xiangqi_auth.otp_sends') IS NOT NULL AND EXISTS(SELECT 1 FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('public.profiles') AND attname='username_changed_at' AND NOT attisdropped) AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.password_recoveries') AND attname IN ('reset_expires_at','reset_operation_hash') AND NOT attisdropped)=2 AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.username_challenges') AND attname IN ('pending_request_hash','pending_otp_hash','last_issue_at') AND NOT attisdropped)=3 AND (SELECT count(*) FROM pg_catalog.pg_attribute WHERE attrelid=to_regclass('xiangqi_auth.app_sessions') AND attname IN ('device_hash','password_change_hash') AND NOT attisdropped)=2 AS \"loginReady\"",
     );
     if (
       !schema.rows[0]?.ready ||
@@ -288,7 +289,12 @@ export async function createRegistrationRuntime(
     settings.secret,
   );
   const sessions = sessionPool
-    ? new SessionService(new PostgresLoginStore(sessionPool), auth)
+    ? new SessionService(
+        new PostgresLoginStore(sessionPool),
+        auth,
+        undefined,
+        readDeviceEnforcement(env),
+      )
     : null;
   const login = sessions
     ? new LoginService(sessions.store, auth, sessions)

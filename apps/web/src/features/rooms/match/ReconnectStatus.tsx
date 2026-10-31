@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { RoomStateSnapshot } from "@xiangqi/shared";
+import { Button } from "../../../shared/ui/primitives.js";
 import "../../../shared/styles/tokens.css";
 import "./ReconnectStatus.css";
 
@@ -10,6 +11,7 @@ export interface ReconnectStatusProps {
   matchStatus: NonNullable<RoomStateSnapshot["match"]>["status"] | null;
   opponentGraceUntil: string | null;
   serverNow: string;
+  onReconnect?: () => void;
 }
 function formatTime(milliseconds: number) {
   const seconds = Math.ceil(Math.max(0, milliseconds) / 1000);
@@ -29,6 +31,7 @@ export function ReconnectStatus({
   matchStatus,
   opponentGraceUntil,
   serverNow,
+  onReconnect,
 }: ReconnectStatusProps) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -110,7 +113,7 @@ export function ReconnectStatus({
         onCancel={(event) => event.preventDefault()}
         onKeyDown={(event) => {
           if (event.key === "Escape") event.preventDefault();
-          if (event.key === "Tab") {
+          if (event.key === "Tab" && !onReconnect) {
             event.preventDefault();
             event.currentTarget.focus();
           }
@@ -125,6 +128,11 @@ export function ReconnectStatus({
         <p>Thời gian chờ ước tính</p>
         {countdown}
         <p>Hạn giữ ván thực tế sẽ được xác nhận từ máy chủ khi nối lại.</p>
+        {onReconnect && (
+          <Button variant="secondary" onClick={onReconnect}>
+            Nối lại
+          </Button>
+        )}
       </dialog>
     );
   if (unsynced)

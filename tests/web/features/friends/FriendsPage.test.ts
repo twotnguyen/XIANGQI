@@ -9,9 +9,11 @@ import {
   fireEvent,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { nativeDialogStub } from "../rooms/RoomPage.test-helper.js";
 import { FriendsPage } from "@web/features/friends/FriendsPage.js";
 import type { FriendClient } from "@web/features/friends/friend-client.js";
+beforeEach(nativeDialogStub);
 afterEach(() => {
   cleanup();
   vi.useRealTimers();
@@ -89,6 +91,35 @@ describe("friends page", () => {
       .setup()
       .click(screen.getByRole("button", { name: "Kết bạn" }));
     expect(c.send).toHaveBeenCalledWith("band");
+  });
+  it("does not query below 3 characters and shows guidance (AC-YC3-RV-02)", async () => {
+    const c = client();
+    render(createElement(FriendsPage, { client: c }));
+    await screen.findByText("@banb", { exact: false });
+    const user = userEvent.setup();
+    await user.type(screen.getByLabelText("Tên đăng nhập"), "ba");
+    await user.click(screen.getByRole("button", { name: "Tìm" }));
+    expect(c.search).not.toHaveBeenCalled();
+    // Gợi ý nhập thêm là thông tin, không phải lỗi.
+    expect(screen.getByRole("status").textContent).toContain(
+      "Nhập ít nhất 3 ký tự để tìm bạn",
+    );
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+  it("asks for confirmation before unfriending and cancels without a call (YC3 mục 17c)", async () => {
+    const c = client();
+    render(createElement(FriendsPage, { client: c }));
+    await screen.findByText("@banb", { exact: false });
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Hủy kết bạn" }));
+    expect(c.unfriend).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Giữ bạn bè" }));
+    expect(c.unfriend).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Hủy kết bạn" }));
+    await user.click(
+      screen.getByRole("button", { name: "Xác nhận hủy kết bạn" }),
+    );
+    await waitFor(() => expect(c.unfriend).toHaveBeenCalledOnce());
   });
   it("shows loading, empty and error states", async () => {
     const loading = client({

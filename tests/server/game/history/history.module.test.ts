@@ -141,6 +141,11 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );
+      await apply("supabase/migrations/20261103000005_match_aborted.sql");
+      await apply("supabase/migrations/20261103000006_online_undo.sql");
+      await apply(
+        "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+      );
       app = await createApp(
         ["http://localhost:5173"],
         [HistoryModule.forRoot(service)],

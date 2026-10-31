@@ -359,3 +359,38 @@ it("authorizes an AI socket with the guest capability and no member token", asyn
   expect(payload).not.toHaveProperty("accessToken");
   expect(payload).not.toHaveProperty("appSession");
 });
+
+it("keeps a control request made before the first handshake until the server grants control", async () => {
+  const peer = connectAi({
+    getProof: vi.fn().mockResolvedValue({
+      kind: "member",
+      accessToken: "token",
+      appSession: "cap",
+    }),
+    onControl: vi.fn(),
+    onSnapshot: vi.fn(),
+    onConnection: vi.fn(),
+    onError: vi.fn(),
+  });
+  peers.push(peer);
+  // startAiGame asks for control right after connectAi, before the socket handshake runs.
+  const waiting = peer.getControl();
+  const done = vi.fn();
+  fixture.auth!(done);
+  await Promise.resolve();
+  await Promise.resolve();
+  const tabId = done.mock.calls[0]?.[0].tabId as string;
+  deliver("ai.control", {
+    tabId,
+    connectionId: "socket_one",
+    generation: 1,
+    mode: "controller",
+    gameId: null,
+    graceUntil: null,
+  });
+  await expect(waiting).resolves.toEqual({
+    tabId,
+    connectionId: "socket_one",
+    generation: 1,
+  });
+});

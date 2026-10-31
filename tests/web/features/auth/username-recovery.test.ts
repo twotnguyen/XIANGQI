@@ -43,7 +43,7 @@ it("switches the forgot page to username recovery and shows the username only af
     )
     .mockResolvedValueOnce(json({ username: "chessfan" }));
   render(createElement(ForgotPasswordPage));
-  await user.click(screen.getByRole("button", { name: "Quên tên đăng nhập?" }));
+  await user.click(screen.getByRole("tab", { name: "Quên tên đăng nhập" }));
   await user.type(screen.getByLabelText(/email/i), "member@example.invalid");
   await user.click(screen.getByRole("button", { name: /gửi/i }));
   await user.type(await screen.findByLabelText("Mã OTP"), "123456");
@@ -52,6 +52,18 @@ it("switches the forgot page to username recovery and shows the username only af
   const [url, init] = fetchMock.mock.calls[0] ?? [];
   expect(String(url)).toContain("/auth/username/recovery");
   expect(String(init?.body)).not.toContain("chessfan");
+});
+
+it("opens username recovery directly from the login link destination", () => {
+  window.history.replaceState(null, "", "/forgot-password?tab=username");
+  render(createElement(ForgotPasswordPage));
+  expect(
+    screen
+      .getByRole("tab", { name: "Quên tên đăng nhập" })
+      .getAttribute("aria-selected"),
+  ).toBe("true");
+  expect(screen.getByLabelText("Email đã xác minh")).toBeTruthy();
+  expect(screen.queryByLabelText("Tên đăng nhập (Username)")).toBeNull();
 });
 
 it("uses the returned expiry and cooldown without resetting them on rerender", async () => {

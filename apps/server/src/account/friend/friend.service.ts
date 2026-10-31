@@ -23,6 +23,8 @@ export type RoomInviteDecision =
   | { accept: false; commandId: string }
   | { accept: true; commandId: string; proof: RoomRequestProof };
 
+/** Tối đa lời mời phòng còn hạn, chưa trả lời cho một người nhận (YC3 mục 17). */
+const MAX_PENDING_INVITES = 5;
 /** Mã lỗi từ port cho thấy phòng không còn nhận lời mời; lời mời bị revoke. */
 const REVOKING_ROOM_CODES: Record<string, true> = {
   FRIEND_ROOM_MISSING: true,
@@ -53,8 +55,8 @@ export class FriendService {
     userId: string,
     prefix: string,
   ): Promise<Omit<FriendPeer, "status">[]> {
-    if (typeof prefix !== "string" || prefix.trim().length < 1)
-      fail("FRIEND_INPUT_INVALID", "Từ tìm kiếm không hợp lệ", 400);
+    if (typeof prefix !== "string" || prefix.trim().length < 3)
+      fail("FRIEND_INPUT_INVALID", "Nhập ít nhất 3 ký tự để tìm bạn", 400);
     const clean = prefix.trim().slice(0, 20);
     return this.store.read(async (tx) => {
       await requireMember(tx, userId);
@@ -205,6 +207,12 @@ export class FriendService {
         return { ...existing, cooldownUntil: await tx.cooldownUntil(userId) };
       if (await tx.cooldownUntil(userId))
         fail("FRIEND_INVITE_COOLDOWN", "Vui lòng chờ trước khi mời tiếp", 429);
+      if ((await tx.countPendingInvites(peer.user_id)) >= MAX_PENDING_INVITES)
+        fail(
+          "FRIEND_INVITE_RECIPIENT_FULL",
+          "Người nhận đang có quá nhiều lời mời, vui lòng thử lại sau",
+          409,
+        );
       if (!(await tx.lockOpenRoom(roomId)))
         fail("FRIEND_ROOM_MISSING", "Phòng không còn khả dụng", 404);
       const invite = await tx.insertRoomInvite(roomId, userId, peer.user_id);

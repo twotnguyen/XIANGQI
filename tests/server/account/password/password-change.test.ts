@@ -225,8 +225,85 @@ describe.skipIf(!databaseUrl)(
       ).toBe(user.userId);
     });
 
-    it("does not claim success when the provider rejects the write", async () => {
-      const user = await f.member();
+    it("keeps both sessions and an existing reset grant when Auth clearly rejects the new password", async () => {
+      const user = await f.member({ contact: "verified" });
+      const other = await f.historicalSession(user.userId);
+      const recovery = await f.passwords.request({ username: user.username });
+      await f.passwords.verify({
+        requestId: recovery.requestId,
+        otp: f.messages.at(-1)!.otp,
+      });
+      const before = (
+        await pool.query(
+          "SELECT reset_hash,reset_expires_at FROM xiangqi_auth.password_recoveries WHERE user_id=$1",
+          [user.userId],
+        )
+      ).rows[0];
+      f.provider.state.rejectPasswordUpdate = true;
+      const response = await f.request(
+        "/account/password/change",
+        changeBody,
+        user,
+      );
+      expect(response.status).toBe(400);
+      expect(await response.json()).toMatchObject({
+        code: "PASSWORD_PROVIDER_REJECTED",
+      });
+      for (const token of [user.appSession, other])
+        await expect(
+          f.sessions.requireValidSession(token),
+        ).resolves.toMatchObject({ userId: user.userId });
+      expect(
+        (
+          await pool.query(
+            "SELECT reset_hash,reset_expires_at FROM xiangqi_auth.password_recoveries WHERE user_id=$1",
+            [user.userId],
+          )
+        ).rows[0],
+      ).toEqual(before);
+      expect(
+        (
+          await pool.query(
+            "SELECT password_change_hash FROM xiangqi_auth.app_sessions WHERE token_hash=$1",
+            [fingerprint(user.appSession)],
+          )
+        ).rows[0].password_change_hash,
+      ).toBeNull();
+      expect(
+        (await f.auth.signInPassword(user.credentialEmail, oldPassword)).user
+          .id,
+      ).toBe(user.userId);
+      f.provider.state.rejectPasswordUpdate = false;
+      expect(
+        (
+          await f.request(
+            "/account/password/change",
+            {
+              ...changeBody,
+              newPassword: "accepted-different-password",
+              passwordConfirmation: "accepted-different-password",
+            },
+            user,
+          )
+        ).status,
+      ).toBe(200);
+      await expect(f.sessions.requireValidSession(other)).rejects.toMatchObject(
+        { code: "SESSION_EXPIRED" },
+      );
+      expect(
+        (
+          await pool.query(
+            "SELECT 1 FROM xiangqi_auth.password_recoveries WHERE user_id=$1",
+            [user.userId],
+          )
+        ).rowCount,
+      ).toBe(0);
+    });
+
+    it("does not claim success when the provider write is ambiguous and fails closed for other sessions and reset grants", async () => {
+      const user = await f.member({ contact: "verified" });
+      const other = await f.historicalSession(user.userId);
+      await f.passwords.request({ username: user.username });
       f.provider.state.failPasswordUpdate = true;
       const response = await f.request(
         "/account/password/change",
@@ -237,6 +314,23 @@ describe.skipIf(!databaseUrl)(
       const body = await response.json();
       expect(body).toMatchObject({ code: "PASSWORD_PROVIDER_ERROR" });
       expect(JSON.stringify(body)).not.toContain("fake-sensitive-fixture");
+      await expect(f.sessions.requireValidSession(other)).rejects.toMatchObject(
+        { code: "SESSION_EXPIRED" },
+      );
+      await expect(
+        f.sessions.requireValidSession(user.appSession),
+      ).resolves.toMatchObject({
+        userId: user.userId,
+        expiresAt: user.expiresAt,
+      });
+      expect(
+        (
+          await pool.query(
+            "SELECT 1 FROM xiangqi_auth.password_recoveries WHERE user_id=$1",
+            [user.userId],
+          )
+        ).rowCount,
+      ).toBe(0);
       expect(
         (await f.auth.signInPassword(user.credentialEmail, oldPassword)).user
           .id,
@@ -284,6 +378,7 @@ describe.skipIf(!databaseUrl)(
       expect(
         (await f.request("/account/password/change", different, user)).status,
       ).toBe(400);
+      f.provider.state.rejectPasswordUpdate = true;
       const retried = await f.request(
         "/account/password/change",
         changeBody,

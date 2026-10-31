@@ -1,5 +1,6 @@
 import type { Pool, PoolClient } from "pg";
 import { actorLock, transaction } from "../../core/postgres.js";
+import { reserveOtpSend, OTP_LIMIT_MESSAGE } from "../auth/otp.store.js";
 import {
   UsernameError,
   type OtpMatcher,
@@ -8,7 +9,7 @@ import {
   type UsernamePurpose,
 } from "./username.types.js";
 
-const accountSql = `SELECT a.id AS "userId",p.username,
+const accountSql = `SELECT a.id AS "userId",p.username,p.username_changed_at AS "usernameChangedAt",
   (a.email_confirmed_at IS NOT NULL AND p.completed_at IS NOT NULL AND NOT p.registration_pending) AS active,
   CASE WHEN u.user_id IS NOT NULL THEN CASE WHEN u.verified_at IS NOT NULL THEN u.email END
     WHEN a.email_confirmed_at IS NOT NULL AND a.email NOT LIKE '%.xiangqi.invalid' THEN a.email END AS "contactEmail"
@@ -23,6 +24,20 @@ const MAX_ATTEMPTS = 5;
 const RESEND_MS = 60_000;
 const OTP_MS = 180_000;
 const RESERVATION_MS = 30 * 24 * 3600_000;
+const CHANGE_COOLDOWN_MS = 7 * 24 * 3600_000;
+
+function requireChangeAllowed(account: UsernameAccount, now: Date) {
+  const remaining = account.usernameChangedAt
+    ? account.usernameChangedAt.getTime() + CHANGE_COOLDOWN_MS - now.getTime()
+    : 0;
+  if (remaining > 0)
+    throw new UsernameError(
+      "USERNAME_CHANGE_LIMITED",
+      `Bạn vừa đổi Username, vui lòng thử lại sau ${Math.ceil(remaining / (24 * 3600_000))} ngày`,
+      429,
+      Math.ceil(remaining / (24 * 3600_000)),
+    );
+}
 
 export interface IssueInput {
   requestHash: string;
@@ -109,6 +124,8 @@ export class UsernameStore {
       const account = await readAccount(client, userId);
       if (!account?.active || !account.contactEmail)
         return { kind: "unavailable" };
+      if (purpose === "username-change")
+        requireChangeAllowed(account, input.sentAt);
       const prior = (
         await client.query<{
           requestHash: string;
@@ -140,6 +157,8 @@ export class UsernameStore {
       const contactEmail = account.contactEmail;
       const otpHash = input.otpHash(contactEmail);
       const expiresAt = new Date(input.sentAt.getTime() + OTP_MS);
+      if (!(await reserveOtpSend(client, userId, contactEmail, input.sentAt)))
+        throw new UsernameError("USERNAME_OTP_LIMITED", OTP_LIMIT_MESSAGE, 429);
       // Chỉ giữ chỗ lần gửi và cooldown. Mã/capability đang hợp lệ không đổi trước khi SMTP xác nhận.
       await client.query(
         `INSERT INTO xiangqi_auth.username_challenges(user_id,purpose,request_hash,contact_email,sent_at,expires_at,
@@ -275,6 +294,7 @@ export class UsernameStore {
         row.verifiedExpiresAt.getTime() <= now.getTime()
       )
         return { kind: "invalid" };
+      requireChangeAllowed(account, now);
       const old = account.username;
       if (old === next)
         throw new UsernameError(
@@ -290,8 +310,8 @@ export class UsernameStore {
         );
       try {
         await client.query(
-          "UPDATE public.profiles SET username=$2 WHERE user_id=$1",
-          [userId, next],
+          "UPDATE public.profiles SET username=$2,username_changed_at=$3 WHERE user_id=$1",
+          [userId, next, now],
         );
       } catch (error) {
         if (

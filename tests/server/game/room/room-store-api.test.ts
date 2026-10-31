@@ -30,6 +30,8 @@ const roomApi = [
   "respondSwap",
   "expireSwapOffers",
   "ready",
+  "start",
+  "transferHost",
   "presence",
   "startDue",
   "onMatchEnded",

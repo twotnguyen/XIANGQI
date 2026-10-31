@@ -14,7 +14,7 @@ import { apply } from "../../game/room/room.test-helper.js";
 let f: PasswordFixture;
 const base = "/auth/password/recovery";
 const unavailableMessage =
-  "Tài khoản không có Gmail đã xác minh nên không thể khôi phục mật khẩu.";
+  "Tài khoản không có email đã xác minh nên không thể khôi phục mật khẩu.";
 
 describe.skipIf(!databaseUrl)(
   "YC1 recovery with PostgreSQL, Nest and Auth HTTP",
@@ -118,6 +118,10 @@ describe.skipIf(!databaseUrl)(
 
     it("requires OTP verification before reset, then consumes its grant, revokes old sessions and returns to login without issuing app access", async () => {
       const user = await f.member({ contact: "verified" });
+      await pool.query(
+        "INSERT INTO xiangqi_auth.login_attempts(username_key,failures,blocked_until) VALUES(lower($1),ARRAY[clock_timestamp()],clock_timestamp()+interval '15 minutes')",
+        [user.username],
+      );
       const other = await f.historicalSession(user.userId);
       const request = await start(user.username);
       const beforeVerify = await f.request(`${base}/reset`, {
@@ -140,6 +144,14 @@ describe.skipIf(!databaseUrl)(
         passwordConfirmation: newPassword,
       });
       expect(response.status).toBe(200);
+      expect(
+        (
+          await pool.query(
+            "SELECT 1 FROM xiangqi_auth.login_attempts WHERE username_key=lower($1)",
+            [user.username],
+          )
+        ).rowCount,
+      ).toBe(0);
       expect(await response.json()).toEqual({ ok: true });
       expect(response.headers.get("cache-control")).toBe("no-store");
       expect(
@@ -194,6 +206,7 @@ describe.skipIf(!databaseUrl)(
       const proof = await verify(request.requestId);
       for (const input of [
         { newPassword: "short", passwordConfirmation: "short" },
+        { newPassword: "🐉".repeat(19), passwordConfirmation: "🐉".repeat(19) },
         { newPassword, passwordConfirmation: "not-the-same" },
       ]) {
         const response = await f.request(`${base}/reset`, {
@@ -284,17 +297,36 @@ describe.skipIf(!databaseUrl)(
         requestId: request.requestId,
       });
       const proof = await verify(request.requestId);
-      f.advance(180_000);
+      f.advance(600_000);
       const reset = await f.request(`${base}/reset`, {
         requestId: request.requestId,
         resetToken: proof.resetToken,
         newPassword,
         passwordConfirmation: newPassword,
       });
-      expect(reset.status).toBe(410);
+      expect(reset.status).toBe(400);
       expect(
         (await f.auth.signInPassword(user.credentialEmail, oldPassword)).user
           .id,
+      ).toBe(user.userId);
+    });
+
+    it("gives a fresh ten-minute reset grant even when the OTP was verified near its deadline", async () => {
+      const user = await f.member({ contact: "verified" });
+      const request = await start(user.username);
+      f.advance(179_999);
+      const proof = await verify(request.requestId);
+      f.advance(599_999);
+      const password = "🐉".repeat(18);
+      const response = await f.request(`${base}/reset`, {
+        requestId: request.requestId,
+        resetToken: proof.resetToken,
+        newPassword: password,
+        passwordConfirmation: password,
+      });
+      expect(response.status).toBe(200);
+      expect(
+        (await f.auth.signInPassword(user.credentialEmail, password)).user.id,
       ).toBe(user.userId);
     });
 
@@ -386,6 +418,10 @@ describe.skipIf(!databaseUrl)(
 
     it("does not report success or leave a replayable grant after an ambiguous failed password write", async () => {
       const user = await f.member({ contact: "verified" });
+      await pool.query(
+        "INSERT INTO xiangqi_auth.login_attempts(username_key,failures,blocked_until) VALUES(lower($1),ARRAY[clock_timestamp()],clock_timestamp()+interval '15 minutes')",
+        [user.username],
+      );
       const request = await start(user.username);
       const proof = await verify(request.requestId);
       f.provider.state.failPasswordUpdate = true;
@@ -397,6 +433,14 @@ describe.skipIf(!databaseUrl)(
       };
       const failed = await f.request(`${base}/reset`, body);
       expect(failed.status).toBe(503);
+      expect(
+        (
+          await pool.query(
+            "SELECT 1 FROM xiangqi_auth.login_attempts WHERE username_key=lower($1)",
+            [user.username],
+          )
+        ).rowCount,
+      ).toBe(1);
       expect(await failed.json()).toMatchObject({
         code: "PASSWORD_PROVIDER_ERROR",
       });

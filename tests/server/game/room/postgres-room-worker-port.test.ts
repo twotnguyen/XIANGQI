@@ -108,9 +108,10 @@ async function setup(two = false) {
         },
         true,
       );
-      await rooms.ready(s, roomId, true);
+      if (m !== a) await rooms.ready(s, roomId, true);
     });
   }
+  if (b) await run(a, [roomId], (s) => rooms.start(s, roomId));
   if (b) {
     await pool.query(
       "INSERT INTO public.matches(id,room_id,mode,red_user_id,black_user_id,position) VALUES($1,$2,'ONLINE',$3,$4,$5)",

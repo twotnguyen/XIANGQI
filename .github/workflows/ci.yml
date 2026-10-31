@@ -33,6 +33,10 @@ jobs:
         with:
           node-version-file: .node-version
           cache: pnpm
+      # Khi không có thay đổi web/server, pnpm install bị bỏ qua và thư mục store chưa tồn tại:
+      # bước lưu cache của setup-node khi đó báo lỗi làm job (và check bắt buộc) đỏ.
+      - name: Ensure pnpm store directory exists
+        run: mkdir -p "$(pnpm store path --silent)"
       - name: Check CI scope rules
         run: node .github/scripts/ci-scope.mjs --self-test
       - id: filter

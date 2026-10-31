@@ -34,6 +34,7 @@ export class RoomSwapStore extends RoomStoreCore {
    * Tạo đề nghị đổi bên gửi tới đối phương (thời hạn 30 giây, giới hạn cooldown sau khi bị từ chối).
    */
   async proposeSwap(s: RoomScope, id: string) {
+    this.throttle(s, "swap");
     const { other } = await this.swapPair(s, id);
     // Tu het han truoc khi kiem: phong khoe khong co worker ghe tham van tu phuc hoi.
     await this.expireSwapOffers(s, id);

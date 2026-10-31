@@ -19,6 +19,7 @@ const reasons: Readonly<Record<string, string>> = {
   RESIGN: "Đầu hàng",
   TIMEOUT: "Hết giờ",
   DISCONNECT: "Mất kết nối",
+  DRAW_SIMULTANEOUS_DISCONNECT: "Hai người mất kết nối đồng thời",
   DRAW_REPETITION: "Lặp thế cờ ba lần",
   DRAW_AGREEMENT: "Thoả thuận hoà",
   DRAW_NO_CAPTURE: "120 nửa nước không ăn quân",
@@ -28,6 +29,7 @@ const reasons: Readonly<Record<string, string>> = {
 const draws = new Set([
   "DRAW_REPETITION",
   "DRAW_AGREEMENT",
+  "DRAW_SIMULTANEOUS_DISCONNECT",
   "DRAW_NO_CAPTURE",
   "PERPETUAL_CHECK",
 ]);
@@ -65,32 +67,38 @@ export function MatchResult({
   }, [match?.id, terminal, player]);
   if (!match || !terminal) return null;
 
+  const aborted = match.result === "ABORTED";
   const interrupted =
-    match.status === "INTERRUPTED" || match.result === "SERVER_RESTART";
-  const title = interrupted
-    ? "Ván bị gián đoạn"
-    : match.winner
-      ? player
-        ? match.winner === role
-          ? "Bạn thắng!"
-          : "Bạn thua"
-        : match.winner === "red"
-          ? "Đỏ thắng"
-          : "Đen thắng"
-      : draws.has(match.result ?? "")
-        ? "Hoà"
-        : "Kết quả ván cờ";
-  const reason = interrupted
-    ? "Máy chủ đã khởi động lại."
-    : Object.hasOwn(reasons, match.result ?? "")
-      ? reasons[match.result!]
-      : "Lý do kết thúc chưa được đồng bộ.";
+    !aborted &&
+    (match.status === "INTERRUPTED" || match.result === "SERVER_RESTART");
+  const title = aborted
+    ? "Ván bị hủy"
+    : interrupted
+      ? "Ván bị gián đoạn"
+      : match.winner
+        ? player
+          ? match.winner === role
+            ? "Bạn thắng!"
+            : "Bạn thua"
+          : match.winner === "red"
+            ? "Đỏ thắng"
+            : "Đen thắng"
+        : draws.has(match.result ?? "")
+          ? "Hoà"
+          : "Kết quả ván cờ";
+  const reason = aborted
+    ? "Ván được hủy trước nước đi đầu tiên."
+    : interrupted
+      ? "Máy chủ đã khởi động lại."
+      : Object.hasOwn(reasons, match.result ?? "")
+        ? reasons[match.result!]
+        : "Lý do kết thúc chưa được đồng bộ.";
   const content = (
     <>
       <h2 id={`${id}-title`}>{title}</h2>
       <div id={`${id}-reason`}>
         <p>{reason}</p>
-        {interrupted && <p>Ván cờ không được tính kết quả.</p>}
+        {(interrupted || aborted) && <p>Ván cờ không được tính kết quả.</p>}
       </div>
     </>
   );

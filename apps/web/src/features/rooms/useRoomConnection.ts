@@ -44,6 +44,9 @@ export function useRoomConnection(options: RoomConnectionOptions) {
   const [actionError, setActionError] = useState("");
   const [retryCount, setRetryCount] = useState(0);
   const [optimistic, setOptimistic] = useState<OptimisticMove | null>(null);
+  const [demoEnabled, setDemoEnabled] = useState(false);
+  const [demoDisconnected, setDemoDisconnected] = useState(false);
+  const demoRequested = useRef(false);
   const connection = useRef<RoomConnection | null>(null);
   const roomChat = useRoomChat(roomId, connection);
   const epoch = useRef(0);
@@ -118,6 +121,9 @@ export function useRoomConnection(options: RoomConnectionOptions) {
     roomChat.clear();
     latest.current = null;
     versionFloor.current = 0;
+    setDemoEnabled(false);
+    setDemoDisconnected(false);
+    demoRequested.current = false;
     setBusy(false);
     commandPending.current = false;
     audioBaseline.current = true;
@@ -191,6 +197,12 @@ export function useRoomConnection(options: RoomConnectionOptions) {
           setConnected(value);
           roomChat.update(null, value);
           if (value) fallbackStarted = false;
+          if (value) {
+            setDemoDisconnected(false);
+            demoRequested.current = false;
+          } else if (demoRequested.current) {
+            setDemoDisconnected(true);
+          }
           if (!value) {
             invalidateCommands();
             audioBaseline.current = true;
@@ -210,6 +222,9 @@ export function useRoomConnection(options: RoomConnectionOptions) {
       },
       onChatChanged: (notice) => {
         if (alive) roomChat.changed(notice);
+      },
+      onDemoCapability: (enabled) => {
+        if (alive) setDemoEnabled(enabled);
       },
     });
     connection.current = peer;
@@ -255,6 +270,30 @@ export function useRoomConnection(options: RoomConnectionOptions) {
     };
   }, [roomId, client, getProof, connect, retryCount]);
   return {
+    demoEnabled,
+    demoDisconnected,
+    disconnectDemo: async () => {
+      if (
+        !demoEnabled ||
+        !connectedRef.current ||
+        demoRequested.current ||
+        !connection.current?.networkDemo
+      )
+        return;
+      const requestEpoch = epoch.current;
+      demoRequested.current = true;
+      try {
+        await connection.current.networkDemo.disconnect();
+      } catch {
+        if (epoch.current !== requestEpoch) return;
+        demoRequested.current = false;
+        setError("Chưa thể giả lập mất mạng. Hãy thử lại.");
+      }
+    },
+    reconnectDemo: () => {
+      if (demoEnabled && demoDisconnected)
+        connection.current?.networkDemo?.reconnect();
+    },
     view,
     setView,
     snapshot,

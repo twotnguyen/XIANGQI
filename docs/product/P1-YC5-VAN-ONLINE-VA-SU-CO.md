@@ -2,9 +2,9 @@
 
 > **BA 0.27 — PO chốt 31/10/2026:** toàn bộ nội dung từng thuộc P2 (Ranked/Elo/bảng xếp hạng, ghép ngẫu nhiên Casual, Xin đi lại/Tái đấu Casual, phần Ranked của lịch sử/thống kê) nay thuộc **P1**. Mọi câu "vẫn P2 / giữ P2 / làm sau / Sắp ra mắt" còn lại trong tài liệu này là lịch sử và bị thay bởi [BA mục 0.27](BA-SCOPE-DECISIONS.md#027-đưa-toàn-bộ-phần-còn-lại-của-p2-lên-p1--po-chốt-31102026); QR vẫn bị loại. Chưa tái ước lượng giờ/Jira; chưa phải bằng chứng triển khai.
 
-**Rà soát 31/10/2026:** PO chốt năm điểm tại mục 17 (đi nước = tự Từ chối, Hủy ván khi chưa có nước, ván bị hủy vào Lịch sử, báo tới lượt bằng âm thanh, Xin hòa không ngưỡng); **chưa triển khai**. Hạng mục Hủy ván làm đổi danh sách kết quả ở mục 10.2.
+**Triển khai 31/10/2026:** đã bổ sung Hủy ván, Xin đi lại online, phân xử deadline/mất mạng đồng thời và demo mạng. Bằng chứng và giới hạn nghiệm thu mới nằm ở mục 18; các bảng đối chiếu trước triển khai ở mục 13 không phải trạng thái runtime mới.
 
-**Ngày lập/chốt bổ sung:** 31/10/2026. **Phạm vi:** EP-05, US-05.1–05.3 và giao điểm P1 theo BA 0.20–0.23, gồm demo mạng chỉ môi trường demo. **Trạng thái:** đã chốt đặc tả và đối chiếu code; chưa sửa hoặc nghiệm thu lại runtime trong lượt này. Bốn quyết định PO tại mục 15 đã được ghi vào BA 0.23; Casual/Ranked P1 theo BA 0.27.
+**Ngày lập/chốt bổ sung:** 31/10/2026. **Phạm vi:** EP-05, US-05.1–05.3 và giao điểm P1 theo BA 0.20–0.23, gồm demo mạng chỉ môi trường demo. Bốn quyết định PO tại mục 15 đã được ghi vào BA 0.23; Casual/Ranked P1 theo BA 0.27 và vòng đời ghép thuộc YC9. Phân biệt triển khai local với nghiệm thu Cloud/thiết bị/PO tại mục 18.
 
 ## 1. Mục tiêu, nguồn và cách đọc
 
@@ -242,7 +242,7 @@ Dữ liệu nước/kết quả online vẫn bền phục vụ lịch sử; “k
 
 ## 12. Truy vết28 AC và các ca bắt buộc
 
-Bảng là kế hoạch kiểm, **chưa PASS trong lượt tài liệu**.
+Bảng là danh sách ca bắt buộc. Bằng chứng mới ở mục 18 phân biệt kiểm thử DB/Socket.IO, giao diện và các gate thiết bị còn mở.
 
 | AC | Chứng minh | Ca chính |
 |---|---|---|
@@ -279,9 +279,9 @@ Bảng là kế hoạch kiểm, **chưa PASS trong lượt tài liệu**.
 
 **Độ trễ:** nguồn sản phẩm NFR-01/AC-05.1.1 hiện là **p95<100ms trong môi trường demo**, GATE-REALTIME50client/10ván. Không đổi sang200ms hoặc lấy thời gian ack đơn thuần thay thời gian đối thủ/người xem thực sự cập nhật. Báo topology, local/remoteDB, sốmẫu, lỗi, p95, CPU/RAM. Một lần đo nhỏ hoặc thông số tick100ms không chứng minh đạtSLO.
 
-## 13. Đối chiếu triển khai hiện tại và rủi ro
+## 13. Đối chiếu trước triển khai và rủi ro (lưu dấu)
 
-Đã đọc các đường dưới đây; không chạy runtime/test trong lượt tài liệu. Không dùng test đang có làm lý do giữ hành vi trái BA.
+Đây là đối chiếu trước khi sửa YC5. Các thiếu sót đã xử lý và bằng chứng runtime mới ở mục 18; không dùng bảng lịch sử này để phủ nhận mã mới hoặc kế thừa PASS cũ.
 
 | Hạng mục | Bằng chứng repo | Kết luận và việc cần làm khi triển khai |
 |---|---|---|
@@ -363,11 +363,11 @@ Không còn câu hỏi chờ cho bốn lựa chọn này. Quota Undo/quyền Kh�
 - **AC-05.3.4 + AC-P2-10.2–3:** TIMEOUT/grace và INACTIVITY/grace tại deadline trước/bằng/sau; cả hai bên có thể có nguyên nhân thua khác nhau. Trì hoãn worker rồi đảo thứ tự xử lý vẫn cùng winner/reason. Hòa đồng thời không được lấn nguyên nhân đến trước.
 - **AC-05.1.10–12 và giao điểm AC-P2-11/13/15:** reason hòa mới đọc được từ DB/snapshot, hai người/người xem/History/Replay thống nhất; PGN là `1/2-1/2`, không `*`; người ngoài/Khách vẫn không có quyền đọc lịch sử riêng. Dữ liệu kết quả cũ giữ nguyên, không tự viết lại quá khứ từ UUID thành hòa.
 
-**Lượt hiện tại:** chỉ soạn tài liệu/đối chiếu nguồn; không sửa runtime/migration, không bật dịch vụ/cờ, không MCP/Jira. **Test local: không chạy (không được yêu cầu).** Chưa xem giao diện hoặc đo SLO hiện tại; chưa commit/push tài liệu.
+**Lượt đặc tả ban đầu:** chỉ soạn tài liệu/đối chiếu nguồn, không sửa runtime. Trạng thái và kiểm chứng của lượt triển khai tiếp nối ở mục 18.
 
 ## 17. Quyết định PO khi rà soát YC5 — 31/10/2026
 
-**Chưa triển khai**; code và test hiện còn theo trạng thái cũ. Bổ sung cho mục 7, 8, 10, 11.
+Đã triển khai các quyết định dưới đây trong mã local; kiểm chứng và giới hạn tại mục 18.
 
 | # | Quyết định | AC bổ sung |
 |---|---|---|
@@ -402,10 +402,68 @@ Không còn câu hỏi chờ cho bốn lựa chọn này. Quota Undo/quyền Kh�
 
 **PO xác nhận 31/10/2026:** (a) người gửi Xin hòa tự đi một nước khi đề nghị còn chờ thì đề nghị tự rút, không phạt chờ 5 nước; (b) Hủy ván ở ghép ngẫu nhiên giữ vòng đời `FINISHED`; (c) reason mới là `ABORTED`.
 
-### 17.4 Tác động triển khai (chưa làm)
+### 17.4 Tác động triển khai
 
 - Loại kết quả mới `ABORTED` (trung tính) ở luật kết thúc/hợp đồng chung: `packages/shared` (kết quả), `RoomStore`/`MatchStore` (lệnh và kết thúc), lịch sử/`HistoryStore`, `MatchResult` (hộp kết quả), migration nếu cột reason có ràng buộc; thêm vào danh sách lý do kết thúc ở BA 3.5.
 - Lệnh `abortMatch` qua `withRoom` có `commandId`, kiểm số nước = 0 dưới khóa.
 - Nước đi của người nhận phải đóng đề nghị Xin hòa/Xin đi lại đang chờ trong cùng transaction.
 - Âm thanh nước đối thủ khi tab ẩn: chỉ phụ thuộc chính sách phát tự động của trình duyệt (cần kiểm Chrome, Safari, Firefox).
-- Bằng chứng ở mục 13 là trước các thay đổi này; không kế thừa PASS.
+- Bằng chứng mới ở mục 18 thay cho đối chiếu lịch sử ở mục 13.
+
+## 18. Triển khai và kiểm chứng local — 31/10/2026
+
+### 18.1 Thay đổi
+
+- `MatchUndoStore`, migration `20261103000006_online_undo` và rollback: gửi/rút/trả lời/hết hạn Xin đi lại 30 giây; 1 hoặc 2 ply trên nhánh hiệu lực; tối đa 3 lần thành công, chờ 3 MOVE của người xin sau Từ chối/hết hạn. Cùng một pending/người xuyên Xin hòa/Xin đi lại, người gửi Undo không đi khi chờ. Không hoàn đồng hồ; Không giới hạn mở 3 phút mới và giữ quota xác nhận.
+- Người nhận đi nước đóng đề nghị trong cùng transaction; người gửi được thông báo “Đối thủ đã đi nước, đề nghị bị từ chối.” Người gửi Xin hòa tự đi là Rút, không báo nhầm đối thủ từ chối.
+- `stillHere` tăng version ván/phòng, ghi event và outbox. Banner dùng mốc monotonic để đếm tiếp khi không có snapshot mới.
+- `adjudicateDeadline` dùng chung cho action, clock/disconnect worker và reconnect: hạn sớm nhất thắng; bằng nhau TIMEOUT → DISCONNECT → INACTIVITY. Timestamp disconnect so bằng microsecond, không UUID/làm tròn; Khách và thành viên được phân xử cùng luật. `endedAt` giữ nghĩa thời điểm máy chủ xử lý, không thay bằng deadline quá khứ.
+- Migration `20261103000007_match_simultaneous_disconnect` và rollback: reason hòa thật, winner=null, History/Replay/PGN `1/2-1/2`, guard History cập nhật theo constraint thật. Không viết lại kết quả lịch sử.
+- Hủy ván `ABORTED` từ commit tiếp nối `bbcb04a`: trung tính, có Lịch sử, không Replay/export. Snapshot `canAbort` kiểm MOVE bền; Undo về 0 ply không mở lại Hủy ván.
+- `NETWORK_DEMO=true` ngoài production: ngắt chính socket thật, chỉ Nối lại theo thao tác rõ; xác thực lại trước lệnh, production chặn direct socket. Capability cập nhật khi trạng thái/quyền đổi; còn tab hợp lệ khác thì không giả người chơi mất toàn bộ kết nối.
+- Panel đề nghị nonmodal ở cạnh phải desktop, không che bàn/Đầu hàng; mobile theo luồng dọc. Nút demo dùng khung/tooltip sẵn có trong header, không thêm thẻ làm bàn tụt khỏi viewport.
+
+### 18.2 Bằng chứng đã quan sát
+
+Môi trường: Node 22.22.3, PostgreSQL 17 test cô lập trên `127.0.0.1` qua `tests/server/db.sh`; không dùng URL Supabase cho fixture xóa schema. Web Vite và backend Nest/Socket.IO chạy trên cùng Mac arm64. Khách được cấp/xác thực bởi dịch vụ thật; provider của 50 thành viên tải là synthetic, phiên DB/khóa/quyền/phòng/ván vẫn thật.
+
+- Smoke runtime: Khách tạo phòng, Host Bắt đầu sau đối thủ Sẵn sàng, worker đếm tới ACTIVE, đi nước, Undo offer/accept về đúng nhánh; demo ngắt socket thật, DB ghi grace và đối thủ nhận snapshot mất mạng; nối lại cùng Match ID/thế/quyền; ván mới Hủy thành `ABORTED`.
+- Restart bằng tiến trình khác thật: sau khi dừng tiến trình đang giữ hai ván ACTIVE bền trong DB, tiến trình mới khởi động chuyển cả hai thành `INTERRUPTED/SERVER_RESTART`, phòng WAITING, Ready reset, mỗi ván đúng một RESULT; không giả tiếp tục ACTIVE.
+- Chromium: component `RoomPage` thật nối runtime qua harness tạm, không giả API ván. Đã thấy/gửi Xin đi lại nonmodal 30 giây; ngắt bằng demo, Nối lại ngay trong modal và đợi quyền chính thức; Hủy ván focus mặc định “Giữ ván”, kết quả “Ván bị hủy”. Harness bỏ qua shell xác thực không nằm trong phạm vi YC5; media/chat không bật nên có thông báo chưa khả dụng.
+- 1366×768: sau điều chỉnh kích thước, bàn nằm từ y=269,19 đến 644,58; hành động từ y=669,58 đến 713,58. Panel đề nghị x=1022, rộng 320 nên không đè bàn. 360×800: `scrollWidth=360`, không tràn ngang; cho phép cuộn dọc.
+- Một mẫu đồng hồ trình duyệt so với DB sau nối lại: hiển thị 219 giây, chiếu server 219 giây, sai khác 0 giây. Mẫu đơn này không thay gate sai số qua mọi điều kiện tab ẩn/mạng chậm.
+- Tải `tests/load/realtime.ts`: 50 kết nối/10 ván, 20 vòng/200 nước; 800 mẫu giao tới đối thủ/người xem (200/600), 0 lỗi. p95 toàn bộ **56,85 ms**, đối thủ **56,85 ms**, người xem **56,44 ms**; p99 toàn bộ **66,57 ms**. Đây là thời điểm client nhận snapshot, không lấy ack thay delivery. DB local, tổng lượt đo 5,331 giây, riêng workload nước đi 1,263 giây. Mẫu tiến trình sau lượt tải: CPU 0,3%, RSS 180.480 KiB; không phải CPU/RAM đỉnh trong tải. Không suy rộng số liệu local sang Supabase từ xa, LAN hoặc DOM hai thiết bị.
+- Kết quả cuối: **server 180 file/1.930 test đạt**, **web/packages 115 file/1.296 test đạt**; không skip ở hai lượt đầy đủ. Các scenario đề nghị được tách thành `match-draw`, `match-undo`, `match-proposals-security` và helper, giữ nguyên số ca. Typecheck toàn workspace, build và ESLint các file TS/TSX sửa đạt. Build vẫn cảnh báo chunk LiveKit >500 kB.
+  Log test vẫn có `realtime_disconnect_failed`, `realtime_maintenance_failed`, `registration_maintenance_failed` và một `MaxListenersExceededWarning` trên pg Client. Đã truy vết một ca disconnect lúc teardown: runtime chủ động từ chối bằng “Máy chủ phòng đang dừng”; gỡ log chẩn đoán tạm, không che cảnh báo hoặc nâng listener limit. Chưa điều tra riêng cảnh báo listener.
+
+### 18.3 Rollout và giới hạn nghiệm thu
+
+Đã push `develop`; CI xanh ở commit `25a8818`. Ngày 31/10/2026 đã áp lên Supabase Cloud `20261103000005`, `...000006`, `...000007` theo thứ tự (qua `psql` DIRECT_URL, có ghi `supabase_migrations.schema_migrations`); lúc áp không có ván ACTIVE, constraint khớp baseline, đã kiểm lại bảng `match_undo_offers` (RLS + trigger), constraint kết quả/sự kiện. Triển khai server trước web: web mới từ chối snapshot Undo nếu server chưa có trường `undo.moved`. Guard History từ chối schema cũ. Rollback không phải cách xóa kết quả mới để quay lui.
+
+Không tự đánh dấu Jira Done hoặc PO nghiệm thu. Safari/Firefox, loa/cảm ứng thật, hai thiết bị/mạng thật, Google/SMTP/LiveKit và gate DOM/p95 từ xa chưa được kiểm trong lượt này. Vòng đời Casual/Ranked và giới hạn mode mới phải nghiệm thu cùng YC9; mã YC5 không dựng queue giả hoặc tự mở mode chưa được YC9 triển khai.
+
+### 18.4 Truy vết nghiệm thu
+
+“Đạt tự động” dưới đây chỉ là các kịch bản đã chạy bằng mã/DB/socket thật hoặc component test; không gộp các gate môi trường thành PASS.
+
+| AC | Bằng chứng local | Gate còn mở |
+|---|---|---|
+| AC-05.1.1 | 50 client/10 ván/200 nước, đối thủ và người xem nhận cùng snapshot; p95 56,85 ms | DOM end-to-end và hai thiết bị/mạng thật |
+| AC-05.1.2, 05.1.3, 05.1.4 | `game-integration`, `match-store-concurrency`: từ chối sai lượt/luật, receipt/retry, MOVE bền | Nghiệm thu PO |
+| AC-05.1.5, 05.1.6, 05.1.7 | `clock-sql`: 300/600/900 giây, tự TIMEOUT, deadline −1/0/+1 ms; `inactivity`/runtime Không giới hạn | Thiết bị thật |
+| AC-05.1.8 | Test nội suy/tab visibility/reconnect, một mẫu Chromium/DB sai 0 giây | Ma trận tab ẩn/skew/mạng chậm ≤1 giây |
+| AC-05.1.9 | Core + MatchStore tái hiện luật kết thúc trên nhánh hiệu lực | Không mở luật đuổi quân ngoài YC4 |
+| AC-05.1.10, 05.1.11, 05.1.12, 05.1.13 | MatchResult/History/PGN reason mới, spectator chỉ đọc, RESULT/rollback/concurrency | Quan sát đồng thời nhiều thiết bị |
+| AC-05.2.1, 05.2.2, 05.2.3, 05.2.4 | Confirm/Esc/focus, leave atomic, Host chuyển, bàn/hành động không bị panel che | Cảm ứng và trợ năng thiết bị thật |
+| AC-05.2.5, 05.2.6, 05.2.7, 05.2.8, 05.2.9 | `match-draw`, `match-proposals-security`, MatchActions: nonmodal/thu gọn, quyền/30 giây/cooldown5/Rút/terminal đóng offer | Nghiệm thu PO |
+| AC-05.3.1, 05.3.2 | Smoke socket thật/Chromium: ngắt, DB grace, snapshot đối thủ, manual reconnect đúng ván/quyền | Rút mạng vật lý, nhiều thiết bị |
+| AC-05.3.3, 05.3.4, 05.3.5 | `disconnect-worker`, clock, late reconnect: member/guest/mixed; timestamp bằng/khác 1 microsecond; đảo worker và ưu tiên deadline | Nghiệm thu mạng vật lý |
+| AC-05.3.6 | Hai ván bền được process mới recovery về INTERRUPTED/WAITING, một RESULT | Deploy hạ tầng thật |
+| AC-P2-08.1–3 | `match-undo`: 1/2 ply, quota3, cooldown3, pending sender, quyền, expiry/late, nhánh/clock | Casual cùng YC9 |
+| AC-P2-09.1–3 | Bộ `room-rematch` hiện có chạy trong server suite, giữ quyền thành viên và Match ID mới | Casual cùng YC9 |
+| AC-P2-10.1–3 | `inactivity`, `game.runtime.draw`, banner: 180+30 giây, quota2, version/receipt, ưu tiên grace | Chờ thực tế trên mạng/thiết bị |
+| AC-P2-23.1–3 | Socket thật + gateway grant; tắt cờ/production direct-call bị từ chối; UI ngắt/nối có chủ đích | Demo không thay kiểm mạng vật lý |
+| AC-YC5-RV-01, RV-02 | MOVE đóng offer trong transaction, thông báo đúng bên, tự rút không báo nhầm; cooldown5/3 và Undo không trừ quota | Nghiệm thu PO |
+| AC-YC5-RV-03, RV-04, RV-05, RV-06 | Abort SQL/race/receipt/role, History trung tính không Replay; Chromium confirm và kết quả; Undo về0 không mở Abort | Mode ghép/Ranked theo YC9 |
+| AC-YC5-RV-07 | Web Audio test: tab hidden vẫn phát khi context chạy, mute/reconnect không phát lại, title giữ nguyên | Chrome/Safari/Firefox theo chính sách autoplay và loa thật |
+| AC-YC5-RV-08 | Xin hòa trước nước đầu đạt bằng DB và UI component | Ngưỡng Ranked thuộc YC9 |

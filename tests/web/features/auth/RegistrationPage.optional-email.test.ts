@@ -1,9 +1,18 @@
 // @vitest-environment jsdom
 import { createElement } from "react";
-import { afterEach, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RegistrationPage } from "@web/features/auth/RegistrationPage.js";
+
+beforeEach(() => {
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute("open", "");
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute("open");
+  };
+});
 
 afterEach(() => {
   cleanup();
@@ -64,6 +73,8 @@ it("completes the account from step two without an email and removes the form", 
   await user.click(
     await screen.findByRole("button", { name: "Bỏ qua email, vào Sảnh" }),
   );
+  expect(request.mock.calls.some(([url]) => url.endsWith("/skip"))).toBe(false);
+  await user.click(screen.getByRole("button", { name: "Vẫn bỏ qua" }));
   expect(await screen.findByText("Tài khoản đã được tạo.")).toBeTruthy();
   expect(screen.queryByLabelText("Email chính chủ")).toBeNull();
   expect(
@@ -87,6 +98,7 @@ it("still completes from step three when the OTP has expired", async () => {
   await user.click(
     screen.getByRole("button", { name: "Bỏ qua email, vào Sảnh" }),
   );
+  await user.click(screen.getByRole("button", { name: "Vẫn bỏ qua" }));
   expect(await screen.findByText("Tài khoản đã được tạo.")).toBeTruthy();
   expect(screen.queryByLabelText("Chữ số OTP 1")).toBeNull();
   expect(onRegistered).toHaveBeenCalledWith(session);
@@ -106,6 +118,7 @@ it("returns to step one with the username error when skip hits USERNAME_TAKEN", 
   await user.click(
     await screen.findByRole("button", { name: "Bỏ qua email, vào Sảnh" }),
   );
+  await user.click(screen.getByRole("button", { name: "Vẫn bỏ qua" }));
   expect(
     await screen.findByText(
       "Username đã có người dùng. Vui lòng chọn Username khác.",
@@ -116,4 +129,35 @@ it("returns to step one with the username error when skip hits USERNAME_TAKEN", 
   ).toBeTruthy();
   expect(screen.queryByText("Tài khoản đã được tạo.")).toBeNull();
   expect(onRegistered).not.toHaveBeenCalled();
+});
+
+it("keeps registration unfinished when the warning is dismissed or the user chooses email", async () => {
+  const request = vi.fn(async (url: string) =>
+    reply(url.endsWith("/email") ? draft(180000) : { step: 2 }),
+  );
+  vi.stubGlobal("fetch", request);
+  const user = userEvent.setup();
+  const onRegistered = vi.fn();
+  render(createElement(RegistrationPage, { onRegistered }));
+  await enterAccount(user);
+  await enterEmail(user);
+  await user.click(
+    screen.getByRole("button", { name: "Bỏ qua email, vào Sảnh" }),
+  );
+  expect(
+    screen.getByText(
+      "Nếu không có email đã xác minh, bạn sẽ không thể khôi phục mật khẩu.",
+    ),
+  ).toBeTruthy();
+  fireEvent(
+    screen.getByRole("dialog"),
+    new Event("cancel", { cancelable: true }),
+  );
+  expect(onRegistered).not.toHaveBeenCalled();
+  await user.click(
+    screen.getByRole("button", { name: "Bỏ qua email, vào Sảnh" }),
+  );
+  await user.click(screen.getByRole("button", { name: "Thêm email" }));
+  expect(screen.getByLabelText("Email chính chủ")).toBeTruthy();
+  expect(request.mock.calls.some(([url]) => url.endsWith("/skip"))).toBe(false);
 });

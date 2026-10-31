@@ -222,6 +222,7 @@ export class UsernameService {
         error instanceof UsernameError &&
         [
           "USERNAME_RATE_LIMITED",
+          "USERNAME_OTP_LIMITED",
           "USERNAME_PROVIDER_ERROR",
           "USERNAME_EMAIL_REQUIRED",
         ].includes(error.code)

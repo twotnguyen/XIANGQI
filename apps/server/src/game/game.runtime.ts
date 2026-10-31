@@ -1,6 +1,10 @@
 import { createHash, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
-import { maskForbiddenChat } from "@xiangqi/shared";
+import {
+  maskForbiddenChat,
+  ROOM_REMOVAL_MESSAGES,
+  type RoomClosedMessage,
+} from "@xiangqi/shared";
 import { FriendStore } from "../account/friend/friend.store.js";
 import { RoomFriendInvites } from "./room/friend-room-port.js";
 import { RoomSessionSeats } from "./room/session-seat-port.js";
@@ -140,6 +144,16 @@ async function bootRoomRuntime(
       END AS ready`);
     if (draw.rows[0]?.present && !draw.rows[0].ready) throw new Error();
     drawReady = draw.rows[0]?.ready === true;
+    // Bảng xin ngồi ghế là tùy chọn, nhưng đã có thì phải đủ quyền: mọi snapshot phòng đọc nó.
+    const seatRequests = await pool.query<{ ready: boolean }>(`SELECT
+      to_regclass('xiangqi_room.seat_requests') IS NULL OR (
+        has_table_privilege('app_server','xiangqi_room.seat_requests','SELECT') AND
+        has_table_privilege('app_server','xiangqi_room.seat_requests','INSERT') AND
+        has_table_privilege('app_server','xiangqi_room.seat_requests','UPDATE') AND
+        NOT has_table_privilege('anon','xiangqi_room.seat_requests','SELECT') AND
+        NOT has_table_privilege('authenticated','xiangqi_room.seat_requests','SELECT')
+      ) AS ready`);
+    if (!seatRequests.rows[0]?.ready) throw new Error();
     const publicSchema = await pool.query<{
       present: boolean;
       ready: boolean;
@@ -284,10 +298,14 @@ async function bootRoomRuntime(
     {
       deliver: async (event) => {
         if (!publisher) throw new Error("Realtime publisher is not attached");
-        if (event.type === "room.closed") {
+        if (event.type === "room.closed" || event.type === "room.removed") {
           const recipients = event.payload.recipients;
+          const message = event.payload.message;
+          const removal = event.type === "room.removed";
           if (
-            event.payload.message !== "Phòng đã đóng" ||
+            (removal
+              ? !(ROOM_REMOVAL_MESSAGES as readonly unknown[]).includes(message)
+              : message !== "Phòng đã đóng") ||
             !Array.isArray(recipients) ||
             recipients.some(
               (id) =>
@@ -302,7 +320,22 @@ async function bootRoomRuntime(
               "Sự kiện phòng chưa hợp lệ",
               503,
             );
-          await publisher.publishRoomClosed(event.roomId, recipients);
+          // Người ở lại cần snapshot mới. Người bị gỡ nhận thông báo, trừ ai đã vào lại phòng trước khi sự kiện này tới.
+          let notify: string[] = recipients;
+          if (removal) {
+            await publisher.publishSnapshots(event.roomId, event.version);
+            const present = await roomPort.membersPresent(
+              event.roomId,
+              recipients,
+            );
+            notify = recipients.filter((id) => !present.has(id));
+          }
+          if (notify.length)
+            await publisher.publishRoomClosed(
+              event.roomId,
+              notify,
+              removal ? (message as RoomClosedMessage) : undefined,
+            );
           return;
         }
         await publisher.publishSnapshots(event.roomId, event.version);

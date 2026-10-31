@@ -1,106 +1,17 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
+import { databaseUrl, pool } from "./room.test-helper.js";
 import {
-  actor,
-  apply,
-  databaseUrl,
-  pool,
-  reset,
-  transaction,
-} from "./room.test-helper.js";
-import { RoomStore } from "@server/game/room/room-store.js";
-import { AiReservations } from "@server/game/ai/ai-reservations.js";
-import type { RoomActor, RoomScope } from "@server/game/room/room.types.js";
+  admitted,
+  fullRoom,
+  migrateViewers,
+  reserveAi,
+  run,
+  store,
+} from "./room-viewers.test-helper.js";
 afterAll(() => pool.end());
-const store = new RoomStore();
-const capabilities = new Map<string, string>();
-async function run<T>(
-  a: RoomActor,
-  proof: string,
-  roomIds: string[],
-  work: (s: RoomScope) => Promise<T>,
-) {
-  const roster = roomIds.length
-    ? (
-        await pool.query(
-          "SELECT user_id FROM public.room_members WHERE room_id=ANY($1::uuid[]) AND role='PLAYER'",
-          [roomIds],
-        )
-      ).rows.map((r: { user_id: string }) => r.user_id)
-    : [];
-  const ids = [a.userId, ...roster];
-  return transaction(
-    ids,
-    roomIds,
-    async (client) =>
-      work({
-        client,
-        actor: a,
-        lockedActorIds: new Set(ids),
-        lockedRoomIds: new Set(roomIds),
-        activeActorIds: new Set(ids.filter((id) => capabilities.has(id))),
-      }),
-    async () => {
-      if (capabilities.get(a.userId) !== proof)
-        throw new Error("SESSION_INVALID");
-    },
-  );
-}
-async function admitted() {
-  const a = await actor();
-  const proof = randomUUID();
-  capabilities.set(a.userId, proof);
-  return { a, proof };
-}
-async function fullRoom() {
-  const h = await admitted(),
-    b = await admitted(),
-    w = await admitted();
-  const e = await run(h.a, h.proof, [], (s) =>
-    store.create(s, { commandId: randomUUID() }),
-  );
-  await run(b.a, b.proof, [e.roomId], (s) =>
-    store.join(s, {
-      commandId: randomUUID(),
-      roomId: e.roomId,
-      intent: "auto",
-    }),
-  );
-  await run(w.a, w.proof, [e.roomId], (s) =>
-    store.join(s, {
-      commandId: randomUUID(),
-      roomId: e.roomId,
-      intent: "watch",
-    }),
-  );
-  return { h, b, w, roomId: e.roomId };
-}
-async function reserveAi(
-  player: Awaited<ReturnType<typeof admitted>>,
-  roomId: string,
-) {
-  await apply("supabase/migrations/20261011000011_ai_reservations.sql");
-  const reservations = new AiReservations();
-  const boot = await transaction([], [], (client) =>
-    reservations.createBoot(client),
-  );
-  const gameId = randomUUID();
-  await run(player.a, player.proof, [roomId], (s) =>
-    reservations.reserve(s, { gameId, bootId: boot.id }),
-  );
-  return gameId;
-}
 describe.skipIf(!databaseUrl)("room viewers", () => {
-  beforeEach(async () => {
-    await pool.query(
-      "DROP SCHEMA IF EXISTS xiangqi_chat CASCADE; DROP SCHEMA IF EXISTS xiangqi_ai CASCADE; DROP SCHEMA IF EXISTS xiangqi_social CASCADE",
-    );
-    await reset();
-    await apply("supabase/migrations/20261011000006_rooms.sql");
-    await apply("supabase/migrations/20261017000018_room_code_digits.sql");
-    await apply("supabase/migrations/20261102000002_custom_rematch.sql");
-    await apply("supabase/migrations/20261011000016_room_viewers.sql");
-  });
+  beforeEach(migrateViewers);
   it("moves a non-host player to spectator and back via host invite", async () => {
     const { h, b, roomId } = await fullRoom();
     await expect(
@@ -111,11 +22,11 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
     );
     expect(moved.room.seats).toEqual({ red: h.a.userId, black: null });
     expect(moved.room.downOffer).toBeNull();
-    await run(h.a, h.proof, [roomId], (s) =>
+    const invite = await run(h.a, h.proof, [roomId], (s) =>
       store.inviteDown(s, roomId, b.a.userId),
     );
     const back = await run(b.a, b.proof, [roomId], (s) =>
-      store.respondDown(s, roomId, true),
+      store.respondDown(s, roomId, invite.room.downOffer!.id, true),
     );
     expect(back.room.seats).toEqual({ red: h.a.userId, black: b.a.userId });
     expect(back.room.ready).toEqual({ red: false, black: false });
@@ -132,11 +43,11 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
         store.moveToSpectator(s, roomId, h.a.userId),
       ),
     ).rejects.toMatchObject({ code: "SEAT_MOVE_DENIED" });
-    await run(h.a, h.proof, [roomId], (s) =>
+    const invite = await run(h.a, h.proof, [roomId], (s) =>
       store.inviteDown(s, roomId, b.a.userId),
     );
     const declined = await run(b.a, b.proof, [roomId], (s) =>
-      store.respondDown(s, roomId, false),
+      store.respondDown(s, roomId, invite.room.downOffer!.id, false),
     );
     expect(declined.room.downOffer).toBeNull();
     expect(declined.room.seats).toEqual({ red: h.a.userId, black: null });
@@ -256,12 +167,14 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
   it("rejects accepting a seat after an AI game reserves the invitee's position", async () => {
     const { h, b, w, roomId } = await fullRoom();
     await run(b.a, b.proof, [roomId], (s) => store.toSpectator(s, roomId));
-    await run(h.a, h.proof, [roomId], (s) =>
+    const invite = await run(h.a, h.proof, [roomId], (s) =>
       store.inviteDown(s, roomId, w.a.userId),
     );
     const gameId = await reserveAi(w, roomId);
     await expect(
-      run(w.a, w.proof, [roomId], (s) => store.respondDown(s, roomId, true)),
+      run(w.a, w.proof, [roomId], (s) =>
+        store.respondDown(s, roomId, invite.room.downOffer!.id, true),
+      ),
     ).rejects.toMatchObject({ code: "ALREADY_SEATED", status: 409 });
     const state = await run(h.a, h.proof, [roomId], (s) =>
       store.snapshot(s, roomId),
@@ -386,7 +299,7 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
   it("rejects seat invite races and moves during play", async () => {
     const { h, b, roomId } = await fullRoom();
     await run(b.a, b.proof, [roomId], (s) => store.toSpectator(s, roomId));
-    await run(h.a, h.proof, [roomId], (s) =>
+    const invite = await run(h.a, h.proof, [roomId], (s) =>
       store.inviteDown(s, roomId, b.a.userId),
     );
     const v = await admitted();
@@ -394,7 +307,9 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
       store.join(s, { commandId: randomUUID(), roomId, intent: "auto" }),
     );
     await expect(
-      run(b.a, b.proof, [roomId], (s) => store.respondDown(s, roomId, true)),
+      run(b.a, b.proof, [roomId], (s) =>
+        store.respondDown(s, roomId, invite.room.downOffer!.id, true),
+      ),
     ).rejects.toMatchObject({ code: "SEAT_INVITE_MISSING" });
     const matchId = randomUUID();
     await pool.query("BEGIN");
@@ -414,7 +329,7 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
   it("closes invites when the seat fills before countdown", async () => {
     const { h, b, roomId } = await fullRoom();
     await run(b.a, b.proof, [roomId], (s) => store.toSpectator(s, roomId));
-    await run(h.a, h.proof, [roomId], (s) =>
+    const invite = await run(h.a, h.proof, [roomId], (s) =>
       store.inviteDown(s, roomId, b.a.userId),
     );
     const v = await admitted();
@@ -434,10 +349,12 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
           true,
         ),
       );
-    await run(h.a, h.proof, [roomId], (s) => store.ready(s, roomId, true));
     await run(v.a, v.proof, [roomId], (s) => store.ready(s, roomId, true));
+    await run(h.a, h.proof, [roomId], (s) => store.start(s, roomId));
     await expect(
-      run(b.a, b.proof, [roomId], (s) => store.respondDown(s, roomId, true)),
+      run(b.a, b.proof, [roomId], (s) =>
+        store.respondDown(s, roomId, invite.room.downOffer!.id, true),
+      ),
     ).rejects.toMatchObject({ code: "SEAT_INVITE_MISSING" });
   });
 });

@@ -10,6 +10,7 @@ import {
   type RoomScope,
   type RoomView,
 } from "./room.types.js";
+import { FailureLimiter } from "./command-limiter.js";
 import type { RoomStore } from "./room-store.js";
 import type {
   RoomActorProof,
@@ -32,6 +33,7 @@ export interface MemberRoomAuthorizer {
  * Quản lý vòng đời phòng, vào/rời phòng, phân bổ ghế, đổi bên và điều chỉnh quyền truy cập.
  */
 export class RoomHttpService {
+  private readonly wrongCodes = new FailureLimiter();
   constructor(
     private readonly store: RoomStore,
     private readonly transactions: RoomTransactions,
@@ -97,13 +99,25 @@ export class RoomHttpService {
     },
   ) {
     const actor = await this.actor(proof);
+    const wait = this.wrongCodes.retryAfterSeconds(actor.userId);
+    if (wait > 0)
+      throw new RoomError(
+        "ROOM_CODE_RATE_LIMITED",
+        `Bạn nhập mã sai quá nhiều lần, vui lòng thử lại sau ${wait} giây`,
+        429,
+      );
     const roomId = await this.run<string>(
       proof,
       actor,
       [],
       (scope) => this.store.resolveCode(scope.client, input.code),
       "join-room",
-    );
+    ).catch((error: unknown) => {
+      // Chỉ mã sai/phòng đóng mới tính; nhập đúng không làm tăng bộ đếm.
+      if (error instanceof RoomError && error.code === "ROOM_FORBIDDEN")
+        this.wrongCodes.record(actor.userId);
+      throw error;
+    });
     return this.run<Awaited<ReturnType<RoomStore["join"]>>>(
       proof,
       actor,
@@ -163,6 +177,20 @@ export class RoomHttpService {
     });
   }
   /**
+   * Host nhường quyền Host cho người chơi còn lại.
+   */
+  async transferHost(
+    proof: RoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    control: RoomControlProof,
+  ) {
+    return this.mutate(proof, roomId, control, async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.transferHost(scope, roomId);
+    });
+  }
+  /**
    * Người chơi tự nguyện rời ghế thi đấu để chuyển xuống làm khán giả.
    */
   async toSpectator(
@@ -207,18 +235,60 @@ export class RoomHttpService {
     });
   }
   /**
-   * Khán giả phản hồi chấp nhận hoặc từ chối lời mời xuống ghế thi đấu từ chủ phòng.
+   * Khán giả phản hồi chấp nhận hoặc từ chối đúng lời mời `offerId` xuống ghế thi đấu từ chủ phòng.
    */
   async respondDown(
     proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
+    offerId: string,
     accept: boolean,
     control: RoomControlProof,
   ) {
     return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
-      return this.store.respondDown(scope, roomId, accept);
+      return this.store.respondDown(scope, roomId, offerId, accept);
+    });
+  }
+  /**
+   * Người xem xin ngồi ghế trống (idempotent, không gắn phiên bản phòng: lệnh chỉ thêm yêu cầu của chính mình).
+   */
+  async requestSeat(
+    proof: RoomRequestProof,
+    roomId: string,
+    control: RoomControlProof,
+  ) {
+    return this.mutate(proof, roomId, control, (scope) =>
+      this.store.requestSeat(scope, roomId),
+    );
+  }
+  /**
+   * Chủ phòng đồng ý hoặc từ chối đúng yêu cầu `requestId`; định danh yêu cầu thay cho phiên bản phòng.
+   */
+  async respondSeatRequest(
+    proof: RoomRequestProof,
+    roomId: string,
+    requestId: string,
+    accept: boolean,
+    control: RoomControlProof,
+  ) {
+    return this.mutate(proof, roomId, control, (scope) =>
+      this.store.respondSeatRequest(scope, roomId, requestId, accept),
+    );
+  }
+  /**
+   * Chủ phòng mời người chơi thứ hai rời ghế (không chặn vào lại).
+   */
+  async inviteLeave(
+    proof: RoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    targetId: string,
+    control: RoomControlProof,
+  ) {
+    return this.mutate(proof, roomId, control, async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.inviteLeave(scope, roomId, targetId);
     });
   }
   /**

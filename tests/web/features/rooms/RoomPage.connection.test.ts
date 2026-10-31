@@ -16,7 +16,17 @@ it("returns to the lobby on trusted closure and ignores closure after unmount", 
   expect(fixture.close).toHaveBeenCalledOnce();
 });
 it("Ready sends current version and remains server-controlled until acknowledgement", async () => {
-  const fixture = setup();
+  const guest = { ...snapshot, role: "black" as const };
+  const fixture = setup(guest, { userId: "b" });
+  fixture.command.mockResolvedValue({
+    status: "ok",
+    commandId: "c",
+    snapshot: {
+      ...guest,
+      version: 4,
+      room: { ...guest.room, ready: { red: false, black: true } },
+    },
+  });
   await fixture.ready();
   await userEvent
     .setup()

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { passwordValidationMessage } from "@xiangqi/shared";
 import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
 import { Button, TextField } from "../../shared/ui/primitives.js";
 import { AuthShell } from "./AuthShell.js";
@@ -118,6 +119,8 @@ export function ResetPasswordPage() {
   function resendFailure(failure: unknown) {
     if (isRestart(failure)) return "restart";
     if (failure instanceof PasswordRequestError) {
+      if (failure.code === "PASSWORD_OTP_LIMITED")
+        return "Bạn đã yêu cầu quá nhiều mã, vui lòng thử lại sau";
       if (failure.code === "PASSWORD_RATE_LIMITED")
         return "Vui lòng đợi thêm trước khi gửi lại mã.";
       if (failure.code === "PASSWORD_PROVIDER_ERROR") return providerFailed;
@@ -172,8 +175,9 @@ export function ResetPasswordPage() {
   function submitPassword(event: FormEvent) {
     event.preventDefault();
     if (!recovery || !resetToken) return;
-    if (newPassword.length < 8 || newPassword !== confirmation) {
-      setError(passwordRule);
+    const invalidPassword = passwordValidationMessage(newPassword);
+    if (invalidPassword || newPassword !== confirmation) {
+      setError(invalidPassword || passwordRule);
       return;
     }
     void run(
@@ -196,6 +200,9 @@ export function ResetPasswordPage() {
         if (isRestart(failure)) return "restart";
         if (failure instanceof PasswordRequestError) {
           if (failure.code === "PASSWORD_INVALID_INPUT") return passwordRule;
+          if (failure.code === "PASSWORD_PROVIDER_REJECTED") {
+            return "Dịch vụ xác thực không chấp nhận mật khẩu này, vui lòng chọn mật khẩu khác";
+          }
           if (failure.code === "PASSWORD_OTP_EXPIRED") return "restart";
           if (failure.code === "PASSWORD_PROVIDER_ERROR") {
             abandon(
@@ -253,7 +260,7 @@ export function ResetPasswordPage() {
         >
           <p className="form-subtitle">
             {remaining > 0
-              ? `Nhập mã 6 chữ số đã gửi tới Gmail. Mã còn hiệu lực trong ${formatRemaining(remaining)}.`
+              ? `Nhập mã 6 chữ số đã gửi tới email. Mã còn hiệu lực trong ${formatRemaining(remaining)}.`
               : "Mã đã hết hạn. Vui lòng gửi lại mã."}
           </p>
           <TextField
@@ -293,7 +300,7 @@ export function ResetPasswordPage() {
         >
           <TextField
             label="Mật khẩu mới"
-            helper="Ít nhất 8 ký tự. Mật khẩu được giữ nguyên, không tự cắt khoảng trắng."
+            helper="8–72 byte (chữ có dấu tính nhiều byte). Mật khẩu được giữ nguyên, không tự cắt khoảng trắng."
             id="reset-new-password"
             type="password"
             autoComplete="new-password"

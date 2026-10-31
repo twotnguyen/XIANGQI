@@ -148,8 +148,8 @@ async function matchVersionOf(room: Room, matchId: string) {
 
 // Ready both seats and wait for the first ACTIVE match (the production countdown path).
 async function readyBoth(room: Room) {
-  await act(room, "red", { type: "room.ready", payload: { ready: true } });
   await act(room, "black", { type: "room.ready", payload: { ready: true } });
+  await act(room, "red", { type: "room.start", payload: {} });
   const red = await snapshotWhen(
     room.red.tracker,
     (s) => s.match?.status === "ACTIVE",

@@ -73,8 +73,17 @@ export interface RoomView {
       expiresAt: string;
     } | null;
     swapCooldownUntil?: string | null;
-    spectators: { userId: string; displayName: string }[];
+    spectators: { userId: string; displayName: string; guest?: boolean }[];
     downOffer: { id: string; inviteeId: string; expiresAt: string } | null;
+    downCooldownUntil?: string | null;
+    seatRequests?: { id: string; userId: string; expiresAt: string }[];
+    seatRequestCooldownUntil?: string | null;
+    seatPlayers?: {
+      red: { userId: string; displayName: string; guest: boolean } | null;
+      black: { userId: string; displayName: string; guest: boolean } | null;
+    };
+    /** Chính người đọc đang giữ vị trí chơi ở nơi khác (ghế phòng khác, ván AI/online). */
+    occupiedElsewhere?: boolean;
   };
   role: "red" | "black" | "spectator";
 }
@@ -92,6 +101,10 @@ export interface MatchStartPort {
     input: MatchStartInput,
   ): Promise<{ matchId: string }>;
   leave?(
+    client: PoolClient,
+    input: { roomId: string; matchId: string; actor: RoomActor },
+  ): Promise<void>;
+  reconnect?(
     client: PoolClient,
     input: { roomId: string; matchId: string; actor: RoomActor },
   ): Promise<void>;

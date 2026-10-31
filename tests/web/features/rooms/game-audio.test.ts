@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { RoomSnapshot } from "@xiangqi/shared";
+import { parsePosition } from "@xiangqi/xiangqi-core";
 import { createGameAudio } from "@web/features/rooms/game-audio";
 
 const initial =
@@ -78,6 +79,7 @@ function snapshot(
       version: 0,
       position: initial,
       lastMove: null,
+      canAbort: true,
       turn: "red",
       status: "ACTIVE",
       winner: null,
@@ -119,7 +121,62 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+describe("local move audio (AC-YC4-RV-02)", () => {
+  it("plays once when the mover sees the move and not again when the server accepts it", async () => {
+    const helper = audio();
+    await helper.unlock();
+    helper.playLocal(snapshot(), parsePosition(pawn), { from: 54, to: 45 });
+    expect(oscillators.map((item) => item.frequency.value)).toEqual([440]);
+    helper.accept(snapshot(), moved());
+    helper.accept(snapshot(), moved());
+    expect(oscillators).toHaveLength(1);
+  });
+  it("plays a capture tone and stays silent when muted or when the move is rejected", async () => {
+    const helper = audio();
+    await helper.unlock();
+    helper.playLocal(
+      snapshot(),
+      parsePosition(
+        "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR b - - 0 1",
+      ),
+      { from: 64, to: 1 },
+    );
+    expect(oscillators.map((item) => item.frequency.value)).toEqual([220]);
+    helper.setMuted(true);
+    helper.playLocal(snapshot(), parsePosition(pawn), { from: 54, to: 45 });
+    expect(oscillators).toHaveLength(1);
+  });
+  it("still plays the accepted move for another client that never played it locally", async () => {
+    const helper = audio();
+    await helper.unlock();
+    helper.accept(snapshot(), moved());
+    expect(oscillators.map((item) => item.frequency.value)).toEqual([440]);
+  });
+});
+
 describe("accepted game audio", () => {
+  it("plays a live opponent move while hidden, but not a reconnect baseline or muted move", async () => {
+    const helper = audio();
+    await helper.unlock();
+    const visibility = vi
+      .spyOn(document, "visibilityState", "get")
+      .mockReturnValue("hidden");
+    const title = document.title;
+    helper.accept(
+      { ...snapshot(), role: "black" },
+      { ...moved(), role: "black" },
+    );
+    expect(oscillators.map((item) => item.frequency.value)).toEqual([440]);
+    helper.accept(null, moved());
+    helper.setMuted(true);
+    helper.accept(snapshot({ id: "muted" }), {
+      ...moved(),
+      match: { ...moved().match!, id: "muted" },
+    });
+    expect(oscillators.map((item) => item.frequency.value)).toEqual([440]);
+    expect(document.title).toBe(title);
+    visibility.mockRestore();
+  });
   it("separates the accepted terminal move and result, including duplicate delivery", async () => {
     const helper = audio();
     await helper.unlock();

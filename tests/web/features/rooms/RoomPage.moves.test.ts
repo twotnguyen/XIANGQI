@@ -43,6 +43,9 @@ it("sends a canonical move once and updates the board optimistically until serve
   expect(
     screen.queryByRole("img", { name: "Tốt đỏ, cột 1 hàng 7" }),
   ).toBeNull();
+  // AC-YC4-RV-02: quân hiện ngay, khóa gửi thêm bằng aria-busy, không có chữ chờ.
+  expect(document.querySelector('svg[aria-busy="true"]')).not.toBeNull();
+  expect(screen.queryByText(/Đang gửi nước/)).toBeNull();
   const next = {
     ...state,
     version: 4,
@@ -99,7 +102,13 @@ it.each(["move", "ready"] as const)(
     const playback = gameAudio.createGameAudio();
     const accept = vi.spyOn(playback, "accept");
     vi.spyOn(gameAudio, "createGameAudio").mockReturnValue(playback);
-    const state = action === "move" ? playing() : snapshot;
+    const state =
+      action === "move"
+        ? playing()
+        : {
+            ...snapshot,
+            room: { ...snapshot.room, ready: { red: false, black: true } },
+          };
     const f = setup(state);
     await f.ready();
     let finish!: (ack: CommandAcknowledgement) => void;
@@ -116,7 +125,7 @@ it.each(["move", "ready"] as const)(
       fireEvent.click(
         screen.getByRole("button", { name: "Trống, cột 1 hàng 6" }),
       );
-    } else fireEvent.click(screen.getByRole("button", { name: "Sẵn sàng" }));
+    } else fireEvent.click(screen.getByRole("button", { name: "Bắt đầu" }));
     const next: RoomSnapshot =
       action === "move"
         ? {
@@ -292,7 +301,10 @@ it("a superseded control proof fences an earlier move rejection", async () => {
 });
 
 it("a canonical ACK that introduces a new match clears its previous request pending state", async () => {
-  const f = setup();
+  const f = setup({
+    ...snapshot,
+    room: { ...snapshot.room, ready: { red: false, black: true } },
+  });
   await f.ready();
   f.command.mockResolvedValueOnce({
     status: "ok",
@@ -301,7 +313,7 @@ it("a canonical ACK that introduces a new match clears its previous request pend
   });
   await userEvent
     .setup()
-    .click(screen.getByRole("button", { name: "Sẵn sàng" }));
+    .click(screen.getByRole("button", { name: "Bắt đầu" }));
   expect(
     screen
       .getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" })

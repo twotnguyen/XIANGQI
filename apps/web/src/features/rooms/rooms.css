@@ -1543,7 +1543,7 @@
     align-content: start;
   }
   .is-playing .xq-room-board {
-    max-width: min(560px, max(320px, calc((100dvh - 340px) * 0.9)));
+    max-width: min(560px, max(240px, calc((100dvh - 500px) * 0.9)));
     justify-self: center;
     width: 100%;
   }

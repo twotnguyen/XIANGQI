@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
-import type { Session } from "../auth/registration.types.js";
+import { passwordValidationMessage } from "@xiangqi/shared";
+import { RegistrationError, type Session } from "../auth/registration.types.js";
 import { validateUsername } from "../auth/registration.service.js";
 import {
   GoogleError,
@@ -307,16 +308,12 @@ export class GoogleService {
   ) {
     const tokenHash = hash(capability),
       username = validateUsername(input.username);
-    if (
-      typeof input.password !== "string" ||
-      input.password.length < 8 ||
-      input.password.length > 4096
-    )
-      throw new GoogleError(
-        "PASSWORD_INVALID",
-        "Mật khẩu cần tối thiểu 8 ký tự",
-      );
-    const password = input.password;
+    const passwordError =
+      typeof input.password === "string"
+        ? passwordValidationMessage(input.password)
+        : "Mật khẩu cần tối thiểu 8 ký tự";
+    if (passwordError) throw new GoogleError("PASSWORD_INVALID", passwordError);
+    const password = input.password as string;
     const initialUserId = await this.db(() =>
       this.store.findDraftOwner(tokenHash),
     );
@@ -383,7 +380,12 @@ export class GoogleService {
           await tx.markDraftRecovering(account.userId);
           try {
             await this.auth.setPassword(account.userId, password);
-          } catch {
+          } catch (error) {
+            if (
+              error instanceof RegistrationError &&
+              error.code === "PASSWORD_PROVIDER_REJECTED"
+            )
+              throw new GoogleError(error.code, error.message, 400);
             throw new GoogleError(
               "GOOGLE_RECOVERING",
               "Chưa thể hoàn tất đăng ký Google, vui lòng thử lại",

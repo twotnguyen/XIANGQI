@@ -1,5 +1,8 @@
 import { afterEach, vi } from "vitest";
-import { connectRoom } from "@web/features/rooms/room-client.js";
+import {
+  connectRoom,
+  type RoomConnectionInput,
+} from "@web/features/rooms/room-client.js";
 import type { ChatPage } from "@xiangqi/shared";
 
 export { fixture, roomId, snapshot, observer, chatPage, chatPeer };
@@ -36,6 +39,7 @@ function snapshot(lastMove: unknown = null) {
     roomId,
     version: 4,
     serverNow: "2026-10-11T00:00:00Z",
+    undo: null,
     role: "red",
     room: {
       name: "Kỳ hữu",
@@ -66,6 +70,7 @@ function snapshot(lastMove: unknown = null) {
       winner: null,
       endedAt: null,
       result: null,
+      canAbort: false,
     },
     clocks: {
       redMs: 600000,
@@ -76,7 +81,7 @@ function snapshot(lastMove: unknown = null) {
     control: { mode: "writable", generation: 1, reason: null },
   };
 }
-function observer() {
+function observer(onDemoCapability?: RoomConnectionInput["onDemoCapability"]) {
   const onSnapshot = vi.fn(),
     onError = vi.fn();
   const peer = connectRoom({
@@ -85,6 +90,7 @@ function observer() {
     onSnapshot,
     onError,
     onConnection: vi.fn(),
+    onDemoCapability,
   });
   return { peer, onSnapshot, onError };
 }

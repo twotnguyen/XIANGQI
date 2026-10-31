@@ -186,7 +186,12 @@ export class HistoryStore {
     if (row.status === "INTERRUPTED") {
       if (
         winner !== null ||
-        !["BOTH_OFFLINE", "SERVER_RESTART", "AI_UNAVAILABLE"].includes(reason)
+        ![
+          "BOTH_OFFLINE",
+          "SERVER_RESTART",
+          "AI_UNAVAILABLE",
+          "ABORTED",
+        ].includes(reason)
       )
         fail("HISTORY_CORRUPT", 409);
       const abandoned =
@@ -198,7 +203,11 @@ export class HistoryStore {
       result = {
         kind: abandoned ? "ABANDONED" : "INTERRUPTED",
         reason,
-        label: abandoned ? "Bỏ dở" : "Bị gián đoạn",
+        label: abandoned
+          ? "Bỏ dở"
+          : reason === "ABORTED"
+            ? "Ván bị hủy"
+            : "Bị gián đoạn",
         countsForWdl: false,
       };
     } else if (
@@ -209,6 +218,7 @@ export class HistoryStore {
         "DRAW_REPETITION",
         "DRAW_NO_CAPTURE",
         "DRAW_AGREEMENT",
+        "DRAW_SIMULTANEOUS_DISCONNECT",
         "PERPETUAL_CHECK",
       ].includes(reason)
     )

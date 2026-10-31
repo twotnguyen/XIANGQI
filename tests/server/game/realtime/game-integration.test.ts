@@ -37,7 +37,7 @@ import { attachRealtime } from "@server/game/realtime/gateway.js";
 import { parseCommand } from "@server/game/realtime/protocol.js";
 
 const loginPool = createLoginPool({ connectionString: databaseUrl });
-async function fixture() {
+async function fixture(startAgeMs = 0) {
   const users = new Map<string, { id: string; email: string }>();
   // Synthetic provider boundary ONLY; all application auth/session/room/match SQL is real.
   const provider = {
@@ -69,7 +69,13 @@ async function fixture() {
       await rooms.onMatchEnded(scope, input);
     },
   });
-  const rooms = new RoomStore(matches);
+  const rooms = new RoomStore({
+    start: (client, input) =>
+      matches.start(client, {
+        ...input,
+        startedAt: new Date(input.startedAt.getTime() - startAgeMs),
+      }),
+  });
   const game = new GameRooms(rooms, matches, clock, (client, identity, id) => {
     const s = transactions.getScope(client, identity, id);
     scopes.set(client, s);
@@ -163,17 +169,16 @@ async function fixture() {
     await connect(b, true);
     await connect(v);
     expect(
-      (await command(r, { type: "room.ready", payload: { ready: true } })).ack
-        .status,
-    ).toBe("ok");
-    expect(
       (await command(b, { type: "room.ready", payload: { ready: true } })).ack
         .status,
     ).toBe("ok");
+    expect(
+      (await command(r, { type: "room.start", payload: {} })).ack.status,
+    ).toBe("ok");
     // Administrator advances only synthetic countdown, no claim production scheduler.
     await pool.query(
-      "UPDATE xiangqi_room.countdowns SET due_at=clock_timestamp()-interval '1 millisecond' WHERE room_id=$1",
-      [entry.roomId],
+      "UPDATE xiangqi_room.countdowns SET due_at=clock_timestamp()-($2::int + 1000) * interval '1 millisecond' WHERE room_id=$1",
+      [entry.roomId, startAgeMs],
     );
     await coordinator.withRoom(
       { actor: red.identity, roomIds: [entry.roomId] },
@@ -238,9 +243,16 @@ describe.skipIf(!databaseUrl)(
     beforeEach(async () => {
       await reset();
       await apply("supabase/migrations/20261011000007_match_outcomes.sql");
+      await apply("supabase/migrations/20261011000009_match_draw.sql");
       await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+      await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
+      );
+      await apply("supabase/migrations/20261103000005_match_aborted.sql");
+      await apply("supabase/migrations/20261103000006_online_undo.sql");
+      await apply(
+        "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
       );
     });
     it("starts with both verified members then commits actual red/black moves and replays one receipt", async () => {
@@ -352,7 +364,7 @@ describe.skipIf(!databaseUrl)(
       ).toBe(1);
     });
     it("TIMEOUT command commits terminal result, receipt/outbox once and no move even when payload is otherwise illegal", async () => {
-      const f = await fixture(),
+      const f = await fixture(5000),
         m = await f.start();
       await pool.query(
         "UPDATE public.matches SET clock=jsonb_build_object('redMs',1,'blackMs',600000,'runningSinceEpochMs',floor(extract(epoch FROM clock_timestamp())*1000)::bigint-100) WHERE id=$1",
@@ -395,7 +407,7 @@ describe.skipIf(!databaseUrl)(
       ).toBe(1);
     });
     it("receipt failure rolls back terminal match/room/outbox atomically, then same command retries once", async () => {
-      const f = await fixture(),
+      const f = await fixture(5000),
         m = await f.start();
       await pool.query(
         "UPDATE public.matches SET clock=jsonb_build_object('redMs',1,'blackMs',600000,'runningSinceEpochMs',floor(extract(epoch FROM clock_timestamp())*1000)::bigint-100) WHERE id=$1",
@@ -585,8 +597,14 @@ describe.skipIf(!databaseUrl)(
       await reset();
       await apply("supabase/migrations/20261011000007_match_outcomes.sql");
       await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+      await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
+      );
+      await apply("supabase/migrations/20261103000005_match_aborted.sql");
+      await apply("supabase/migrations/20261103000006_online_undo.sql");
+      await apply(
+        "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
       );
     });
     it("commits media.revoke-user with each takeover, drops it on rollback, and orders revokes by room version", async () => {

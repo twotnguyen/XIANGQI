@@ -250,6 +250,8 @@ describe.skipIf(!databaseUrl)(
         "20261011000012_ai_presence",
         "20261029000001_username_account_email",
         "20261030000001_password_recovery",
+        "20261103000002_yc1_account_rules",
+        "20261103000003_password_reset_grant",
       ])
         await apply(`supabase/migrations/${migration}.sql`);
       f = await boot();

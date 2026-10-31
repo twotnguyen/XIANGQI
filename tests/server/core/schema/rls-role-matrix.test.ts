@@ -30,10 +30,17 @@ const migrations = [
   "20261101000001_friend_presence_invites",
   "20261102000001_username_management",
   "20261102000002_custom_rematch",
+  "20261103000004_room_issued_codes",
   "20261102000003_unlimited_inactivity",
+  "20261103000005_match_aborted",
+  "20261103000006_online_undo",
+  "20261103000007_match_simultaneous_disconnect",
+  "20261103000008_seat_requests",
   "20261102000004_direct_messages",
   "20261102000005_account_theme",
   "20261103000001_username_otp_delivery",
+  "20261103000002_yc1_account_rules",
+  "20261103000003_password_reset_grant",
 ];
 const appSchemas = [
   "public",

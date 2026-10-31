@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { containsForbiddenName } from "@xiangqi/shared";
+import {
+  containsForbiddenName,
+  passwordValidationMessage,
+} from "@xiangqi/shared";
 import { Button, Notice, TextField } from "../../shared/ui/primitives.js";
 import { GoogleSignInButton } from "./GoogleSignInButton.js";
 import {
@@ -106,8 +109,8 @@ export function GoogleOnboardingPage({
       : "";
   const validation =
     invalidUsername ||
-    (password.length < 8
-      ? "Mật khẩu cần tối thiểu 8 ký tự."
+    (passwordValidationMessage(password)
+      ? passwordValidationMessage(password)
       : confirmation !== password
         ? "Hai mật khẩu chưa khớp."
         : "");

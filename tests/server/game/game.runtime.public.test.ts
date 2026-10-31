@@ -298,7 +298,7 @@ describe.skipIf(!databaseUrl)(
               roomId: entry.roomId,
               commandId: randomUUID(),
               expectedVersion: fresh.version,
-              action: { type: "room.ready", payload: { ready: true } },
+              action: { type: "room.start", payload: {} },
             },
             (
               error: Error | null,
@@ -306,7 +306,11 @@ describe.skipIf(!databaseUrl)(
             ) => (error ? reject(error) : resolve(value)),
           ),
         );
-        expect(ack.status).toBe("ok");
+        // Đối thủ chưa Sẵn sàng nên bị từ chối; ack chứng minh socket phòng vẫn sống sau khi feed ngắt.
+        expect(ack).toMatchObject({
+          status: "error",
+          error: { code: "START_DENIED" },
+        });
       } finally {
         await f.close();
       }

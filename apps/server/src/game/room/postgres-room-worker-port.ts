@@ -205,6 +205,11 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
   pendingEvents() {
     return this.transaction((client) => this.rooms.pendingEvents(client));
   }
+  membersPresent(roomId: string, userIds: string[]) {
+    return this.transaction((client) =>
+      this.rooms.membersPresent(client, roomId, userIds),
+    );
+  }
   markDelivered(id: string) {
     return this.transaction((client) => this.rooms.markDelivered(client, id));
   }

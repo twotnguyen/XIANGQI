@@ -19,6 +19,7 @@ import {
   type GooglePending,
 } from "./google-gis.js";
 import type { PublicRoomAuthProof } from "@xiangqi/shared";
+import { settleTabSession, tabSessionFetch } from "../../shared/tab-session.js";
 
 export type SessionState =
   | { status: "checking" }
@@ -211,6 +212,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return ++epoch.current;
   }, []);
   const anonymous = useCallback(() => {
+    settleTabSession();
     invalidateRequest();
     loggingOut.current = null;
     clearTimers();
@@ -221,6 +223,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [clearTimers, invalidateRequest]);
   const install = useCallback(
     (result: SessionResult) => {
+      settleTabSession();
       clearTimers();
       guestRef.current = null;
       pendingGoogle.current = null;
@@ -266,6 +269,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           value,
           typeof (value as { email?: unknown }).email === "string",
         );
+        settleTabSession();
         invalidateRequest();
         loggingOut.current = null;
         clearTimers();
@@ -309,6 +313,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   );
   const installGuest = useCallback(
     (guest: GuestRecord) => {
+      settleTabSession();
       pendingGoogle.current = null;
       credentials.current = null;
       guestRef.current = guest;
@@ -325,12 +330,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // Trả false khi cookie Khách không còn (401); lỗi khác ném ra để refresh báo lỗi tạm thời, không xóa phiên.
   const restoreGuest = useCallback(
     async (requestEpoch: number, signal: AbortSignal): Promise<boolean> => {
-      const response = await fetch(backend("/account/guest/session"), {
-        credentials: "include",
-        redirect: "error",
-        cache: "no-store",
-        signal,
-      });
+      const response = await tabSessionFetch(
+        backend("/account/guest/session"),
+        {
+          credentials: "include",
+          redirect: "error",
+          cache: "no-store",
+          signal,
+        },
+      );
       if (!isLive(requestEpoch, signal)) return true;
       if (response.status === 401) return false;
       if (!response.ok) throw new Error(unavailable);
@@ -348,12 +356,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       const abort = new AbortController();
       controller.current = abort;
       try {
-        const response = await fetch(backend("/account/guest/session"), {
-          credentials: "include",
-          redirect: "error",
-          cache: "no-store",
-          signal: abort.signal,
-        });
+        const response = await tabSessionFetch(
+          backend("/account/guest/session"),
+          {
+            credentials: "include",
+            redirect: "error",
+            cache: "no-store",
+            signal: abort.signal,
+          },
+        );
         if (!isLive(requestEpoch, abort.signal) || guestRef.current !== guest)
           return;
         if (response.status === 401) {
@@ -387,7 +398,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       const abort = new AbortController();
       controller.current = abort;
       try {
-        const response = await fetch(backend("/auth/refresh"), {
+        const response = await tabSessionFetch(backend("/auth/refresh"), {
           method: "POST",
           credentials: "include",
           redirect: "error",
@@ -436,6 +447,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
               )
                 return;
               pendingGoogle.current = google;
+              settleTabSession();
               setState({
                 status: "pending",
                 method: "google",
@@ -461,7 +473,6 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         if (
           previous &&
           (result.userId !== previous.member.userId ||
-            result.username !== previous.member.username ||
             result.appSession !== previous.capability ||
             result.expiresAt !== previous.member.expiresAt ||
             result.remember !== previous.member.remember)
@@ -511,7 +522,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
           const requestEpoch = invalidateRequest();
           const abort = new AbortController();
           controller.current = abort;
-          const response = await fetch(backend("/auth/logout"), {
+          const response = await tabSessionFetch(backend("/auth/logout"), {
             method: "POST",
             credentials: "include",
             redirect: "error",
@@ -603,7 +614,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       const headers = new Headers(init.headers);
       headers.set("Authorization", `Bearer ${record.bearer}`);
       headers.set("X-Xiangqi-Session", record.capability);
-      const response = await fetch(url, {
+      const response = await tabSessionFetch(url, {
         ...init,
         headers,
         credentials: "include",
@@ -622,7 +633,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       if (!guest || loggingOut.current) throw new Error(unavailable);
       const headers = new Headers(init.headers);
       headers.set("Authorization", `Guest ${guest.capability}`);
-      const response = await fetch(url, {
+      const response = await tabSessionFetch(url, {
         ...init,
         headers,
         credentials: "include",
@@ -643,7 +654,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       if (loggingOut.current) throw new Error(unavailable);
       const requestEpoch = invalidateRequest();
       // Không gắn signal vào fetch: phiên vừa tạo phải về đủ để thu hồi nếu đã bị hủy.
-      const response = await fetch(backend("/account/guest"), {
+      const response = await tabSessionFetch(backend("/account/guest"), {
         method: "POST",
         credentials: "include",
         redirect: "error",
@@ -660,7 +671,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         epoch.current !== requestEpoch
       ) {
         // Đã hủy hoặc đã đổi phiên trong lúc chờ: thu hồi Khách vừa tạo, không cài.
-        void fetch(backend("/account/guest/logout"), {
+        void tabSessionFetch(backend("/account/guest/logout"), {
           method: "POST",
           credentials: "include",
           redirect: "error",
@@ -688,18 +699,21 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       let pending: Promise<void> | null = null;
       pending = (async () => {
         try {
-          const response = await fetch(backend("/account/guest/logout"), {
-            method: "POST",
-            credentials: "include",
-            redirect: "error",
-            cache: "no-store",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Guest ${guest.capability}`,
+          const response = await tabSessionFetch(
+            backend("/account/guest/logout"),
+            {
+              method: "POST",
+              credentials: "include",
+              redirect: "error",
+              cache: "no-store",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Guest ${guest.capability}`,
+              },
+              body: JSON.stringify({ confirmedResign }),
+              signal: abort.signal,
             },
-            body: JSON.stringify({ confirmedResign }),
-            signal: abort.signal,
-          });
+          );
           if (response.status === 409)
             throw new GuestRequestError(409, await readCode(response));
           if (!response.ok && response.status !== 401)

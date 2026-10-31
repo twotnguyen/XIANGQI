@@ -179,3 +179,9 @@ chuỗi SQL từ xa hoặc đặt backend gần DB; không phát dự đoán nh�
 Resolver nhận `RoomRequestProof` ở handshake, command, replay, phát snapshot và tiếp quản. Proof không bao giờ được chiếu vào receipt hoặc snapshot. Thu hồi capability phải từ chối ngay, kể cả khi bearer còn hợp lệ. Lớp `RoomRealtimeIdentities`/`RoomRealtimeTransactions`/`RoomRealtimePresence` (tên cũ `Member*` đã bỏ) dùng `RoomSessionAuthorizer` để định tuyến thành viên/Khách; disconnect chỉ hạ cấp presence, không tăng quyền.
 
 Web phòng và feed Sảnh kết nối Socket.IO bằng WebSocket trực tiếp, giữ kiểm Origin hiện có; không dùng GET polling thiếu Origin ở trình duyệt cùng nguồn. Không nới CORS/Origin để khắc phục handshake.
+
+## YC5: demo mạng chỉ môi trường demo
+
+`NETWORK_DEMO=true` chỉ có hiệu lực khi `NODE_ENV` khác `production`. Gateway xác thực lại phiên, snapshot và quyền điều khiển trước `demo.capability`/`demo.disconnect`; chỉ người chơi đang điều khiển ván ACTIVE được dùng. Production luôn từ chối lệnh trực tiếp dù cờ bật.
+
+`demo.disconnect` ngắt socket gửi lệnh thật bằng server disconnect; không tự reconnect. Web chỉ hiện công cụ sau capability của server, hỏi lại khi trạng thái ván/quyền thay đổi; nút Nối lại trong lớp reconnect nối cùng tab và đợi snapshot/quyền chính thức. Công cụ không ngắt đối thủ hay tab khác; còn kết nối hợp lệ khác thì không giả toàn người chơi đã offline.

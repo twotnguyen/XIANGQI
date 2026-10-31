@@ -21,6 +21,7 @@ export interface LoginResult {
   displaced?: boolean;
 }
 import { getApiBaseUrl } from "../../shared/api.js";
+import { tabSessionFetch } from "../../shared/tab-session.js";
 
 const invalid = "Sai tên đăng nhập hoặc mật khẩu";
 const locked = "Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút";
@@ -103,7 +104,7 @@ export function LoginPage({
     controller.current = abort;
     try {
       const base = getApiBaseUrl();
-      const response = await fetch(`${base}/auth/login`, {
+      const response = await tabSessionFetch(`${base}/auth/login`, {
         method: "POST",
         credentials: "include",
         redirect: "error",
@@ -264,6 +265,14 @@ export function LoginPage({
                 Quên mật khẩu?
               </NavigationLink>
             </div>
+            <p className="session-note">
+              <NavigationLink
+                href="/forgot-password?tab=username"
+                className="link-forgot"
+              >
+                Quên tên đăng nhập?
+              </NavigationLink>
+            </p>
             <p className="session-note">
               {remember
                 ? "Giữ phiên 30 ngày từ lúc đăng nhập."

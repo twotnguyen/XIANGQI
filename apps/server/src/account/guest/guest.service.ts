@@ -1,6 +1,6 @@
 import { randomBytes, randomUUID, createHash } from "node:crypto";
 import type { PoolClient } from "pg";
-import { containsForbiddenName } from "@xiangqi/shared";
+import { normalizeDisplayName, isValidDisplayName } from "@xiangqi/shared";
 import type { ExpiryCursor, GuestStore } from "./guest.store.js";
 import {
   GuestError,
@@ -22,17 +22,8 @@ function displayName(input: unknown) {
       "Tên Khách cần 2–20 ký tự hợp lệ",
       400,
     );
-  const name = input.normalize("NFC").trim();
-  const length = Array.from(name).length;
-  if (
-    length < 2 ||
-    length > 20 ||
-    Array.from(name).some((c) => {
-      const n = c.codePointAt(0)!;
-      return n < 32 || (n >= 127 && n <= 159);
-    }) ||
-    containsForbiddenName(name)
-  )
+  const name = normalizeDisplayName(input);
+  if (!isValidDisplayName(name, 20))
     throw new GuestError(
       "GUEST_NAME_INVALID",
       "Tên Khách cần 2–20 ký tự hợp lệ",

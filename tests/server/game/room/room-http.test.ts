@@ -38,6 +38,7 @@ const snapshot = vi.fn<(scope: RoomScope, roomId: string) => Promise<unknown>>(
   async () => ({ roomId, version: 1, room: { name: "Phòng" }, role: "red" }),
 );
 const switchSeat = vi.fn(async () => ({ roomId, version: 2 }));
+const transferHost = vi.fn(async () => ({ roomId, version: 4 }));
 const leave = vi.fn(async () => {});
 const resolveCode = vi.fn<(client: unknown, code: unknown) => Promise<string>>(
   async () => roomId,
@@ -94,6 +95,7 @@ const service = new RoomHttpService(
     snapshot,
     resolveCode,
     switchSeat,
+    transferHost,
     leave,
   } as unknown as RoomStore,
   { withRoom } as unknown as RoomTransactions,
@@ -219,6 +221,39 @@ it("resolves code privately and rechecks it under the target room transaction", 
     intent: "watch",
     expectedVersion: 1,
   });
+});
+it("limits wrong codes to 10 per 60 seconds per actor and never checks the code while blocked (AC-YC3-RV-01)", async () => {
+  const other = { ...actor, userId: "99999999-9999-4999-8999-999999999999" };
+  resolve.mockResolvedValue(other);
+  resolveCode.mockRejectedValue(
+    new RoomError(
+      "ROOM_FORBIDDEN",
+      "Mã phòng không tồn tại hoặc phòng đã đóng",
+      403,
+    ),
+  );
+  const join = () =>
+    request("/rooms/join", {
+      commandId,
+      code: "11111111",
+      preference: "watch",
+    });
+  try {
+    for (let i = 0; i < 10; i++) expect((await join()).status).toBe(403);
+    const checked = resolveCode.mock.calls.length;
+    const blocked = await join();
+    expect(blocked.status).toBe(429);
+    expect(await blocked.json()).toMatchObject({
+      code: "ROOM_CODE_RATE_LIMITED",
+      message: expect.stringMatching(
+        /^Bạn nhập mã sai quá nhiều lần, vui lòng thử lại sau \d+ giây$/,
+      ),
+    });
+    expect(resolveCode.mock.calls.length).toBe(checked);
+  } finally {
+    resolve.mockResolvedValue(actor);
+    resolveCode.mockResolvedValue(roomId);
+  }
 });
 it("rejects malformed bodies/UUID and unsupported input types with400", async () => {
   for (const body of [
@@ -363,6 +398,27 @@ it("switches seats only within fresh authorized matching room version", async ()
     ).toBe(400);
   }
 });
+it.each([["transfer-host", transferHost]])(
+  "%s runs only within fresh authorized matching room version",
+  async (route, command) => {
+    const response = await request(`/rooms/${roomId}/${route}`, {
+      expectedVersion: 1,
+    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(command).toHaveBeenLastCalledWith(scope, roomId);
+    const calls = command.mock.calls.length;
+    expect(
+      (await request(`/rooms/${roomId}/${route}`, { expectedVersion: 0 }))
+        .status,
+    ).toBe(409);
+    expect(
+      (await request(`/rooms/${roomId}/${route}`, { expectedVersion: "1" }))
+        .status,
+    ).toBe(400);
+    expect(command.mock.calls.length).toBe(calls);
+  },
+);
 it("leaves only the authenticated actor and preserves lifecycle errors", async () => {
   const response = await request(`/rooms/${roomId}/leave`, {
     expectedVersion: 1,

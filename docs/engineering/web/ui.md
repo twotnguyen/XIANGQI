@@ -374,6 +374,14 @@ hộp thoại, hiện lỗi đã làm sạch và cho gửi lại; chỉ điều 
 
 `features/rooms/match/InactivityBanner.tsx` chỉ hiện cho bên đang đến lượt khi snapshot có `match.inactivity`. Banner không modal, không khóa focus, không che bàn cờ hay nút Đầu hàng; có `role="status"`. Đếm lùi lấy từ `expiresAt` của server. Khi `confirmsLeft` = 0 thì ẩn nút "Tôi còn đây". Ván không giới hạn không có đồng hồ từng bên (snapshot không gửi `clocks`).
 
+## Hoàn thiện YC1 theo rà soát 31/10/2026
+
+Đăng ký mở Dialog xác nhận trước khi bỏ qua Email/OTP; đóng/Escape không hoàn tất tài khoản, “Thêm email” quay lại bước Email, chỉ “Vẫn bỏ qua” mới gửi lệnh. `/forgot-password` dùng Tabs sẵn có cho hai mục đích OTP riêng; link “Quên tên đăng nhập?” tại Login chọn tab bằng `?tab=username`, không đưa email/token lên URL. Rời tab recovery hủy hiệu lực callback cũ.
+
+Các form dùng validation shared cho mật khẩu tối thiểu 8 ký tự, tối đa 72 byte UTF-8 và tên NFC/gộp dấu cách/allowlist. Quota OTP chung có thông báo riêng với cooldown gửi lại; đổi Username hiển thị số ngày server trả (chỉ nhận số nguyên 1–7), không render message lỗi thô. Provider từ chối password được báo đúng, không giả thành lỗi gửi OTP.
+
+SessionProvider và client auth dùng `tabSessionFetch`; sessionStorage chỉ giữ selector tab, secret vẫn trong cookie HttpOnly/bộ nhớ. Web Locks nhận biết tab nhân đôi; khi không có Web Locks, mỗi lượt tải có namespace mới và chỉ bootstrap từ nguồn trước. Đổi username giữ danh tính UUID và phiên, không làm refresh lỗi do tên cũ. Chưa xem giao diện trong lượt YC1 này vì không có dev server đang chạy; không thay bằng chứng trình duyệt/thiết bị thật bằng typecheck.
+
 ## Nâng cấp giao diện kỳ đài (31/10/2026)
 
 - Đồng bộ nền nâu trầm, viền mảnh và vàng dịu bằng token hiện có; giữ hai chủ đề, phông/ảnh local và palette bàn cờ. Không thêm dependency UI.
@@ -386,3 +394,19 @@ hộp thoại, hiện lỗi đã làm sạch và cho gửi lại; chỉ điều 
 Đã chạy web Vite và server NestJS local dưới Node 22.23.3. Đã kiểm trực tiếp /dev/lobby, /dev/login, /dev/register và /dev/board ở desktop 1366/1440px và mobile 360/390px: không tràn ngang, ảnh tải đầy đủ, input auth 16px/cao48px và nút Sảnh tối thiểu44px. Đã thao tác lọc 5 phút/Tất cả, mã sai, dialog tạo phòng ở 844×390, menu/Escape/trả focus, đổi góc nhìn/thế cờ và chú giải. Đã xem Sảnh và auth dưới Giấy Sáng bằng thuộc tính HTML local tạm thời, đã khôi phục trước commit.
 
 Typecheck web, ESLint các TSX đổi và git diff --check đạt. Test local: không chạy (không được yêu cầu); không chạy build theo quy ước repository. Chưa nghiệm thu phòng/ván thật, trang cần tài khoản, Google/SMTP/LiveKit hoặc thiết bị camera/mic; các preview là dữ liệu minh họa, không thay bằng chứng nghiệp vụ.
+
+## YC5: đề nghị trong ván và demo mạng (31/10/2026)
+
+`MatchActions` dùng chung luồng Xin hòa/Xin đi lại: nonmodal, deadline 30 giây không reset khi X/Esc thu gọn, có Mở lại/Rút; pending/quota/cooldown và readonly có lý do. Desktop đặt các đề nghị thành cột cuộn ở vùng phụ bên phải, không đẩy bàn hoặc che Đầu hàng; mobile giữ luồng dọc. Bàn desktop tính lại phần chiều cao dành cho ghế/đồng hồ/chú giải/hành động. Không khóa cuộn dọc trên mobile.
+
+Hủy ván hiện theo `match.canAbort` từ server, không suy từ bàn khai cuộc sau Undo; xác nhận mặc định focus Giữ ván, kết quả trung tính. “Tôi còn đây” cập nhật version/snapshot; countdown dùng elapsed monotonic. Âm thanh tiếp tục dựa nước đã nhận, không đổi tiêu đề tab hay Notification.
+
+Công cụ demo chỉ hiện sau grant server, nằm trong header và dùng Tooltip giải thích giới hạn tab khác còn kết nối. Khi ngắt thật, modal reconnect vẫn chặn thao tác ván nhưng có Nối lại; đợi snapshot/quyền thật trước mở thao tác. Production từ chối direct command dù client cố hiện nút.
+
+Kiểm Chromium với RoomPage thật qua harness tạm nối Nest/Socket.IO/PostgreSQL 17 cô lập: gửi Undo, demo ngắt/nối và mở lại quyền, Hủy ván/focus Giữ ván/kết quả trung tính; desktop 1366×768 giữ bàn/hành động trong viewport, mobile 360×800 không tràn ngang. Không dùng harness này làm bằng chứng shell đăng nhập, chat/media hoặc nghiệm thu Supabase thật; chi tiết số đo và giới hạn ở YC5 mục 18.
+
+## YC6: người xem, Xin ngồi ghế và bộ lọc Sảnh (31/10/2026)
+
+`SpectatorsPanel` hiện danh sách tên cho mọi vai trò (kèm “(Khách)”); chỉ người chơi thấy Đuổi. Host thấy hàng yêu cầu Xin ngồi ghế (tên, đếm ngược theo giờ server, Đồng ý/Từ chối), người xem chỉ thấy yêu cầu của mình (“Đang chờ chủ phòng · còn N giây”). Nút Xin ngồi ghế luôn hiện cho người xem và bị khóa kèm lý do (ghế đủ người, đang đếm ngược, “Chờ N giây để xin lại”); Mời xuống ghế khóa khi đang có lời mời hoặc trong 10 giây cooldown. Lời mời xuống ghế và yêu cầu gắn `offerId`/`requestId`; khung lời mời nonmodal, chỉ Chấp nhận/Từ chối, có đếm ngược, hết hạn thì ẩn. Nếu yêu cầu của mình biến mất khi vẫn là người xem, hiện “Ghế đã có người.” hoặc “Yêu cầu ngồi ghế đã kết thúc.”
+
+`RoomSeats` thêm Mời rời ghế cho Host (WAITING, đủ hai người) với hộp xác nhận mặc định focus Hủy và câu “vẫn có thể vào lại nếu phòng chưa bị khóa”. Người bị Đuổi hoặc Mời rời ghế nhận `room.closed` với lý do riêng và quay về Sảnh kèm thông báo. `LobbyShell` thêm hai nút lọc Đang chờ / Còn chỗ xem (tắt mặc định, lọc phía client trên ≤50 phòng, giữ thứ tự mới nhất).

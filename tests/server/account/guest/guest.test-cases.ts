@@ -48,7 +48,7 @@ describe.skipIf(!databaseUrl)(
     it("issues opaque fixed12h proof without creating Auth account and rejects malformed/forbidden names", async () => {
       const count = (await pool.query("SELECT count(*)::int n FROM auth.users"))
         .rows[0].n;
-      const session = await service().create("  Người thử  ");
+      const session = await service().create("  Người   thử  ");
       expect(session.displayName).toBe("Người thử");
       expect(session.expiresAt).toBe("2026-10-11T12:00:00.000Z");
       expect(session.capability).toMatch(/^[A-Za-z0-9_-]{43}$/);
@@ -62,7 +62,15 @@ describe.skipIf(!databaseUrl)(
         )
       ).rows[0].token_hash;
       expect(stored).not.toContain(session.capability);
-      for (const invalid of ["x", "a".repeat(21), "hi\nthere", "địt mẹ"])
+      for (const invalid of [
+        "x",
+        "a".repeat(21),
+        "hi\nthere",
+        "địt mẹ",
+        "Tên 🐉",
+        "Tên@bạn",
+        "\nTên",
+      ])
         await expect(service().create(invalid)).rejects.toMatchObject({
           code: "GUEST_NAME_INVALID",
         });

@@ -57,6 +57,7 @@ function match(
     version: 20,
     position: "server-position",
     lastMove: null,
+    canAbort: false,
     turn: "black",
     status: "FINISHED",
     winner,
@@ -90,6 +91,7 @@ it.each([
   ["DISCONNECT", "Mất kết nối"],
   ["DRAW_REPETITION", "Lặp thế cờ ba lần"],
   ["DRAW_AGREEMENT", "Thoả thuận hoà"],
+  ["DRAW_SIMULTANEOUS_DISCONNECT", "Hai người mất kết nối đồng thời"],
   ["DRAW_NO_CAPTURE", "120 nửa nước không ăn quân"],
   ["PERPETUAL_CHECK", "Chiếu liên tục"],
 ])("shows the canonical %s reason in Vietnamese", (reason, label) => {
@@ -115,6 +117,7 @@ it.each(["red", "black"] as const)(
 it.each([
   "DRAW_REPETITION",
   "DRAW_AGREEMENT",
+  "DRAW_SIMULTANEOUS_DISCONNECT",
   "DRAW_NO_CAPTURE",
   "PERPETUAL_CHECK",
 ])("shows a server-confirmed draw for %s", (reason) => {
@@ -135,6 +138,24 @@ it.each(["FINISHED", "INTERRUPTED"] as const)(
     expect(
       screen.getAllByRole("button").map((button) => button.textContent),
     ).toEqual(["Ở lại phòng", "Rời phòng"]);
+  },
+);
+it.each(["red", "black", "spectator"] as const)(
+  'ABORTED is a neutral "Ván bị hủy" for %s without win/loss text (AC-YC5-RV-03)',
+  (role) => {
+    setup({ ...match("ABORTED", null), status: "INTERRUPTED" }, role);
+    expect(screen.getByRole("heading", { name: "Ván bị hủy" })).toBeTruthy();
+    expect(
+      screen.getByText("Ván được hủy trước nước đi đầu tiên."),
+    ).toBeTruthy();
+    expect(screen.queryByText("Máy chủ đã khởi động lại.")).toBeNull();
+    expect(
+      screen.queryByRole("heading", { name: /thắng|thua|hoà|gián đoạn/i }),
+    ).toBeNull();
+    if (role !== "spectator")
+      expect(
+        screen.getAllByRole("button").map((button) => button.textContent),
+      ).toEqual(["Ở lại phòng", "Rời phòng"]);
   },
 );
 it("INTERRUPTED remains neutral even when its old reason suggests a win", () => {

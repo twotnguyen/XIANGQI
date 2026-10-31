@@ -20,7 +20,7 @@ const CHAT_MIGRATION = "supabase/migrations/20261011000010_room_chat.sql";
 const PRIVACY_MIGRATION =
   "supabase/migrations/20261019060000_guest_privacy_receipt_redaction.sql";
 // Unicode, quotes and emoji (within the 2–20 character limit): the display name must never survive in a structured record tied to the guest UUID.
-const GUEST_NAME = 'Nguyễn "Sen" 🙂 O\'K';
+const GUEST_NAME = "Nguyễn Sen O'K";
 
 // Same as the room-transactions helper's apply: privileged DDL, no test-fixture role.
 async function applyFile(file: string) {

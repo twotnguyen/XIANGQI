@@ -320,7 +320,7 @@ Thách đấu từ trang Bạn bè dùng cùng form tạo phòng không tên, m�
 
 ## 21. Quyết định PO khi rà soát YC2 — 31/10/2026
 
-Các quyết định dưới đây sửa mục 1, 3, 5, 7, 8, 11, 13, 14. **Chưa triển khai**; code, test và mockup `SCR-WAITING-ROOM.html` còn theo luồng cũ (cả hai bấm Sẵn sàng).
+Các quyết định dưới đây sửa mục 1, 3, 5, 7, 8, 11, 13, 14. **Đã có mã local 31/10 (Host Bắt đầu, Nhường Host, trần 60 lệnh/phút), chưa nghiệm thu**; mockup `SCR-WAITING-ROOM.html` còn theo luồng cũ (cả hai bấm Sẵn sàng).
 
 ### 21.1 Bắt đầu ván bằng nút của Host (phòng tự tạo)
 
@@ -370,7 +370,9 @@ Các quyết định dưới đây sửa mục 1, 3, 5, 7, 8, 11, 13, 14. **Chư
 | AC-YC2-RV-09 | Người dùng tạo phòng rồi rời/hủy rồi tạo tiếp liên tục dưới trần | Mọi lần tạo thành công, không khóa chờ; Khách vẫn tối đa 1 phòng mở |
 | AC-YC2-RV-10 | Một tài khoản gửi trên 60 lệnh phòng cùng loại trong một phút | Lệnh vượt trần bị từ chối với thông báo quá nhanh, dữ liệu không đổi |
 
-### 21.6 Tác động triển khai (chưa làm)
+### 21.6 Tác động triển khai (đã có mã local, chưa nghiệm thu)
+
+- Đã làm: lệnh `room.start` (socket) và `transfer-host` (HTTP); `ready` từ chối Host; hộp xác nhận Nhường Host ở `RoomPage`; trần `CommandLimiter`; test server/web cập nhật theo luồng mới. Người xem: Sảnh vốn không có banner quay lại phòng xem, "Rời phòng" giải phóng chỗ xem ngay, người xem tạo phòng không bị chặn; **chưa tự rời khi trình duyệt quay lại/đóng tab (giữ chỗ 5 phút theo YC6)**. Chưa sửa mockup. **Đã xem giao diện thật 31/10/2026** (Vite + Nest + Socket.IO + PostgreSQL cô lập; Khách làm Host trên trình duyệt, đối thủ Khách qua API/Socket, không dùng Cloud): Host một mình thấy Bắt đầu bị khóa kèm lý do; đối thủ Sẵn sàng làm Bắt đầu sáng ngay không tải lại, Hủy thì tắt ngay; bấm Bắt đầu → đếm 3-2-1 (ẩn Xin đổi bên/Nhường Host) → ván mới đồng hồ chạy; sau ván Sẵn sàng reset; Nhường Host qua hộp xác nhận chuyển quyền ngay, ghế giữ nguyên; 360 px không tràn ngang, nút cao 44 px. Chưa đo độ trễ p95, chưa thử hai trình duyệt người thật, chưa thử trần 60 lệnh/phút trên UI. Ghi chú các mục dưới là phân tích ban đầu:
 
 - Đổi mô hình Sẵn sàng: hiện lưu Sẵn sàng cả hai ghế; cần Sẵn sàng chỉ cho người không phải Host và lệnh Bắt đầu mới. Ảnh hưởng `RoomStore` (lớp và hợp đồng `realtime.ts`), `RoomSeats`/`RoomPage`, test phòng, mockup `SCR-WAITING-ROOM.html`, AC-02.1.7–02.1.10, D5, D7.
 - Nhường Host: lệnh mới trong `RoomStore`, nút ở `RoomSeats`, AC mới; thêm vào danh sách lệnh trong `docs/engineering/server/room.md` khi triển khai.
