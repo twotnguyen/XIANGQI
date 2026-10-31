@@ -45,12 +45,15 @@ export function RoomSeats({
   onInviteLeave?: (userId: string) => void;
 }) {
   const [leaving, setLeaving] = useState<string | null>(null);
-  const leavingSide =
+  const leavingPlayer =
     leaving === room.seats.red
-      ? "Đỏ"
+      ? room.seatPlayers?.red
       : leaving === room.seats.black
-        ? "Đen"
+        ? room.seatPlayers?.black
         : null;
+  const leavingName = leavingPlayer
+    ? `${leavingPlayer.displayName}${leavingPlayer.guest ? " (Khách)" : ""}`
+    : "người chơi này";
   return (
     <div className="xq-room-seats">
       {(["red", "black"] as const).map((side) => {
@@ -258,8 +261,8 @@ export function RoomSeats({
         }}
       >
         <p>
-          Mời người chơi phe {leavingSide ?? ""} rời ghế? Người này vẫn có thể
-          vào lại phòng nếu phòng chưa bị khóa.
+          Mời {leavingName} rời ghế? Người này vẫn có thể vào lại phòng nếu
+          phòng chưa bị khóa.
         </p>
       </Dialog>
     </div>

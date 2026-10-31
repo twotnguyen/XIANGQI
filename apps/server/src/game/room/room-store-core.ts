@@ -21,6 +21,24 @@ const seatCooldownOpen =
   "(status IN('DECLINED','EXPIRED') OR (status='PENDING' AND expires_at<=clock_timestamp()))";
 const seatCooldown = (table: string, who: string) =>
   `(SELECT m FROM (SELECT max(${seatCooldownMark})+interval '10 seconds' AS m FROM xiangqi_room.${table} WHERE room_id=$1 AND ${who}=$2 AND ${seatCooldownOpen}) c WHERE m>clock_timestamp())`;
+const seatPlayer = (
+  players: {
+    user_id: string;
+    side: string;
+    display_name: string;
+    guest: boolean;
+  }[],
+  side: "RED" | "BLACK",
+) => {
+  const found = players.find((p) => p.side === side);
+  return found
+    ? {
+        userId: found.user_id,
+        displayName: found.display_name,
+        guest: found.guest,
+      }
+    : null;
+};
 /** Đề nghị đổi bên đang trong 60 giây khóa của người gửi: bị từ chối/hết hạn; rút không khóa (Q3). */
 export const swapCooldownOpen =
   "status IN('DECLINED','EXPIRED') AND resolved_at+interval '60 seconds'>clock_timestamp()";
@@ -45,6 +63,13 @@ type SnapshotRow = {
   rematch_expires_at: Date | null;
   seat_requests: { id: string; user_id: string; expires_at: string }[];
   seat_request_cooldown_until: Date | null;
+  players: {
+    user_id: string;
+    side: string;
+    display_name: string;
+    guest: boolean;
+  }[];
+  occupied_elsewhere: boolean;
   down_cooldown_until: Date | null;
 };
 /**
@@ -105,14 +130,15 @@ export class RoomStoreCore {
   constructor(protected readonly matches?: MatchStartPort) {}
   protected swapTableReady: boolean | null = null;
   protected seatTableReady: boolean | null = null;
-  protected requestTableReady: boolean | null = null;
+  /** Chỉ nhớ khi bảng đã có: migration áp sau khi tiến trình khởi động vẫn được nhận ra mà không cần restart. */
+  protected requestTablePresent = false;
   protected async requestTableExists(s: RoomScope): Promise<boolean> {
-    this.requestTableReady ??= (
+    this.requestTablePresent ||= (
       await s.client.query(
         "SELECT to_regclass('xiangqi_room.seat_requests') IS NOT NULL AS present",
       )
     ).rows[0].present as boolean;
-    return this.requestTableReady;
+    return this.requestTablePresent;
   }
   protected async swapTableExists(s: RoomScope): Promise<boolean> {
     if (this.swapTableReady === null) {
@@ -200,6 +226,20 @@ export class RoomStoreCore {
         `SELECT id,room_id AS "roomId",room_version::float8 AS version,type,payload FROM xiangqi_room.outbox WHERE delivered_at IS NULL AND type NOT IN ('media.revoke-room','media.revoke-user') AND next_attempt_at<=clock_timestamp() ORDER BY created_at,id LIMIT 50`,
       )
     ).rows as RoomEvent[];
+  }
+  /** Những người trong `userIds` hiện vẫn là thành viên phòng (dùng để bỏ qua thông báo gỡ cho ai đã vào lại). */
+  async membersPresent(
+    client: PoolClient,
+    roomId: string,
+    userIds: string[],
+  ): Promise<Set<string>> {
+    const rows = (
+      await client.query<{ user_id: string }>(
+        "SELECT user_id FROM public.room_members WHERE room_id=$1 AND user_id=ANY($2::uuid[])",
+        [roomId, userIds],
+      )
+    ).rows;
+    return new Set(rows.map((row) => row.user_id));
   }
   async markDelivered(client: PoolClient, id: string) {
     await client.query(
@@ -362,7 +402,7 @@ export class RoomStoreCore {
       : "(SELECT NULL::timestamptz WHERE $2::uuid IS NULL) AS swap_cooldown_until";
     const includeRequests = await this.requestTableExists(s);
     const seatColumns = `${includeRequests ? `COALESCE((SELECT json_agg(json_build_object('id',q.id,'user_id',q.requester_id,'expires_at',q.expires_at) ORDER BY q.created_at,q.id) FROM xiangqi_room.seat_requests q JOIN public.room_members rm ON rm.room_id=q.room_id AND rm.user_id=q.requester_id AND rm.role='SPECTATOR' WHERE q.room_id=$1 AND q.status='PENDING' AND q.expires_at>clock_timestamp() AND (q.requester_id=$2 OR (SELECT owner_id FROM public.rooms WHERE id=$1)=$2)),'[]'::json) AS seat_requests,${seatCooldown("seat_requests", "requester_id")} AS seat_request_cooldown_until` : "'[]'::json AS seat_requests,NULL::timestamptz AS seat_request_cooldown_until"},${includeDown ? `${seatCooldown("seat_invites", "inviter_id")} AS down_cooldown_until` : "NULL::timestamptz AS down_cooldown_until"}`;
-    return `(SELECT (SELECT token FROM xiangqi_room.countdowns WHERE room_id=$1) AS countdown_token,(SELECT due_at FROM xiangqi_room.countdowns WHERE room_id=$1) AS countdown_due_at,COALESCE((SELECT json_agg(json_build_object('user_id',m.user_id,'display_name',COALESCE(p.display_name,'Khách'),'guest',COALESCE(n.kind='guest',false)) ORDER BY m.user_id) FROM public.room_members m LEFT JOIN public.profiles p ON p.user_id=m.user_id LEFT JOIN xiangqi_auth.principals n ON n.id=m.user_id WHERE m.room_id=$1 AND m.role='SPECTATOR'),'[]'::json) AS spectators,ARRAY(SELECT user_id::text FROM xiangqi_room.presence WHERE room_id=$1 AND connected) AS online,${cooldown},${seatColumns},${offerColumns} FROM (SELECT 1) room_snapshot ${offerJoins}) snap`;
+    return `(SELECT (SELECT token FROM xiangqi_room.countdowns WHERE room_id=$1) AS countdown_token,(SELECT due_at FROM xiangqi_room.countdowns WHERE room_id=$1) AS countdown_due_at,COALESCE((SELECT json_agg(json_build_object('user_id',m.user_id,'display_name',COALESCE(p.display_name,'Khách'),'guest',COALESCE(n.kind='guest',false)) ORDER BY m.user_id) FROM public.room_members m LEFT JOIN public.profiles p ON p.user_id=m.user_id LEFT JOIN xiangqi_auth.principals n ON n.id=m.user_id WHERE m.room_id=$1 AND m.role='SPECTATOR'),'[]'::json) AS spectators,COALESCE((SELECT json_agg(json_build_object('user_id',m.user_id,'side',m.side,'display_name',COALESCE(p.display_name,'Khách'),'guest',COALESCE(n.kind='guest',false))) FROM public.room_members m LEFT JOIN public.profiles p ON p.user_id=m.user_id LEFT JOIN xiangqi_auth.principals n ON n.id=m.user_id WHERE m.room_id=$1 AND m.role='PLAYER'),'[]'::json) AS players,EXISTS(SELECT 1 FROM public.active_players WHERE user_id=$2 AND room_id IS DISTINCT FROM $1::uuid) AS occupied_elsewhere,ARRAY(SELECT user_id::text FROM xiangqi_room.presence WHERE room_id=$1 AND connected) AS online,${cooldown},${seatColumns},${offerColumns} FROM (SELECT 1) room_snapshot ${offerJoins}) snap`;
   }
   protected async member(
     s: RoomScope,
@@ -466,6 +506,8 @@ export class RoomStoreCore {
       seat_requests,
       seat_request_cooldown_until,
       down_cooldown_until,
+      players,
+      occupied_elsewhere,
     } = snap!;
     const down = down_id
       ? {
@@ -557,6 +599,11 @@ export class RoomStoreCore {
         downCooldownUntil: down_cooldown_until
           ? (down_cooldown_until as Date).toISOString()
           : null,
+        seatPlayers: {
+          red: seatPlayer(players, "RED"),
+          black: seatPlayer(players, "BLACK"),
+        },
+        occupiedElsewhere: occupied_elsewhere,
         spectators: watchers.map((m) => ({
           userId: m.user_id,
           displayName: m.display_name,

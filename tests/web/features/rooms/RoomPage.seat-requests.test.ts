@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { expect, it } from "vitest";
-import { screen, within } from "@testing-library/react";
+import { expect, it, vi } from "vitest";
+import { act, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { RoomSnapshot } from "@xiangqi/shared";
 import { setup, snapshot, useRoomPageHooks } from "./RoomPage.test-helper.js";
@@ -23,10 +23,12 @@ const open = (over: Partial<RoomSnapshot["room"]> = {}): RoomSnapshot => ({
     ...over,
   },
 });
+// Tab người xem thật luôn readonly/not_allowed; fixture này giữ đúng điều kiện đó.
 const viewer = (over: Partial<RoomSnapshot["room"]> = {}): RoomSnapshot => ({
   ...open(over),
   role: "spectator",
   room: { ...open(over).room, hostId: "a" },
+  control: { mode: "readonly", generation: 1, reason: "not_allowed" },
 });
 const request = (userId: string, seconds: number) => ({
   id: requestId,
@@ -66,6 +68,11 @@ it.each([
     "a countdown",
     { countdown: { token: "t", dueAt: "2026-10-11T00:00:03Z" } },
     "Phòng đang đếm ngược",
+  ],
+  [
+    "a position held elsewhere",
+    { occupiedElsewhere: true },
+    "Bạn đang ở trong một ván/phòng khác",
   ],
 ])(
   "keeps Xin ngồi ghế visible but disabled with the reason for %s",
@@ -156,7 +163,14 @@ it("confirms Mời rời ghế by side, sends the command and cancel sends nothi
   const state: RoomSnapshot = {
     ...snapshot,
     version: 11,
-    room: { ...snapshot.room, spectators: [] },
+    room: {
+      ...snapshot.room,
+      spectators: [],
+      seatPlayers: {
+        red: { userId: "a", displayName: "Chủ phòng", guest: false },
+        black: { userId: "b", displayName: "Kỳ thủ Đen", guest: true },
+      },
+    },
   };
   const f = setup(state, { userId: "a" });
   await f.ready();
@@ -164,7 +178,9 @@ it("confirms Mời rời ghế by side, sends the command and cancel sends nothi
   await user.click(screen.getByRole("button", { name: "Mời rời ghế" }));
   const dialog = screen.getByRole("dialog", { name: "Mời rời ghế" });
   expect(
-    within(dialog).getByText(/vẫn có thể vào lại phòng nếu phòng chưa bị khóa/),
+    within(dialog).getByText(
+      /Mời Kỳ thủ Đen \(Khách\) rời ghế\? Người này vẫn có thể vào lại phòng nếu phòng chưa bị khóa/,
+    ),
   ).toBeTruthy();
   await user.click(within(dialog).getByRole("button", { name: "Hủy" }));
   expect(f.client.inviteLeave).not.toHaveBeenCalled();
@@ -191,4 +207,75 @@ it("never offers Mời rời ghế to the second player", async () => {
   const f = setup({ ...snapshot, role: "black" }, { userId: "b" });
   await f.ready();
   expect(screen.queryByRole("button", { name: "Mời rời ghế" })).toBeNull();
+});
+
+it("locks Xin ngồi ghế for 10 s from the original deadline when a request times out locally", async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(Date.parse(snapshot.serverNow));
+  const state = viewer({ seatRequests: [request("w", 2)] });
+  const f = setup(state, { userId: "w" });
+  // findBy* would hang under fake timers, so connect and publish synchronously.
+  act(() => {
+    f.reconnect();
+    f.publish(state);
+  });
+  expect(screen.getByText(/Đang chờ chủ phòng/)).toBeTruthy();
+  act(() => {
+    vi.advanceTimersByTime(3000);
+  });
+  expect(screen.getByText("Yêu cầu ngồi ghế đã hết hạn.")).toBeTruthy();
+  const button = screen.getByRole("button", { name: "Xin ngồi ghế" });
+  expect(button.getAttribute("aria-disabled")).toBe("true");
+  expect(
+    document.getElementById(button.getAttribute("aria-describedby")!)
+      ?.textContent,
+  ).toBe("Chờ 9 giây để xin lại");
+  act(() => {
+    vi.advanceTimersByTime(10000);
+  });
+  expect(
+    screen
+      .getByRole("button", { name: "Xin ngồi ghế" })
+      .getAttribute("aria-disabled"),
+  ).toBe("false");
+  expect(f.client.requestSeat).not.toHaveBeenCalled();
+});
+
+it("tells the viewer when the host declined, not when the request merely expired", async () => {
+  const f = setup(viewer({ seatRequests: [request("w", 30)] }), {
+    userId: "w",
+  });
+  await f.ready();
+  f.publish({
+    ...viewer({ seatRequestCooldownUntil: "2026-10-11T00:00:10Z" }),
+    version: 10,
+  });
+  expect(
+    await screen.findByText("Chủ phòng đã từ chối yêu cầu ngồi ghế."),
+  ).toBeTruthy();
+});
+
+it("locks Mời xuống ghế for the host 10 s after an unanswered invite times out", async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(Date.parse(snapshot.serverNow));
+  const state = open({
+    downOffer: {
+      id: "44444444-4444-4444-8444-444444444444",
+      inviteeId: "w",
+      expiresAt: request("w", 2).expiresAt,
+    },
+  });
+  const f = setup(state, { userId: "a" });
+  act(() => {
+    f.reconnect();
+    f.publish(state);
+  });
+  act(() => {
+    vi.advanceTimersByTime(3000);
+  });
+  const [first] = screen.getAllByRole("button", { name: "Mời xuống ghế" });
+  expect(first!.getAttribute("aria-disabled")).toBe("true");
+  expect(screen.getAllByText("Chờ 9 giây để mời lại.").length).toBeGreaterThan(
+    0,
+  );
 });

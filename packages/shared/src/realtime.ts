@@ -55,6 +55,11 @@ export interface RoomStateSnapshot {
     downCooldownUntil?: string | null;
     seatRequests?: { id: string; userId: string; expiresAt: string }[];
     seatRequestCooldownUntil?: string | null;
+    seatPlayers?: {
+      red: { userId: string; displayName: string; guest: boolean } | null;
+      black: { userId: string; displayName: string; guest: boolean } | null;
+    };
+    occupiedElsewhere?: boolean;
   };
   match: {
     id: string;
@@ -240,12 +245,13 @@ export interface ReadOnlyNotice {
   stopMedia: true;
 }
 /** Lý do được phép gửi kèm `room.closed`: phòng đóng, hoặc người nhận bị đưa khỏi phòng (không đóng phòng). */
-export const ROOM_REMOVAL_MESSAGES = [
-  "Chủ phòng đã mời bạn rời ghế",
-  "Bạn đã bị đuổi khỏi phòng và không thể vào lại.",
-] as const;
+export const ROOM_REMOVAL = {
+  leftSeat: "Chủ phòng đã mời bạn rời ghế",
+  kicked: "Bạn đã bị đuổi khỏi phòng và không thể vào lại.",
+} as const;
+export const ROOM_REMOVAL_MESSAGES = Object.values(ROOM_REMOVAL);
 export type RoomClosedMessage =
-  "Phòng đã đóng" | (typeof ROOM_REMOVAL_MESSAGES)[number];
+  "Phòng đã đóng" | (typeof ROOM_REMOVAL)[keyof typeof ROOM_REMOVAL];
 export interface RoomClosedNotice {
   roomId: string;
   message: RoomClosedMessage;

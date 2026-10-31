@@ -23,8 +23,10 @@ ALTER TABLE xiangqi_room.seat_requests FORCE ROW LEVEL SECURITY;
 CREATE POLICY app_server_all ON xiangqi_room.seat_requests TO app_server USING(true) WITH CHECK(true);
 CREATE UNIQUE INDEX seat_request_pending_requester ON xiangqi_room.seat_requests(room_id,requester_id) WHERE status='PENDING';
 CREATE INDEX seat_request_requester_history ON xiangqi_room.seat_requests(room_id,requester_id,created_at DESC);
+ALTER TABLE xiangqi_room.seat_requests ADD CONSTRAINT seat_requests_requester_principal_fk FOREIGN KEY(requester_id) REFERENCES xiangqi_auth.principals(id) ON DELETE CASCADE;
+CREATE INDEX seat_requests_requester_idx ON xiangqi_room.seat_requests(requester_id);
 CREATE FUNCTION xiangqi_room.close_seat_requests() RETURNS trigger LANGUAGE plpgsql SET search_path='' AS $$ BEGIN
- UPDATE xiangqi_room.seat_requests SET status='CLOSED',resolved_at=pg_catalog.clock_timestamp() WHERE room_id=NEW.id AND status='PENDING';
+ UPDATE xiangqi_room.seat_requests SET status='CLOSED',resolved_at=pg_catalog.clock_timestamp() WHERE room_id=NEW.id AND status='PENDING' AND expires_at>pg_catalog.clock_timestamp();
  RETURN NEW;
 END $$;
 ALTER FUNCTION xiangqi_room.close_seat_requests() OWNER TO postgres;

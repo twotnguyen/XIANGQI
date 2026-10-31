@@ -1,6 +1,10 @@
 import { createHash, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
-import { maskForbiddenChat, ROOM_REMOVAL_MESSAGES } from "@xiangqi/shared";
+import {
+  maskForbiddenChat,
+  ROOM_REMOVAL_MESSAGES,
+  type RoomClosedMessage,
+} from "@xiangqi/shared";
 import { FriendStore } from "../account/friend/friend.store.js";
 import { RoomFriendInvites } from "./room/friend-room-port.js";
 import { RoomSessionSeats } from "./room/session-seat-port.js";
@@ -140,6 +144,16 @@ async function bootRoomRuntime(
       END AS ready`);
     if (draw.rows[0]?.present && !draw.rows[0].ready) throw new Error();
     drawReady = draw.rows[0]?.ready === true;
+    // Bảng xin ngồi ghế là tùy chọn, nhưng đã có thì phải đủ quyền: mọi snapshot phòng đọc nó.
+    const seatRequests = await pool.query<{ ready: boolean }>(`SELECT
+      to_regclass('xiangqi_room.seat_requests') IS NULL OR (
+        has_table_privilege('app_server','xiangqi_room.seat_requests','SELECT') AND
+        has_table_privilege('app_server','xiangqi_room.seat_requests','INSERT') AND
+        has_table_privilege('app_server','xiangqi_room.seat_requests','UPDATE') AND
+        NOT has_table_privilege('anon','xiangqi_room.seat_requests','SELECT') AND
+        NOT has_table_privilege('authenticated','xiangqi_room.seat_requests','SELECT')
+      ) AS ready`);
+    if (!seatRequests.rows[0]?.ready) throw new Error();
     const publicSchema = await pool.query<{
       present: boolean;
       ready: boolean;
@@ -310,20 +324,17 @@ async function bootRoomRuntime(
           let notify: string[] = recipients;
           if (removal) {
             await publisher.publishSnapshots(event.roomId, event.version);
-            const back = await pool.query<{ user_id: string }>(
-              "SELECT user_id FROM public.room_members WHERE room_id=$1 AND user_id=ANY($2::uuid[])",
-              [event.roomId, recipients],
+            const present = await roomPort.membersPresent(
+              event.roomId,
+              recipients,
             );
-            const present = new Set(back.rows.map((row) => row.user_id));
             notify = recipients.filter((id) => !present.has(id));
           }
           if (notify.length)
             await publisher.publishRoomClosed(
               event.roomId,
               notify,
-              removal
-                ? (message as (typeof ROOM_REMOVAL_MESSAGES)[number])
-                : undefined,
+              removal ? (message as RoomClosedMessage) : undefined,
             );
           return;
         }

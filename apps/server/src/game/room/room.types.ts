@@ -78,6 +78,12 @@ export interface RoomView {
     downCooldownUntil?: string | null;
     seatRequests?: { id: string; userId: string; expiresAt: string }[];
     seatRequestCooldownUntil?: string | null;
+    seatPlayers?: {
+      red: { userId: string; displayName: string; guest: boolean } | null;
+      black: { userId: string; displayName: string; guest: boolean } | null;
+    };
+    /** Chính người đọc đang giữ vị trí chơi ở nơi khác (ghế phòng khác, ván AI/online). */
+    occupiedElsewhere?: boolean;
   };
   role: "red" | "black" | "spectator";
 }

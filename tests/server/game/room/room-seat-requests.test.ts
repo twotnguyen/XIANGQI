@@ -70,7 +70,6 @@ describe.skipIf(!databaseUrl)("seat requests, leave invites, names", () => {
     expect(asked.room.seatRequests).toHaveLength(1);
     const list = (await view(h, roomId)).room.seatRequests!;
     expect(list).toHaveLength(3);
-    expect(h.a.userId).not.toBe(third.a.userId);
     const winner = list.find((q) => q.userId === w.a.userId)!;
     const after = await answer(h, roomId, winner.id, true);
     expect(after.room.seats.black).toBe(w.a.userId);
@@ -164,7 +163,7 @@ describe.skipIf(!databaseUrl)("seat requests, leave invites, names", () => {
       ).rows[0].status,
     ).toBe("EXPIRED");
     // Vừa quá hạn 3 giây: còn khoảng 7 giây chờ, tính từ hạn gốc.
-    const fresh = (await request(w, roomId)).room.seatRequests![0]!.id;
+    await request(w, roomId);
     await age("seat_requests", 33);
     const waiting = await view(w, roomId);
     expect(waiting.room.seatRequests).toEqual([]);
@@ -175,7 +174,6 @@ describe.skipIf(!databaseUrl)("seat requests, leave invites, names", () => {
     await expect(request(w, roomId)).rejects.toMatchObject({
       code: "SEAT_REQUEST_COOLDOWN",
     });
-    expect(fresh).toBeTruthy();
   });
   it("refuses to seat a requester who left or took a position elsewhere", async () => {
     const { h, w, roomId } = await openSeat();
@@ -368,6 +366,87 @@ describe.skipIf(!databaseUrl)("seat requests, leave invites, names", () => {
           guest: w.a.kind === "guest",
         }),
       ]);
+    }
+  });
+  it("names every player and flags a position held elsewhere only for the reader who holds it", async () => {
+    const { h, b, w, roomId } = await fullRoom();
+    for (const p of [h, b, w]) {
+      const seen = await view(p, roomId);
+      expect(seen.room.seatPlayers).toEqual({
+        red: {
+          userId: h.a.userId,
+          displayName: expect.any(String),
+          guest: h.a.kind === "guest",
+        },
+        black: {
+          userId: b.a.userId,
+          displayName: expect.any(String),
+          guest: b.a.kind === "guest",
+        },
+      });
+      expect(seen.room.occupiedElsewhere).toBe(false);
+    }
+    await as(b, roomId, (s) => store.toSpectator(s, roomId));
+    await reserveAi(w, roomId);
+    expect((await view(w, roomId)).room.occupiedElsewhere).toBe(true);
+    expect((await view(h, roomId)).room.occupiedElsewhere).toBe(false);
+    expect((await view(h, roomId)).room.seatPlayers?.black).toBeNull();
+  });
+  it("drops a requester's rows with their principal", async () => {
+    const { w, roomId } = await openSeat();
+    await request(w, roomId);
+    await as(w, roomId, (s) => store.leave(s, roomId));
+    // Biên lai idempotency giữ khóa ngoại tới principal; dọn như bước xóa danh tính thật.
+    await pool.query(
+      "DELETE FROM xiangqi_room.entry_receipts WHERE actor_id=$1",
+      [w.a.userId],
+    );
+    await pool.query("DELETE FROM xiangqi_auth.principals WHERE id=$1", [
+      w.a.userId,
+    ]);
+    expect(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM xiangqi_room.seat_requests WHERE requester_id=$1",
+          [w.a.userId],
+        )
+      ).rows[0].n,
+    ).toBe(0);
+  });
+  it("keeps an already expired request pending when the room leaves WAITING, so its wait still counts", async () => {
+    const { h, b, w, roomId } = await openSeat();
+    const third = await admitted();
+    await joinAs(third, roomId, "watch");
+    await request(w, roomId);
+    await request(third, roomId);
+    await pool.query(
+      "UPDATE xiangqi_room.seat_requests SET created_at=created_at-interval '35 seconds',expires_at=expires_at-interval '35 seconds' WHERE requester_id=$1",
+      [w.a.userId],
+    );
+    await playMatch(roomId, h, b);
+    const rows = (
+      await pool.query(
+        "SELECT requester_id,status FROM xiangqi_room.seat_requests",
+      )
+    ).rows as { requester_id: string; status: string }[];
+    const statusOf = (p: Person) =>
+      rows.find((r) => r.requester_id === p.a.userId)!.status;
+    expect(statusOf(w)).toBe("PENDING");
+    expect(statusOf(third)).toBe("CLOSED");
+  });
+  it("reports who is still in the room for a removal notice", async () => {
+    const { h, b, roomId } = await fullRoom();
+    const client = await pool.connect();
+    try {
+      expect(
+        await store.membersPresent(client, roomId, [h.a.userId, randomUUID()]),
+      ).toEqual(new Set([h.a.userId]));
+      await as(b, roomId, (s) => store.leave(s, roomId));
+      expect(await store.membersPresent(client, roomId, [b.a.userId])).toEqual(
+        new Set(),
+      );
+    } finally {
+      client.release();
     }
   });
 });

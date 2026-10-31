@@ -202,6 +202,24 @@ function parseView(value: unknown, roomId: string): RoomView {
         invalidResponse();
     }
   }
+  if (
+    room.occupiedElsewhere !== undefined &&
+    typeof room.occupiedElsewhere !== "boolean"
+  )
+    invalidResponse();
+  if (room.seatPlayers !== undefined) {
+    const players = record(room.seatPlayers);
+    for (const side of ["red", "black"]) {
+      if (players[side] === null) continue;
+      const player = record(players[side]);
+      if (
+        !isId(player.userId) ||
+        typeof player.displayName !== "string" ||
+        typeof player.guest !== "boolean"
+      )
+        invalidResponse();
+    }
+  }
   return view as unknown as RoomView;
 }
 function parseSnapshot(value: unknown, roomId: string): RoomSnapshot {

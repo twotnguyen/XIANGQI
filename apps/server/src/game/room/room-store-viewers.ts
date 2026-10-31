@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { ROOM_REMOVAL } from "@xiangqi/shared";
 import { invalidRoomInput, RoomError, type RoomScope } from "./room.types.js";
 import { RoomRematchStore } from "./room-store-rematch.js";
 import { uuid } from "./room-store-core.js";
@@ -7,17 +8,32 @@ import { uuid } from "./room-store-core.js";
  * Chuyển đổi vai trò người chơi/khán giả, mời khán giả xuống ghế và đuổi khán giả khỏi phòng.
  */
 export class RoomViewerStore extends RoomRematchStore {
-  private async expireDownOffers(s: RoomScope, id: string) {
-    if (!(await this.downTableExists(s))) return 0;
+  /** Đóng `EXPIRED` mọi đề nghị ghế đã quá hạn của phòng (lời mời hoặc yêu cầu xin ngồi), mỗi mục một sự kiện. */
+  private async expireOffers(
+    s: RoomScope,
+    id: string,
+    table: "seat_invites" | "seat_requests",
+  ) {
+    const present =
+      table === "seat_invites"
+        ? await this.downTableExists(s)
+        : await this.requestTableExists(s);
+    if (!present) return;
     const due = (
       await s.client.query(
-        "UPDATE xiangqi_room.seat_invites SET status='EXPIRED',resolved_at=clock_timestamp() WHERE room_id=$1 AND status='PENDING' AND expires_at<=clock_timestamp() RETURNING id",
+        `UPDATE xiangqi_room.${table} SET status='EXPIRED',resolved_at=clock_timestamp() WHERE room_id=$1 AND status='PENDING' AND expires_at<=clock_timestamp() RETURNING id`,
         [id],
       )
     ).rows as { id: string }[];
     for (const offer of due)
-      await this.bump(s, id, "room.seat-invite-expired", { offerId: offer.id });
-    return due.length;
+      await this.bump(
+        s,
+        id,
+        table === "seat_invites"
+          ? "room.seat-invite-expired"
+          : "room.seat-request-expired",
+        { offerId: offer.id },
+      );
   }
   /**
    * Người chơi tự nguyện rời ghế thi đấu để chuyển xuống làm khán giả xem phòng.
@@ -92,7 +108,7 @@ export class RoomViewerStore extends RoomRematchStore {
     const players = members.filter((m) => m.role === "PLAYER");
     if (players.length >= 2)
       throw new RoomError("SEAT_FULL", "Ghế đã đủ hai người");
-    await this.expireDownOffers(s, id);
+    await this.expireOffers(s, id, "seat_invites");
     const wait = await this.seatCooldownLeft(
       s,
       "seat_invites",
@@ -106,13 +122,7 @@ export class RoomViewerStore extends RoomRematchStore {
         `Chờ ${wait} giây để mời lại`,
         429,
       );
-    const blocked = (
-      await s.client.query(
-        "SELECT 1 FROM public.active_players WHERE user_id=$1 AND room_id IS DISTINCT FROM $2::uuid LIMIT 1",
-        [targetId, id],
-      )
-    ).rowCount;
-    if (blocked)
+    if (await this.busyElsewhere(s, targetId, id))
       throw new RoomError("FRIEND_BUSY", "Người này đang chơi ở nơi khác", 409);
     try {
       await s.client.query("SAVEPOINT seat_invite_insert");
@@ -175,7 +185,7 @@ export class RoomViewerStore extends RoomRematchStore {
         403,
       );
     if (offer.due) {
-      await this.expireDownOffers(s, id);
+      await this.expireOffers(s, id, "seat_invites");
       return this.snapshot(s, id);
     }
     if (!accept) {
@@ -240,12 +250,17 @@ export class RoomViewerStore extends RoomRematchStore {
       status === "WAITING" &&
       who?.role === "SPECTATOR" &&
       players < 2 &&
-      !(
+      !(await this.counting(s, id))
+    );
+  }
+  private async counting(s: RoomScope, id: string) {
+    return Boolean(
+      (
         await s.client.query(
           "SELECT 1 FROM xiangqi_room.countdowns WHERE room_id=$1",
           [id],
         )
-      ).rowCount
+      ).rowCount,
     );
   }
   /** Chuyển người xem thành người chơi ở phe còn trống, reset Sẵn sàng/đếm ngược và đóng mọi đề nghị ghế còn lại. */
@@ -270,19 +285,6 @@ export class RoomViewerStore extends RoomRematchStore {
     await this.closeSwapOffers(s, id);
     await this.closeDownOffers(s, id);
   }
-  private async expireSeatRequests(s: RoomScope, id: string) {
-    if (!(await this.requestTableExists(s))) return;
-    const due = (
-      await s.client.query(
-        "UPDATE xiangqi_room.seat_requests SET status='EXPIRED',resolved_at=clock_timestamp() WHERE room_id=$1 AND status='PENDING' AND expires_at<=clock_timestamp() RETURNING id",
-        [id],
-      )
-    ).rows as { id: string }[];
-    if (due.length)
-      await this.bump(s, id, "room.seat-request-expired", {
-        requestIds: due.map((q) => q.id),
-      });
-  }
   /** Người xem xin ngồi ghế trống; Host duyệt. Gửi lặp trả lại yêu cầu đang chờ, không tạo bản sao hay gia hạn. */
   async requestSeat(s: RoomScope, id: string) {
     const { r, members, member } = await this.member(s, id);
@@ -304,7 +306,7 @@ export class RoomViewerStore extends RoomRematchStore {
       throw new RoomError("SEAT_FULL", "Ghế đã đủ hai người");
     if (!(await this.seatOpenFor(s, id, r.status, member)))
       throw new RoomError("SEAT_REQUEST_DENIED", "Phòng đang đếm ngược");
-    await this.expireSeatRequests(s, id);
+    await this.expireOffers(s, id, "seat_requests");
     if (await this.busyElsewhere(s, s.actor.userId, id))
       throw new RoomError(
         "ALREADY_SEATED",
@@ -378,7 +380,7 @@ export class RoomViewerStore extends RoomRematchStore {
         404,
       );
     if (request.due) {
-      await this.expireSeatRequests(s, id);
+      await this.expireOffers(s, id, "seat_requests");
       return this.snapshot(s, id);
     }
     if (!accept) {
@@ -433,12 +435,7 @@ export class RoomViewerStore extends RoomRematchStore {
         403,
       );
     const players = members.filter((m) => m.role === "PLAYER");
-    const counting = (
-      await s.client.query(
-        "SELECT 1 FROM xiangqi_room.countdowns WHERE room_id=$1",
-        [id],
-      )
-    ).rowCount;
+    const counting = await this.counting(s, id);
     if (
       r.status !== "WAITING" ||
       counting ||
@@ -467,7 +464,7 @@ export class RoomViewerStore extends RoomRematchStore {
     await this.event(s, id, version, "media.revoke-user", { userId: targetId });
     await this.event(s, id, version, "room.removed", {
       recipients: [targetId],
-      message: "Chủ phòng đã mời bạn rời ghế",
+      message: ROOM_REMOVAL.leftSeat,
     });
     return this.snapshot(s, id);
   }
@@ -495,7 +492,7 @@ export class RoomViewerStore extends RoomRematchStore {
     await this.event(s, id, version, "media.revoke-user", { userId: targetId });
     await this.event(s, id, version, "room.removed", {
       recipients: [targetId],
-      message: "Bạn đã bị đuổi khỏi phòng và không thể vào lại.",
+      message: ROOM_REMOVAL.kicked,
     });
     return this.snapshot(s, id);
   }

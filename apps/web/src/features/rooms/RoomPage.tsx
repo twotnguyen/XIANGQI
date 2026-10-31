@@ -206,37 +206,56 @@ export function RoomPage({
   const swapSeconds = remainingSeconds(swapExpiresAt);
   const cooldownSeconds = remainingSeconds(cooldownUntil);
   const downSeconds = remainingSeconds(downOffer?.expiresAt ?? null);
-  const inviteCooldownSeconds = remainingSeconds(
-    view?.room.downCooldownUntil ?? null,
+  // Hết hạn không có sự kiện nào đẩy snapshot mới: tự tính 10 giây chờ từ hạn gốc để nút khóa đúng lúc, server vẫn kiểm lại khi gửi.
+  const afterExpiry = (expiresAt: string | undefined) =>
+    expiresAt && remainingSeconds(expiresAt) === 0
+      ? remainingSeconds(new Date(Date.parse(expiresAt) + 10000).toISOString())
+      : 0;
+  const inviteCooldownSeconds = Math.max(
+    remainingSeconds(view?.room.downCooldownUntil ?? null),
+    afterExpiry(downOffer?.expiresAt),
   );
-  const seatRequestCooldownSeconds = remainingSeconds(
-    view?.room.seatRequestCooldownUntil ?? null,
+  const ownRequest = seatRequests.find((q) => q.userId === userId);
+  const seatRequestCooldownSeconds = Math.max(
+    remainingSeconds(view?.room.seatRequestCooldownUntil ?? null),
+    afterExpiry(ownRequest?.expiresAt),
   );
   const liveRequests = seatRequests
     .map((q) => ({
       id: q.id,
       userId: q.userId,
+      expiresAt: q.expiresAt,
       seconds: remainingSeconds(q.expiresAt),
     }))
     .filter((q) => q.seconds > 0);
-  // Yêu cầu của chính mình biến mất khi vẫn là người xem: báo vì sao (ghế đã có người hoặc yêu cầu đã kết thúc).
-  const requestLive = liveRequests.some((q) => q.userId === userId);
+  // Yêu cầu của chính mình biến mất khi vẫn là người xem: báo vì sao (ghế đã có người, bị từ chối hoặc đã hết hạn).
+  const liveOwn = liveRequests.find((q) => q.userId === userId);
   const seatsFull = Boolean(view?.room.seats.red && view?.room.seats.black);
   const [seatNotice, setSeatNotice] = useState("");
-  const hadRequest = useRef(false);
+  const hadRequest = useRef(0);
+  const requestCooldownUntil = view?.room.seatRequestCooldownUntil ?? null;
   useEffect(() => {
-    if (requestLive) {
-      hadRequest.current = true;
+    if (liveOwn) {
+      hadRequest.current = Date.parse(liveOwn.expiresAt);
       setSeatNotice("");
       return;
     }
     if (!hadRequest.current) return;
-    hadRequest.current = false;
-    if (view?.role === "spectator")
-      setSeatNotice(
-        seatsFull ? "Ghế đã có người." : "Yêu cầu ngồi ghế đã kết thúc.",
-      );
-  }, [requestLive, view?.role, seatsFull]);
+    const expiresAt = hadRequest.current;
+    hadRequest.current = 0;
+    if (view?.role !== "spectator") return;
+    // Từ chối đặt chờ 10 giây từ lúc phản hồi (sớm hơn hạn gốc); hết hạn đặt chờ đúng hạn gốc + 10 giây.
+    const declined =
+      requestCooldownUntil !== null &&
+      Date.parse(requestCooldownUntil) - 10000 < expiresAt - 1000;
+    setSeatNotice(
+      seatsFull
+        ? "Ghế đã có người."
+        : declined
+          ? "Chủ phòng đã từ chối yêu cầu ngồi ghế."
+          : "Yêu cầu ngồi ghế đã hết hạn.",
+    );
+  }, [liveOwn?.expiresAt, view?.role, seatsFull, requestCooldownUntil]);
   const swapOfferOpen = Boolean(
     swapOfferId &&
     view?.room.swapOffer?.responderId === userId &&
@@ -1352,16 +1371,21 @@ export function RoomPage({
                   ? "Ghế đã đủ người"
                   : room.countdown
                     ? "Phòng đang đếm ngược"
-                    : seatRequestCooldownSeconds > 0
-                      ? `Chờ ${seatRequestCooldownSeconds} giây để xin lại`
-                      : undefined
+                    : room.occupiedElsewhere
+                      ? "Bạn đang ở trong một ván/phòng khác"
+                      : seatRequestCooldownSeconds > 0
+                        ? `Chờ ${seatRequestCooldownSeconds} giây để xin lại`
+                        : undefined
             }
             onRequestSeat={() => void viewerAction("request-seat")}
             onRespondRequest={(requestId, accept) =>
               void viewerAction("respond-seat-request", { requestId, accept })
             }
             busy={busy}
-            writable={writable}
+            // Tab người xem luôn readonly/not_allowed nhưng vẫn là chủ HTTP của chính mình.
+            writable={
+              writable || (view.role === "spectator" && ownsHttpControl())
+            }
             onMoveToSpectator={() => void viewerAction("to-spectator")}
             onInviteDown={(target) =>
               void viewerAction("invite-down", { targetId: target })
