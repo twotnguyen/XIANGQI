@@ -38,6 +38,7 @@ const snapshot = vi.fn<(scope: RoomScope, roomId: string) => Promise<unknown>>(
   async () => ({ roomId, version: 1, room: { name: "Phòng" }, role: "red" }),
 );
 const switchSeat = vi.fn(async () => ({ roomId, version: 2 }));
+const transferHost = vi.fn(async () => ({ roomId, version: 4 }));
 const leave = vi.fn(async () => {});
 const resolveCode = vi.fn<(client: unknown, code: unknown) => Promise<string>>(
   async () => roomId,
@@ -94,6 +95,7 @@ const service = new RoomHttpService(
     snapshot,
     resolveCode,
     switchSeat,
+    transferHost,
     leave,
   } as unknown as RoomStore,
   { withRoom } as unknown as RoomTransactions,
@@ -363,6 +365,27 @@ it("switches seats only within fresh authorized matching room version", async ()
     ).toBe(400);
   }
 });
+it.each([["transfer-host", transferHost]])(
+  "%s runs only within fresh authorized matching room version",
+  async (route, command) => {
+    const response = await request(`/rooms/${roomId}/${route}`, {
+      expectedVersion: 1,
+    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(command).toHaveBeenLastCalledWith(scope, roomId);
+    const calls = command.mock.calls.length;
+    expect(
+      (await request(`/rooms/${roomId}/${route}`, { expectedVersion: 0 }))
+        .status,
+    ).toBe(409);
+    expect(
+      (await request(`/rooms/${roomId}/${route}`, { expectedVersion: "1" }))
+        .status,
+    ).toBe(400);
+    expect(command.mock.calls.length).toBe(calls);
+  },
+);
 it("leaves only the authenticated actor and preserves lifecycle errors", async () => {
   const response = await request(`/rooms/${roomId}/leave`, {
     expectedVersion: 1,

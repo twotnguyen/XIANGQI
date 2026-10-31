@@ -36,6 +36,24 @@ describe("media sharing protocol", () => {
   );
 });
 
+describe("room.start protocol", () => {
+  const command = (payload: unknown) => ({
+    commandId: randomUUID(),
+    roomId: randomUUID(),
+    expectedVersion: 0,
+    action: { type: "room.start", payload },
+  });
+  it("accepts an empty payload only", () => {
+    expect(parseCommand(command({})).action).toEqual({
+      type: "room.start",
+      payload: {},
+    });
+    expect(() => parseCommand(command({ ready: true }))).toThrow(
+      "Dữ liệu lệnh không hợp lệ",
+    );
+  });
+});
+
 describe("application session capability handshake", () => {
   const base = {
     accessToken: "fixture-bearer",

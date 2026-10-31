@@ -192,17 +192,16 @@ async function playing(timeMinutes = 5) {
       (s) => Boolean(s?.room.connected.red && s?.room.connected.black),
     );
     expect(
-      (await command(0, { type: "room.ready", payload: { ready: true } }))
-        .status,
-    ).toBe("ok");
-    await waitFor(
-      async () => latest(1),
-      (s) => s?.room.ready.red === true,
-    );
-    expect(
       (await command(1, { type: "room.ready", payload: { ready: true } }))
         .status,
     ).toBe("ok");
+    await waitFor(
+      async () => latest(0),
+      (s) => s?.room.ready.black === true,
+    );
+    expect((await command(0, { type: "room.start", payload: {} })).status).toBe(
+      "ok",
+    );
     await waitFor(
       async () => latest(0),
       (s) => s?.match?.status === "ACTIVE",

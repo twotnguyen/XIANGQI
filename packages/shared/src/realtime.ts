@@ -96,7 +96,8 @@ export interface RoomSnapshot extends RoomStateSnapshot {
 
 /**
  * Các hành động mà người chơi có thể thực hiện trong phòng cờ và ván đấu:
- * - `room.ready`: Báo sẵn sàng bắt đầu ván.
+ * - `room.ready`: Người chơi thứ hai báo sẵn sàng (Host không có Sẵn sàng).
+ * - `room.start`: Host bắt đầu đếm 3-2-1 khi đối thủ đã sẵn sàng.
  * - `match.move`: Đi một nước cờ (từ ô `from` đến ô `to`).
  * - `match.resign`: Đầu hàng.
  * - `match.still-here`: Xác nhận "Tôi còn đây" trong ván không giới hạn.
@@ -105,6 +106,7 @@ export interface RoomSnapshot extends RoomStateSnapshot {
  */
 export type RoomAction =
   | { type: "room.ready"; payload: { ready: boolean } }
+  | { type: "room.start"; payload: Record<string, never> }
   | {
       type: "match.move";
       payload: {
@@ -182,6 +184,8 @@ export type RealtimeErrorCode =
   | "MATCH_INACTIVITY_LIMIT"
   | "MATCH_INACTIVITY_EXPIRED"
   | "READY_DENIED"
+  | "START_DENIED"
+  | "ROOM_RATE_LIMITED"
   | "PLAYER_DISCONNECTED"
   | "ROOM_INPUT_INVALID";
 export type CommandAcknowledgement =

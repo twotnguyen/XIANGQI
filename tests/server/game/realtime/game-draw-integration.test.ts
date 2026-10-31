@@ -160,12 +160,11 @@ async function fixture() {
     await connect(b, true);
     await connect(v);
     expect(
-      (await command(r, { type: "room.ready", payload: { ready: true } })).ack
+      (await command(b, { type: "room.ready", payload: { ready: true } })).ack
         .status,
     ).toBe("ok");
     expect(
-      (await command(b, { type: "room.ready", payload: { ready: true } })).ack
-        .status,
+      (await command(r, { type: "room.start", payload: {} })).ack.status,
     ).toBe("ok");
     // Administrator advances only synthetic countdown, no claim production scheduler.
     await pool.query(

@@ -121,8 +121,8 @@ describe.skipIf(!databaseUrl)("YC2 room lifecycle gaps", () => {
     const { h, b, roomId } = await waitingPair();
     await connect(h, roomId, "host");
     await connect(b, roomId, "black");
-    await run(h.a, h.proof, [roomId], (s) => store.ready(s, roomId, true));
     await run(b.a, b.proof, [roomId], (s) => store.ready(s, roomId, true));
+    await run(h.a, h.proof, [roomId], (s) => store.start(s, roomId));
     const before = await pool.query(
       "SELECT count(*)::int AS n FROM xiangqi_room.countdowns WHERE room_id=$1",
       [roomId],
@@ -153,12 +153,20 @@ describe.skipIf(!databaseUrl)("YC2 room lifecycle gaps", () => {
         true,
       ),
     );
-    await run(h.a, h.proof, [roomId], (s) => store.ready(s, roomId, true));
+    await run(b.a, b.proof, [roomId], (s) =>
+      store.presence(
+        s,
+        roomId,
+        { connectionId: "black", generation: 1, serverInstance: randomUUID() },
+        true,
+      ),
+    );
+    await run(b.a, b.proof, [roomId], (s) => store.ready(s, roomId, true));
     await run(b.a, b.proof, [roomId], (s) => store.toSpectator(s, roomId));
     const view = await run(h.a, h.proof, [roomId], (s) =>
       store.snapshot(s, roomId),
     );
-    expect(view.room.ready.red).toBe(false);
+    expect(view.room.ready).toEqual({ red: false, black: false });
   });
   it("host moving a seated player down resets the host's ready", async () => {
     const { h, b, roomId } = await waitingPair();
@@ -170,14 +178,22 @@ describe.skipIf(!databaseUrl)("YC2 room lifecycle gaps", () => {
         true,
       ),
     );
-    await run(h.a, h.proof, [roomId], (s) => store.ready(s, roomId, true));
+    await run(b.a, b.proof, [roomId], (s) =>
+      store.presence(
+        s,
+        roomId,
+        { connectionId: "black", generation: 1, serverInstance: randomUUID() },
+        true,
+      ),
+    );
+    await run(b.a, b.proof, [roomId], (s) => store.ready(s, roomId, true));
     await run(h.a, h.proof, [roomId], (s) =>
       store.moveToSpectator(s, roomId, b.a.userId),
     );
     const view = await run(h.a, h.proof, [roomId], (s) =>
       store.snapshot(s, roomId),
     );
-    expect(view.room.ready.red).toBe(false);
+    expect(view.room.ready).toEqual({ red: false, black: false });
   });
 
   it("sixth viewer gets ROOM_FULL when two players and five viewers are seated", async () => {
@@ -211,14 +227,14 @@ describe.skipIf(!databaseUrl)("YC2 room lifecycle gaps", () => {
       await run(p.a, p.proof, [roomId], (s) =>
         store.presence(s, roomId, proofs.get(p.a.userId)!, true),
       );
-    await run(h.a, h.proof, [roomId], (s) => store.ready(s, roomId, true));
+    await run(b.a, b.proof, [roomId], (s) => store.ready(s, roomId, true));
     await run(b.a, b.proof, [roomId], (s) =>
       store.presence(s, roomId, proofs.get(b.a.userId)!, false),
     );
     const view = await run(h.a, h.proof, [roomId], (s) =>
       store.snapshot(s, roomId),
     );
-    expect(view.room.ready.red).toBe(false);
+    expect(view.room.ready).toEqual({ red: false, black: false });
     expect(view.room.countdown).toBeNull();
   });
   it("host expiring at sixty seconds transfers host to the seated peer without a loss", async () => {
@@ -310,8 +326,8 @@ describe.skipIf(!databaseUrl)("YC2 room lifecycle gaps", () => {
         ),
       );
     await run(h.a, h.proof, [roomId], (s) => store.proposeSwap(s, roomId));
-    await run(h.a, h.proof, [roomId], (s) => store.ready(s, roomId, true));
     await run(b.a, b.proof, [roomId], (s) => store.ready(s, roomId, true));
+    await run(h.a, h.proof, [roomId], (s) => store.start(s, roomId));
     const offer = (
       await pool.query(
         "SELECT status FROM xiangqi_room.side_swap_offers WHERE room_id=$1",

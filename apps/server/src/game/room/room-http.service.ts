@@ -163,6 +163,20 @@ export class RoomHttpService {
     });
   }
   /**
+   * Host nhường quyền Host cho người chơi còn lại.
+   */
+  async transferHost(
+    proof: RoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    control: RoomControlProof,
+  ) {
+    return this.mutate(proof, roomId, control, async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.transferHost(scope, roomId);
+    });
+  }
+  /**
    * Người chơi tự nguyện rời ghế thi đấu để chuyển xuống làm khán giả.
    */
   async toSpectator(

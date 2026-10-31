@@ -10,6 +10,7 @@ import {
   type RoomView,
   type MatchStartPort,
 } from "./room.types.js";
+import { CommandLimiter, type RoomCommandKind } from "./command-limiter.js";
 export const alphabet = "0123456789";
 export const uuid =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -41,6 +42,16 @@ type SnapshotRow = {
  * Quản lý sự kiện outbox, kiểm tra biên lai idempotency, giải mã invite code và truy vấn snapshot phòng.
  */
 export class RoomStoreCore {
+  private readonly limiter = new CommandLimiter();
+  /** Trần kỹ thuật 60 lệnh/phút mỗi loại (YC2 mục 21.4); gọi đầu mỗi lệnh phòng bị giới hạn. */
+  protected throttle(s: RoomScope, kind: RoomCommandKind) {
+    if (!this.limiter.allow(s.actor.userId, kind))
+      throw new RoomError(
+        "ROOM_RATE_LIMITED",
+        "Thao tác quá nhanh, vui lòng thử lại sau",
+        429,
+      );
+  }
   /** Verify the physical owner after withRoom has acquired the actor and room locks. */
   async assertHttpControl(
     s: RoomScope,

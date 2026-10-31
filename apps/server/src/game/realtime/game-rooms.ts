@@ -46,6 +46,8 @@ const messages = {
   MATCH_INACTIVITY_LIMIT: "Đã xác nhận tối đa, cần đi nước để tiếp tục.",
   MATCH_INACTIVITY_EXPIRED: "Đã hết thời gian xác nhận.",
   READY_DENIED: "Không thể Sẵn sàng lúc này",
+  START_DENIED: "Chưa thể bắt đầu ván lúc này",
+  ROOM_RATE_LIMITED: "Thao tác quá nhanh, vui lòng thử lại sau",
   PLAYER_DISCONNECTED: "Chưa có kết nối điều khiển",
   ROOM_INPUT_INVALID: "Thông tin phòng không hợp lệ",
   ROOM_FORBIDDEN: "Bạn không có quyền truy cập phòng",
@@ -292,12 +294,17 @@ export class GameRooms implements RoomCollaborator {
           "REALTIME_UNAVAILABLE",
           "Chia sẻ camera và mic chưa sẵn sàng",
         );
-      if (command.action.type === "room.ready") {
-        await this.rooms.ready(
-          scope,
-          command.roomId,
-          command.action.payload.ready,
-        );
+      if (
+        command.action.type === "room.ready" ||
+        command.action.type === "room.start"
+      ) {
+        if (command.action.type === "room.ready")
+          await this.rooms.ready(
+            scope,
+            command.roomId,
+            command.action.payload.ready,
+          );
+        else await this.rooms.start(scope, command.roomId);
         return {
           snapshot: await this.project(
             scope,

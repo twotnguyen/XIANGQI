@@ -161,8 +161,8 @@ async function act(
 }
 
 async function readyBoth(room: Room, previousMatchId?: string) {
-  await act(room, "red", { type: "room.ready", payload: { ready: true } });
   await act(room, "black", { type: "room.ready", payload: { ready: true } });
+  await act(room, "red", { type: "room.start", payload: {} });
   const fresh = (s: RoomSnapshot) =>
     s.match?.status === "ACTIVE" && s.match.id !== previousMatchId;
   const red = await snapshotWhen(room.red.tracker, fresh);
@@ -437,11 +437,11 @@ describe.skipIf(!databaseUrl)("YC2 actual runtime lifecycle", () => {
     let closed = false;
     try {
       const room = await seatedRoom(boot);
-      await act(room, "red", { type: "room.ready", payload: { ready: true } });
       await act(room, "black", {
         type: "room.ready",
         payload: { ready: true },
       });
+      await act(room, "red", { type: "room.start", payload: {} });
       await waitFor(
         async () =>
           (

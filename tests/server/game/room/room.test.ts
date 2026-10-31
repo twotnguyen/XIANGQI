@@ -183,7 +183,6 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
         true,
       ),
     );
-    await run(h.a, h.proof, [e.roomId], (s) => store.ready(s, e.roomId, true));
     expect(
       await run(b.a, b.proof, [e.roomId], (s) =>
         store.join(s, {
@@ -291,8 +290,8 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
           true,
         ),
       );
-    await run(h.a, h.proof, [e.roomId], (s) => store.ready(s, e.roomId, true));
     await run(b.a, b.proof, [e.roomId], (s) => store.ready(s, e.roomId, true));
+    await run(h.a, h.proof, [e.roomId], (s) => store.start(s, e.roomId));
     expect(
       (
         await pool.query(
@@ -336,10 +335,8 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
           true,
         ),
       );
-    for (const p of [h, b])
-      await run(p.a, p.proof, [e.roomId], (s) =>
-        store.ready(s, e.roomId, true),
-      );
+    await run(b.a, b.proof, [e.roomId], (s) => store.ready(s, e.roomId, true));
+    await run(h.a, h.proof, [e.roomId], (s) => store.start(s, e.roomId));
     await run(h.a, h.proof, [e.roomId], (s) =>
       store.presence(
         s,
@@ -532,10 +529,12 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
           true,
         ),
       );
-      await run(p.a, p.proof, [e.roomId], (s) =>
-        store.ready(s, e.roomId, true),
-      );
+      if (p === b)
+        await run(p.a, p.proof, [e.roomId], (s) =>
+          store.ready(s, e.roomId, true),
+        );
     }
+    await run(h.a, h.proof, [e.roomId], (s) => store.start(s, e.roomId));
     await pool.query(
       "UPDATE xiangqi_room.countdowns SET due_at=clock_timestamp()-interval '1ms'",
     );
@@ -665,7 +664,10 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
         true,
       ),
     );
-    await run(h.a, h.proof, [e.roomId], (s) => store.ready(s, e.roomId, true));
+    await pool.query(
+      "UPDATE public.room_members SET ready=true WHERE room_id=$1",
+      [e.roomId],
+    );
     await run(h.a, h.proof, [e.roomId], (s) =>
       store.recoverWaiting(s, e.roomId, randomUUID()),
     );
@@ -715,10 +717,12 @@ describe.skipIf(!databaseUrl)("room mutations", () => {
           true,
         ),
       );
-      await run(p.a, p.proof, [e.roomId], (s) =>
-        store.ready(s, e.roomId, true),
-      );
+      if (p === b)
+        await run(p.a, p.proof, [e.roomId], (s) =>
+          store.ready(s, e.roomId, true),
+        );
     }
+    await run(h.a, h.proof, [e.roomId], (s) => store.start(s, e.roomId));
     await pool.query(
       "UPDATE xiangqi_room.countdowns SET due_at=clock_timestamp()-interval '1ms'",
     );

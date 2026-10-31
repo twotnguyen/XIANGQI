@@ -80,21 +80,27 @@ async function playingPair(boot: GuestBoot, name: string): Promise<Seated> {
     (s) => Boolean(s?.room.connected.red && s?.room.connected.black),
   );
 
+  // Khách tạo phòng nên là Host: người vào sau Sẵn sàng trước, Host Bắt đầu sau.
   for (const [socket, snapshot] of [
-    [guestSocket, guestSnapshot],
     [hostSocket, hostSnapshot],
+    [guestSocket, guestSnapshot],
   ] as const) {
     const current = await waitFor(
       async () => snapshot(),
       (s) => s !== undefined,
     );
     if (!current) throw new Error("Room snapshot did not arrive before ready");
-    const ack = await command(socket, entry.roomId, current.version, {
-      type: "room.ready",
-      payload: { ready: true },
-    });
+    // Khách (người chơi thứ hai) Sẵn sàng trước, rồi Host Bắt đầu.
+    const ack = await command(
+      socket,
+      entry.roomId,
+      current.version,
+      socket === guestSocket
+        ? { type: "room.start", payload: {} }
+        : { type: "room.ready", payload: { ready: true } },
+    );
     if (ack.status !== "ok")
-      throw new Error(`room.ready rejected: ${ack.error.code}`);
+      throw new Error(`room command rejected: ${ack.error.code}`);
     // The origin receives its snapshot in the ack; realtime publication skips origins
     // already at that version, so the peer is the one that gets the push.
     const peerSnapshot = socket === guestSocket ? hostSnapshot : guestSnapshot;

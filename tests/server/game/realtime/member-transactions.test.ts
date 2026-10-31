@@ -90,7 +90,7 @@ describe.skipIf(!databaseUrl)(
   "member realtime transaction boundary with actual SQL",
   () => {
     beforeEach(reset);
-    it("runs actual room ready on the same locked scope and destroys scope after commit", async () => {
+    it("runs an actual room command on the same locked scope and destroys scope after commit", async () => {
       const m = await setup();
       let client!: PoolClient;
       await m.transactions.run(m.connection, async (c) => {
@@ -112,8 +112,8 @@ describe.skipIf(!databaseUrl)(
           },
           true,
         );
-        const view = await m.rooms.ready(scope, m.connection.roomId, true);
-        expect(view.room.ready.red).toBe(true);
+        const view = await m.rooms.switchSeat(scope, m.connection.roomId);
+        expect(view.room.seats.black).toBe(m.id);
       });
       expect(() =>
         m.transactions.getScope(
@@ -126,11 +126,11 @@ describe.skipIf(!databaseUrl)(
       expect(
         (
           await pool.query(
-            "SELECT ready FROM public.room_members WHERE room_id=$1 AND user_id=$2",
+            "SELECT side FROM public.room_members WHERE room_id=$1 AND user_id=$2",
             [m.connection.roomId, m.id],
           )
-        ).rows[0].ready,
-      ).toBe(true);
+        ).rows[0].side,
+      ).toBe("BLACK");
     });
     it("rejects proof replacement, mutation, missing proof and copied identity with different actor", async () => {
       const m = await setup(),

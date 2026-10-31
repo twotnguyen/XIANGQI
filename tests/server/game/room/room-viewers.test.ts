@@ -434,8 +434,8 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
           true,
         ),
       );
-    await run(h.a, h.proof, [roomId], (s) => store.ready(s, roomId, true));
     await run(v.a, v.proof, [roomId], (s) => store.ready(s, roomId, true));
+    await run(h.a, h.proof, [roomId], (s) => store.start(s, roomId));
     await expect(
       run(b.a, b.proof, [roomId], (s) => store.respondDown(s, roomId, true)),
     ).rejects.toMatchObject({ code: "SEAT_INVITE_MISSING" });

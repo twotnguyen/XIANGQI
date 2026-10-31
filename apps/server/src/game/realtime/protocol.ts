@@ -87,6 +87,8 @@ export function parseCommand(value: unknown): RoomCommand {
   let parsed: RoomAction;
   if (action.type === "room.ready" && typeof payload.ready === "boolean")
     parsed = { type: action.type, payload: { ready: payload.ready } };
+  else if (action.type === "room.start" && Object.keys(payload).length === 0)
+    parsed = { type: action.type, payload: {} };
   else if (
     action.type === "match.move" &&
     Object.keys(payload).every((key) =>

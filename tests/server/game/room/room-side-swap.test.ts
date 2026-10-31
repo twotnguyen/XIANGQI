@@ -177,8 +177,8 @@ describe.skipIf(!databaseUrl)("side swap offers", () => {
         ),
       );
     await run(h.a, h.proof, [roomId], (s) => store.proposeSwap(s, roomId));
-    await run(h.a, h.proof, [roomId], (s) => store.ready(s, roomId, true));
     await run(b.a, b.proof, [roomId], (s) => store.ready(s, roomId, true));
+    await run(h.a, h.proof, [roomId], (s) => store.start(s, roomId));
     const counting = await run(h.a, h.proof, [roomId], (s) =>
       store.snapshot(s, roomId),
     );
