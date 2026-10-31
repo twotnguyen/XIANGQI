@@ -57,6 +57,7 @@ function match(
     version: 20,
     position: "server-position",
     lastMove: null,
+    canAbort: false,
     turn: "black",
     status: "FINISHED",
     winner,
@@ -90,6 +91,7 @@ it.each([
   ["DISCONNECT", "Mất kết nối"],
   ["DRAW_REPETITION", "Lặp thế cờ ba lần"],
   ["DRAW_AGREEMENT", "Thoả thuận hoà"],
+  ["DRAW_SIMULTANEOUS_DISCONNECT", "Hai người mất kết nối đồng thời"],
   ["DRAW_NO_CAPTURE", "120 nửa nước không ăn quân"],
   ["PERPETUAL_CHECK", "Chiếu liên tục"],
 ])("shows the canonical %s reason in Vietnamese", (reason, label) => {
@@ -115,6 +117,7 @@ it.each(["red", "black"] as const)(
 it.each([
   "DRAW_REPETITION",
   "DRAW_AGREEMENT",
+  "DRAW_SIMULTANEOUS_DISCONNECT",
   "DRAW_NO_CAPTURE",
   "PERPETUAL_CHECK",
 ])("shows a server-confirmed draw for %s", (reason) => {

@@ -195,7 +195,8 @@ function parseSnapshot(value: unknown, roomId: string): RoomSnapshot {
     if (
       !isId(match.id) ||
       !Number.isSafeInteger(match.version) ||
-      (match.version as number) < 0
+      (match.version as number) < 0 ||
+      typeof match.canAbort !== "boolean"
     )
       invalidResponse();
     if (match.lastMove !== null) {
@@ -299,7 +300,62 @@ function parseSnapshot(value: unknown, roomId: string): RoomSnapshot {
       },
     };
   }
-  return { ...(snapshot as unknown as RoomSnapshot), draw: normalizedDraw };
+  let normalizedUndo: RoomSnapshot["undo"] = null;
+  if (snapshot.undo !== undefined && snapshot.undo !== null) {
+    if (
+      snapshot.role === "spectator" ||
+      snapshot.match === null ||
+      record(snapshot.match).status !== "ACTIVE"
+    )
+      invalidResponse();
+    const undo = record(snapshot.undo),
+      remaining = record(undo.remainingMoves),
+      used = record(undo.used);
+    if (
+      !Array.isArray(undo.offers) ||
+      undo.offers.length > 2 ||
+      ![remaining.red, remaining.black, used.red, used.black].every(
+        (value) =>
+          Number.isInteger(value) &&
+          (value as number) >= 0 &&
+          (value as number) <= 3,
+      )
+    )
+      invalidResponse();
+    const ids = new Set<string>(),
+      senders = new Set<string>();
+    const offers = undo.offers.map((value) => {
+      const offer = record(value);
+      if (
+        !isId(offer.id) ||
+        !["red", "black"].includes(offer.sender as string) ||
+        !isDate(offer.expiresAt) ||
+        ids.has((offer.id as string).toLowerCase()) ||
+        senders.has(offer.sender as string)
+      )
+        invalidResponse();
+      ids.add((offer.id as string).toLowerCase());
+      senders.add(offer.sender as string);
+      return {
+        id: offer.id as string,
+        sender: offer.sender as "red" | "black",
+        expiresAt: offer.expiresAt as string,
+      };
+    });
+    normalizedUndo = {
+      offers,
+      remainingMoves: {
+        red: remaining.red as number,
+        black: remaining.black as number,
+      },
+      used: { red: used.red as number, black: used.black as number },
+    };
+  }
+  return {
+    ...(snapshot as unknown as RoomSnapshot),
+    draw: normalizedDraw,
+    undo: normalizedUndo,
+  };
 }
 
 /**

@@ -1135,6 +1135,11 @@ export function RoomPage({
                   !active ||
                   !writable ||
                   !player ||
+                  Boolean(
+                    snapshot?.undo?.offers.some(
+                      (offer) => offer.sender === view.role,
+                    ),
+                  ) ||
                   (optimistic
                     ? optimistic.position.turn !== view.role
                     : snapshot?.match?.turn !== view.role)
@@ -1167,6 +1172,7 @@ export function RoomPage({
               match={snapshot.match}
               role={snapshot.role}
               draw={snapshot.draw}
+              undo={snapshot.undo}
               serverNow={snapshot.serverNow}
               canAct={Boolean(writable && player && active)}
               busy={busy}

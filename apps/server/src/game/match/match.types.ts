@@ -34,6 +34,7 @@ export type MatchOutcome = {
     | "RESIGN"
     | "TIMEOUT"
     | "DISCONNECT"
+    | "DRAW_SIMULTANEOUS_DISCONNECT"
     | "DRAW_AGREEMENT"
     | "SERVER_RESTART"
     | "INACTIVITY"
@@ -78,4 +79,10 @@ export type MatchDrawView = {
 };
 export type MatchDrawCommandResult = MatchCommandResult & {
   draw: MatchDrawView;
+};
+export type MatchUndoView = MatchDrawView & {
+  used: { red: number; black: number };
+};
+export type MatchUndoCommandResult = MatchCommandResult & {
+  undo: MatchUndoView;
 };

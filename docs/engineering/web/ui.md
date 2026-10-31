@@ -394,3 +394,13 @@ SessionProvider và client auth dùng `tabSessionFetch`; sessionStorage chỉ gi
 Đã chạy web Vite và server NestJS local dưới Node 22.23.3. Đã kiểm trực tiếp /dev/lobby, /dev/login, /dev/register và /dev/board ở desktop 1366/1440px và mobile 360/390px: không tràn ngang, ảnh tải đầy đủ, input auth 16px/cao48px và nút Sảnh tối thiểu44px. Đã thao tác lọc 5 phút/Tất cả, mã sai, dialog tạo phòng ở 844×390, menu/Escape/trả focus, đổi góc nhìn/thế cờ và chú giải. Đã xem Sảnh và auth dưới Giấy Sáng bằng thuộc tính HTML local tạm thời, đã khôi phục trước commit.
 
 Typecheck web, ESLint các TSX đổi và git diff --check đạt. Test local: không chạy (không được yêu cầu); không chạy build theo quy ước repository. Chưa nghiệm thu phòng/ván thật, trang cần tài khoản, Google/SMTP/LiveKit hoặc thiết bị camera/mic; các preview là dữ liệu minh họa, không thay bằng chứng nghiệp vụ.
+
+## YC5: đề nghị trong ván và demo mạng (31/10/2026)
+
+`MatchActions` dùng chung luồng Xin hòa/Xin đi lại: nonmodal, deadline 30 giây không reset khi X/Esc thu gọn, có Mở lại/Rút; pending/quota/cooldown và readonly có lý do. Desktop đặt các đề nghị thành cột cuộn ở vùng phụ bên phải, không đẩy bàn hoặc che Đầu hàng; mobile giữ luồng dọc. Bàn desktop tính lại phần chiều cao dành cho ghế/đồng hồ/chú giải/hành động. Không khóa cuộn dọc trên mobile.
+
+Hủy ván hiện theo `match.canAbort` từ server, không suy từ bàn khai cuộc sau Undo; xác nhận mặc định focus Giữ ván, kết quả trung tính. “Tôi còn đây” cập nhật version/snapshot; countdown dùng elapsed monotonic. Âm thanh tiếp tục dựa nước đã nhận, không đổi tiêu đề tab hay Notification.
+
+Công cụ demo chỉ hiện sau grant server, nằm trong header và dùng Tooltip giải thích giới hạn tab khác còn kết nối. Khi ngắt thật, modal reconnect vẫn chặn thao tác ván nhưng có Nối lại; đợi snapshot/quyền thật trước mở thao tác. Production từ chối direct command dù client cố hiện nút.
+
+Kiểm Chromium với RoomPage thật qua harness tạm nối Nest/Socket.IO/PostgreSQL 17 cô lập: gửi Undo, demo ngắt/nối và mở lại quyền, Hủy ván/focus Giữ ván/kết quả trung tính; desktop 1366×768 giữ bàn/hành động trong viewport, mobile 360×800 không tràn ngang. Không dùng harness này làm bằng chứng shell đăng nhập, chat/media hoặc nghiệm thu Supabase thật; chi tiết số đo và giới hạn ở YC5 mục 18.

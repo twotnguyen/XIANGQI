@@ -48,6 +48,7 @@ const match: NonNullable<MatchActionsProps["match"]> = {
   version: 3,
   position: "unused",
   lastMove: null,
+  canAbort: true,
   turn: "red",
   status: "ACTIVE",
   winner: null,
@@ -138,7 +139,11 @@ it("shows Hủy ván only before the first move and sends match.abort after conf
   });
   cleanup();
   setup({
-    match: { ...match, lastMove: { from: 54, to: 45, eventVersion: 1 } },
+    match: {
+      ...match,
+      canAbort: false,
+      lastMove: { from: 54, to: 45, eventVersion: 1 },
+    },
   });
   expect(screen.queryByRole("button", { name: "Hủy ván" })).toBeNull();
   expect(screen.getByRole("button", { name: "Đầu hàng" })).toBeTruthy();
@@ -413,4 +418,75 @@ it("loss of control while an action waits fences its late failure after reconnec
   expect(
     screen.getByRole("button", { name: "Xin hòa" }).matches(":disabled"),
   ).toBe(false);
+});
+it("shows nonmodal undo and sends explicit acceptance", async () => {
+  const view = setup({
+    undo: {
+      offers: [incoming],
+      remainingMoves: { red: 0, black: 0 },
+      used: { red: 0, black: 0 },
+    },
+  });
+  const panel = screen.getByRole("group", {
+    name: "Đề nghị đi lại của đối thủ",
+  });
+  expect(screen.queryByRole("dialog")).toBeNull();
+  fireEvent.click(
+    within(panel).getByRole("button", { name: "Thu gọn đề nghị đi lại" }),
+  );
+  expect(view.props.onAction).not.toHaveBeenCalled();
+  fireEvent.click(
+    within(panel).getByRole("button", { name: "Mở đề nghị đi lại" }),
+  );
+  await act(async () =>
+    fireEvent.click(within(panel).getByRole("button", { name: "Đồng ý" })),
+  );
+  expect(view.props.onAction).toHaveBeenCalledWith({
+    type: "match.undo.respond",
+    payload: {
+      matchId: match.id,
+      matchVersion: 3,
+      offerId: incoming.id,
+      accept: true,
+    },
+  });
+});
+it("notifies the sender when the opponent moves instead of accepting undo", () => {
+  const undo = {
+    offers: [own],
+    remainingMoves: { red: 0, black: 0 },
+    used: { red: 0, black: 0 },
+  };
+  const view = setup({ undo });
+  view.rerender(
+    createElement(MatchActions, {
+      ...view.props,
+      match: {
+        ...match,
+        version: 5,
+        lastMove: { from: 27, to: 36, eventVersion: 4 },
+      },
+      undo: { ...undo, offers: [], remainingMoves: { red: 3, black: 0 } },
+    }),
+  );
+  expect(screen.getByRole("alert").textContent).toContain(
+    "Đối thủ đã đi nước, đề nghị bị từ chối.",
+  );
+});
+it("does not claim rejection when the sender moves and withdraws their draw offer", () => {
+  const draw = { offers: [own], remainingMoves: { red: 0, black: 0 } };
+  const view = setup({ draw });
+  view.rerender(
+    createElement(MatchActions, {
+      ...view.props,
+      match: {
+        ...match,
+        version: 5,
+        turn: "black",
+        lastMove: { from: 54, to: 45, eventVersion: 4 },
+      },
+      draw: { ...draw, offers: [] },
+    }),
+  );
+  expect(screen.queryByRole("alert")).toBeNull();
 });

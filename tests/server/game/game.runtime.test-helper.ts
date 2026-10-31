@@ -97,6 +97,7 @@ async function oldRoom(
   r: ReturnType<typeof registration>,
   playing = false,
   usernameOnly = false,
+  startedAt = new Date(),
 ) {
   const a = await member(r, usernameOnly),
     b = await member(r),
@@ -144,7 +145,7 @@ async function oldRoom(
         [entry.roomId],
       );
       const token = randomUUID(),
-        at = new Date();
+        at = startedAt;
       await scope.client.query(
         "INSERT INTO xiangqi_room.countdowns(room_id,token,due_at,red_id,black_id) VALUES($1,$2,$3,$4,$5)",
         [entry.roomId, token, at, a.id, b.id],
@@ -222,6 +223,8 @@ export async function reset() {
     "20261103000004_room_issued_codes",
     "20261102000003_unlimited_inactivity",
     "20261103000005_match_aborted",
+    "20261103000006_online_undo",
+    "20261103000007_match_simultaneous_disconnect",
   ]);
 }
 

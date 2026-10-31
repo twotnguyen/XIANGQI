@@ -81,6 +81,7 @@ const draws = [
   "DRAW_REPETITION",
   "DRAW_NO_CAPTURE",
   "DRAW_AGREEMENT",
+  "DRAW_SIMULTANEOUS_DISCONNECT",
   "PERPETUAL_CHECK",
 ];
 const interruptions = [

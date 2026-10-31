@@ -189,7 +189,9 @@ export class MatchDrawStore extends MatchStoreCore {
       { ...input, matchVersion: 0 },
       "moved",
     );
-    return result.applied ? result.match : null;
+    return result.applied || result.match.status !== "ACTIVE"
+      ? result.match
+      : null;
   }
   /**
    * Điều phối và thực thi các hành động cầu hòa với đầy đủ kiểm tra khóa, trạng thái đồng hồ và xung đột phiên bản.
@@ -204,7 +206,7 @@ export class MatchDrawStore extends MatchStoreCore {
     const ctx = await this.context(scope, input);
     let { match } = ctx;
     const { row, room, side, history } = ctx;
-    let at = await this.drawTime(scope.client);
+    const at = await this.drawTime(scope.client);
     const result = async (
       applied: boolean,
       code?: string,
@@ -224,12 +226,20 @@ export class MatchDrawStore extends MatchStoreCore {
       row,
       match,
       history.at(-1)!,
+      at,
     );
     if (ended) {
       match = ended;
-      return result(false, "MATCH_FINISHED", "Ván đã kết thúc.");
+      return ended.outcome?.reason === "INACTIVITY"
+        ? result(
+            false,
+            "MATCH_INACTIVITY_EXPIRED",
+            "Đã hết thời gian xác nhận.",
+          )
+        : ended.outcome?.reason === "TIMEOUT"
+          ? result(false, "MATCH_TIME_EXPIRED", "Thời gian suy nghĩ đã hết.")
+          : result(false, "MATCH_FINISHED", "Ván đã kết thúc.");
     }
-    at = await this.drawTime(scope.client);
     const unlimited = match.inactivity !== null;
     const checked = unlimited
       ? {
@@ -340,6 +350,16 @@ export class MatchDrawStore extends MatchStoreCore {
     }
     if (action === "offer") {
       const state = await this.drawState(scope.client, match, at);
+      const undoPending = await scope.client.query(
+        "SELECT 1 FROM xiangqi_room.match_undo_offers WHERE match_id=$1 AND sender=$2 AND status='PENDING' AND expires_at>$3",
+        [row.id, sender, at],
+      );
+      if (undoPending.rowCount)
+        return result(
+          false,
+          "MATCH_DRAW_PENDING",
+          "Bạn đã có đề nghị đang chờ.",
+        );
       if (state.offers.some((o) => o.sender === side))
         return result(
           false,

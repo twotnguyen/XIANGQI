@@ -218,6 +218,7 @@ export class HistoryStore {
         "DRAW_REPETITION",
         "DRAW_NO_CAPTURE",
         "DRAW_AGREEMENT",
+        "DRAW_SIMULTANEOUS_DISCONNECT",
         "PERPETUAL_CHECK",
       ].includes(reason)
     )

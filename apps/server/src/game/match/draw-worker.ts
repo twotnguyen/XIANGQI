@@ -12,7 +12,7 @@ export interface DrawWorkerPort {
     work: (scope: MatchScope) => Promise<void>,
   ): Promise<void>;
 }
-const joins = `FROM xiangqi_room.match_draw_offers o
+const joins = `FROM (SELECT id,match_id,status,expires_at FROM xiangqi_room.match_draw_offers UNION ALL SELECT id,match_id,status,expires_at FROM xiangqi_room.match_undo_offers) o
  JOIN public.matches m ON m.id=o.match_id JOIN public.rooms r ON r.id=m.room_id
  JOIN public.match_events e ON e.match_id=m.id AND e.version=0 AND e.type='START'`;
 const eligible = `o.status='PENDING' AND o.expires_at<=clock_timestamp()
@@ -100,5 +100,6 @@ export class DrawWorker {
     );
     if (!current.rowCount) return;
     await this.matches.expireDrawOffers(scope, { matchId: candidate.matchId });
+    await this.matches.expireUndoOffers(scope, { matchId: candidate.matchId });
   }
 }

@@ -138,6 +138,10 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
     await apply("supabase/migrations/20261103000005_match_aborted.sql");
+    await apply("supabase/migrations/20261103000006_online_undo.sql");
+    await apply(
+      "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+    );
   });
   afterAll(() => pool.end());
   it("returns only own terminal matches from both colors; outsiders and active games are absent", async () => {
@@ -405,6 +409,7 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
       "DRAW_REPETITION",
       "DRAW_NO_CAPTURE",
       "DRAW_AGREEMENT",
+      "DRAW_SIMULTANEOUS_DISCONNECT",
       "PERPETUAL_CHECK",
     ]) {
       const id = await game(a, b, { reason, winner: null });

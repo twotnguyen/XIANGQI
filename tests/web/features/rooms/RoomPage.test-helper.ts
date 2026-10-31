@@ -173,6 +173,7 @@ export function playing(): RoomSnapshot {
       endedAt: null,
       result: null,
       lastMove: null,
+      canAbort: true,
     },
     clocks: {
       redMs: 600000,

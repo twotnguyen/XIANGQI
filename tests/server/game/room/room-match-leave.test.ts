@@ -43,6 +43,7 @@ async function fixture(
     | "noop"
     | "room-reset-only"
     | "end-only" = "normal",
+  startAgeMs = 0,
 ) {
   const red = await member(),
     black = await member(),
@@ -136,8 +137,11 @@ async function fixture(
       "INSERT INTO public.active_players(user_id,room_id) VALUES($1,$3),($2,$3)",
       [red.userId, black.userId, roomId],
     );
-    const at = (await c.query("SELECT clock_timestamp() AS now")).rows[0]
-      .now as Date;
+    const at = new Date(
+      (
+        (await c.query("SELECT clock_timestamp() AS now")).rows[0].now as Date
+      ).getTime() - startAgeMs,
+    );
     await c.query(
       "INSERT INTO xiangqi_room.countdowns(room_id,token,due_at,red_id,black_id) VALUES($1,$2,$3,$4,$5)",
       [roomId, token, at, red.userId, black.userId],
@@ -232,6 +236,8 @@ describe.skipIf(!databaseUrl)(
         "20261103000004_room_issued_codes",
         "20261102000003_unlimited_inactivity",
         "20261103000005_match_aborted",
+        "20261103000006_online_undo",
+        "20261103000007_match_simultaneous_disconnect",
       ])
         await apply(`supabase/migrations/${migration}.sql`);
     });
@@ -331,7 +337,7 @@ describe.skipIf(!databaseUrl)(
       },
     );
     it("serializes a concurrent clock timeout and leave into one canonical result and one seat release", async () => {
-      const f = await fixture();
+      const f = await fixture("normal", 5000);
       await pool.query(
         "UPDATE public.matches SET clock=jsonb_build_object('redMs',1,'blackMs',600000,'runningSinceEpochMs',floor(extract(epoch FROM clock_timestamp())*1000)::bigint-1000) WHERE id=$1",
         [f.matchId],

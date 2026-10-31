@@ -137,7 +137,10 @@ export function parseCommand(value: unknown): RoomCommand {
   else if (
     (action.type === "match.draw.offer" ||
       action.type === "match.draw.withdraw" ||
-      action.type === "match.draw.respond") &&
+      action.type === "match.draw.respond" ||
+      action.type === "match.undo.offer" ||
+      action.type === "match.undo.withdraw" ||
+      action.type === "match.undo.respond") &&
     typeof payload.matchVersion === "number" &&
     Number.isSafeInteger(payload.matchVersion) &&
     payload.matchVersion >= 0 &&
@@ -145,8 +148,14 @@ export function parseCommand(value: unknown): RoomCommand {
       [
         "matchId",
         "matchVersion",
-        ...(action.type === "match.draw.offer" ? [] : ["offerId"]),
-        ...(action.type === "match.draw.respond" ? ["accept"] : []),
+        ...(action.type === "match.draw.offer" ||
+        action.type === "match.undo.offer"
+          ? []
+          : ["offerId"]),
+        ...(action.type === "match.draw.respond" ||
+        action.type === "match.undo.respond"
+          ? ["accept"]
+          : []),
       ].includes(key),
     )
   ) {
@@ -154,9 +163,15 @@ export function parseCommand(value: unknown): RoomCommand {
       matchId: uuid(payload.matchId),
       matchVersion: payload.matchVersion,
     };
-    if (action.type === "match.draw.offer")
+    if (
+      action.type === "match.draw.offer" ||
+      action.type === "match.undo.offer"
+    )
       parsed = { type: action.type, payload: base };
-    else if (action.type === "match.draw.withdraw")
+    else if (
+      action.type === "match.draw.withdraw" ||
+      action.type === "match.undo.withdraw"
+    )
       parsed = {
         type: action.type,
         payload: { ...base, offerId: uuid(payload.offerId) },

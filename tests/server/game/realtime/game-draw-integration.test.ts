@@ -240,8 +240,12 @@ describe.skipIf(!databaseUrl)(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );
       await apply("supabase/migrations/20261103000005_match_aborted.sql");
+      await apply("supabase/migrations/20261103000006_online_undo.sql");
+      await apply(
+        "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+      );
     });
-    it("commits one durable offer through replay, rejects command ID reuse, keeps canonical lastMove through withdrawal", async () => {
+    it("commits one durable offer through replay, rejects command ID reuse, and withdraws when sender moves", async () => {
       const f = await fixture(),
         m = await f.start();
       const first = await f.command(f.r, {
@@ -285,22 +289,23 @@ describe.skipIf(!databaseUrl)(
           match: { lastMove: { from: 54, to: 45, eventVersion: 2 } },
         },
       });
-      const snap = await f.rt.snapshot(f.r),
-        offerId = snap.draw!.offers[0]!.id;
-      const withdrawn = await f.command(f.r, {
-        type: "match.draw.withdraw",
-        payload: { matchId: m.id, matchVersion: snap.match!.version, offerId },
+      const snap = await f.rt.snapshot(f.r);
+      expect(snap.draw).toMatchObject({
+        offers: [],
+        remainingMoves: { red: 0 },
       });
-      expect(withdrawn.ack).toMatchObject({
-        status: "ok",
-        snapshot: {
-          draw: { offers: [], remainingMoves: { red: 0 } },
-          match: {
-            lastMove: { from: 54, to: 45, eventVersion: 2 },
-            status: "ACTIVE",
-          },
-        },
+      expect(snap.match).toMatchObject({
+        lastMove: { from: 54, to: 45, eventVersion: 2 },
+        status: "ACTIVE",
       });
+      expect(
+        (
+          await pool.query(
+            "SELECT status FROM xiangqi_room.match_draw_offers WHERE match_id=$1",
+            [m.id],
+          )
+        ).rows[0].status,
+      ).toBe("WITHDRAWN");
       expect(
         (await pool.query("SELECT ply FROM public.matches WHERE id=$1", [m.id]))
           .rows[0].ply,

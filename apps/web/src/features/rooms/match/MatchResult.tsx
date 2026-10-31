@@ -19,6 +19,7 @@ const reasons: Readonly<Record<string, string>> = {
   RESIGN: "Đầu hàng",
   TIMEOUT: "Hết giờ",
   DISCONNECT: "Mất kết nối",
+  DRAW_SIMULTANEOUS_DISCONNECT: "Hai người mất kết nối đồng thời",
   DRAW_REPETITION: "Lặp thế cờ ba lần",
   DRAW_AGREEMENT: "Thoả thuận hoà",
   DRAW_NO_CAPTURE: "120 nửa nước không ăn quân",
@@ -28,6 +29,7 @@ const reasons: Readonly<Record<string, string>> = {
 const draws = new Set([
   "DRAW_REPETITION",
   "DRAW_AGREEMENT",
+  "DRAW_SIMULTANEOUS_DISCONNECT",
   "DRAW_NO_CAPTURE",
   "PERPETUAL_CHECK",
 ]);

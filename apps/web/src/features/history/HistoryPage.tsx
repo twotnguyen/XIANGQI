@@ -27,6 +27,7 @@ const reasons: Record<string, string> = {
   PERPETUAL_CHECK: "Chiếu liên tục",
   AGREED_DRAW: "Đồng ý hòa",
   DRAW_AGREEMENT: "Đồng ý hòa",
+  DRAW_SIMULTANEOUS_DISCONNECT: "Hai người mất kết nối đồng thời",
   REPETITION: "Lặp thế ba lần",
   DRAW_REPETITION: "Lặp thế ba lần",
   DRAW_NO_CAPTURE: "120 nửa nước không ăn quân",

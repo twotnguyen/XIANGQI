@@ -72,6 +72,10 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     await apply("supabase/migrations/20261011000008_room_modes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
     await apply("supabase/migrations/20261103000005_match_aborted.sql");
+    await apply("supabase/migrations/20261103000006_online_undo.sql");
+    await apply(
+      "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+    );
   });
   it("serializes simultaneous changes so only one wins the version CAS", async () => {
     const { host, entry, view } = await room(true);
@@ -128,6 +132,10 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     await apply("supabase/migrations/20261011000008_room_modes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
     await apply("supabase/migrations/20261103000005_match_aborted.sql");
+    await apply("supabase/migrations/20261103000006_online_undo.sql");
+    await apply(
+      "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+    );
     expect(
       (
         await pool.query(

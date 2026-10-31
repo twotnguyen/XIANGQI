@@ -125,7 +125,7 @@ const roomEnd = {
 };
 const matches = new MatchStore(new ClockService(), roomEnd);
 const coordinator = new RoomTransactions(pool);
-async function game() {
+async function game(startAgeMs = 0) {
   const red = randomUUID(),
     black = randomUUID(),
     roomId = randomUUID(),
@@ -171,7 +171,7 @@ async function game() {
         "INSERT INTO public.active_players(user_id,room_id) VALUES($1,$3),($2,$3)",
         [red, black, roomId],
       );
-      const at = new Date();
+      const at = new Date(Date.now() - startAgeMs);
       await client.query(
         "INSERT INTO xiangqi_room.countdowns(room_id,token,due_at,red_id,black_id) VALUES($1,$2,$3,$4,$5)",
         [roomId, startToken, at, red, black],
@@ -340,7 +340,7 @@ describe.skipIf(!databaseUrl)(
     it.each(["TIMEOUT", "DISCONNECT"])(
       "preserves canonical %s priority over expiry and produces only one RESULT",
       async (reason) => {
-        const g = await game();
+        const g = await game(reason === "DISCONNECT" ? 120000 : 0);
         await offer(g);
         await overdue(g);
         if (reason === "TIMEOUT")

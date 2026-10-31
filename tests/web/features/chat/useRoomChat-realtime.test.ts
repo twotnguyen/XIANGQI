@@ -16,6 +16,7 @@ function playing(version = 4, matchVersion = 0): RoomSnapshot {
       id: "33333333-3333-4333-8333-333333333333",
       version: matchVersion,
       position: "authoritative position",
+      canAbort: matchVersion === 0,
       lastMove: matchVersion
         ? { from: 54, to: 45, eventVersion: matchVersion }
         : null,

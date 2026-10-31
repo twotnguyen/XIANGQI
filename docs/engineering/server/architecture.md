@@ -30,7 +30,7 @@ Không khóa theo thứ tự tùy ý: hai người chơi sẽ deadlock. Lệnh m
 
 ## Store chia lớp bằng kế thừa
 
-`RoomStore` = `RoomStoreCore` (helper, `snapshot`) → `RoomSwapStore` → `RoomRematchStore` → `RoomViewerStore` → `RoomStore`. `MatchStore` = `MatchStoreCore` → `MatchDrawStore` → `MatchStore`.
+`RoomStore` = `RoomStoreCore` (helper, `snapshot`) → `RoomSwapStore` → `RoomRematchStore` → `RoomViewerStore` → `RoomStore`. `MatchStore` = `MatchStoreCore` → `MatchDrawStore` → `MatchUndoStore` → `MatchStore`.
 
 Nơi khác chỉ import `RoomStore` và `MatchStore`. Thêm lệnh vào lớp theo nhóm lệnh; helper dùng chung ở core (`protected`). Lớp con không được gọi ngược lên lớp con khác.
 
@@ -38,7 +38,7 @@ Nơi khác chỉ import `RoomStore` và `MatchStore`. Thêm lệnh vào lớp th
 
 `game/realtime/gateway.ts` xác thực handshake, cho một tab điều khiển mỗi actor và phòng (chặn bằng `connectionId`) và gửi snapshot riêng cho từng người nhận. Snapshot HTTP chỉ để hiển thị. Đồng hồ, ân hạn mất kết nối và hết hạn xin hòa là worker phía server. Ván với máy (`game/ai/`) có gateway riêng.
 
-Ván không giới hạn (`time_control = 0`, `game/match/inactivity.ts`) không có đồng hồ từng nước. Mốc chống treo là `runningSinceEpochMs + 210000` ms (nhắc 180 s, ân hạn 30 s), do clock worker quyết định. Hết hạn thì bên đến lượt thua với lý do `INACTIVITY`. `match.still-here` (`matches.inactivity_extensions`, tối đa 2 lần liên tiếp, reset khi có nước đi) mở lại cửa sổ 3 phút; không có outbox và không đổi version. Snapshot không gửi `clocks` cho ván không giới hạn.
+Ván không giới hạn (`time_control = 0`, `game/match/inactivity.ts`) không có đồng hồ từng nước. Mốc chống treo là `runningSinceEpochMs + 210000` ms (nhắc 180 s, ân hạn 30 s), do clock worker quyết định. Hết hạn thì bên đến lượt thua với lý do `INACTIVITY`. `match.still-here` (`matches.inactivity_extensions`, tối đa 2 lần liên tiếp, reset khi có nước đi) mở lại cửa sổ 3 phút, tăng phiên bản ván/phòng và ghi event/outbox `MATCH_STILL_HERE`. Snapshot không gửi `clocks` cho ván không giới hạn.
 
 Feed Sảnh (`game/room/public/public-room-feed.ts`) giữ `PUBLIC_FEED_POLL_MS = 1000` ms cho AC-06.2.3/06.2.15 (≤ 2 giây). Mỗi người đọc vẫn kiểm quyền trong giao dịch riêng; catalog PUBLIC dùng chung theo tick qua `PublicRoomCatalog`, không chia sẻ quyền hoặc phiên. Probe PostgreSQL test cô lập với 50 người đọc, 50 phòng PUBLIC và 5 phòng CODE_ONLY đo được 50 → 1 truy vấn catalog/tick, 350 → 301 câu SQL/tick, không có dòng riêng tư lọt ra. Đây là số đo query cục bộ, không phải nghiệm thu độ trễ mạng production.
 

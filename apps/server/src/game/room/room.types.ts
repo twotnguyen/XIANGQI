@@ -95,6 +95,10 @@ export interface MatchStartPort {
     client: PoolClient,
     input: { roomId: string; matchId: string; actor: RoomActor },
   ): Promise<void>;
+  reconnect?(
+    client: PoolClient,
+    input: { roomId: string; matchId: string; actor: RoomActor },
+  ): Promise<void>;
 }
 export interface RoomEvent {
   id: string;

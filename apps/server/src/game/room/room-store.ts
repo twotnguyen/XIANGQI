@@ -478,7 +478,21 @@ export class RoomStore extends RoomViewerStore {
       !uuid.test(proof.serverInstance)
     )
       invalidRoomInput();
-    const { r, member } = await this.member(s, id, true);
+    let { r, member } = await this.member(s, id, true);
+    if (
+      connected &&
+      member.role === "PLAYER" &&
+      r.status === "PLAYING" &&
+      r.current_match_id &&
+      this.matches?.reconnect
+    ) {
+      await this.matches.reconnect(s.client, {
+        roomId: id,
+        matchId: r.current_match_id,
+        actor: s.actor,
+      });
+      ({ r, member } = await this.member(s, id, true));
+    }
     if (connected && member.role === "SPECTATOR" && member.viewer_expired) {
       await this.release(s, id, s.actor.userId, false);
       return "viewer-expired" as const;

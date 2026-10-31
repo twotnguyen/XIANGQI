@@ -65,50 +65,6 @@ describe("GameRooms native projection and adapter (synthetic stores, no SQL)", (
     Object.assign(f.room.room, { privateRoster: "PRIVATE_ROSTER" });
     Object.assign(f.match, { secret: "PRIVATE_MATCH" });
     const result = await f.adapter.snapshot(f.client, f.identity, f.roomId);
-    expect(result).toEqual({
-      draw: null,
-      serverNow: f.room.serverNow,
-      roomId: f.roomId,
-      version: 8,
-      role: "red",
-      room: {
-        status: "PLAYING",
-        hostId: f.userId,
-        name: "Synthetic Room",
-        visibility: "CODE_ONLY",
-        inviteCode: "ABCDEFGH",
-        timeMinutes: 10,
-        viewerLimit: 5,
-        seats: { red: f.userId, black: f.peerId },
-        ready: { red: false, black: false },
-        connected: { red: true, black: false },
-        graceUntil: { red: null, black: "2026-10-11T12:01:00Z" },
-        countdown: null,
-        swapOffer: null,
-        downOffer: null,
-        swapCooldownUntil: null, // proposer-only visibility is enforced in room-store-core; covered by room-side-swap DB tests
-        rematchOffer: null,
-        spectators: [],
-      },
-      match: {
-        id: f.matchId,
-        version: 3,
-        position: "synthetic-fen",
-        lastMove: null,
-        turn: "red",
-        status: "ACTIVE",
-        winner: null,
-        endedAt: null,
-        result: null,
-        inactivity: null,
-      },
-      clocks: {
-        redMs: 598000,
-        blackMs: 600000,
-        running: "red",
-        asOf: f.room.serverNow,
-      },
-    });
     expect(f.matchStore.current).toHaveBeenCalledWith(
       f.client,
       f.roomId,

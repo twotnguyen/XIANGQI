@@ -79,6 +79,7 @@ function snapshot(
       version: 0,
       position: initial,
       lastMove: null,
+      canAbort: true,
       turn: "red",
       status: "ACTIVE",
       winner: null,
@@ -154,6 +155,28 @@ describe("local move audio (AC-YC4-RV-02)", () => {
 });
 
 describe("accepted game audio", () => {
+  it("plays a live opponent move while hidden, but not a reconnect baseline or muted move", async () => {
+    const helper = audio();
+    await helper.unlock();
+    const visibility = vi
+      .spyOn(document, "visibilityState", "get")
+      .mockReturnValue("hidden");
+    const title = document.title;
+    helper.accept(
+      { ...snapshot(), role: "black" },
+      { ...moved(), role: "black" },
+    );
+    expect(oscillators.map((item) => item.frequency.value)).toEqual([440]);
+    helper.accept(null, moved());
+    helper.setMuted(true);
+    helper.accept(snapshot({ id: "muted" }), {
+      ...moved(),
+      match: { ...moved().match!, id: "muted" },
+    });
+    expect(oscillators.map((item) => item.frequency.value)).toEqual([440]);
+    expect(document.title).toBe(title);
+    visibility.mockRestore();
+  });
   it("separates the accepted terminal move and result, including duplicate delivery", async () => {
     const helper = audio();
     await helper.unlock();

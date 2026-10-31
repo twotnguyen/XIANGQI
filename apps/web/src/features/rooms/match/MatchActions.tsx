@@ -11,13 +11,17 @@ export type MatchAction = Extract<
       | "match.still-here"
       | "match.draw.offer"
       | "match.draw.withdraw"
-      | "match.draw.respond";
+      | "match.draw.respond"
+      | "match.undo.offer"
+      | "match.undo.withdraw"
+      | "match.undo.respond";
   }
 >;
 export interface MatchActionsProps {
   match: RoomStateSnapshot["match"];
   role: RoomStateSnapshot["role"];
   draw: RoomStateSnapshot["draw"];
+  undo?: RoomStateSnapshot["undo"];
   serverNow: string;
   canAct: boolean;
   busy?: boolean;
@@ -39,6 +43,7 @@ export function MatchActions({
   match,
   role,
   draw,
+  undo,
   serverNow,
   canAct,
   busy = false,
@@ -53,7 +58,52 @@ export function MatchActions({
     [notice, setNotice] = useState(""),
     [confirm, setConfirm] = useState<"resign" | "abort" | null>(null),
     [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
-  const offers = active ? (draw?.offers ?? []) : [];
+  const offers = active
+    ? [
+        ...(draw?.offers ?? []).map((offer) => ({
+          ...offer,
+          kind: "draw" as const,
+        })),
+        ...(undo?.offers ?? []).map((offer) => ({
+          ...offer,
+          kind: "undo" as const,
+        })),
+      ]
+    : [];
+  const previousOffers = useRef<{
+    matchId: string;
+    version: number;
+    offers: typeof offers;
+  }>({ matchId: "", version: -1, offers: [] });
+  useEffect(() => {
+    const previous = previousOffers.current;
+    if (
+      match &&
+      previous.matchId === match.id &&
+      match.lastMove &&
+      match.lastMove.eventVersion > previous.version &&
+      match.turn === role
+    ) {
+      const declined = previous.offers.find(
+        (offer) =>
+          offer.sender === role &&
+          !offers.some((current) => current.id === offer.id),
+      );
+      if (declined) setNotice("Đối thủ đã đi nước, đề nghị bị từ chối.");
+    }
+    previousOffers.current = {
+      matchId: match?.id ?? "",
+      version: match?.version ?? -1,
+      offers,
+    };
+  }, [
+    match?.id,
+    match?.version,
+    match?.lastMove?.eventVersion,
+    role,
+    draw,
+    undo,
+  ]);
   const clockKey = offers.length
     ? `${match?.id}/${serverNow}/${offers
         .map((o) => `${o.id}:${o.expiresAt}`)
@@ -133,6 +183,17 @@ export function MatchActions({
   if (!active || !match) return null;
   const ownPending = offers.some((o) => o.sender === role),
     cooldown = draw?.remainingMoves[role] ?? 0;
+  const undoReason = !canAct
+    ? "Kết nối hoặc quyền điều khiển chưa sẵn sàng."
+    : !undo
+      ? "Xin đi lại chưa sẵn sàng."
+      : ownPending
+        ? "Đang chờ trả lời đề nghị trước."
+        : undo.used[role] >= 3
+          ? "Bạn đã sử dụng hết 3 lượt xin đi lại trong ván này."
+          : undo.remainingMoves[role] > 0
+            ? `Cần đi thêm ${undo.remainingMoves[role]} nước của bạn để xin đi lại.`
+            : null;
   const reason = !canAct
     ? "Kết nối hoặc quyền điều khiển chưa sẵn sàng."
     : !draw
@@ -155,7 +216,7 @@ export function MatchActions({
           Đầu hàng
         </button>
         {/* Hủy ván chỉ khi chưa có nước đi nào; máy chủ kiểm lại dưới khóa. */}
-        {match.lastMove === null && (
+        {match.canAbort && (
           <button
             type="button"
             className="xq-button xq-button-secondary"
@@ -176,134 +237,182 @@ export function MatchActions({
         >
           Xin hòa
         </button>
+        <button
+          type="button"
+          className="xq-button xq-button-secondary"
+          disabled={Boolean(undoReason) || working}
+          aria-describedby={
+            undoReason
+              ? `${match.id}-${undoReason === reason ? "draw" : "undo"}-reason`
+              : undefined
+          }
+          onClick={() => {
+            void send({ type: "match.undo.offer", payload });
+          }}
+        >
+          Xin đi lại
+        </button>
       </div>
       {reason && (
         <p id={`${match.id}-draw-reason`} className="match-actions__help">
           {reason}
         </p>
       )}
+      {undoReason && undoReason !== reason && (
+        <p id={`${match.id}-undo-reason`} className="match-actions__help">
+          {undoReason}
+        </p>
+      )}
       {(error || notice) && <p role="alert">{error || notice}</p>}
       {working && <p role="status">Đang chờ máy chủ xác nhận…</p>}
-      {offers.map((offer) => {
-        const own = offer.sender === role,
-          hidden = collapsed.has(offer.id),
-          left = remaining(offer.expiresAt);
-        return (
-          <section
-            key={offer.id}
-            className="match-actions__proposal"
-            role="group"
-            aria-label={own ? "Đề nghị hòa của bạn" : "Đề nghị hòa của đối thủ"}
-            onKeyDown={(event) => {
-              if (event.key === "Escape" && !hidden && left > 0) {
-                event.preventDefault();
-                event.stopPropagation();
-                event.currentTarget
-                  .querySelector<HTMLButtonElement>("[data-collapse]")
-                  ?.focus();
-                setCollapsed((prior) => new Set([...prior, offer.id]));
+      <div className="match-actions__proposals">
+        {offers.map((offer) => {
+          const own = offer.sender === role,
+            hidden = collapsed.has(offer.id),
+            left = remaining(offer.expiresAt);
+          return (
+            <section
+              key={offer.id}
+              className="match-actions__proposal"
+              role="group"
+              aria-label={
+                offer.kind === "draw"
+                  ? own
+                    ? "Đề nghị hòa của bạn"
+                    : "Đề nghị hòa của đối thủ"
+                  : own
+                    ? "Đề nghị đi lại của bạn"
+                    : "Đề nghị đi lại của đối thủ"
               }
-            }}
-          >
-            {left <= 0 ? (
-              <p role="status">
-                Đề nghị đã hết hạn. Đang chờ máy chủ cập nhật.
-              </p>
-            ) : (
-              <>
-                <header>
-                  <h3>{own ? "Bạn đang xin hòa" : "Đối thủ xin hòa"}</h3>
-                  <button
-                    data-collapse
-                    type="button"
-                    className="xq-button xq-button-ghost"
-                    aria-expanded={!hidden}
-                    aria-label={
-                      hidden ? "Mở đề nghị hòa" : "Thu gọn đề nghị hòa"
-                    }
-                    onClick={() =>
-                      setCollapsed((prior) => {
-                        const next = new Set(prior);
-                        if (hidden) next.delete(offer.id);
-                        else next.add(offer.id);
-                        return next;
-                      })
-                    }
-                  >
-                    {hidden ? "Mở lại" : "×"}
-                  </button>
-                </header>
-                {!hidden && (
-                  <>
-                    <span
-                      role="timer"
-                      aria-live="off"
-                      className="match-actions__time"
+              onKeyDown={(event) => {
+                if (event.key === "Escape" && !hidden && left > 0) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  event.currentTarget
+                    .querySelector<HTMLButtonElement>("[data-collapse]")
+                    ?.focus();
+                  setCollapsed((prior) => new Set([...prior, offer.id]));
+                }
+              }}
+            >
+              {left <= 0 ? (
+                <p role="status">
+                  Đề nghị đã hết hạn. Đang chờ máy chủ cập nhật.
+                </p>
+              ) : (
+                <>
+                  <header>
+                    <h3>
+                      {own ? "Bạn đang xin" : "Đối thủ xin"}{" "}
+                      {offer.kind === "undo" ? "đi lại" : "hòa"}
+                    </h3>
+                    <button
+                      data-collapse
+                      type="button"
+                      className="xq-button xq-button-ghost"
+                      aria-expanded={!hidden}
+                      aria-label={
+                        offer.kind === "draw"
+                          ? hidden
+                            ? "Mở đề nghị hòa"
+                            : "Thu gọn đề nghị hòa"
+                          : hidden
+                            ? "Mở đề nghị đi lại"
+                            : "Thu gọn đề nghị đi lại"
+                      }
+                      onClick={() =>
+                        setCollapsed((prior) => {
+                          const next = new Set(prior);
+                          if (hidden) next.delete(offer.id);
+                          else next.add(offer.id);
+                          return next;
+                        })
+                      }
                     >
-                      Còn {time(left)}
-                    </span>
-                    {own ? (
-                      <>
-                        <p>Đang chờ đối thủ trả lời…</p>
-                        <button
-                          type="button"
-                          className="xq-button xq-button-secondary"
-                          disabled={!canAct || working}
-                          onClick={() => {
-                            void send({
-                              type: "match.draw.withdraw",
-                              payload: { ...payload, offerId: offer.id },
-                            });
-                          }}
-                        >
-                          Rút đề nghị
-                        </button>
-                      </>
-                    ) : (
-                      <div className="match-actions__buttons">
-                        <button
-                          type="button"
-                          className="xq-button xq-button-secondary"
-                          disabled={!canAct || working}
-                          onClick={() => {
-                            void send({
-                              type: "match.draw.respond",
-                              payload: {
-                                ...payload,
-                                offerId: offer.id,
-                                accept: false,
-                              },
-                            });
-                          }}
-                        >
-                          Từ chối
-                        </button>
-                        <button
-                          type="button"
-                          className="xq-button xq-button-primary"
-                          disabled={!canAct || working}
-                          onClick={() => {
-                            void send({
-                              type: "match.draw.respond",
-                              payload: {
-                                ...payload,
-                                offerId: offer.id,
-                                accept: true,
-                              },
-                            });
-                          }}
-                        >
-                          Đồng ý
-                        </button>
-                      </div>
-                    )}
-                  </>
-                )}
-              </>
-            )}
-          </section>
-        );
-      })}
+                      {hidden ? "Mở lại" : "×"}
+                    </button>
+                  </header>
+                  {!hidden && (
+                    <>
+                      <span
+                        role="timer"
+                        aria-live="off"
+                        className="match-actions__time"
+                      >
+                        Còn {time(left)}
+                      </span>
+                      {own ? (
+                        <>
+                          <p>Đang chờ đối thủ trả lời…</p>
+                          <button
+                            type="button"
+                            className="xq-button xq-button-secondary"
+                            disabled={!canAct || working}
+                            onClick={() => {
+                              void send({
+                                type:
+                                  offer.kind === "undo"
+                                    ? "match.undo.withdraw"
+                                    : "match.draw.withdraw",
+                                payload: { ...payload, offerId: offer.id },
+                              });
+                            }}
+                          >
+                            Rút đề nghị
+                          </button>
+                        </>
+                      ) : (
+                        <div className="match-actions__buttons">
+                          <button
+                            type="button"
+                            className="xq-button xq-button-secondary"
+                            disabled={!canAct || working}
+                            onClick={() => {
+                              void send({
+                                type:
+                                  offer.kind === "undo"
+                                    ? "match.undo.respond"
+                                    : "match.draw.respond",
+                                payload: {
+                                  ...payload,
+                                  offerId: offer.id,
+                                  accept: false,
+                                },
+                              });
+                            }}
+                          >
+                            Từ chối
+                          </button>
+                          <button
+                            type="button"
+                            className="xq-button xq-button-primary"
+                            disabled={!canAct || working}
+                            onClick={() => {
+                              void send({
+                                type:
+                                  offer.kind === "undo"
+                                    ? "match.undo.respond"
+                                    : "match.draw.respond",
+                                payload: {
+                                  ...payload,
+                                  offerId: offer.id,
+                                  accept: true,
+                                },
+                              });
+                            }}
+                          >
+                            Đồng ý
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </section>
+          );
+        })}
+      </div>
       <fieldset className="match-actions__confirmation" disabled={working}>
         <Dialog
           open={confirm === "resign" && canAct}

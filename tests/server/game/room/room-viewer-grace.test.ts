@@ -111,6 +111,10 @@ describe.skipIf(!databaseUrl)("spectator grace on synthetic PostgreSQL", () => {
     await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
     await apply("supabase/migrations/20261103000005_match_aborted.sql");
+    await apply("supabase/migrations/20261103000006_online_undo.sql");
+    await apply(
+      "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+    );
   });
   it("records physical spectator presence and fences lower generation and old disconnects", async () => {
     const f = await fixture();

@@ -45,4 +45,8 @@ export async function reset() {
   await apply("supabase/migrations/20261017000018_room_code_digits.sql");
   await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
   await apply("supabase/migrations/20261103000005_match_aborted.sql");
+  await apply("supabase/migrations/20261103000006_online_undo.sql");
+  await apply(
+    "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+  );
 }

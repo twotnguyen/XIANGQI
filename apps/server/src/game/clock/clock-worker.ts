@@ -1,6 +1,5 @@
 import type { PoolClient } from "pg";
-import { earliestDisconnect } from "../match/disconnect-worker.js";
-import { inactivityExpired } from "../match/inactivity.js";
+import { adjudicateDeadline } from "../match/disconnect-worker.js";
 import type { MatchStore } from "../match/match-store.js";
 import { uuid } from "../match/position-codec.js";
 import type { ClockService } from "./clock.service.js";
@@ -120,44 +119,20 @@ export class ClockWorker {
       !scope.lockedActorIds.has(row.black_user_id)
     )
       throw new ClockError("CLOCK_LOCK_REQUIRED");
-    const at = new Date(
-      Number(
-        (
-          await scope.client.query<{ ms: string }>(
-            "SELECT floor(extract(epoch FROM clock_timestamp())*1000)::bigint ms",
-          )
-        ).rows[0]!.ms,
-      ),
-    );
+    void this.clock;
     const match = await this.matches.snapshot(
       scope.client,
       candidate.roomId,
       candidate.matchId,
     );
-    const unlimited = match.inactivity !== null;
-    const expired = unlimited
-      ? inactivityExpired(match.clock, at)
-      : this.clock.beforeAction(match.clock, match.turn, at).expired !== null;
-    if (!expired) return;
-    if (!unlimited) {
-      const disconnect = await earliestDisconnect(
-        scope.client,
-        candidate.roomId,
-        row.red_user_id,
-        row.black_user_id,
-      );
-      const deadline =
-        match.clock.runningSinceEpochMs +
-        (match.turn === "red" ? match.clock.redMs : match.clock.blackMs);
-      if (disconnect && disconnect.deadline < deadline) return;
-    }
-    await this.matches.finish(scope.client, {
-      ...candidate,
-      outcome: {
-        reason: unlimited ? "INACTIVITY" : "TIMEOUT",
-        winner: match.turn === "red" ? "black" : "red",
-      },
-      at,
-    });
+    const decision = await adjudicateDeadline(
+      scope.client,
+      candidate.roomId,
+      row.red_user_id,
+      row.black_user_id,
+      match,
+    );
+    if (decision)
+      await this.matches.finish(scope.client, { ...candidate, ...decision });
   }
 }

@@ -30,6 +30,7 @@ const match: NonNullable<InactivityBannerProps["match"]> = {
   version: 1,
   position: "unused",
   lastMove: null,
+  canAbort: true,
   turn: "red",
   status: "ACTIVE",
   winner: null,

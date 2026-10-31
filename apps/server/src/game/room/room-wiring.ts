@@ -44,6 +44,13 @@ export function createRoomWiring(pool: Pool, clock: ClockService) {
   };
   const rooms = new RoomStore({
     start: (client, input) => matches.start(client, input),
+    reconnect: async (client, input) => {
+      const scope = getScope(client, input.actor, input.roomId);
+      await matches.settleDeadlines(
+        { ...scope, roomId: input.roomId, canControl: true },
+        { matchId: input.matchId },
+      );
+    },
     leave: async (client, input) => {
       const scope = getScope(client, input.actor, input.roomId);
       const match = await matches.snapshot(client, input.roomId, input.matchId);

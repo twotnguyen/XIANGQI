@@ -58,6 +58,7 @@ export interface RoomStateSnapshot {
     version: number;
     position: string;
     lastMove: { from: number; to: number; eventVersion: number } | null;
+    canAbort: boolean;
     turn: "red" | "black";
     status: "ACTIVE" | "FINISHED" | "INTERRUPTED";
     winner: "red" | "black" | null;
@@ -79,6 +80,11 @@ export interface RoomStateSnapshot {
   draw?: {
     offers: { id: string; sender: "red" | "black"; expiresAt: string }[];
     remainingMoves: { red: number; black: number };
+  } | null;
+  undo?: {
+    offers: { id: string; sender: "red" | "black"; expiresAt: string }[];
+    remainingMoves: { red: number; black: number };
+    used: { red: number; black: number };
   } | null;
 }
 
@@ -147,6 +153,23 @@ export type RoomAction =
       };
     }
   | {
+      type: "match.undo.offer";
+      payload: { matchId: string; matchVersion: number };
+    }
+  | {
+      type: "match.undo.withdraw";
+      payload: { matchId: string; matchVersion: number; offerId: string };
+    }
+  | {
+      type: "match.undo.respond";
+      payload: {
+        matchId: string;
+        matchVersion: number;
+        offerId: string;
+        accept: boolean;
+      };
+    }
+  | {
       type: "media.sharing";
       payload: { sharing: "none" | "opponent" | "room" };
     };
@@ -185,6 +208,12 @@ export type RealtimeErrorCode =
   | "MATCH_DRAW_EXPIRED"
   | "MATCH_DRAW_SENDER_REQUIRED"
   | "MATCH_DRAW_RECEIVER_REQUIRED"
+  | "MATCH_UNDO_PENDING"
+  | "MATCH_UNDO_LIMIT"
+  | "MATCH_UNDO_COOLDOWN"
+  | "MATCH_UNDO_NO_MOVE"
+  | "MATCH_UNDO_EXPIRED"
+  | "MATCH_UNDO_FORBIDDEN"
   | "MATCH_NOT_UNLIMITED"
   | "MATCH_INACTIVITY_NOT_DUE"
   | "MATCH_INACTIVITY_LIMIT"

@@ -154,7 +154,12 @@ async function playing(timeMinutes = 5) {
       await connected;
     }
     const latest = (index: number) => snapshots.get(players[index]!.id);
-    const command = (index: number, action: RoomAction) =>
+    const command = (
+      index: number,
+      action: RoomAction,
+      commandId = randomUUID(),
+      expectedVersion?: number,
+    ) =>
       new Promise<CommandAcknowledgement>((resolve, reject) => {
         const state = latest(index);
         if (!state) {
@@ -164,9 +169,9 @@ async function playing(timeMinutes = 5) {
         sockets[index]!.timeout(5000).emit(
           "room.command",
           {
-            commandId: randomUUID(),
+            commandId,
             roomId: entry.roomId,
-            expectedVersion: state.version,
+            expectedVersion: expectedVersion ?? state.version,
             action,
           },
           (error: Error | null, ack: CommandAcknowledgement) => {
@@ -411,32 +416,29 @@ describe.skipIf(!databaseUrl)("actual runtime unlimited match gates", () => {
       const matchId = started.match!.id;
       expect(started.match!.inactivity!.confirmsLeft).toBe(2);
       await ageAnchor(matchId, 181_000);
-      const ack = (commandId: string) =>
-        new Promise<CommandAcknowledgement>((resolve, reject) => {
-          f.sockets[0]!.timeout(5000).emit(
-            "room.command",
-            {
-              commandId,
-              roomId: f.roomId,
-              expectedVersion: f.latest(0)!.version,
-              action: {
-                type: "match.still-here",
-                payload: { matchId, matchVersion: started.match!.version },
-              },
-            },
-            (error: Error | null, value: CommandAcknowledgement) =>
-              error ? reject(error) : resolve(value),
-          );
-        });
+      const action: RoomAction = {
+        type: "match.still-here",
+        payload: { matchId, matchVersion: started.match!.version },
+      };
       const commandId = randomUUID();
-      const first = await ack(commandId);
+      const first = await f.command(0, action, commandId, started.version);
       if (first.status !== "ok")
         throw new Error("First match.still-here must succeed");
       expect(first.snapshot.match!.inactivity!.confirmsLeft).toBe(1);
       // Same commandId returns the stored receipt; it must not count a second extension.
-      expect(await ack(commandId)).toEqual(first);
+      expect(await f.command(0, action, commandId, started.version)).toEqual(
+        first,
+      );
       // A fresh commandId after success is still before the new prompt and must be rejected.
-      expect((await ack(randomUUID())).status).toBe("error");
+      expect(
+        await f.command(0, {
+          type: "match.still-here",
+          payload: { matchId, matchVersion: first.snapshot.match!.version },
+        }),
+      ).toMatchObject({
+        status: "error",
+        error: { code: "MATCH_INACTIVITY_NOT_DUE" },
+      });
       expect(
         (
           await pool.query(
@@ -451,7 +453,7 @@ describe.skipIf(!databaseUrl)("actual runtime unlimited match gates", () => {
             type: "match.move",
             payload: {
               matchId,
-              matchVersion: started.match!.version,
+              matchVersion: first.snapshot.match!.version,
               from: 54,
               to: 45,
             },

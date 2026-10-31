@@ -43,6 +43,8 @@ export async function reset() {
     "20261103000004_room_issued_codes",
     "20261102000003_unlimited_inactivity",
     "20261103000005_match_aborted",
+    "20261103000006_online_undo",
+    "20261103000007_match_simultaneous_disconnect",
     "20261031000001_session_devices",
   ])
     await apply(`supabase/migrations/${file}.sql`);
