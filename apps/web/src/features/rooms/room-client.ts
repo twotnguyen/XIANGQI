@@ -381,6 +381,16 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
         (value) => parseView(value, roomId),
         { control, expectedVersion },
       ),
+    transferHost: (
+      roomId: string,
+      expectedVersion: number,
+      control: RoomControlProof,
+    ) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/transfer-host`,
+        (value) => parseView(value, roomId),
+        { control, expectedVersion },
+      ),
     toSpectator: (
       roomId: string,
       expectedVersion: number,

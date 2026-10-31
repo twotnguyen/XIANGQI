@@ -30,7 +30,7 @@ it("defers HTTP room display until realtime is unavailable and never grants its 
   expect(f.client.snapshot).toHaveBeenCalledOnce();
   expect(
     screen
-      .getByRole("button", { name: "Sẵn sàng" })
+      .getByRole("button", { name: "Bắt đầu" })
       .getAttribute("aria-disabled"),
   ).toBe("true");
   expect(f.command).not.toHaveBeenCalled();

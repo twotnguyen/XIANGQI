@@ -50,7 +50,7 @@ export const snapshot: RoomSnapshot = {
 };
 export function setup(
   state = snapshot,
-  extra: { chat?: ReactNode; isMember?: boolean } = {},
+  extra: { chat?: ReactNode; isMember?: boolean; userId?: string } = {},
 ) {
   let handlers: RoomConnectionInput;
   const command = vi.fn().mockResolvedValue({
@@ -65,6 +65,7 @@ export function setup(
   const client = {
     snapshot: vi.fn().mockResolvedValue(state),
     switchSeat: vi.fn(),
+    transferHost: vi.fn(),
     changeVisibility: vi.fn(),
     leave: vi.fn().mockResolvedValue({ roomId: "room", left: true }),
     proposeSwap: vi.fn(),

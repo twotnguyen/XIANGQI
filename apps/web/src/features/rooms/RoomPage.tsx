@@ -92,6 +92,7 @@ export function RoomPage({
   const [leaveError, setLeaveError] = useState("");
   const [leaveConfirm, setLeaveConfirm] = useState<string | null>(null);
   const [copying, setCopying] = useState(false);
+  const [confirmTransfer, setConfirmTransfer] = useState(false);
   const [copyStatus, setCopyStatus] = useState("");
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
   useEffect(() => {
@@ -265,7 +266,7 @@ export function RoomPage({
     oscillator.start();
     oscillator.stop(context.currentTime + 0.12);
   }
-  async function ready() {
+  async function ready(action?: "start") {
     if (
       !snapshot ||
       snapshot.version < versionFloor.current ||
@@ -292,10 +293,12 @@ export function RoomPage({
     setError("");
     try {
       const acknowledgement = await connection.current!.command(
-        {
-          type: "room.ready",
-          payload: { ready: !snapshot.room.ready[snapshot.role] },
-        },
+        action === "start"
+          ? { type: "room.start", payload: {} }
+          : {
+              type: "room.ready",
+              payload: { ready: !snapshot.room.ready[snapshot.role] },
+            },
         snapshot.version,
       );
       if (!isCurrent()) return;
@@ -304,7 +307,9 @@ export function RoomPage({
         setError(
           acknowledgement.error.code === "VERSION_STALE"
             ? "Phòng đã thay đổi. Kiểm tra trạng thái mới rồi thử lại."
-            : "Chưa thể thay đổi Sẵn sàng. Kiểm tra kết nối, ghế và quyền điều khiển.",
+            : action === "start"
+              ? "Chưa thể bắt đầu ván. Kiểm tra đối thủ đã Sẵn sàng và đang kết nối."
+              : "Chưa thể thay đổi Sẵn sàng. Kiểm tra kết nối, ghế và quyền điều khiển.",
         );
     } catch {
       if (isCurrent())
@@ -545,6 +550,7 @@ export function RoomPage({
   async function httpAction(
     action:
       | "switch"
+      | "transfer-host"
       | "leave"
       | "swap-propose"
       | "swap-withdraw"
@@ -572,8 +578,10 @@ export function RoomPage({
       if (action === "leave") {
         await client.leave(roomId, view.version, control);
         if (epoch.current === requestEpoch) onLeft();
-      } else if (action === "switch") {
-        const next = await client.switchSeat(roomId, view.version, control);
+      } else if (action === "switch" || action === "transfer-host") {
+        const seatCommand =
+          action === "switch" ? client.switchSeat : client.transferHost;
+        const next = await seatCommand(roomId, view.version, control);
         if (
           epoch.current === requestEpoch &&
           next.version >= versionFloor.current
@@ -799,6 +807,8 @@ export function RoomPage({
   const activeLastMove = optimistic
     ? { ...optimistic.lastMove, eventVersion: 0 }
     : (snapshot?.match?.lastMove ?? null);
+  const isHost = room.hostId === userId;
+  const opponentSide = view.role === "red" ? "black" : "red";
   const readyControl = room.status === "WAITING" && player && (
     <Button
       className="xq-room-ready"
@@ -807,12 +817,23 @@ export function RoomPage({
         !writable
           ? "Cần kết nối và quyền điều khiển ghế."
           : !room.seats.red || !room.seats.black
-            ? "Chờ đủ hai người chơi để Sẵn sàng."
-            : undefined
+            ? isHost
+              ? "Chờ người chơi thứ hai"
+              : "Chờ đủ hai người chơi để Sẵn sàng."
+            : isHost &&
+                !(room.ready[opponentSide] && room.connected[opponentSide])
+              ? "Chờ đối thủ sẵn sàng"
+              : room.countdown
+                ? "Đang đếm ngược bắt đầu ván."
+                : undefined
       }
-      onClick={() => void ready()}
+      onClick={() => void ready(isHost ? "start" : undefined)}
     >
-      {room.ready[view.role as "red" | "black"] ? "Huỷ sẵn sàng" : "Sẵn sàng"}
+      {isHost
+        ? "Bắt đầu"
+        : room.ready[view.role as "red" | "black"]
+          ? "Huỷ sẵn sàng"
+          : "Sẵn sàng"}
     </Button>
   );
   const resultVisible = Boolean(
@@ -1067,6 +1088,7 @@ export function RoomPage({
             swapReopenSeconds={swapReopenSeconds}
             onSwapReopen={() => setSwapCollapsedId(null)}
             readyControl={readyControl}
+            onTransferHost={() => setConfirmTransfer(true)}
             onAction={(action) => void httpAction(action)}
             onMoveToSpectator={(targetId) =>
               void viewerAction("move-to-spectator", { targetId })
@@ -1276,6 +1298,22 @@ export function RoomPage({
           </div>
         </aside>
       </div>
+      <Dialog
+        open={confirmTransfer}
+        onClose={() => setConfirmTransfer(false)}
+        title="Nhường Host?"
+        cancelLabel="Hủy"
+        confirmLabel="Xác nhận nhường Host"
+        onConfirm={() => {
+          setConfirmTransfer(false);
+          void httpAction("transfer-host");
+        }}
+      >
+        <p>
+          Quyền Host (Bắt đầu, Cài đặt phòng) chuyển ngay cho đối thủ, không cần
+          họ đồng ý. Ghế và phe giữ nguyên.
+        </p>
+      </Dialog>
       <RoomSettings
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}

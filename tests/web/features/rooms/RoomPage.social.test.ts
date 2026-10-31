@@ -253,7 +253,10 @@ it.each([
 );
 
 it("allows manual reconnection after a failed admission without granting HTTP control", async () => {
-  const f = setup();
+  const f = setup({
+    ...snapshot,
+    room: { ...snapshot.room, ready: { red: false, black: true } },
+  });
   await f.ready();
   f.disconnect();
   f.error("Kết nối chưa sẵn sàng.");
@@ -261,11 +264,11 @@ it("allows manual reconnection after a failed admission without granting HTTP co
   await userEvent
     .setup()
     .click(screen.getByRole("button", { name: "Thử lại" }));
-  expect(screen.queryByRole("button", { name: "Sẵn sàng" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Bắt đầu" })).toBeNull();
   await f.ready();
   expect(
     screen
-      .getByRole("button", { name: "Sẵn sàng" })
+      .getByRole("button", { name: "Bắt đầu" })
       .getAttribute("aria-disabled"),
   ).not.toBe("true");
 });
