@@ -43,6 +43,9 @@ it("sends a canonical move once and updates the board optimistically until serve
   expect(
     screen.queryByRole("img", { name: "Tốt đỏ, cột 1 hàng 7" }),
   ).toBeNull();
+  // AC-YC4-RV-02: quân hiện ngay, khóa gửi thêm bằng aria-busy, không có chữ chờ.
+  expect(document.querySelector('svg[aria-busy="true"]')).not.toBeNull();
+  expect(screen.queryByText(/Đang gửi nước/)).toBeNull();
   const next = {
     ...state,
     version: 4,

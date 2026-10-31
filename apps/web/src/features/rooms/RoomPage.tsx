@@ -365,6 +365,7 @@ export function RoomPage({
         matchVersion: current.match.version,
       });
       void gameAudio.current?.unlock();
+      gameAudio.current?.playLocal(current, nextBoard, { from, to });
     }
     try {
       const acknowledgement = await connection.current!.command(
@@ -1126,7 +1127,7 @@ export function RoomPage({
                     ? optimistic.position.turn !== view.role
                     : snapshot?.match?.turn !== view.role)
                 }
-                pending={busy && !optimistic}
+                pending={busy}
                 lastMove={activeLastMove}
                 onMove={(from, to) => void move(from, to)}
               />

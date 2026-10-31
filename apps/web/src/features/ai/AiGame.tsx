@@ -1,7 +1,9 @@
 import {
   parsePosition,
+  playMove,
   type MatchEnding,
   type Move,
+  type Position,
   type Side,
 } from "@xiangqi/xiangqi-core";
 import { XiangqiBoard } from "../../shared/board/XiangqiBoard.js";
@@ -60,7 +62,9 @@ function AiGameView(props: AiGameProps) {
   const [working, setWorking] = useState(false),
     [error, setError] = useState(""),
     [confirm, setConfirm] = useState(false),
-    [resultDismissed, setResultDismissed] = useState(false);
+    [resultDismissed, setResultDismissed] = useState(false),
+    // Nước người vừa đi hiện ngay ở đích trong lúc chờ máy chủ; máy chủ từ chối thì hoàn về (YC4 mục 16.1).
+    [optimistic, setOptimistic] = useState<Position | null>(null);
   const alive = useRef(true),
     inFlight = useRef(false);
   useEffect(() => {
@@ -135,6 +139,7 @@ function AiGameView(props: AiGameProps) {
       if (alive.current) {
         inFlight.current = false;
         setWorking(false);
+        setOptimistic(null);
       }
     }
   }
@@ -154,7 +159,7 @@ function AiGameView(props: AiGameProps) {
       <div className="xq-ai-layout">
         <div className="xq-ai-board">
           <XiangqiBoard
-            position={parsePosition(snapshot.position)}
+            position={optimistic ?? parsePosition(snapshot.position)}
             orientation={snapshot.actualSide}
             playerSide={snapshot.actualSide}
             disabled={!available || !active || snapshot.engineState !== "IDLE"}
@@ -162,7 +167,16 @@ function AiGameView(props: AiGameProps) {
             lastMove={props.lastMove}
             onMove={(from, to) => {
               if (active && snapshot.engineState === "IDLE")
-                void request(() => props.onMove({ from, to }));
+                void request(() => {
+                  try {
+                    setOptimistic(
+                      playMove(parsePosition(snapshot.position), { from, to }),
+                    );
+                  } catch {
+                    /* Nước không hợp lệ: để máy chủ từ chối, không dựng thế giả. */
+                  }
+                  return props.onMove({ from, to });
+                });
             }}
           />
         </div>

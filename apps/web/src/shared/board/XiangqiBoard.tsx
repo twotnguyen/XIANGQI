@@ -283,11 +283,12 @@ export function XiangqiBoard({
       setSelected(null);
       return;
     }
-    if (selected !== null) {
-      setSelected(null);
+    // Bấm quân mình khác thì chuyển chọn ngay (YC4 mục 16); bấm lại quân đang chọn hoặc ô sai thì bỏ chọn.
+    if (position.board[square]?.side === playerSide && square !== selected) {
+      setSelected(square);
       return;
     }
-    if (position.board[square]?.side === playerSide) setSelected(square);
+    if (selected !== null) setSelected(null);
   }
   function keyboard(event: KeyboardEvent<SVGRectElement>, square: number) {
     if (event.key === "Escape") {
@@ -570,7 +571,6 @@ export function XiangqiBoard({
       >
         <span aria-hidden="true">▸</span> Lượt:{" "}
         {position.turn === "red" ? "Đỏ" : "Đen"}
-        {pending && <span> · Đang gửi nước…</span>}
         {checks.length > 0 && (
           <span>
             {" "}

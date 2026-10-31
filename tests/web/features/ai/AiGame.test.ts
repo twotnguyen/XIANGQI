@@ -99,6 +99,34 @@ it("requests a canonical human move without modifying the controlled board", asy
     screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
   ).toBeTruthy();
 });
+it("shows the human move at its destination at once with no sending text and restores it on rejection (AC-YC4-RV-02/03)", async () => {
+  const p = props();
+  let reject!: (reason: Error) => void;
+  p.onMove = vi.fn(
+    () =>
+      new Promise<void>((_resolve, rejectMove) => {
+        reject = rejectMove;
+      }),
+  );
+  render(createElement(AiGame, p));
+  movePawn();
+  // Đang chờ máy chủ bàn bị khóa nên quân chỉ là hình (role=img).
+  expect(
+    screen.getByRole("img", { name: "Tốt đỏ, cột 1 hàng 6" }),
+  ).toBeTruthy();
+  expect(
+    screen.queryByRole("img", { name: "Tốt đỏ, cột 1 hàng 7" }),
+  ).toBeNull();
+  expect(screen.queryByText(/Đang gửi nước/)).toBeNull();
+  await act(async () => {
+    reject(new Error("rejected"));
+  });
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
+    ).toBeTruthy(),
+  );
+});
 it.each(["offline", "readonly", "pending", "thinking", "opponent"])(
   "does not grant board control while %s",
   (condition) => {
