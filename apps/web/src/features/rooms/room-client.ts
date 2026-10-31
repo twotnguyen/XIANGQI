@@ -50,31 +50,34 @@ export class RoomRequestError extends Error {
     public readonly code: string,
     public readonly status: number,
     context?: "visibility",
+    retrySeconds?: number,
   ) {
     super(
-      code === "ROOM_TAB_READ_ONLY"
-        ? "Tab này chỉ có thể xem. Hãy chuyển quyền điều khiển trước khi thao tác."
-        : code === "ROOM_LOCK_REQUIRES_PLAYERS"
-          ? "Chỉ khoá được khi đã đủ 2 người chơi"
-          : code === "ROOM_FORBIDDEN" && context === "visibility"
-            ? "Chỉ chủ phòng được đổi chế độ"
-            : code === "ROOM_FULL"
-              ? "Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"
-              : code === "ROOM_BLOCKED"
-                ? "Bạn đã bị đuổi và chặn tham gia phòng cờ này!"
-                : code === "ROOM_LOCKED"
-                  ? "Phòng đã khóa, không thể nhận người mới."
-                  : code === "ROOM_FORBIDDEN" || code === "ROOM_CODE_CHANGED"
-                    ? "Mã phòng không tồn tại hoặc phòng đã đóng"
-                    : code === "ALREADY_SEATED"
-                      ? "Bạn đang ở trong một ván/phòng khác"
-                      : code === "VERSION_STALE"
-                        ? "Phòng đã thay đổi. Kiểm tra trạng thái mới rồi thử lại."
-                        : status === 401
-                          ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
-                          : status === 503
-                            ? "Chức năng phòng chưa sẵn sàng. Vui lòng thử lại."
-                            : "Thao tác chưa thực hiện được. Kiểm tra thông tin và quyền vào phòng.",
+      code === "ROOM_CODE_RATE_LIMITED"
+        ? `Bạn nhập mã sai quá nhiều lần, vui lòng thử lại sau ${retrySeconds ?? 60} giây`
+        : code === "ROOM_TAB_READ_ONLY"
+          ? "Tab này chỉ có thể xem. Hãy chuyển quyền điều khiển trước khi thao tác."
+          : code === "ROOM_LOCK_REQUIRES_PLAYERS"
+            ? "Chỉ khoá được khi đã đủ 2 người chơi"
+            : code === "ROOM_FORBIDDEN" && context === "visibility"
+              ? "Chỉ chủ phòng được đổi chế độ"
+              : code === "ROOM_FULL"
+                ? "Phòng thi đấu đã đầy người, vui lòng chọn phòng khác!"
+                : code === "ROOM_BLOCKED"
+                  ? "Bạn đã bị đuổi và chặn tham gia phòng cờ này!"
+                  : code === "ROOM_LOCKED"
+                    ? "Phòng đã khóa, không thể nhận người mới."
+                    : code === "ROOM_FORBIDDEN" || code === "ROOM_CODE_CHANGED"
+                      ? "Mã phòng không tồn tại hoặc phòng đã đóng"
+                      : code === "ALREADY_SEATED"
+                        ? "Bạn đang ở trong một ván/phòng khác"
+                        : code === "VERSION_STALE"
+                          ? "Phòng đã thay đổi. Kiểm tra trạng thái mới rồi thử lại."
+                          : status === 401
+                            ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
+                            : status === 503
+                              ? "Chức năng phòng chưa sẵn sàng. Vui lòng thử lại."
+                              : "Thao tác chưa thực hiện được. Kiểm tra thông tin và quyền vào phòng.",
     );
   }
 }
@@ -329,13 +332,24 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
     });
     if (!response.ok) {
       let code = "ROOM_UNAVAILABLE";
+      let retrySeconds: number | undefined;
       try {
-        const value = (await response.json()) as { code?: unknown };
+        const value = (await response.json()) as {
+          code?: unknown;
+          message?: unknown;
+        };
         if (typeof value.code === "string") code = value.code;
+        // Chỉ lấy số giây chờ; không hiển thị nội dung phản hồi của server.
+        if (
+          code === "ROOM_CODE_RATE_LIMITED" &&
+          typeof value.message === "string"
+        )
+          retrySeconds =
+            Number(/(\d+) giây/.exec(value.message)?.[1]) || undefined;
       } catch {
         /* Do not display upstream response bodies. */
       }
-      throw new RoomRequestError(code, response.status, context);
+      throw new RoomRequestError(code, response.status, context, retrySeconds);
     }
     try {
       return parse(await response.json());
