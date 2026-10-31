@@ -37,7 +37,7 @@ Bắt đầu từ code và caller bị ảnh hưởng. Chỉ mở tài liệu kh
 
 ## Git và pull request
 
-- `develop` là nhánh mặc định và tích hợp; `main` là nhánh phát hành, có branch protection (`Fast Checks & Build (full tests on main)`, `Database Integration Gate`). Làm thẳng trên `develop` trừ khi người dùng muốn nhánh riêng (`<type>/XIAN-<số>-<mô-tả>`).
+- `develop` là nhánh mặc định và tích hợp; `main` là nhánh phát hành, có branch protection (`Scope, Lint, Typecheck & Build`, `Database Integration Gate`). Làm thẳng trên `develop` trừ khi người dùng muốn nhánh riêng (`<type>/XIAN-<số>-<mô-tả>`).
 - Commit: `<type>(<scope>): XIAN-<số> <mô tả>` (bỏ mã nếu không có issue). Type: `feat fix docs refactor perf ci chore test`. Không Smart Commit, không `Co-Authored-By`.
 - Mã Jira: dùng `XIAN-…` thật (`T01` không phải `XIAN-1`), không suy bằng phép cộng hay gán gần đúng. Task đã chốt trong phiên và phạm vi không đổi thì dùng lại. Chưa xác định thì tra `docs/planning/jira/TRA-CUU-TASK-COMMIT.md` (grep theo mục đích công việc, không đọc cả bảng), rồi nêu mã và lý do ngắn. Vẫn chưa xác định thì hỏi. Việc độc lập thuộc nhiều Task thì tách commit; test hồi quy đi cùng Task triển khai.
 - "Chỉ commit/push": kiểm nhánh, `git diff --check`, secret staged; stage từng file; commit; push. Không lint/test/build, không review sâu, không MCP.
