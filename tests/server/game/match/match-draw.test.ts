@@ -1,116 +1,16 @@
-import { randomUUID } from "node:crypto";
-import { afterAll, beforeEach, describe, expect, it } from "vitest";
-import type { PoolClient } from "pg";
-import { ClockService } from "@server/game/clock/clock.service.js";
-import { MatchStore } from "@server/game/match/match-store.js";
-import type { MatchScope } from "@server/game/match/match.types.js";
+import { describe, expect, it } from "vitest";
 import {
-  actor,
-  apply,
-  databaseUrl,
+  fixture,
+  run,
+  store,
   pool,
-  reset,
-  transaction,
-} from "./match.test-helper.js";
-const migration = "supabase/migrations/20261011000009_match_draw.sql";
-const roomEnd = {
-  async onMatchEnded(
-    client: PoolClient,
-    input: { roomId: string; matchId: string },
-  ) {
-    await client.query(
-      "UPDATE public.rooms SET status='WAITING',current_match_id=NULL,room_version=room_version+1 WHERE id=$1 AND current_match_id=$2",
-      [input.roomId, input.matchId],
-    );
-    await client.query(
-      "UPDATE public.room_members SET ready=false WHERE room_id=$1",
-      [input.roomId],
-    );
-    await client.query(
-      "UPDATE public.active_players SET match_id=NULL WHERE room_id=$1",
-      [input.roomId],
-    );
-  },
-};
-const store = new MatchStore(new ClockService(), roomEnd);
-async function fixture() {
-  const red = (await actor()).userId,
-    black = (await actor()).userId,
-    viewer = (await actor()).userId;
-  const roomId = randomUUID(),
-    token = randomUUID();
-  const result = await transaction(
-    [red, black, viewer],
-    [roomId],
-    async (client) => {
-      await client.query(
-        "INSERT INTO public.rooms(id,owner_id,name,time_control,viewer_limit,invite_code) VALUES($1,$2,'Synthetic Draw',600,5,'12345678')",
-        [roomId, red],
-      );
-      await client.query(
-        "INSERT INTO public.room_members(room_id,user_id,role,side,ready) VALUES($1,$2,'PLAYER','RED',true),($1,$3,'PLAYER','BLACK',true),($1,$4,'SPECTATOR',NULL,false)",
-        [roomId, red, black, viewer],
-      );
-      await client.query(
-        "INSERT INTO public.active_players(user_id,room_id) VALUES($1,$3),($2,$3)",
-        [red, black, roomId],
-      );
-      const at = new Date();
-      await client.query(
-        "INSERT INTO xiangqi_room.countdowns(room_id,token,due_at,red_id,black_id) VALUES($1,$2,$3,$4,$5)",
-        [roomId, token, at, red, black],
-      );
-      const result = await store.start(client, {
-        roomId,
-        startToken: token,
-        redId: red,
-        blackId: black,
-        timeControlSeconds: 600,
-        startedAt: at,
-      });
-      await client.query(
-        "UPDATE public.rooms SET status='PLAYING',current_match_id=$2 WHERE id=$1",
-        [roomId, result.matchId],
-      );
-      await client.query(
-        "UPDATE public.active_players SET match_id=$2 WHERE room_id=$1",
-        [roomId, result.matchId],
-      );
-      return result;
-    },
-  );
-  return { red, black, viewer, roomId, ...result };
-}
-async function run<T>(
-  f: Awaited<ReturnType<typeof fixture>>,
-  userId: string,
-  action: (scope: MatchScope) => Promise<T>,
-  canControl = true,
-) {
-  const ids = [f.red, f.black, userId];
-  return transaction(ids, [f.roomId], (client) =>
-    action({
-      client,
-      actor: { userId, kind: "guest" },
-      roomId: f.roomId,
-      canControl,
-      lockedActorIds: new Set(ids),
-      lockedRoomIds: new Set([f.roomId]),
-    }),
-  );
-}
-afterAll(() => pool.end());
+  databaseUrl,
+  useProposalHooks,
+} from "./match-proposals.test-helper.js";
+useProposalHooks();
 describe.skipIf(!databaseUrl)(
   "durable draw agreements on synthetic PostgreSQL",
   () => {
-    beforeEach(async () => {
-      await reset();
-      await apply("supabase/migrations/20261011000007_match_outcomes.sql");
-      await apply(migration);
-      await apply(
-        "supabase/migrations/20261102000003_unlimited_inactivity.sql",
-      );
-    });
     it("persists an offer without pausing the clock and only the receiver can accept it", async () => {
       const f = await fixture();
       const before = (
@@ -569,7 +469,7 @@ describe.skipIf(!databaseUrl)(
       ).toMatchObject({ offers: [] });
     });
     it("an expired earlier disconnect beats draw acceptance while proposals do not stop clock consumption", async () => {
-      const f = await fixture();
+      const f = await fixture(600, 2000);
       const offer = await run(f, f.red, (s) =>
         store.offerDraw(s, { matchId: f.matchId, matchVersion: 0 }),
       );
@@ -634,48 +534,6 @@ describe.skipIf(!databaseUrl)(
         ).rows[0].n,
       ).toBe(0);
     });
-    it("denies browser access and app_server TRUNCATE, permits empty rollback and refuses rollback after feature writes", async () => {
-      for (const role of ["anon", "authenticated", "app_server"]) {
-        const client = await pool.connect();
-        try {
-          await client.query("BEGIN");
-          await client.query(`SET LOCAL ROLE ${role}`);
-          await expect(
-            client.query(
-              role === "app_server"
-                ? "TRUNCATE xiangqi_room.match_draw_offers"
-                : "SELECT * FROM xiangqi_room.match_draw_offers",
-            ),
-          ).rejects.toThrow(/permission denied/);
-        } finally {
-          await client.query("ROLLBACK");
-          client.release();
-        }
-      }
-      await apply("supabase/rollback/20261011000009_match_draw.sql");
-      expect(
-        (
-          await pool.query(
-            "SELECT to_regclass('xiangqi_room.match_draw_offers') object",
-          )
-        ).rows[0].object,
-      ).toBeNull();
-      await apply(migration);
-      const f = await fixture();
-      await run(f, f.red, (s) =>
-        store.offerDraw(s, { matchId: f.matchId, matchVersion: 0 }),
-      );
-      await expect(
-        apply("supabase/rollback/20261011000009_match_draw.sql"),
-      ).rejects.toThrow("Draw feature writes exist");
-      expect(
-        (
-          await pool.query(
-            "SELECT count(*)::int n FROM xiangqi_room.match_draw_offers",
-          )
-        ).rows[0].n,
-      ).toBe(1);
-    });
 
     it("closes the receiver's own pending offer when they accept the opponent's offer", async () => {
       const f = await fixture();
@@ -718,66 +576,6 @@ describe.skipIf(!databaseUrl)(
           )
         ).rows[0].n,
       ).toBe(1);
-    });
-    it("rejects malformed and unrelated offer IDs without changing state", async () => {
-      const f = await fixture();
-      const a = await run(f, f.red, (s) =>
-        store.offerDraw(s, { matchId: f.matchId, matchVersion: 0 }),
-      );
-      await expect(
-        run(f, f.black, (s) =>
-          store.respondDraw(s, {
-            matchId: f.matchId,
-            matchVersion: a.match.version,
-            offerId: "not-an-id",
-            accept: true,
-          }),
-        ),
-      ).rejects.toMatchObject({ code: "MATCH_INVALID_INPUT", status: 400 });
-      const wrong = await run(f, f.black, (s) =>
-        store.respondDraw(s, {
-          matchId: f.matchId,
-          matchVersion: a.match.version,
-          offerId: randomUUID(),
-          accept: true,
-        }),
-      );
-      expect(wrong.error?.code).toBe("MATCH_DRAW_EXPIRED");
-      expect(wrong.match.version).toBe(a.match.version);
-      expect(wrong.draw.offers).toHaveLength(1);
-    });
-    it("rollback refuses ACL or schema drift instead of removing altered objects", async () => {
-      await pool.query(
-        "GRANT DELETE ON xiangqi_room.match_draw_offers TO app_server",
-      );
-      await expect(
-        apply("supabase/rollback/20261011000009_match_draw.sql"),
-      ).rejects.toThrow("Draw metadata changed");
-      await pool.query(
-        "REVOKE DELETE ON xiangqi_room.match_draw_offers FROM app_server",
-      );
-      await pool.query(
-        "ALTER TABLE xiangqi_room.match_draw_offers ALTER COLUMN resolved_at SET NOT NULL",
-      );
-      await expect(
-        apply("supabase/rollback/20261011000009_match_draw.sql"),
-      ).rejects.toThrow("Draw metadata changed");
-      await pool.query(
-        "ALTER TABLE xiangqi_room.match_draw_offers ALTER COLUMN resolved_at DROP NOT NULL",
-      );
-      await pool.query(
-        "ALTER TABLE xiangqi_room.match_draw_offers ADD COLUMN unexpected text",
-      );
-      await expect(
-        apply("supabase/rollback/20261011000009_match_draw.sql"),
-      ).rejects.toThrow("Draw metadata changed");
-      expect(
-        (
-          await pool.query(
-            "SELECT to_regclass('xiangqi_room.match_draw_offers') object",
-          )
-        ).rows[0].object,
-      ).toBe("xiangqi_room.match_draw_offers");
     });
   },
 );

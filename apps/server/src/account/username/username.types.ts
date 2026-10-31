@@ -5,6 +5,7 @@ export class UsernameError extends Error {
     readonly code: string,
     message: string,
     readonly status = 400,
+    readonly retryAfterDays?: number,
   ) {
     super(message);
   }
@@ -14,6 +15,7 @@ export class UsernameError extends Error {
 export interface UsernameAccount {
   userId: string;
   username: string | null;
+  usernameChangedAt: Date | null;
   contactEmail: string | null;
   active: boolean;
 }

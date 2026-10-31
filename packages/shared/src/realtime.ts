@@ -58,6 +58,7 @@ export interface RoomStateSnapshot {
     version: number;
     position: string;
     lastMove: { from: number; to: number; eventVersion: number } | null;
+    canAbort: boolean;
     turn: "red" | "black";
     status: "ACTIVE" | "FINISHED" | "INTERRUPTED";
     winner: "red" | "black" | null;
@@ -80,6 +81,12 @@ export interface RoomStateSnapshot {
     offers: { id: string; sender: "red" | "black"; expiresAt: string }[];
     remainingMoves: { red: number; black: number };
   } | null;
+  undo?: {
+    offers: { id: string; sender: "red" | "black"; expiresAt: string }[];
+    remainingMoves: { red: number; black: number };
+    used: { red: number; black: number };
+    moved: { red: boolean; black: boolean };
+  } | null;
 }
 
 /**
@@ -96,15 +103,18 @@ export interface RoomSnapshot extends RoomStateSnapshot {
 
 /**
  * Các hành động mà người chơi có thể thực hiện trong phòng cờ và ván đấu:
- * - `room.ready`: Báo sẵn sàng bắt đầu ván.
+ * - `room.ready`: Người chơi thứ hai báo sẵn sàng (Host không có Sẵn sàng).
+ * - `room.start`: Host bắt đầu đếm 3-2-1 khi đối thủ đã sẵn sàng.
  * - `match.move`: Đi một nước cờ (từ ô `from` đến ô `to`).
  * - `match.resign`: Đầu hàng.
+ * - `match.abort`: Hủy ván khi chưa có nước đi (kết quả trung tính ABORTED).
  * - `match.still-here`: Xác nhận "Tôi còn đây" trong ván không giới hạn.
  * - `match.draw.*`: Xin hòa, rút đề nghị hòa, chấp nhận hoặc từ chối hòa.
  * - `media.sharing`: Thay đổi phạm vi chia sẻ camera/micro.
  */
 export type RoomAction =
   | { type: "room.ready"; payload: { ready: boolean } }
+  | { type: "room.start"; payload: Record<string, never> }
   | {
       type: "match.move";
       payload: {
@@ -116,6 +126,10 @@ export type RoomAction =
     }
   | {
       type: "match.resign";
+      payload: { matchId: string; matchVersion: number };
+    }
+  | {
+      type: "match.abort";
       payload: { matchId: string; matchVersion: number };
     }
   | {
@@ -132,6 +146,23 @@ export type RoomAction =
     }
   | {
       type: "match.draw.respond";
+      payload: {
+        matchId: string;
+        matchVersion: number;
+        offerId: string;
+        accept: boolean;
+      };
+    }
+  | {
+      type: "match.undo.offer";
+      payload: { matchId: string; matchVersion: number };
+    }
+  | {
+      type: "match.undo.withdraw";
+      payload: { matchId: string; matchVersion: number; offerId: string };
+    }
+  | {
+      type: "match.undo.respond";
       payload: {
         matchId: string;
         matchVersion: number;
@@ -167,6 +198,7 @@ export type RealtimeErrorCode =
   | "MATCH_NOT_YOUR_TURN"
   | "MATCH_ILLEGAL_MOVE"
   | "MATCH_TIME_EXPIRED"
+  | "MATCH_ABORT_NOT_ALLOWED"
   | "MATCH_ID_MISMATCH"
   | "MATCH_PLAYER_REQUIRED"
   | "MATCH_READ_ONLY"
@@ -177,11 +209,19 @@ export type RealtimeErrorCode =
   | "MATCH_DRAW_EXPIRED"
   | "MATCH_DRAW_SENDER_REQUIRED"
   | "MATCH_DRAW_RECEIVER_REQUIRED"
+  | "MATCH_UNDO_PENDING"
+  | "MATCH_UNDO_LIMIT"
+  | "MATCH_UNDO_COOLDOWN"
+  | "MATCH_UNDO_NO_MOVE"
+  | "MATCH_UNDO_EXPIRED"
+  | "MATCH_UNDO_FORBIDDEN"
   | "MATCH_NOT_UNLIMITED"
   | "MATCH_INACTIVITY_NOT_DUE"
   | "MATCH_INACTIVITY_LIMIT"
   | "MATCH_INACTIVITY_EXPIRED"
   | "READY_DENIED"
+  | "START_DENIED"
+  | "ROOM_RATE_LIMITED"
   | "PLAYER_DISCONNECTED"
   | "ROOM_INPUT_INVALID";
 export type CommandAcknowledgement =

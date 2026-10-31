@@ -31,6 +31,7 @@ const messages = {
   MATCH_NOT_YOUR_TURN: "Chưa đến lượt bạn.",
   MATCH_ILLEGAL_MOVE: "Nước đi không hợp lệ.",
   MATCH_TIME_EXPIRED: "Thời gian suy nghĩ đã hết.",
+  MATCH_ABORT_NOT_ALLOWED: "Chỉ hủy được ván khi chưa có nước đi.",
   MATCH_ID_MISMATCH: "Ván trong phòng đã thay đổi.",
   MATCH_PLAYER_REQUIRED: "Chỉ người chơi được điều khiển ván.",
   MATCH_READ_ONLY: "Tab này chỉ theo dõi ván.",
@@ -41,11 +42,19 @@ const messages = {
   MATCH_DRAW_EXPIRED: "Đề nghị không còn hiệu lực.",
   MATCH_DRAW_SENDER_REQUIRED: "Chỉ người gửi được rút đề nghị.",
   MATCH_DRAW_RECEIVER_REQUIRED: "Chỉ người nhận được phản hồi đề nghị.",
+  MATCH_UNDO_PENDING: "Bạn đã có đề nghị đang chờ.",
+  MATCH_UNDO_LIMIT: "Bạn đã sử dụng hết 3 lượt xin đi lại trong ván này.",
+  MATCH_UNDO_COOLDOWN: "Chưa đủ số nước để xin đi lại.",
+  MATCH_UNDO_NO_MOVE: "Bạn chưa đi nước nào.",
+  MATCH_UNDO_EXPIRED: "Đề nghị không còn hiệu lực.",
+  MATCH_UNDO_FORBIDDEN: "Không có quyền phản hồi đề nghị này.",
   MATCH_NOT_UNLIMITED: "Ván này có đồng hồ, không cần xác nhận.",
   MATCH_INACTIVITY_NOT_DUE: "Chưa đến lúc hỏi xác nhận.",
   MATCH_INACTIVITY_LIMIT: "Đã xác nhận tối đa, cần đi nước để tiếp tục.",
   MATCH_INACTIVITY_EXPIRED: "Đã hết thời gian xác nhận.",
   READY_DENIED: "Không thể Sẵn sàng lúc này",
+  START_DENIED: "Chưa thể bắt đầu ván lúc này",
+  ROOM_RATE_LIMITED: "Thao tác quá nhanh, vui lòng thử lại sau",
   PLAYER_DISCONNECTED: "Chưa có kết nối điều khiển",
   ROOM_INPUT_INVALID: "Thông tin phòng không hợp lệ",
   ROOM_FORBIDDEN: "Bạn không có quyền truy cập phòng",
@@ -189,8 +198,13 @@ export class GameRooms implements RoomCollaborator {
           ? await this.drawPort.drawOf(matchScope, loaded, match)
           : await this.drawPort.drawSnapshot(matchScope, { matchId: match.id })
         : null;
+    const undo =
+      this.drawPort && match?.status === "ACTIVE" && room.role !== "spectator"
+        ? await this.matches.undoSnapshot(matchScope, { matchId: match.id })
+        : null;
     return {
       serverNow: room.serverNow,
+      undo,
       draw: draw
         ? {
             offers: draw.offers.map((offer) => ({
@@ -239,6 +253,12 @@ export class GameRooms implements RoomCollaborator {
             id: match.id,
             version: match.version,
             position: match.position,
+            canAbort:
+              match.status === "ACTIVE" &&
+              room.role !== "spectator" &&
+              match.ply === 0 &&
+              (undo?.used.red ?? 0) === 0 &&
+              (undo?.used.black ?? 0) === 0,
             lastMove: match.lastMove
               ? {
                   from: match.lastMove.from,
@@ -292,12 +312,17 @@ export class GameRooms implements RoomCollaborator {
           "REALTIME_UNAVAILABLE",
           "Chia sẻ camera và mic chưa sẵn sàng",
         );
-      if (command.action.type === "room.ready") {
-        await this.rooms.ready(
-          scope,
-          command.roomId,
-          command.action.payload.ready,
-        );
+      if (
+        command.action.type === "room.ready" ||
+        command.action.type === "room.start"
+      ) {
+        if (command.action.type === "room.ready")
+          await this.rooms.ready(
+            scope,
+            command.roomId,
+            command.action.payload.ready,
+          );
+        else await this.rooms.start(scope, command.roomId);
         return {
           snapshot: await this.project(
             scope,
@@ -330,6 +355,9 @@ export class GameRooms implements RoomCollaborator {
             command.action.payload,
           );
           break;
+        case "match.abort":
+          result = await this.matches.abort(matchScope, command.action.payload);
+          break;
         case "match.still-here":
           result = await this.matches.stillHere(
             matchScope,
@@ -359,6 +387,24 @@ export class GameRooms implements RoomCollaborator {
               matchScope,
               command.action.payload,
             );
+          break;
+        case "match.undo.offer":
+          result = await this.matches.offerUndo(
+            matchScope,
+            command.action.payload,
+          );
+          break;
+        case "match.undo.withdraw":
+          result = await this.matches.withdrawUndo(
+            matchScope,
+            command.action.payload,
+          );
+          break;
+        case "match.undo.respond":
+          result = await this.matches.respondUndo(
+            matchScope,
+            command.action.payload,
+          );
           break;
       }
       if (!result.applied && !result.error)

@@ -73,3 +73,25 @@ it("does not accept AI abandonment as a custom online match result", async () =>
   delete value.aiLevel;
   await expect(client(value).list()).rejects.toThrow();
 });
+
+it("parses an aborted match and shows a neutral row without a replay button (AC-YC5-RV-06)", async () => {
+  const value = item();
+  value.type = "CASUAL";
+  value.typeLabel = "Đánh Thường";
+  delete value.aiLevel;
+  value.opponent = { displayName: "Đối thủ", isGuest: false };
+  value.result = {
+    kind: "INTERRUPTED",
+    reason: "ABORTED",
+    label: "Ván bị hủy",
+    countsForWdl: false,
+  };
+  expect((await client(value).list()).items[0]?.result).toEqual(value.result);
+  render(
+    createElement(HistoryPage, { client: client(value), onReplay: vi.fn() }),
+  );
+  expect(await screen.findByText("Ván bị hủy")).toBeTruthy();
+  expect(screen.getByText("Hủy trước nước đầu tiên")).toBeTruthy();
+  expect(screen.getByText("Không tính thắng/thua/hòa")).toBeTruthy();
+  expect(screen.queryByRole("button", { name: /Xem lại/ })).toBeNull();
+});

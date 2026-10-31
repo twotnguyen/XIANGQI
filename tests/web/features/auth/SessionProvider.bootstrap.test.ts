@@ -45,7 +45,11 @@ it("bootstraps pending Google only after member401 and server readiness, with se
     "/api/auth/providers",
     "/api/auth/google/onboarding",
   ]);
-  expect(storage).not.toHaveBeenCalled();
+  expect(
+    storage.mock.calls.every(
+      ([key, value]) => key === "xiangqi.tab" && /^[a-f0-9-]{36}$/.test(value),
+    ),
+  ).toBe(true);
   await expect(current.authorizedFetch("/protected")).rejects.toThrow();
 });
 it("does not probe Google onboarding when server readiness is false", async () => {
@@ -117,11 +121,34 @@ it("returns socket handshake proof only from active memory and never public stat
     session.access_token,
   );
   expect(JSON.stringify(state())).not.toContain(session.access_token);
-  expect(storage).not.toHaveBeenCalled();
+  expect(
+    storage.mock.calls.every(
+      ([key, value]) => key === "xiangqi.tab" && /^[a-f0-9-]{36}$/.test(value),
+    ),
+  ).toBe(true);
   await act(async () => {
     current.accept({ kind: "pending", expiresAt: "2030-01-01T00:00:00Z" });
   });
   await expect(current.getRealtimeProof()).rejects.toThrow();
+});
+
+it("accepts a renamed username on refresh while preserving the capability, deadline and account", async () => {
+  const request = vi
+    .fn()
+    .mockResolvedValueOnce(reply(session))
+    .mockResolvedValueOnce(reply({ ...session, username: "TenMoi" }));
+  vi.stubGlobal("fetch", request);
+  mount();
+  await vi.waitFor(() => expect(state().status).toBe("active-member"));
+  await act(async () => current.refresh());
+  expect(state()).toMatchObject({
+    username: "TenMoi",
+    userId: session.userId,
+    expiresAt: session.expiresAt,
+  });
+  expect(memberProof(await current.getRealtimeProof()).appSession).toBe(
+    session.appSession,
+  );
 });
 it("refreshes an expired socket bearer once and rejects unavailable or fixed-expired proof", async () => {
   vi.useFakeTimers();

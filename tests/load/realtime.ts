@@ -239,16 +239,21 @@ try {
   }
   for (let room = 0; room < 10; room++) {
     const group = peers.filter((p) => p.roomId === rooms[room]!.roomId);
-    for (const player of group.filter(
-      (p) => p.latest.role === "red" || p.latest.role === "black",
-    )) {
+    const host = group.find((p) => p.proof.userId === p.latest.room.hostId)!;
+    const opponent = group.find(
+      (p) => p.latest.role !== "spectator" && p !== host,
+    )!;
+    for (const player of [opponent, host]) {
       let ack: CommandAcknowledgement | undefined;
       for (let attempt = 0; attempt < 5; attempt++) {
         ack = await emit(player, {
           commandId: randomUUID(),
           roomId: player.roomId,
           expectedVersion: player.latest.version,
-          action: { type: "room.ready", payload: { ready: true } },
+          action:
+            player === host
+              ? { type: "room.start", payload: {} }
+              : { type: "room.ready", payload: { ready: true } },
         });
         if (ack.snapshot && ack.snapshot.version >= player.latest.version)
           player.latest = ack.snapshot;
@@ -350,7 +355,6 @@ try {
         };
       });
       const sendAt = performance.now();
-      const moverSnapshot = waitSnapshot(mover, targetVersion);
       const ackWait = emit(mover, {
         commandId: randomUUID(),
         roomId: mover.roomId,
@@ -364,21 +368,21 @@ try {
         )
           throw new Error(`Move command failed in ${mover.roomId}`);
         ackSamples.push(ackMs);
+        mover.latest = ack.snapshot;
+        return ack.snapshot;
       });
-      return Promise.all([
-        Promise.all(deliveryWaits),
-        ackWait,
-        moverSnapshot,
-      ]).then(([delivered, , authoritative]) => {
-        if (authoritative.match?.position !== serializePosition(next))
-          throw new Error(`Mover snapshot mismatch in ${mover.roomId}`);
-        for (const sample of delivered) samples.push(sample);
-        return {
-          group,
-          expected: serializePosition(next),
-          version: targetVersion,
-        };
-      });
+      return Promise.all([Promise.all(deliveryWaits), ackWait]).then(
+        ([delivered, authoritative]) => {
+          if (authoritative.match?.position !== serializePosition(next))
+            throw new Error(`Mover snapshot mismatch in ${mover.roomId}`);
+          for (const sample of delivered) samples.push(sample);
+          return {
+            group,
+            expected: serializePosition(next),
+            version: targetVersion,
+          };
+        },
+      );
     });
     const updated = await Promise.all(deliveries);
     for (const state of updated) {
@@ -419,7 +423,8 @@ try {
     ),
     topology: {
       app: "existing NestJS + Socket.IO",
-      database: "live Supabase Postgres",
+      database:
+        "not inspected by this probe; record the server database topology separately",
       transport: "WebSocket",
       serverHost: new URL(baseUrl).host,
       client: {

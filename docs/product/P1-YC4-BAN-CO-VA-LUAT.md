@@ -2,7 +2,7 @@
 
 > **BA 0.27 — PO chốt 31/10/2026:** toàn bộ nội dung từng thuộc P2 (Ranked/Elo/bảng xếp hạng, ghép ngẫu nhiên Casual, Xin đi lại/Tái đấu Casual, phần Ranked của lịch sử/thống kê) nay thuộc **P1**. Mọi câu "vẫn P2 / giữ P2 / làm sau / Sắp ra mắt" còn lại trong tài liệu này là lịch sử và bị thay bởi [BA mục 0.27](BA-SCOPE-DECISIONS.md#027-đưa-toàn-bộ-phần-còn-lại-của-p2-lên-p1--po-chốt-31102026); QR vẫn bị loại. Chưa tái ước lượng giờ/Jira; chưa phải bằng chứng triển khai.
 
-**Rà soát 31/10/2026:** PO chốt bốn điểm tại mục 16 (chuyển chọn quân, hiện nước ngay, không xác nhận nước đi, ký hiệu xuất); **chưa triển khai**.
+**Rà soát 31/10/2026:** PO chốt bốn điểm tại mục 16 (chuyển chọn quân, hiện nước ngay, không xác nhận nước đi, ký hiệu xuất); **đã có mã và test local 31/10/2026, chưa nghiệm thu** (xem 16.3).
 
 **Ngày lập/chốt bổ sung:** 31/10/2026. **Phạm vi đã duyệt:** EP-04, US-04.1–04.3 và sáu phần mở rộng tại BA0.22/mục12–14. **Trạng thái:** đã chốt đặc tả và đối chiếu mã nguồn; chưa nghiệm thu lại YC4 hoặc phần bổ sung trong lượt này. Không tự cập nhật Jira/lịch hoặc coi có code là đã hoàn thành.
 
@@ -338,7 +338,7 @@ Hướng nhìn người xem giữ mặc định Đỏ ở dưới; chưa bổ su
 
 ## 16. Quyết định PO khi rà soát YC4 — 31/10/2026
 
-**Chưa triển khai**; code và test hiện còn theo trạng thái cũ (ví dụ chọn quân khác đang bỏ chọn). Bổ sung cho mục 7, 8, 9, 10.
+**Đã có mã và test local 31/10/2026, chưa nghiệm thu.** Bổ sung cho mục 7, 8, 9, 10.
 
 | # | Quyết định | AC bổ sung |
 |---|---|---|
@@ -371,7 +371,12 @@ Câu hỏi của PO: *khi đưa quân tới đích thì web hiện ngay và đ�
 
 **PO xác nhận 31/10:** (a) không có luật tự hòa do thiếu lực — ván không có nước thắng thì kết thúc bằng lặp thế hoặc 120 nửa nước không ăn quân; (b) tắt/bật tiếng giữ theo phiên trình duyệt như mục 8.2; (c) **không có dấu “chưa xác nhận” và không có chữ “Đang gửi nước…”**, nước bị từ chối thì quân nhảy về chỗ cũ kèm thông báo lỗi.
 
-### 16.3 Tác động triển khai (chưa làm)
+### 16.3 Tác động triển khai (đã có mã local, chưa nghiệm thu)
+
+- Đã làm: `XiangqiBoard` chuyển chọn sang quân mình khác (RV-01), bỏ chữ "Đang gửi nước…" và giữ khóa gửi thêm bằng `aria-busy`; phòng online truyền `pending` cả khi nước hiện ngay; ván đấu máy (`AiGame`) hiện ngay nước người đi và hoàn về khi bị từ chối (RV-02/03); `GameAudio.playLocal` phát âm một lần khi quân hiện, bản xác nhận của máy chủ không phát lại, từ chối không phát. Đã có từ trước và được kiểm lại bằng test: bốn góc ở nguồn/đích, CSS focus-visible, PGN ICCS (hàng 0 phía Đỏ) và FEN chuẩn (test độc lập `replay-standard-notation.test.ts`), biên bản tiếng Việt ở Replay. Sửa mục 11: dòng "Nước vừa đi" và "Focus bàn phím" ở trên là nhận định cũ, mã hiện đã dùng bốn góc và có focus-visible.
+- **Đã xem giao diện thật 31/10/2026** (Chrome, server dev nối Supabase, tài khoản thành viên làm Đỏ, đối thủ Khách qua API): chọn Tốt rồi bấm Mã thì chuyển chọn và đích Mã sáng; bấm lại Mã bỏ chọn; đi nước thì 40 ms sau quân đã ở đích, nguồn trống, `aria-busy="true"`, không có chữ "Đang gửi nước…", `aria-busy` tắt khi máy chủ xác nhận (> 560 ms trên Supabase thật); nước đối thủ hiện cùng bốn góc ở nguồn và đích, lượt về Đỏ. **Lỗi ván đấu máy đã tìm ra và sửa:** `startAiGame` gọi `getControl()` ngay sau `connectAi()`, nhưng callback `auth` của socket gọi `revoke()` khi socket mở và hủy luôn mọi tác vụ đang chờ nên mọi ván máy bắt đầu từ Sảnh đều báo "Chưa thể bắt đầu ván với máy" (test cũ giả lập socket nên không thấy). Sửa: tác vụ chờ quyền điều khiển sống qua `revoke()` do tái xác thực, chỉ hủy khi đóng kết nối hoặc hết 5 giây. Xác nhận trên Chrome: vào ván, đi nước thì quân hiện ngay ở đích (`aria-busy`, không chữ chờ), máy đáp sau vài giây (chậm ~6 giây trên Supabase thật), đầu hàng ra "Bạn thua".
+- Chưa làm/chưa kiểm: nghe âm thanh thật, màn cảm ứng, đo độ trễ đối thủ nhận nước (NFR-01 p95 < 100 ms), mất kết nối giữa lúc chờ nước trên trình duyệt thật (RV-04 chỉ có test jsdom), âm thanh cho ván đấu máy.
+- Ghi chú cũ bên dưới là phân tích ban đầu:
 
 - `XiangqiBoard.tsx`: chuyển chọn quân khác; vẽ nước chờ xác nhận và hoàn về; ghi nhận âm thanh một lần theo nước. Container (`RoomPage`/`AiGame`) giữ trạng thái chờ và đối chiếu snapshot, khối vẽ vẫn chỉ nhận props.
 - Cần xác định độ trễ máy chủ thực tế: đo cũ ≈ 1,9 giây; “hiện ngay” chỉ che độ trễ ở máy người đi, đối thủ chỉ nhanh khi đạt NFR-01.

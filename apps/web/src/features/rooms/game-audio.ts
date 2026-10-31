@@ -1,5 +1,10 @@
 import type { RoomSnapshot } from "@xiangqi/shared";
-import { isInCheck, parsePosition } from "@xiangqi/xiangqi-core";
+import {
+  isInCheck,
+  parsePosition,
+  type Move,
+  type Position,
+} from "@xiangqi/xiangqi-core";
 import { isSfxEnabled, setSfxEnabled } from "../../shared/preferences.js";
 
 const stops = new Set<() => void>();
@@ -7,6 +12,8 @@ const stops = new Set<() => void>();
 export interface GameAudio {
   unlock(): Promise<void>;
   accept(previous: RoomSnapshot | null, next: RoomSnapshot): void;
+  /** Phát âm ngay khi nước của chính mình hiện ở đích; bản xác nhận của máy chủ sau đó không phát lại. */
+  playLocal(previous: RoomSnapshot, next: Position, move: Move): void;
   readonly muted: boolean;
   setMuted(value: boolean): void;
   toggle(): boolean;
@@ -26,6 +33,8 @@ export function createGameAudio(): GameAudio {
   const active = new Set<OscillatorNode>();
   const timers = new Set<ReturnType<typeof setTimeout>>();
   const seen = new Map<string, { move: number; result: number }>();
+  // `${matchId}:${eventVersion}` của nước đã phát âm ở máy người đi.
+  const local = new Set<string>();
   function stop() {
     for (const timer of timers) clearTimeout(timer);
     timers.clear();
@@ -70,6 +79,14 @@ export function createGameAudio(): GameAudio {
         // Unsupported or blocked audio must not interrupt gameplay.
       }
     },
+    playLocal(previous: RoomSnapshot, next: Position, move: Move) {
+      const match = previous.match;
+      if (closed || !match) return;
+      local.add(`${match.id}:${match.version + 1}`);
+      if (!isSfxEnabled() || context?.state !== "running") return;
+      const capture = parsePosition(match.position).board[move.to];
+      tone(isInCheck(next, next.turn) ? 880 : capture ? 220 : 440);
+    },
     accept(previous: RoomSnapshot | null, next: RoomSnapshot) {
       if (closed || !next.match) return;
       const match = next.match;
@@ -92,7 +109,11 @@ export function createGameAudio(): GameAudio {
       if (terminal) mark.result = Math.max(mark.result, match.version);
       seen.set(match.id, mark);
       if (baseline || !isSfxEnabled() || context?.state !== "running") return;
-      if (newMove && match.lastMove) {
+      if (
+        newMove &&
+        match.lastMove &&
+        !local.delete(`${match.id}:${moveVersion}`)
+      ) {
         const position = parsePosition(match.position);
         const capture = parsePosition(prior.position).board[match.lastMove.to];
         tone(isInCheck(position, position.turn) ? 880 : capture ? 220 : 440);

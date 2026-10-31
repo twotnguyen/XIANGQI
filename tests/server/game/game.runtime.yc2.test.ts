@@ -161,8 +161,8 @@ async function act(
 }
 
 async function readyBoth(room: Room, previousMatchId?: string) {
-  await act(room, "red", { type: "room.ready", payload: { ready: true } });
   await act(room, "black", { type: "room.ready", payload: { ready: true } });
+  await act(room, "red", { type: "room.start", payload: {} });
   const fresh = (s: RoomSnapshot) =>
     s.match?.status === "ACTIVE" && s.match.id !== previousMatchId;
   const red = await snapshotWhen(room.red.tracker, fresh);
@@ -319,6 +319,57 @@ describe.skipIf(!databaseUrl)("YC2 actual runtime lifecycle", () => {
     }
   }, 30000);
 
+  it("abort before the first move is neutral and returns the room to WAITING; after a move it is refused (AC-YC5-RV-03/04)", async () => {
+    const boot = await bootGuestRuntime();
+    try {
+      const room = await seatedRoom(boot);
+      const matchId = await readyBoth(room);
+      await act(room, "black", {
+        type: "match.abort",
+        payload: {
+          matchId,
+          matchVersion: await matchVersionOf(room, matchId),
+        },
+      });
+      const after = await snapshotWhen(
+        room.red.tracker,
+        (s) => s.room.status === "WAITING" && s.match?.result === "ABORTED",
+      );
+      expect(after.match).toMatchObject({
+        status: "INTERRUPTED",
+        winner: null,
+        result: "ABORTED",
+      });
+      expect(after.room.seats).toEqual({
+        red: room.red.member.id,
+        black: room.black.member.id,
+      });
+      expect(after.room.ready).toEqual({ red: false, black: false });
+
+      const second = await readyBoth(room, matchId);
+      await act(room, "red", {
+        type: "match.move",
+        payload: {
+          matchId: second,
+          matchVersion: await matchVersionOf(room, second),
+          from: 54,
+          to: 45,
+        },
+      });
+      await expect(
+        act(room, "black", {
+          type: "match.abort",
+          payload: {
+            matchId: second,
+            matchVersion: await matchVersionOf(room, second),
+          },
+        }),
+      ).rejects.toThrow("MATCH_ABORT_NOT_ALLOWED");
+    } finally {
+      await boot.close();
+    }
+  }, 40000);
+
   it("a new countdown after reset starts a new matchId with a fully reset clock", async () => {
     const boot = await bootGuestRuntime();
     try {
@@ -437,11 +488,11 @@ describe.skipIf(!databaseUrl)("YC2 actual runtime lifecycle", () => {
     let closed = false;
     try {
       const room = await seatedRoom(boot);
-      await act(room, "red", { type: "room.ready", payload: { ready: true } });
       await act(room, "black", {
         type: "room.ready",
         payload: { ready: true },
       });
+      await act(room, "red", { type: "room.start", payload: {} });
       await waitFor(
         async () =>
           (

@@ -24,6 +24,12 @@ describe("draw capability projection and dispatch", () => {
       drawOf: vi.fn(async () => draw),
     };
     const mutations = {
+      undoSnapshot: vi.fn(async () => ({
+        offers: [],
+        remainingMoves: { red: 0, black: 0 },
+        used: { red: 0, black: 0 },
+        moved: { red: false, black: false },
+      })),
       offerDraw: vi.fn(async () => ({ applied: true, match: f.match, draw })),
       withdrawDraw: vi.fn(async () => ({
         applied: true,

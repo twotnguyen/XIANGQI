@@ -56,3 +56,22 @@ it("refuses a controller mutation before any network request when control is abs
   ).rejects.toMatchObject({ code: "ROOM_TAB_READ_ONLY" });
   expect(authorizedFetch).not.toHaveBeenCalled();
 });
+
+it("shows the wait time for the wrong-code limit without echoing other server text (AC-YC3-RV-01)", async () => {
+  const authorizedFetch = vi.fn(
+    async () =>
+      new Response(
+        JSON.stringify({
+          code: "ROOM_CODE_RATE_LIMITED",
+          message:
+            "Bạn nhập mã sai quá nhiều lần, vui lòng thử lại sau 42 giây",
+        }),
+        { status: 429 },
+      ),
+  );
+  const client = createRoomClient(authorizedFetch);
+  await expect(client.join("12345678")).rejects.toMatchObject({
+    code: "ROOM_CODE_RATE_LIMITED",
+    message: "Bạn nhập mã sai quá nhiều lần, vui lòng thử lại sau 42 giây",
+  });
+});

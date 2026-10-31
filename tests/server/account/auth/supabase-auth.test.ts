@@ -4,6 +4,48 @@ import { createServer } from "node:http";
 
 afterEach(() => vi.unstubAllGlobals());
 
+it.each(["signup", "admin-create", "password-update"])(
+  "reports a sanitized provider password rejection for %s",
+  async (operation) => {
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockResolvedValue(
+          Response.json(
+            {
+              error_code: "weak_password",
+              message: "private-provider-email-and-secret",
+            },
+            { status: 422 },
+          ),
+        ),
+    );
+    const auth = new SupabaseAuth(
+      "https://fixture.invalid",
+      "fixture-public",
+      "fixture-secret",
+    );
+    const request =
+      operation === "signup"
+        ? auth.signup("user@example.invalid", "🐉".repeat(72), "nonce")
+        : operation === "admin-create"
+          ? auth.createUsernameAccount(
+              "00000000-0000-0000-0000-000000000001@username.xiangqi.invalid",
+              "🐉".repeat(72),
+              "nonce",
+            )
+          : auth.setPassword("fixture-user", "🐉".repeat(72));
+    await expect(request).rejects.toMatchObject({
+      code: "PASSWORD_PROVIDER_REJECTED",
+      status: 400,
+    });
+    await expect(request).rejects.not.toThrow(
+      "private-provider-email-and-secret",
+    );
+  },
+);
+
 it("exchanges Google credential and raw nonce at the configured provider only", async () => {
   let requestBody: unknown;
   let requestPath: string | undefined;

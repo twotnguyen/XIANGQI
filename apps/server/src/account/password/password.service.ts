@@ -9,6 +9,7 @@ import { RegistrationError, type Session } from "../auth/registration.types.js";
 import type { EmailSender } from "../email/email.types.js";
 import { LoginError } from "../login/login.types.js";
 import type { ValidatedSession } from "../login/session.service.js";
+import { passwordValidationMessage } from "@xiangqi/shared";
 import { PasswordStore, type PasswordTx } from "./password.store.js";
 import {
   invalidRecovery,
@@ -38,17 +39,17 @@ function fields(body: unknown, keys: string[]): Record<string, unknown> {
   return body as Record<string, unknown>;
 }
 function password(body: Record<string, unknown>): string {
-  if (typeof body.newPassword !== "string" || body.newPassword.length < 8)
-    throw new PasswordError(
-      "PASSWORD_INVALID_INPUT",
-      "Mật khẩu mới phải có ít nhất 8 ký tự",
-    );
+  const error =
+    typeof body.newPassword === "string"
+      ? passwordValidationMessage(body.newPassword)
+      : "Mật khẩu cần tối thiểu 8 ký tự";
+  if (error) throw new PasswordError("PASSWORD_INVALID_INPUT", error);
   if (body.passwordConfirmation !== body.newPassword)
     throw new PasswordError(
       "PASSWORD_INVALID_INPUT",
       "Xác nhận mật khẩu mới không khớp",
     );
-  return body.newPassword;
+  return body.newPassword as string;
 }
 function unavailable(): PasswordError {
   return new PasswordError(
@@ -112,7 +113,34 @@ export class PasswordService {
         this.validateProvider(account, proof);
       }
       await tx.prepareChange(sessionHash, changeHash, this.now());
-      const recovered = await this.update(account, next);
+      let recovered: Session | null = null;
+      try {
+        if (pending.passwordChangeHash === changeHash) {
+          try {
+            recovered = await this.auth.signInPassword(
+              account.credentialEmail,
+              next,
+            );
+            this.validateProvider(account, recovered);
+          } catch (error) {
+            if (!(
+              error instanceof RegistrationError &&
+              error.code === "RECOVERY_PASSWORD_INVALID"
+            ))
+              throw unavailable();
+          }
+        }
+        if (!recovered) recovered = await this.update(account, next);
+      } catch (error) {
+        if (
+          error instanceof PasswordError &&
+          error.code === "PASSWORD_PROVIDER_REJECTED"
+        )
+          await tx.cancelChange(sessionHash, changeHash, this.now());
+        else await tx.acceptChange(sessionHash, this.now());
+        throw error;
+      }
+      await tx.acceptChange(sessionHash, this.now());
       // Supabase password changes revoke provider refresh sessions: replace tokens, not the app session/deadline.
       let session: Session;
       try {
@@ -231,11 +259,69 @@ export class PasswordService {
     const requestId = capability(body.requestId);
     const resetToken = capability(body.resetToken);
     const userId = await this.owner(requestId);
+    const requestHash = digest(requestId),
+      resetHash = digest(resetToken);
+    const operationHash = createHmac("sha256", this.secret)
+      .update(JSON.stringify(["password-reset", requestHash, resetHash, next]))
+      .digest("hex");
     await this.store.withUser(userId, async (tx: PasswordTx) => {
       const account = await tx.account();
       if (!account?.active) throw invalidRecovery();
-      await tx.consumeReset(digest(requestId), digest(resetToken), this.now());
-      await this.update(account, next);
+      const prepared = await tx.prepareReset(
+        requestHash,
+        resetHash,
+        operationHash,
+        this.now(),
+      );
+      if (prepared === "expired") throw invalidRecovery();
+      try {
+        let applied = false;
+        if (prepared === "resume") {
+          try {
+            this.validateProvider(
+              account,
+              await this.auth.signInPassword(account.credentialEmail, next),
+            );
+            applied = true;
+          } catch (error) {
+            if (!(
+              error instanceof RegistrationError &&
+              error.code === "RECOVERY_PASSWORD_INVALID"
+            ))
+              throw unavailable();
+          }
+        }
+        if (!applied) await this.update(account, next);
+      } catch (error) {
+        if (
+          error instanceof PasswordError &&
+          error.code === "PASSWORD_PROVIDER_REJECTED"
+        )
+          await tx.cancelReset(
+            requestHash,
+            resetHash,
+            operationHash,
+            this.now(),
+          );
+        else
+          await tx.finishReset(
+            requestHash,
+            resetHash,
+            operationHash,
+            this.now(),
+          );
+        throw error;
+      }
+      if (
+        !(await tx.finishReset(
+          requestHash,
+          resetHash,
+          operationHash,
+          this.now(),
+        ))
+      )
+        throw invalidRecovery();
+      await tx.resetLoginAttempts();
     });
     return { ok: true as const };
   }
@@ -264,7 +350,12 @@ export class PasswordService {
     try {
       await this.auth.setPassword(account.userId, next);
       return null;
-    } catch {
+    } catch (error) {
+      if (
+        error instanceof RegistrationError &&
+        error.code === "PASSWORD_PROVIDER_REJECTED"
+      )
+        throw new PasswordError(error.code, error.message, 400);
       // Reconcile an ambiguous remote write using the intended credential, never by assuming rollback/success.
       try {
         const proof = await this.auth.signInPassword(

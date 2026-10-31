@@ -1,4 +1,4 @@
-import { createHash, randomInt, randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import {
   invalidRoomInput,
   RoomError,
@@ -9,7 +9,7 @@ import {
   type RoomView,
 } from "./room.types.js";
 import { RoomViewerStore } from "./room-store-viewers.js";
-import { alphabet, uuid } from "./room-store-core.js";
+import { uuid } from "./room-store-core.js";
 /**
  * Lớp Store hoàn chỉnh quản lý trạng thái và dữ liệu phòng chơi cờ (kế thừa RoomViewerStore):
  * Đảm nhiệm tạo phòng, tham gia, sẵn sàng, đổi bên, ngắt kết nối/hiện diện, bắt đầu và kết thúc trận đấu.
@@ -34,6 +34,7 @@ export class RoomStore extends RoomViewerStore {
       visibility?: "CODE_ONLY" | "PUBLIC";
     },
   ): Promise<RoomEntry> {
+    this.throttle(s, "create");
     this.scope(s);
     if (!uuid.test(input.commandId)) invalidRoomInput();
     const time = input.timeMinutes ?? (s.actor.kind === "member" ? 0 : 10),
@@ -81,26 +82,21 @@ export class RoomStore extends RoomViewerStore {
         "Khách chỉ được mở 1 phòng cùng lúc",
       );
     const id = randomUUID();
-    let code = "";
-    for (let attempt = 0; attempt < 5; attempt++) {
-      code = Array.from({ length: 8 }, () => alphabet[randomInt(10)]!).join("");
-      const row = await s.client.query(
-        "INSERT INTO public.rooms(id,owner_id,name,visibility,time_control,viewer_limit,invite_code,room_version) VALUES($1,$2,$3,$7,$4,$5,$6,1) ON CONFLICT(invite_code) WHERE invite_code IS NOT NULL DO NOTHING RETURNING id",
-        [
-          id,
-          s.actor.userId,
-          `Phòng ${code}`,
-          time * 60,
-          viewers,
-          code,
-          visibility,
-        ],
-      );
-      if (row.rowCount) break;
-      code = "";
-    }
+    const code = await this.claimCode(s);
     if (!code)
       throw new RoomError("ROOM_UNAVAILABLE", "Chưa thể tạo mã phòng", 503);
+    await s.client.query(
+      "INSERT INTO public.rooms(id,owner_id,name,visibility,time_control,viewer_limit,invite_code,room_version) VALUES($1,$2,$3,$7,$4,$5,$6,1)",
+      [
+        id,
+        s.actor.userId,
+        `Phòng ${code}`,
+        time * 60,
+        viewers,
+        code,
+        visibility,
+      ],
+    );
     if (visibility === "PUBLIC")
       await s.client.query(
         "UPDATE public.rooms SET public_opened_at=clock_timestamp() WHERE id=$1",
@@ -167,29 +163,13 @@ export class RoomStore extends RoomViewerStore {
         "Chỉ khoá được khi đã đủ 2 người chơi",
       );
     if (r.visibility === "LOCKED") {
-      let rotated = false;
-      for (let attempt = 0; attempt < 5; attempt++) {
-        const code = Array.from(
-          { length: 8 },
-          () => alphabet[randomInt(10)]!,
-        ).join("");
-        if (code === r.invite_code) continue;
-        await s.client.query("SAVEPOINT room_code_rotation");
-        try {
-          const row = await s.client.query(
-            "UPDATE public.rooms SET invite_code=$2,visibility=$3,public_opened_at=CASE WHEN $3='PUBLIC' THEN clock_timestamp() ELSE public_opened_at END WHERE id=$1 AND NOT EXISTS(SELECT 1 FROM public.rooms WHERE invite_code=$2) RETURNING id",
-            [id, code, visibility],
-          );
-          rotated = !!row.rowCount;
-        } catch (error) {
-          await s.client.query("ROLLBACK TO SAVEPOINT room_code_rotation");
-          if ((error as { code?: string }).code !== "23505") throw error;
-        }
-        await s.client.query("RELEASE SAVEPOINT room_code_rotation");
-        if (rotated) break;
-      }
-      if (!rotated)
+      const code = await this.claimCode(s, r.invite_code);
+      if (!code)
         throw new RoomError("ROOM_UNAVAILABLE", "Chưa thể tạo mã phòng", 503);
+      await s.client.query(
+        "UPDATE public.rooms SET invite_code=$2,visibility=$3,public_opened_at=CASE WHEN $3='PUBLIC' THEN clock_timestamp() ELSE public_opened_at END WHERE id=$1",
+        [id, code, visibility],
+      );
     } else {
       await s.client.query(
         "UPDATE public.rooms SET visibility=$2,public_opened_at=CASE WHEN $2='PUBLIC' THEN clock_timestamp() ELSE public_opened_at END WHERE id=$1",
@@ -338,6 +318,7 @@ export class RoomStore extends RoomViewerStore {
    * Chủ phòng đổi vị trí ghế cờ (Đỏ <-> Đen) khi đang ở phòng chờ một mình.
    */
   async switchSeat(s: RoomScope, id: string) {
+    this.throttle(s, "switchSeat");
     const { r, members, member } = await this.member(s, id);
     if (
       r.status !== "WAITING" ||
@@ -364,56 +345,119 @@ export class RoomStore extends RoomViewerStore {
     return this.snapshot(s, id);
   }
   /**
-   * Cập nhật trạng thái Sẵn sàng của người chơi; tự động kích hoạt đếm ngược 3 giây khi cả hai bên sẵn sàng.
+   * Người chơi thứ hai bật/tắt Sẵn sàng. Host không có Sẵn sàng; đếm ngược chỉ bắt đầu bằng lệnh `start` của Host.
    */
   async ready(s: RoomScope, id: string, value: boolean) {
+    this.throttle(s, "ready");
     if (typeof value !== "boolean") invalidRoomInput();
     const { r, member } = await this.member(s, id);
     if (r.status !== "WAITING" || member.role !== "PLAYER")
       throw new RoomError("READY_DENIED", "Không thể Sẵn sàng lúc này");
-    if (
-      !(
-        await s.client.query(
-          "SELECT 1 FROM xiangqi_room.presence WHERE room_id=$1 AND user_id=$2 AND connected",
-          [id, s.actor.userId],
-        )
-      ).rowCount
-    )
-      throw new RoomError("PLAYER_DISCONNECTED", "Chưa có kết nối điều khiển");
+    if (r.owner_id === s.actor.userId)
+      throw new RoomError(
+        "READY_DENIED",
+        "Host bấm Bắt đầu, không có Sẵn sàng",
+      );
+    await this.requireConnected(s, id, s.actor.userId);
     if (!value) await this.cancel(s, id);
     else
       await s.client.query(
         "UPDATE public.room_members SET ready=true WHERE room_id=$1 AND user_id=$2",
         [id, s.actor.userId],
       );
+    await this.bump(s, id, "room.ready-changed");
+    return this.snapshot(s, id);
+  }
+  private async requireConnected(s: RoomScope, id: string, userId: string) {
+    if (
+      !(
+        await s.client.query(
+          "SELECT 1 FROM xiangqi_room.presence WHERE room_id=$1 AND user_id=$2 AND connected",
+          [id, userId],
+        )
+      ).rowCount
+    )
+      throw new RoomError("PLAYER_DISCONNECTED", "Chưa có kết nối điều khiển");
+  }
+  /**
+   * Host bắt đầu đếm 3-2-1 khi đủ hai người đang kết nối và đối thủ đã Sẵn sàng; `startDue` kiểm lại khi hết đếm.
+   */
+  async start(s: RoomScope, id: string) {
+    this.throttle(s, "start");
+    const { r, member } = await this.member(s, id);
+    if (
+      r.status !== "WAITING" ||
+      member.role !== "PLAYER" ||
+      r.owner_id !== s.actor.userId
+    )
+      throw new RoomError("START_DENIED", "Chỉ Host mới được bắt đầu ván");
     const players = (
       await s.client.query(
         "SELECT m.user_id,m.side,m.ready,p.connected FROM public.room_members m LEFT JOIN xiangqi_room.presence p USING(room_id,user_id) WHERE m.room_id=$1 AND m.role='PLAYER'",
         [id],
       )
     ).rows;
-    if (players.length === 2 && players.every((p) => p.ready && p.connected))
-      await s.client.query(
-        "INSERT INTO xiangqi_room.countdowns(room_id,token,due_at,red_id,black_id) VALUES($1,$2,clock_timestamp()+interval '3 seconds',$3,$4) ON CONFLICT(room_id) DO NOTHING",
-        [
-          id,
-          randomUUID(),
-          players.find((p) => p.side === "RED").user_id,
-          players.find((p) => p.side === "BLACK").user_id,
-        ],
-      );
+    const self = players.find((p) => p.user_id === s.actor.userId);
+    if (!self?.connected)
+      throw new RoomError("PLAYER_DISCONNECTED", "Chưa có kết nối điều khiển");
+    const opponent = players.find((p) => p.user_id !== s.actor.userId);
+    if (players.length !== 2 || !opponent?.connected)
+      throw new RoomError("START_DENIED", "Chờ người chơi thứ hai");
+    if (!opponent.ready)
+      throw new RoomError("START_DENIED", "Chờ đối thủ sẵn sàng");
+    // Host bấm Bắt đầu tức là Host sẵn sàng; match.start vẫn kiểm cờ ready của cả hai ghế.
+    await s.client.query(
+      "UPDATE public.room_members SET ready=true WHERE room_id=$1 AND user_id=$2",
+      [id, s.actor.userId],
+    );
+    const created = await s.client.query(
+      "INSERT INTO xiangqi_room.countdowns(room_id,token,due_at,red_id,black_id) VALUES($1,$2,clock_timestamp()+interval '3 seconds',$3,$4) ON CONFLICT(room_id) DO NOTHING",
+      [
+        id,
+        randomUUID(),
+        players.find((p) => p.side === "RED").user_id,
+        players.find((p) => p.side === "BLACK").user_id,
+      ],
+    );
+    if (!created.rowCount)
+      throw new RoomError("START_DENIED", "Ván đang được đếm để bắt đầu");
+    await this.closeDownOffers(s, id);
+    await this.closeSwapOffers(s, id);
+    await this.bump(s, id, "room.ready-changed");
+    return this.snapshot(s, id);
+  }
+  /**
+   * Host nhường quyền Host cho người chơi còn lại ngay lập tức; ghế/phe giữ nguyên, Sẵn sàng reset.
+   */
+  async transferHost(s: RoomScope, id: string) {
+    const { r, members, member } = await this.member(s, id);
+    const players = members.filter((m) => m.role === "PLAYER");
     if (
+      r.status !== "WAITING" ||
+      member.role !== "PLAYER" ||
+      r.owner_id !== s.actor.userId ||
+      players.length !== 2 ||
       (
         await s.client.query(
           "SELECT 1 FROM xiangqi_room.countdowns WHERE room_id=$1",
           [id],
         )
       ).rowCount
-    ) {
-      await this.closeDownOffers(s, id);
-      await this.closeSwapOffers(s, id);
-    }
-    await this.bump(s, id, "room.ready-changed");
+    )
+      throw new RoomError(
+        "HOST_TRANSFER_DENIED",
+        "Chỉ Host mới nhường được, khi đủ hai người và chưa đếm",
+      );
+    const next = players.find((m) => m.user_id !== s.actor.userId)!;
+    await s.client.query("UPDATE public.rooms SET owner_id=$2 WHERE id=$1", [
+      id,
+      next.user_id,
+    ]);
+    await s.client.query(
+      "UPDATE public.room_members SET ready=false WHERE room_id=$1 AND ready",
+      [id],
+    );
+    await this.bump(s, id, "room.members-changed");
     return this.snapshot(s, id);
   }
   /**
@@ -434,7 +478,21 @@ export class RoomStore extends RoomViewerStore {
       !uuid.test(proof.serverInstance)
     )
       invalidRoomInput();
-    const { r, member } = await this.member(s, id, true);
+    let { r, member } = await this.member(s, id, true);
+    if (
+      connected &&
+      member.role === "PLAYER" &&
+      r.status === "PLAYING" &&
+      r.current_match_id &&
+      this.matches?.reconnect
+    ) {
+      await this.matches.reconnect(s.client, {
+        roomId: id,
+        matchId: r.current_match_id,
+        actor: s.actor,
+      });
+      ({ r, member } = await this.member(s, id, true));
+    }
     if (connected && member.role === "SPECTATOR" && member.viewer_expired) {
       await this.release(s, id, s.actor.userId, false);
       return "viewer-expired" as const;

@@ -99,6 +99,7 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
     await apply("supabase/migrations/20261011000006_rooms.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261011000016_room_viewers.sql");
   });
   it("moves a non-host player to spectator and back via host invite", async () => {
@@ -434,8 +435,8 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
           true,
         ),
       );
-    await run(h.a, h.proof, [roomId], (s) => store.ready(s, roomId, true));
     await run(v.a, v.proof, [roomId], (s) => store.ready(s, roomId, true));
+    await run(h.a, h.proof, [roomId], (s) => store.start(s, roomId));
     await expect(
       run(b.a, b.proof, [roomId], (s) => store.respondDown(s, roomId, true)),
     ).rejects.toMatchObject({ code: "SEAT_INVITE_MISSING" });

@@ -1,4 +1,4 @@
-import { earliestDisconnect } from "./disconnect-worker.js";
+import { adjudicateDeadline } from "./disconnect-worker.js";
 import { randomUUID } from "node:crypto";
 import { ending, type Position, type Side } from "@xiangqi/xiangqi-core";
 import type { PoolClient } from "pg";
@@ -90,9 +90,11 @@ export function storedOutcome(value: unknown): MatchOutcome | null {
       "RESIGN",
       "TIMEOUT",
       "DISCONNECT",
+      "DRAW_SIMULTANEOUS_DISCONNECT",
       "DRAW_AGREEMENT",
       "SERVER_RESTART",
       "INACTIVITY",
+      "ABORTED",
     ].includes(String(value.reason)) ||
     !(
       value.winner === null ||
@@ -507,6 +509,22 @@ export class MatchStoreCore {
     const match = this.view(row, history.at(-1)!, lastMove);
     return { room: loaded.room, row, side, history, match };
   }
+  async settleDeadlines(
+    scope: MatchScope,
+    input: { matchId: string },
+  ): Promise<MatchView | null> {
+    const { room, row, history, match } = await this.context(scope, {
+      ...input,
+      matchVersion: 0,
+    });
+    if (
+      row.status !== "ACTIVE" ||
+      room.status !== "PLAYING" ||
+      room.current_match_id !== row.id
+    )
+      return null;
+    return this.expiredDisconnect(scope, row, match, history.at(-1)!);
+  }
   /**
    * Tạo đối tượng kết quả trả về khi hành động trong ván bị từ chối kèm lỗi.
    */
@@ -525,36 +543,28 @@ export class MatchStoreCore {
     row: MatchRow,
     match: MatchView,
     position: Position,
+    at?: Date,
   ): Promise<MatchView | null> {
-    const disconnect = await earliestDisconnect(
+    const decision = await adjudicateDeadline(
       scope.client,
       scope.roomId,
       row.red_user_id,
       row.black_user_id,
+      match,
+      at,
     );
-    if (!disconnect) return null;
-    const deadline =
-      match.clock.runningSinceEpochMs +
-      (match.turn === "red" ? match.clock.redMs : match.clock.blackMs);
-    // Unlimited matches have no clock deadline; only the disconnect grace decides.
-    if (!match.unlimited && disconnect.deadline >= deadline) return null;
-    const at = new Date(
-      Number(
-        (
-          await scope.client.query<{ ms: string }>(
-            "SELECT floor(extract(epoch FROM clock_timestamp())*1000)::bigint ms",
-          )
-        ).rows[0]!.ms,
-      ),
-    );
-    if (disconnect.deadline > at.getTime()) return null;
+    if (!decision) return null;
+    const clock =
+      decision.outcome.reason === "TIMEOUT"
+        ? this.checkTime(match, decision.at).clock
+        : row.clock;
     return this.end(
       scope.client,
       row,
       position,
-      { reason: "DISCONNECT", winner: opposite(disconnect.loser) },
-      at,
-      row.clock,
+      decision.outcome,
+      decision.at,
+      clock,
       match.lastMove,
     );
   }
@@ -608,7 +618,9 @@ export class MatchStoreCore {
     const updated: MatchRow = {
       ...row,
       version: String(version),
-      status: outcome.reason === "SERVER_RESTART" ? "INTERRUPTED" : "FINISHED",
+      status: ["SERVER_RESTART", "ABORTED"].includes(outcome.reason)
+        ? "INTERRUPTED"
+        : "FINISHED",
       outcome: dbOutcome(outcome),
       ended_at: at,
       clock: validClock(clock),

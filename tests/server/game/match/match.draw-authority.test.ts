@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { beforeAll, describe, expect, it } from "vitest";
-import { apply, databaseUrl, pool, transaction } from "./match.test-helper.js";
+import { describe, expect, it } from "vitest";
+import { databaseUrl, pool, transaction } from "./match.test-helper.js";
 import {
   black,
   red,
@@ -13,9 +13,6 @@ import {
 
 describe.skipIf(!databaseUrl)("draw projection authority", () => {
   useMatchHooks();
-  beforeAll(async () => {
-    await apply("supabase/migrations/20261011000009_match_draw.sql");
-  });
   it("gives a seated player an empty draw state on a FINISHED match and denies spectators both draw reads", async () => {
     const s = await start();
     await run(s.room, black, (scope) =>

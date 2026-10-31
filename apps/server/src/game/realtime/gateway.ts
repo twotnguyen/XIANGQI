@@ -23,6 +23,7 @@ import {
 } from "./protocol.js";
 import type { RoomRequestProof } from "../room/room-session.js";
 import { logEvent } from "../../core/logger.js";
+import { bindNetworkDemo } from "./network-demo.js";
 
 function authenticationFailure(error: unknown): RealtimeError {
   return error instanceof RealtimeError && error.code === "REALTIME_UNAVAILABLE"
@@ -457,6 +458,16 @@ export function attachRealtime(
       socket.disconnect(true);
       return;
     }
+    bindNetworkDemo(socket as unknown as Socket, {
+      env: process.env,
+      authorize: async () => {
+        if (stopping) throw publicationFailure();
+        const connection = await authorize(peer);
+        const snapshot = await dependencies.store.snapshot(connection);
+        if (stopping) throw publicationFailure();
+        return snapshot;
+      },
+    });
     if (dependencies.chat)
       bindRoomChat(socket, {
         authorize: () => authorize(peer),

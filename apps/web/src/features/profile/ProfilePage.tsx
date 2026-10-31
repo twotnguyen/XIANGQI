@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { isValidDisplayName, normalizeDisplayName } from "@xiangqi/shared";
 import {
   Button,
   Dialog,
@@ -193,10 +194,17 @@ export function ProfilePage({
 
   async function save() {
     if (savingRef.current || guest || !profile) return;
-    const trimmed = name.trim();
+    const trimmed = normalizeDisplayName(name);
     const length = Array.from(trimmed).length;
     if (length < 2 || length > 30) {
       setFieldError("Tên hiển thị cần 2–30 ký tự.");
+      setStatus("");
+      return;
+    }
+    if (!isValidDisplayName(trimmed)) {
+      setFieldError(
+        "Tên hiển thị chỉ dùng chữ, số, khoảng trắng và . - _ ', không chứa từ cấm.",
+      );
       setStatus("");
       return;
     }
@@ -215,7 +223,7 @@ export function ProfilePage({
       if (!current()) return;
       onSaved(result.displayName);
       setName((draft) =>
-        draft.trim() === trimmed ? result.displayName : draft,
+        normalizeDisplayName(draft) === trimmed ? result.displayName : draft,
       );
       setProfile((previous) =>
         previous ? { ...previous, displayName: result.displayName } : previous,

@@ -23,6 +23,7 @@ export function RoomSeats({
   swapReopenSeconds,
   onSwapReopen,
   readyControl,
+  onTransferHost,
   onAction,
   onMoveToSpectator,
 }: {
@@ -37,6 +38,7 @@ export function RoomSeats({
   swapReopenSeconds: number | null;
   onSwapReopen: () => void;
   readyControl: ReactNode;
+  onTransferHost: () => void;
   onAction: (action: SeatAction) => void;
   onMoveToSpectator?: (userId: string) => void;
 }) {
@@ -45,7 +47,13 @@ export function RoomSeats({
       {(["red", "black"] as const).map((side) => {
         const occupant = room.seats[side],
           label = side === "red" ? "Đỏ" : "Đen",
-          ready = Boolean(occupant) && room.connected[side] && room.ready[side],
+          isHost = Boolean(occupant) && occupant === room.hostId,
+          // Host không có Sẵn sàng: Host bấm Bắt đầu (YC2 mục 21.1).
+          ready =
+            Boolean(occupant) &&
+            !isHost &&
+            room.connected[side] &&
+            room.ready[side],
           canMoveOpponent = Boolean(
             player &&
             room.hostId === userId &&
@@ -87,9 +95,11 @@ export function RoomSeats({
                 ? "Đang chờ kỳ hữu"
                 : !room.connected[side]
                   ? "Mất kết nối · đang giữ ghế"
-                  : room.ready[side]
-                    ? "Đã sẵn sàng"
-                    : "Chưa sẵn sàng"}
+                  : isHost
+                    ? "Chủ phòng"
+                    : room.ready[side]
+                      ? "Đã sẵn sàng"
+                      : "Chưa sẵn sàng"}
             </p>
             {!playingLayout && occupant === userId && readyControl}
             {!playingLayout &&
@@ -114,9 +124,11 @@ export function RoomSeats({
               ) : (
                 <p className="xq-room-seat-hint">
                   {occupant
-                    ? ready
-                      ? "Đối thủ đã sẵn sàng"
-                      : "Đang chờ đối thủ sẵn sàng"
+                    ? occupant === room.hostId
+                      ? "Chờ Host bắt đầu"
+                      : ready
+                        ? "Đối thủ đã sẵn sàng"
+                        : "Đang chờ đối thủ sẵn sàng"
                     : "Mời kỳ hữu bằng mã phòng"}
                 </p>
               ))}
@@ -184,6 +196,20 @@ export function RoomSeats({
                     </Button>
                   </div>
                 )}
+              {!solo && !room.countdown && room.hostId === userId && (
+                <Button
+                  variant="secondary"
+                  loading={busy}
+                  disabledReason={
+                    !writable
+                      ? "Cần kết nối và quyền điều khiển ghế."
+                      : undefined
+                  }
+                  onClick={onTransferHost}
+                >
+                  Nhường Host
+                </Button>
+              )}
               {swapReopenSeconds !== null && (
                 <Button variant="secondary" onClick={onSwapReopen}>
                   Xem đề nghị đổi bên ({swapReopenSeconds} giây)

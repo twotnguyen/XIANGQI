@@ -24,6 +24,15 @@ afterEach(() => {
   vi.unstubAllEnvs();
   vi.restoreAllMocks();
 });
+it("links directly to the username-recovery tab", () => {
+  render(createElement(LoginPage, { onLoggedIn: vi.fn() }));
+  expect(
+    screen
+      .getByRole("link", { name: "Quên tên đăng nhập?" })
+      .getAttribute("href"),
+  ).toBe("/forgot-password?tab=username");
+});
+
 it("passes the current remember selection to the official Google slot without replacing password login", () => {
   const slot = vi.fn((remember: boolean) =>
     createElement("span", null, `Google remember ${remember}`),
@@ -106,7 +115,11 @@ it("sends username case intact and the checked default, with cookies; delegates 
       }),
     }),
   );
-  expect(local).not.toHaveBeenCalled();
+  expect(
+    local.mock.calls.every(
+      ([key, value]) => key === "xiangqi.tab" && /^[a-f0-9-]{36}$/.test(value),
+    ),
+  ).toBe(true);
 });
 it("sends the unchecked remember choice through the same-origin API", async () => {
   const request = vi.fn().mockResolvedValue(reply(session));

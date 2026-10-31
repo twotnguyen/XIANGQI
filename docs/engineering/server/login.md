@@ -1,6 +1,6 @@
 # Đăng nhập bằng Username — XIAN-45 / T09
 
-> **Lưu ý (31/10/2026):** tài liệu này mô tả mã hiện tại. Quyết định PO [BA 0.27–0.36](../../product/BA-SCOPE-DECISIONS.md) chưa triển khai (xem mục "Tác động triển khai" của từng YC) và thay luật "thiết bị khác xử thua" và mã thiết bị theo hồ sơ trình duyệt: luật được tạm tắt khi phát triển và bật lại trước nghiệm thu ([YC1 mục 20](../../product/P1-YC1-TAI-KHOAN-VA-XAC-THUC.md), BA 0.28).
+> **Lưu ý (31/10/2026):** phần rà soát YC1/BA 0.28 đã có mã trong lượt triển khai này, xem mục cuối về phiên theo tab và quota OTP. Các quyết định YC khác trong BA 0.27–0.36 vẫn theo trạng thái riêng của từng YC. Có mã không thay bằng chứng nghiệm thu, áp migration hoặc kiểm dịch vụ thật.
 
 `POST /auth/login` nhận `{ username, password, remember? }`; `remember` mặc định
 `true`. Username được chuẩn hoá chữ thường để tra tài khoản và dùng chung bộ đếm.
@@ -183,14 +183,15 @@ Rollback chỉ xóa các bằng chứng thao tác này, không đổi credential
 
 Username không tồn tại, thiếu email hoặc email chỉ pending cùng trả
 `PASSWORD_RECOVERY_UNAVAILABLE`. Không cho client chọn email hoặc user_id.
-Mật khẩu tối thiểu 8 ký tự, không trim; sai mật khẩu cũ không thu hồi phiên.
-Khóa thử sai đăng nhập không bị xóa bởi đổi/reset mật khẩu hoặc Google.
+Mật khẩu mới tối thiểu 8 ký tự và tối đa 72 byte UTF-8 (giới hạn bcrypt), không trim; sai mật khẩu cũ không thu hồi phiên.
+Reset thành công xóa khóa thử sai đăng nhập; đổi mật khẩu chủ động và Google không xóa khóa.
 
 Recovery dùng SMTP đã cấu hình để gửi đến contact email, không gửi tới credential
 kỹ thuật. OTP 6 số có hạn 180 giây; HMAC ràng buộc purpose/user/request/email/sent_at,
 giới hạn 5 lần sai lưu trong SQL. Request/reset capability ngẫu nhiên 256 bit chỉ
 lưu SHA-256; bảng FORCE RLS, chỉ app_server có quyền. Trình duyệt giữ ngữ cảnh
-recovery trong bộ nhớ, không URL/storage; reload phải yêu cầu mã mới.
+recovery trong bộ nhớ, không URL/storage; reload phải yêu cầu mã mới. Sau OTP đúng,
+reset grant có deadline riêng 10 phút tính từ lúc verify, không bị cắt bởi deadline OTP gốc.
 
 `PasswordStore.withUser` tuần tự hóa bằng khóa password rồi khóa username giống
 đăng nhập. Auth HTTP không giữ transaction/khóa actor; transaction ngắn kiểm lại
@@ -269,3 +270,15 @@ kiểm phiên production 10 giây (test 1 giây), không phải cam kết đóng
 Vị trí Hồ sơ/Sảnh đọc reservation AI đang giữ (không chờ ván có bản ghi history);
 trả `playing-ai` với roomId null để banner dẫn đúng `/ai/:id` và chặn tạo vị trí
 chơi thứ hai. Membership chỉ xem không bị coi là ghế đang chơi.
+
+## Rà soát YC1 — 31/10/2026
+
+- `SESSION_DEVICE_ENFORCEMENT_ENABLED`: không đặt thì tắt ngoài production, bật trong production; `true`/`false` cho phép chọn rõ. Phát hành/nghiệm thu D10 phải bật. Khi tắt, login cùng tài khoản không thu hồi phiên cũ hoặc xử thua; quyền một vị trí/một tab điều khiển vẫn do room/AI kiểm.
+- Web giữ **selector không bí mật** `xiangqi.tab` trong sessionStorage. Bearer, refresh token, capability và OTP không lưu vào storage. `X-Xiangqi-Tab` chọn cookie HttpOnly có hậu tố của tab; thiết bị `xiangqi_device` vẫn chung hồ sơ trình duyệt.
+- Middleware chỉ chạy khi `SESSION_DEVICE_ENFORCEMENT_ENABLED` tắt (`tabSessionMiddlewareFor`); khi bật, header tab bị bỏ qua và cookie phiên dùng chung. Middleware từ chối selector/cookie không hợp lệ, không fallback sang tab khác. Tab mới/nhân đôi chỉ kế thừa qua bootstrap explicit (`/auth/refresh`, phiên Khách, onboarding Google); response xác thực ghi lại cookie với SameSite/Secure/hạn thật. Phiên legacy chỉ migrate ở lần bootstrap explicit đầu. Refresh cookie dùng chung theo hash capability để các tab cùng phiên không giữ bản cookie xoay cũ. Không tạo appSession hoặc gia hạn chỉ vì mở tab.
+- `packages/shared/src/auth-validation.ts` thống nhất độ dài mật khẩu (tối thiểu 8 ký tự, tối đa 72 byte UTF-8), tên NFC/gộp dấu cách/allowlist/từ cấm. Lỗi password provider được ánh xạ theo mã allowlist thành `PASSWORD_PROVIDER_REJECTED`, không đưa message thô ra UI.
+- Migration `20261103000002_yc1_account_rules.sql` thêm mốc đổi Username và `otp_sends`; migration `20261103000003_password_reset_grant.sql` tách deadline quyền reset. Startup fail closed nếu schema chưa đủ. Hai file có rollback; chưa áp DB trong lượt này. Rollback `…000002` từ chối chạy nếu còn `username_changed_at` hoặc quota OTP trong 1 giờ gần nhất (migration đã backfill mốc từ lịch sử đổi tên, nên DB từng có người đổi tên gần như luôn bị chặn); rollback `…000003` từ chối khi còn reset grant chưa hết hạn.
+- Quota OTP chung năm lần bắt đầu gửi/60 phút trượt, theo UUID và email chuẩn hóa (lưu hash), khóa nguyên tử trong transaction của store. SMTP ngoài transaction; gửi lỗi vẫn tính, không cấp mã dùng được. Quên Username giữ phản hồi generic khi quota/SMTP lỗi. Cooldown gửi lại 60 giây vẫn riêng từng luồng.
+- Username kiểm cooldown bảy ngày trước request/resend và ghi cuối; trả `USERNAME_CHANGE_LIMITED` cùng `retryAfterDays`. Đổi tên không thu hồi phiên; refresh web không coi username cũ trong bộ nhớ là danh tính bất biến.
+
+Ca hồi quy mới nằm ở `tests/server/account/{auth,login,session,password,username}` và `tests/web/{features,shared}`. Đây là mô tả mã và ca kiểm đã viết, không phải kết quả chạy test hoặc dịch vụ thật.

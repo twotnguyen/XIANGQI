@@ -463,7 +463,7 @@ Tái đấu custom và Không giới hạn/chống treo thuộc P1 ở [YC2 mụ
 
 ## 17. Quyết định PO khi rà soát YC3 — 31/10/2026
 
-**Chưa triển khai**; code và test hiện còn theo trạng thái cũ. Các quyết định dưới đây bổ sung cho mục 5, 6, 8, 11.
+**Đã có mã và test local 31/10/2026, chưa nghiệm thu, migration `20261103000004` đã áp Cloud 31/10/2026 (psql + `migration repair`, backfill 72 mã 8 chữ số; 6 phòng cũ mang mã không phải 8 chữ số, không thể trùng).** Các quyết định dưới đây bổ sung cho mục 5, 6, 8, 11.
 
 | # | Quyết định | AC bổ sung |
 |---|---|---|
@@ -489,7 +489,11 @@ Tái đấu custom và Không giới hạn/chống treo thuộc P1 ở [YC2 mụ
 | AC-YC3-RV-03 | Phòng đóng; phòng mới được tạo sau đó | Phòng mới không bao giờ nhận mã của phòng đã đóng; mở link/mã cũ luôn báo phòng không tồn tại hoặc đã đóng |
 | AC-YC3-RV-04 | Người nhận đang có 5 popup mời còn hạn; người thứ sáu gửi mời | Lời mời bị từ chối ngay tại server với thông báo cho người gửi; không invite mới, cooldown không bắt đầu; khi một popup hết hạn/được trả lời thì gửi lại được |
 
-### 17.2 Tác động triển khai (chưa làm)
+### 17.2 Tác động triển khai (đã có mã local, chưa nghiệm thu)
+
+- Đã làm: `FailureLimiter` (10 lần sai/60 giây trượt theo tài khoản hoặc phiên Khách, `ROOM_CODE_RATE_LIMITED` 429, chỉ tính lỗi `ROOM_FORBIDDEN`, bộ nhớ một instance); tìm bạn tối thiểu 3 ký tự ở server (`FRIEND_INPUT_INVALID`) và client, trần 20 kết quả theo username tăng dần có sẵn; bảng `xiangqi_room.issued_codes` (migration `20261103000004` + rollback) ghi mọi mã đã cấp kể cả mã bị xoay khi khóa/mở lại, cấp mã qua `claimCode`; đếm lời mời phòng còn hạn của người nhận (`FRIEND_INVITE_RECIPIENT_FULL`, 409, không bắt đầu cooldown); hộp xác nhận hủy kết bạn. Điểm a và b đã đúng sẵn (không chế độ ẩn; DM không sửa/xóa).
+- **Đã xem giao diện 31/10/2026** (trình duyệt tích hợp): trang Bạn bè (API giả trong bộ nhớ, chỉ kiểm giao diện): tìm 2 ký tự không gửi request và hiện gợi ý dạng thông tin; hủy kết bạn qua hộp xác nhận nêu tên bạn, "Giữ bạn bè" không đổi gì, xác nhận thì bạn biến mất. Nhập mã sai (stack thật Vite + Nest + PostgreSQL cô lập, Khách): sau 10 lần sai hiện "Bạn nhập mã sai quá nhiều lần, vui lòng thử lại sau {n} giây" với n giảm dần. Phát hiện và sửa khi xem: web trước đó hiện câu chung cho lỗi này (chỉ lấy số giây từ phản hồi, không hiển thị nội dung server). Chưa xem trên UI thật: lời mời thứ 6 (FRIEND_INVITE_RECIPIENT_FULL), mã phòng không tái sử dụng, 360 px.
+- Ghi chú cũ bên dưới là phân tích ban đầu:
 
 - Cần bộ đếm thử mã sai theo tài khoản/phiên (cửa sổ trượt 60 giây), ngưỡng tìm bạn tối thiểu 3 ký tự và trần 20 kết quả ở server và client, lưu mã phòng đã dùng (không tái sử dụng), đếm popup mời còn hạn theo người nhận.
 - Bằng chứng ở mục 13 và 16 là trước các thay đổi này; không kế thừa PASS.

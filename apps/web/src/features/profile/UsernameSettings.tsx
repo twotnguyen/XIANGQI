@@ -32,6 +32,12 @@ function changeError(error: unknown) {
         return "Yêu cầu đã hết hạn. Hãy bắt đầu lại.";
       case "USERNAME_RATE_LIMITED":
         return "Vui lòng đợi trước khi gửi lại mã.";
+      case "USERNAME_OTP_LIMITED":
+        return "Bạn đã yêu cầu quá nhiều mã, vui lòng thử lại sau";
+      case "USERNAME_CHANGE_LIMITED":
+        return error.retryAfterDays
+          ? `Bạn vừa đổi Username, vui lòng thử lại sau ${error.retryAfterDays} ngày`
+          : "Bạn chỉ được đổi Username một lần mỗi 7 ngày.";
       case "USERNAME_PROVIDER_ERROR":
         return "Không gửi được mã, vui lòng thử lại sau.";
     }

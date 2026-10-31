@@ -44,13 +44,16 @@ async function read<T>(work: (c: PoolClient) => Promise<T>) {
     c.release();
   }
 }
-async function setup(guest = false) {
+async function setup(
+  guest: boolean | "mixed" = false,
+  timeControl: 0 | 600 = 600,
+) {
   const red = randomUUID(),
     black = randomUUID(),
     roomId = randomUUID(),
     token = randomUUID();
   for (const id of [red, black]) {
-    if (guest) {
+    if (guest === true || (guest === "mixed" && id === black)) {
       await pool.query(
         "INSERT INTO xiangqi_auth.principals(id,kind) VALUES($1,'guest')",
         [id],
@@ -66,11 +69,15 @@ async function setup(guest = false) {
     );
   }
   const at = new Date(
-    (await pool.query("SELECT clock_timestamp() at")).rows[0].at,
+    (
+      await pool.query(
+        "SELECT clock_timestamp() - interval '5 minutes' AS \"at\"",
+      )
+    ).rows[0].at,
   );
   const result = await transaction([red, black], [roomId], async (c) => {
     await c.query(
-      "INSERT INTO public.rooms(id,owner_id,name,time_control,invite_code,viewer_limit) VALUES($1,$2,'Synthetic',600,$3,5)",
+      "INSERT INTO public.rooms(id,owner_id,name,time_control,invite_code,viewer_limit) VALUES($1,$2,'Synthetic',$4,$3,5)",
       [
         roomId,
         red,
@@ -80,6 +87,7 @@ async function setup(guest = false) {
           .split("")
           .map((c) => parseInt(c, 16) % 10)
           .join(""),
+        timeControl,
       ],
     );
     await c.query(
@@ -99,7 +107,7 @@ async function setup(guest = false) {
       startToken: token,
       redId: red,
       blackId: black,
-      timeControlSeconds: 600,
+      timeControlSeconds: timeControl,
       startedAt: at,
     });
     await c.query(
@@ -166,6 +174,11 @@ describe.skipIf(!databaseUrl)("managed disconnect adjudication", () => {
     await reset();
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+    await apply("supabase/migrations/20261103000005_match_aborted.sql");
+    await apply("supabase/migrations/20261103000006_online_undo.sql");
+    await apply(
+      "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+    );
   });
   afterAll(() => pool.end());
   it("ends at the SQL 60-second boundary, publishes atomically and never repeats", async () => {
@@ -266,7 +279,7 @@ describe.skipIf(!databaseUrl)("managed disconnect adjudication", () => {
     ).toBe(0);
     await new DisconnectWorker(matches, port()).tick();
   });
-  it("exact clock/grace tie is TIMEOUT; identical disconnect timestamps use stable UUID order", async () => {
+  it("exact clock/grace tie is TIMEOUT; identical disconnect timestamps draw", async () => {
     const s = await setup();
     await offline(s, 61);
     await pool.query(
@@ -286,9 +299,15 @@ describe.skipIf(!databaseUrl)("managed disconnect adjudication", () => {
       [t.roomId, t.red],
     );
     await new DisconnectWorker(matches, port()).tick();
-    expect((await outcome(t)).outcome.winner).toBe(
-      t.red < t.black ? "BLACK" : "RED",
-    );
+    expect((await outcome(t)).outcome).toEqual({
+      reason: "DRAW_SIMULTANEOUS_DISCONNECT",
+      winner: null,
+    });
+    await expect(
+      apply(
+        "supabase/rollback/20261103000007_match_simultaneous_disconnect.sql",
+      ),
+    ).rejects.toThrow("Simultaneous disconnect outcomes exist");
   });
   it("rechecks current match, connection presence and required actor locks", async () => {
     const s = await setup();
@@ -317,14 +336,78 @@ describe.skipIf(!databaseUrl)("managed disconnect adjudication", () => {
     await new DisconnectWorker(matches, p).tick();
     expect((await outcome(s)).status).toBe("ACTIVE");
   });
-  it("fails closed for unsupported Guest principals", async () => {
+  it("adjudicates Guest principals", async () => {
     const s = await setup(true);
     await offline(s, 61);
-    await expect(
-      new DisconnectWorker(matches, port()).tick(),
-    ).rejects.toThrow();
-    expect((await outcome(s)).status).toBe("ACTIVE");
+    await new DisconnectWorker(matches, port()).tick();
+    expect((await outcome(s)).outcome).toEqual({
+      reason: "DISCONNECT",
+      winner: "BLACK",
+    });
   });
+  it.each([false, true, "mixed"] as const)(
+    "distinguishes equal and microsecond-apart disconnects for principals %s",
+    async (guest) => {
+      for (const delta of [0, 1, -1]) {
+        const s = await setup(guest);
+        await pool.query(
+          `UPDATE public.room_members SET disconnected_at = date_trunc('milliseconds', statement_timestamp() - interval '61 seconds') +
+          CASE WHEN user_id=$2 THEN interval '0 microseconds' ELSE $3::int * interval '1 microsecond' END
+         WHERE room_id=$1`,
+          [s.roomId, s.red, delta],
+        );
+        const before = Date.now();
+        await new DisconnectWorker(matches, port()).tick();
+        const after = Date.now();
+        expect((await outcome(s)).outcome).toEqual(
+          delta === 0
+            ? { reason: "DRAW_SIMULTANEOUS_DISCONNECT", winner: null }
+            : { reason: "DISCONNECT", winner: delta > 0 ? "BLACK" : "RED" },
+        );
+        expect(
+          (
+            await pool.query(
+              "SELECT count(*)::int AS n FROM public.match_events WHERE match_id=$1 AND type='RESULT'",
+              [s.matchId],
+            )
+          ).rows[0].n,
+        ).toBe(1);
+        const stored = (
+          await pool.query("SELECT ended_at FROM public.matches WHERE id=$1", [
+            s.matchId,
+          ])
+        ).rows[0];
+        expect(stored.ended_at.getTime()).toBeGreaterThanOrEqual(before);
+        expect(stored.ended_at.getTime()).toBeLessThanOrEqual(after);
+      }
+    },
+  );
+  it.each([true, false])(
+    "arbitrates inactivity against disconnect regardless of worker order (%s)",
+    async (clockFirst) => {
+      for (const offset of [-1, 0, 1]) {
+        const s = await setup("mixed", 0);
+        await pool.query(
+          `UPDATE public.room_members SET disconnected_at =
+          to_timestamp(((SELECT (clock->>'runningSinceEpochMs')::bigint FROM public.matches WHERE id=$3) + 210000 + $4 - 60000)::numeric / 1000)
+         WHERE room_id=$1 AND user_id=$2`,
+          [s.roomId, s.red, s.matchId, offset],
+        );
+        const clockWorker = new ClockWorker(clock, matches, port(dueMatches));
+        const disconnectWorker = new DisconnectWorker(matches, port());
+        if (clockFirst) {
+          await clockWorker.tick();
+          await disconnectWorker.tick();
+        } else {
+          await disconnectWorker.tick();
+          await clockWorker.tick();
+        }
+        expect((await outcome(s)).outcome.reason).toBe(
+          offset <= 0 ? "DISCONNECT" : "INACTIVITY",
+        );
+      }
+    },
+  );
   it("rejects malformed cursor/candidate and cross-room transaction scopes", async () => {
     await expect(
       read((c) =>
@@ -365,6 +448,11 @@ describe.skipIf(!databaseUrl)("managed disconnect adjudication", () => {
     await reset();
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+    await apply("supabase/migrations/20261103000005_match_aborted.sql");
+    await apply("supabase/migrations/20261103000006_online_undo.sql");
+    await apply(
+      "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+    );
     const bad = [];
     for (let i = 0; i < 50; i++) {
       const s = await setup();

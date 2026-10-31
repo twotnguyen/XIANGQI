@@ -189,6 +189,28 @@ export class RoomController {
       );
     });
   }
+  /**
+   * Endpoint POST /rooms/:roomId/transfer-host: Host nhường quyền Host cho người chơi còn lại.
+   */
+  @Post(":roomId/transfer-host")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  transferHost(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readRoomProof(request),
+        input = object(body);
+      return this.service.transferHost(
+        authority,
+        id(roomId),
+        this.versioned(input),
+        this.control(input),
+      );
+    });
+  }
   private control(input: Record<string, unknown>): RoomControlProof {
     const value = input.control as Partial<RoomControlProof> | undefined;
     if (

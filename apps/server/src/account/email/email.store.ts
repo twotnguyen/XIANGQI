@@ -1,5 +1,6 @@
 import type { Pool, PoolClient } from "pg";
 import { actorLock, transaction } from "../../core/postgres.js";
+import { reserveOtpSend, OTP_LIMIT_MESSAGE } from "../auth/otp.store.js";
 import {
   ALIAS_DOMAIN,
   EmailError,
@@ -111,6 +112,8 @@ export class EmailVerificationStore {
       if (taken.rowCount)
         throw new EmailError("EMAIL_TAKEN", "Email này đã được sử dụng", 409);
       const otpHash = input.hash(target, now);
+      if (!(await reserveOtpSend(client, userId, target, now)))
+        throw new EmailError("EMAIL_OTP_LIMITED", OTP_LIMIT_MESSAGE, 429);
       await client.query(
         `UPDATE xiangqi_auth.username_accounts
            SET pending_email=$2, otp_hash=$3, last_sent_at=$4, expires_at=$5, attempts=0

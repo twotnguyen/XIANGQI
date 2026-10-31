@@ -8,7 +8,7 @@ Root supplies `ClockWorkerPort.dueMatches(cursor)` and `withMatch`. The due adap
 
 A stale/early/terminal candidate is skipped. Transaction errors are collected into AggregateError after the bounded batch; one corrupt match cannot prevent other candidates from being processed. The caller rolls back failures and publishes only committed outbox events. Errors are not transformed into a fabricated successful timeout.
 
-This module owns no Pool, timer, HTTP/Auth provider, Socket.IO or client clock. Root must serialize runtime ticks (planned100ms interval), clean up the scheduler on shutdown, and recover interrupted old-boot games before starting the clock loop. Root also resolves any **earlier** disconnect/grace cause in its transaction adapter before the clock callback; a later observation of zero must not replace an earlier valid DISCONNECT outcome. Neither a direct test tick nor the ClockWorker constructor proves deployed autonomous scheduling.
+This module owns no Pool, timer, HTTP/Auth provider, Socket.IO or client clock. Root serializes runtime ticks and recovers interrupted old-boot games before starting the clock loop. Under the same actor/room locks, both clock and disconnect workers and match actions use the same deadline arbitration: earliest valid deadline wins; exact ties prefer TIMEOUT, then DISCONNECT, then INACTIVITY. Equal PostgreSQL disconnect timestamps for both still-disconnected players produce DRAW_SIMULTANEOUS_DISCONNECT; timestamps differing by a microsecond remain distinct. The committed terminal time records the trusted adjudication sample, not the earlier deadline. Neither a direct test tick nor the ClockWorker constructor proves deployed autonomous scheduling.
 
 ## Wire projection
 

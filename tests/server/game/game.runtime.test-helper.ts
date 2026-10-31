@@ -97,6 +97,7 @@ async function oldRoom(
   r: ReturnType<typeof registration>,
   playing = false,
   usernameOnly = false,
+  startedAt = new Date(),
 ) {
   const a = await member(r, usernameOnly),
     b = await member(r),
@@ -144,7 +145,7 @@ async function oldRoom(
         [entry.roomId],
       );
       const token = randomUUID(),
-        at = new Date();
+        at = startedAt;
       await scope.client.query(
         "INSERT INTO xiangqi_room.countdowns(room_id,token,due_at,red_id,black_id) VALUES($1,$2,$3,$4,$5)",
         [entry.roomId, token, at, a.id, b.id],
@@ -201,6 +202,7 @@ export async function resetLegacy() {
     "20261017000018_room_code_digits",
     "20261031000001_session_devices",
     "20261102000002_custom_rematch",
+    "20261103000004_room_issued_codes",
   ]);
 }
 // Full current schema (1-9 + 2 + 3) in order: 8 must precede 3 because 3 replaces guard_settings from 6.
@@ -218,7 +220,11 @@ export async function reset() {
     "20261017000018_room_code_digits",
     "20261031000001_session_devices",
     "20261102000002_custom_rematch",
+    "20261103000004_room_issued_codes",
     "20261102000003_unlimited_inactivity",
+    "20261103000005_match_aborted",
+    "20261103000006_online_undo",
+    "20261103000007_match_simultaneous_disconnect",
   ]);
 }
 

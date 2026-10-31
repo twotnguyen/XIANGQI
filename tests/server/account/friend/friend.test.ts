@@ -86,7 +86,13 @@ describe.skipIf(!url)("friendships", () => {
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
+    await apply("supabase/migrations/20261103000005_match_aborted.sql");
+    await apply("supabase/migrations/20261103000006_online_undo.sql");
+    await apply(
+      "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
+    );
     await apply("supabase/migrations/20261011000014_friendships.sql");
     await apply(
       "supabase/migrations/20261101000001_friend_presence_invites.sql",
@@ -209,6 +215,22 @@ describe.skipIf(!url)("friendships", () => {
     ).rejects.toMatchObject({ code: "FRIEND_GUEST_DENIED" });
   });
 
+  it("requires at least 3 characters and returns at most 20 usernames in ascending order (AC-YC3-RV-02)", async () => {
+    const searcher = await member("capsearcher");
+    for (const short of ["", " ", "a", "ca", " ab "])
+      await expect(service.search(searcher, short)).rejects.toMatchObject({
+        code: "FRIEND_INPUT_INVALID",
+      });
+    for (let i = 21; i >= 1; i--)
+      await member(`capmate${String(i).padStart(2, "0")}`);
+    const found = (await service.search(searcher, "capm")).map(
+      (p) => p.username,
+    );
+    expect(found).toHaveLength(20);
+    expect(found).toEqual([...found].sort());
+    expect(found[0]).toBe("capmate01");
+  });
+
   it("excludes Guest usernames from member search and rejects invitations targeting a Guest", async () => {
     const sender = await member("friendsearcher");
     const real = await member("peer_member");
@@ -268,6 +290,31 @@ describe.skipIf(!url)("friendships", () => {
         proof,
       }),
     ).rejects.toMatchObject({ code: "FRIEND_INVITE_MISSING" });
+  });
+
+  it("rejects the sixth concurrent invite to one recipient without a cooldown (AC-YC3-RV-04)", async () => {
+    const mate = await member("fullmate");
+    const invites: string[] = [];
+    for (let i = 1; i <= 5; i++) {
+      const host = await member(`fullhost${i}`);
+      const roomId = await seatedRoom(host);
+      await friendsOnline(host, mate, "fullmate");
+      invites.push((await service.inviteToRoom(host, roomId, "fullmate")).id);
+    }
+    const sixth = await member("fullhost6");
+    const sixthRoom = await seatedRoom(sixth);
+    await friendsOnline(sixth, mate, "fullmate");
+    await expect(
+      service.inviteToRoom(sixth, sixthRoom, "fullmate"),
+    ).rejects.toMatchObject({ code: "FRIEND_INVITE_RECIPIENT_FULL" });
+    expect((await service.inviteState(sixth)).cooldownUntil).toBeNull();
+    expect(await service.listRoomInvites(mate)).toHaveLength(5);
+    await service.respondRoomInvite(mate, invites[0]!, {
+      accept: false,
+      commandId: randomUUID(),
+    });
+    const retry = await service.inviteToRoom(sixth, sixthRoom, "fullmate");
+    expect(retry.id).toBeTruthy();
   });
 
   it("keeps the invite pending when the port fails with a retryable error", async () => {

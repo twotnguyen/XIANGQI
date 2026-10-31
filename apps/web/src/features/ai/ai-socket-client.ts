@@ -95,6 +95,8 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
   // Game to re-attach after a connection/control generation drop; never reused as live attachment.
   let resume: string | null = null;
   const pending = new Set<(message: string) => void>();
+  // Chờ quyền điều khiển: sống qua revoke() do tái xác thực, chỉ hủy khi đóng hoặc hết 5 giây.
+  const durable = new Set<(message: string) => void>();
   const waiters = new Set<(proof: AiControlProof) => void>();
   function authority(): AiControlProof {
     if (!control || !socket.connected || control.connectionId !== socket.id)
@@ -121,19 +123,20 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
     latestVersion = -1;
     return command("ai.watch", { gameId: target });
   }
-  function revoke(message = unavailable) {
+  function revoke(message = unavailable, includeDurable = false) {
     epoch++;
     const wasReady = control !== null;
     if (watchedGame !== null) resume = watchedGame;
     watchedGame = null;
     control = null;
     latestVersion = -1;
-    for (const cancel of [...pending]) cancel(message);
+    for (const cancel of [...pending])
+      if (includeDurable || !durable.has(cancel)) cancel(message);
     if (!disposed && wasReady) options.onConnection(false);
   }
   function close(message?: string) {
     if (disposed) return;
-    revoke(message);
+    revoke(message, true);
     if (message) options.onError(message);
     disposed = true;
     socket.removeAllListeners();
@@ -208,6 +211,7 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
       resolve: (value: T) => void,
       reject: (message: string) => void,
     ) => void,
+    survivesRevoke = false,
   ): Promise<T> {
     if (disposed) return Promise.reject(Error(unavailable));
     return new Promise((resolve, reject) => {
@@ -215,12 +219,14 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
       const finish = () => {
         clearTimeout(timer);
         pending.delete(cancel);
+        durable.delete(cancel);
       };
       const cancel = (message: string) => {
         finish();
         reject(Error(message));
       };
       pending.add(cancel);
+      if (survivesRevoke) durable.add(cancel);
       start((value) => {
         finish();
         resolve(value);
@@ -380,7 +386,7 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
       return task<AiControlProof>((resolve) => {
         complete = resolve;
         waiters.add(resolve);
-      }).finally(() => {
+      }, true).finally(() => {
         if (complete) waiters.delete(complete);
       });
     },

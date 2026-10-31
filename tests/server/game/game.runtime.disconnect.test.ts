@@ -1,6 +1,10 @@
 import { randomUUID } from "node:crypto";
 import type { AddressInfo } from "node:net";
-import type { CommandAcknowledgement, RoomSnapshot } from "@xiangqi/shared";
+import type {
+  CommandAcknowledgement,
+  RoomAction,
+  RoomSnapshot,
+} from "@xiangqi/shared";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { io, type Socket } from "socket.io-client";
 import { createApp } from "@server/app.js";
@@ -155,7 +159,10 @@ describe.skipIf(!databaseUrl)(
               snapshots.get(a.id)?.version === s.version,
             ),
         );
-        const command = (index: number) => {
+        const command = (
+          index: number,
+          action: RoomAction = { type: "room.ready", payload: { ready: true } },
+        ) => {
           const snapshot = snapshots.get([a, b][index]!.id);
           if (!snapshot) throw new Error("Synthetic peer lacks snapshot");
           return new Promise<CommandAcknowledgement>((resolve) =>
@@ -165,18 +172,20 @@ describe.skipIf(!databaseUrl)(
                 commandId: randomUUID(),
                 roomId: entry.roomId,
                 expectedVersion: snapshot.version,
-                action: { type: "room.ready", payload: { ready: true } },
+                action,
               },
               resolve,
             ),
           );
         };
-        expect((await command(0)).status).toBe("ok");
-        await waitFor(
-          async () => snapshots.get(b.id),
-          (s) => s?.room.ready.red === true,
-        );
         expect((await command(1)).status).toBe("ok");
+        await waitFor(
+          async () => snapshots.get(a.id),
+          (s) => s?.room.ready.black === true,
+        );
+        expect(
+          (await command(0, { type: "room.start", payload: {} })).status,
+        ).toBe("ok");
         const started = await waitFor(
           async () => snapshots.get(b.id),
           (s) => s?.match?.status === "ACTIVE",

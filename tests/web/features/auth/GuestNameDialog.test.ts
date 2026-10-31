@@ -129,6 +129,20 @@ it("rejects a name the client already refuses, showing the rule without a server
   expect(screen.getByLabelText("state").textContent).toBe("anonymous");
 });
 
+it("rejects emoji and control characters but normalizes spaces in allowed guest names", async () => {
+  renderDialog();
+  await typeName("Kỳ thủ🙂");
+  await confirm();
+  expect(guestPosts).toEqual([]);
+  await typeName("Kỳ\tThủ");
+  await confirm();
+  expect(guestPosts).toEqual([]);
+  guestResponse = () => reply(guestBody, 201);
+  await typeName("  Lữ   khách  ");
+  await confirm();
+  expect(guestPosts).toEqual(["Lữ khách"]);
+});
+
 it("shows the server name rule at the field when the server refuses a client-valid name", async () => {
   guestResponse = () => reply({ code: "GUEST_NAME_INVALID" }, 400);
   const onClose = renderDialog();

@@ -35,7 +35,11 @@ describe.skipIf(!databaseUrl)(
         "20261011000017_rls_hardening",
         "20261017000018_room_code_digits",
         "20261102000002_custom_rematch",
+        "20261103000004_room_issued_codes",
         "20261102000003_unlimited_inactivity",
+        "20261103000005_match_aborted",
+        "20261103000006_online_undo",
+        "20261103000007_match_simultaneous_disconnect",
       ])
         await apply(`supabase/migrations/${migration}.sql`);
     });

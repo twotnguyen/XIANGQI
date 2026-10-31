@@ -180,10 +180,16 @@ describe("profile service rules", () => {
     await expect(rules.updateDisplayName("u", 7)).rejects.toMatchObject({
       code: "PROFILE_NAME_INVALID",
     });
+    for (const name of ["Kỳ 🐉", "Kỳ@Hữu", "\nKỳ Hữu", "Kỳ\tHữu"])
+      await expect(rules.updateDisplayName("u", name)).rejects.toMatchObject({
+        code: "PROFILE_NAME_INVALID",
+      });
     expect(calls).toEqual([]);
-    await expect(rules.updateDisplayName("u", "  Kỳ Hữu  ")).resolves.toEqual({
-      displayName: "Kỳ Hữu",
-    });
+    await expect(rules.updateDisplayName("u", "  Kỳ   Hữu  ")).resolves.toEqual(
+      {
+        displayName: "Kỳ Hữu",
+      },
+    );
     expect(calls).toEqual(["update"]);
   });
 });

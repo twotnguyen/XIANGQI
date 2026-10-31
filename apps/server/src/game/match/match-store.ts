@@ -6,6 +6,7 @@ import {
   type Position,
 } from "@xiangqi/xiangqi-core";
 import type { PoolClient } from "pg";
+import type { Side } from "@xiangqi/xiangqi-core";
 import {
   type MatchCommandResult,
   type MatchOutcome,
@@ -26,7 +27,7 @@ import {
   assertUuid,
   validClock,
 } from "./match-store-core.js";
-import { MatchDrawStore } from "./match-store-draw.js";
+import { MatchUndoStore } from "./match-store-undo.js";
 import {
   UNLIMITED_TIME_CONTROL,
   inactivityExpired,
@@ -37,7 +38,7 @@ export type CurrentMatch = RoomMatch & { match: MatchView | null };
 /**
  * Lớp Store hoàn chỉnh quản lý vòng đời ván đấu: khởi tạo ván, thực hiện nước đi, đầu hàng và kết thúc ván.
  */
-export class MatchStore extends MatchDrawStore {
+export class MatchStore extends MatchUndoStore {
   /**
    * Khởi tạo và bắt đầu ván đấu mới khi cả hai người chơi đã sẵn sàng và đếm ngược hoàn tất.
    */
@@ -215,20 +216,32 @@ export class MatchStore extends MatchDrawStore {
       return this.denied(match, "MATCH_FINISHED", "Ván đã kết thúc.");
     if (room.current_match_id !== row.id || room.status !== "PLAYING")
       reject("MATCH_ID_MISMATCH", "Ván trong phòng đã thay đổi.");
+    const at = this.now();
     const ended = await this.expiredDisconnect(
       scope,
       row,
       match,
       history.at(-1)!,
+      at,
     );
-    if (ended) return this.denied(ended, "MATCH_FINISHED", "Ván đã kết thúc.");
+    if (ended)
+      return this.denied(
+        ended,
+        ended.outcome?.reason === "TIMEOUT" ||
+          ended.outcome?.reason === "INACTIVITY"
+          ? "MATCH_TIME_EXPIRED"
+          : "MATCH_FINISHED",
+        ended.outcome?.reason === "TIMEOUT" ||
+          ended.outcome?.reason === "INACTIVITY"
+          ? "Thời gian suy nghĩ đã hết."
+          : "Ván đã kết thúc.",
+      );
     if (match.version !== input.matchVersion)
       return this.denied(
         match,
         "MATCH_VERSION_CONFLICT",
         "Thế cờ đã thay đổi.",
       );
-    const at = this.now();
     const checked = this.checkTime(match, at);
     validClock(checked.clock);
     if (checked.expired) {
@@ -251,6 +264,13 @@ export class MatchStore extends MatchDrawStore {
         "Thời gian suy nghĩ đã hết.",
       );
     }
+    const undo = await this.undoSnapshot(scope, { matchId: row.id });
+    if (undo.offers.some((offer) => offer.sender === side))
+      return this.denied(
+        match,
+        "MATCH_UNDO_PENDING",
+        "Hãy rút đề nghị đi lại trước khi đi.",
+      );
     if (side !== match.turn)
       return this.denied(match, "MATCH_NOT_YOUR_TURN", "Chưa đến lượt bạn.");
     let next: Position;
@@ -357,6 +377,22 @@ export class MatchStore extends MatchDrawStore {
       positions: [...history, next],
       lastMove,
     });
+    if (!outcome) {
+      // Đề nghị hòa còn chờ kết thúc cùng giao dịch với nước đi; phiên bản ván tăng theo từng đề nghị.
+      const afterOffers = await this.closeDrawOffersOnMove(scope, {
+        matchId: row.id,
+      });
+      if (afterOffers) {
+        this.historyCache.delete(row.id);
+        result = afterOffers;
+      }
+      if (result.status === "ACTIVE") {
+        const afterUndo = await this.closeUndoOffersOnMove(scope, {
+          matchId: row.id,
+        });
+        if (afterUndo) result = afterUndo;
+      }
+    }
     return { applied: true, match: result };
   }
   /**
@@ -366,6 +402,52 @@ export class MatchStore extends MatchDrawStore {
     scope: MatchScope,
     input: { matchId: string; matchVersion: number },
   ): Promise<MatchCommandResult> {
+    return this.playerEnding(scope, input, (side) => ({
+      reason: "RESIGN",
+      winner: opposite(side),
+    }));
+  }
+  /**
+   * Hủy ván khi chưa có nước đi nào (YC5 mục 17.2): kết quả trung tính ABORTED, chỉ ván online tự tạo/Đánh Thường.
+   */
+  async abort(
+    scope: MatchScope,
+    input: { matchId: string; matchVersion: number },
+  ): Promise<MatchCommandResult> {
+    return this.playerEnding(
+      scope,
+      input,
+      () => ({ reason: "ABORTED", winner: null }),
+      async (row) => {
+        const played = await scope.client.query(
+          "SELECT 1 FROM public.match_events WHERE match_id=$1 AND type='MOVE' LIMIT 1",
+          [row.id],
+        );
+        return Number(row.ply) === 0 &&
+          row.mode === "ONLINE" &&
+          !played.rowCount
+          ? null
+          : {
+              code: "MATCH_ABORT_NOT_ALLOWED",
+              message: "Chỉ hủy được ván khi chưa có nước đi.",
+            };
+      },
+    );
+  }
+  /**
+   * Khung chung cho lệnh người chơi kết thúc ván (đầu hàng, hủy): kiểm hạn/phiên bản trước, hết giờ thì bên hết giờ thua.
+   */
+  private async playerEnding(
+    scope: MatchScope,
+    input: { matchId: string; matchVersion: number },
+    normal: (side: Side) => MatchOutcome,
+    refuse: (
+      row: MatchRow,
+    ) =>
+      | { code: string; message: string }
+      | null
+      | Promise<{ code: string; message: string } | null> = () => null,
+  ): Promise<MatchCommandResult> {
     const { room, row, side, history, match } = await this.context(
       scope,
       input,
@@ -374,31 +456,44 @@ export class MatchStore extends MatchDrawStore {
       return this.denied(match, "MATCH_FINISHED", "Ván đã kết thúc.");
     if (room.current_match_id !== row.id || room.status !== "PLAYING")
       reject("MATCH_ID_MISMATCH", "Ván trong phòng đã thay đổi.");
+    const at = this.now();
     const ended = await this.expiredDisconnect(
       scope,
       row,
       match,
       history.at(-1)!,
+      at,
     );
-    if (ended) return this.denied(ended, "MATCH_FINISHED", "Ván đã kết thúc.");
+    if (ended)
+      return this.denied(
+        ended,
+        ended.outcome?.reason === "TIMEOUT" ||
+          ended.outcome?.reason === "INACTIVITY"
+          ? "MATCH_TIME_EXPIRED"
+          : "MATCH_FINISHED",
+        ended.outcome?.reason === "TIMEOUT" ||
+          ended.outcome?.reason === "INACTIVITY"
+          ? "Thời gian suy nghĩ đã hết."
+          : "Ván đã kết thúc.",
+      );
+    const checked = this.checkTime(match, at);
+    validClock(checked.clock);
+    if (checked.expired && checked.expired !== match.turn) corrupt();
+    // Hết giờ thắng lệnh bị từ chối; lệnh không hợp lệ (đã có nước) báo trước lỗi phiên bản cũ.
+    const refused = checked.expired ? null : await refuse(row);
+    if (refused) return this.denied(match, refused.code, refused.message);
     if (match.version !== input.matchVersion)
       return this.denied(
         match,
         "MATCH_VERSION_CONFLICT",
         "Thế cờ đã thay đổi.",
       );
-    const at = this.now();
-    const checked = this.checkTime(match, at);
-    validClock(checked.clock);
-    if (checked.expired && checked.expired !== match.turn) corrupt();
-    const outcome: MatchOutcome = {
-      reason: checked.expired
-        ? match.inactivity
-          ? "INACTIVITY"
-          : "TIMEOUT"
-        : "RESIGN",
-      winner: opposite(checked.expired ?? side),
-    };
+    const outcome: MatchOutcome = checked.expired
+      ? {
+          reason: match.inactivity ? "INACTIVITY" : "TIMEOUT",
+          winner: opposite(checked.expired),
+        }
+      : normal(side);
     return {
       applied: !checked.expired,
       match: await this.end(
@@ -434,13 +529,28 @@ export class MatchStore extends MatchDrawStore {
       return this.denied(match, "MATCH_FINISHED", "Ván đã kết thúc.");
     if (room.current_match_id !== row.id || room.status !== "PLAYING")
       reject("MATCH_ID_MISMATCH", "Ván trong phòng đã thay đổi.");
+    const at = this.now();
     const ended = await this.expiredDisconnect(
       scope,
       row,
       match,
       history.at(-1)!,
+      at,
     );
-    if (ended) return this.denied(ended, "MATCH_FINISHED", "Ván đã kết thúc.");
+    if (ended)
+      return this.denied(
+        ended,
+        ended.outcome?.reason === "INACTIVITY"
+          ? "MATCH_INACTIVITY_EXPIRED"
+          : ended.outcome?.reason === "TIMEOUT"
+            ? "MATCH_TIME_EXPIRED"
+            : "MATCH_FINISHED",
+        ended.outcome?.reason === "INACTIVITY"
+          ? "Đã hết thời gian xác nhận."
+          : ended.outcome?.reason === "TIMEOUT"
+            ? "Thời gian suy nghĩ đã hết."
+            : "Ván đã kết thúc.",
+      );
     if (match.version !== input.matchVersion)
       return this.denied(
         match,
@@ -455,7 +565,6 @@ export class MatchStore extends MatchDrawStore {
       );
     if (side !== match.turn)
       return this.denied(match, "MATCH_NOT_YOUR_TURN", "Chưa đến lượt bạn.");
-    const at = this.now();
     if (inactivityExpired(match.clock, at)) {
       const terminal = await this.end(
         scope.client,
@@ -487,9 +596,27 @@ export class MatchStore extends MatchDrawStore {
     const next = {
       ...row,
       clock: unlimitedClock(at),
+      version: String(Number(row.version) + 1),
       inactivity_extensions: row.inactivity_extensions + 1,
     };
     await this.update(scope.client, next);
+    await scope.client.query(
+      "INSERT INTO public.match_events(match_id,version,type,payload,created_at) VALUES($1,$2,'STILL_HERE',$3,$4)",
+      [
+        row.id,
+        next.version,
+        { side, confirms: next.inactivity_extensions },
+        at,
+      ],
+    );
+    await scope.client.query(
+      "UPDATE public.rooms SET room_version=room_version+1 WHERE id=$1",
+      [row.room_id],
+    );
+    await this.outbox(scope.client, row.room_id, "MATCH_STILL_HERE", {
+      matchId: row.id,
+      matchVersion: Number(next.version),
+    });
     return {
       applied: true,
       match: this.view(next, history.at(-1)!, match.lastMove),
@@ -515,11 +642,16 @@ export class MatchStore extends MatchDrawStore {
         "RESIGN",
         "TIMEOUT",
         "DISCONNECT",
+        "DRAW_SIMULTANEOUS_DISCONNECT",
         "DRAW_AGREEMENT",
         "SERVER_RESTART",
         "INACTIVITY",
       ].includes(reason) ||
-      (["DRAW_AGREEMENT", "SERVER_RESTART"].includes(reason)
+      ([
+        "DRAW_AGREEMENT",
+        "SERVER_RESTART",
+        "DRAW_SIMULTANEOUS_DISCONNECT",
+      ].includes(reason)
         ? winner !== null
         : !["red", "black"].includes(String(winner)))
     )

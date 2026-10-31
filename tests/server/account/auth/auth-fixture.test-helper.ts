@@ -15,6 +15,7 @@ export interface AuthFixture {
     failVerifyAfterConfirm: boolean;
     limited: boolean;
     failPasswordUpdate: boolean;
+    rejectPasswordUpdate: boolean;
     failPasswordUpdateAfterWrite: boolean;
     failPasswordSession: boolean;
   };
@@ -40,6 +41,7 @@ export async function startAuthFixture(
     failVerifyAfterConfirm: false,
     limited: false,
     failPasswordUpdate: false,
+    rejectPasswordUpdate: false,
     failPasswordUpdateAfterWrite: false,
     failPasswordSession: false,
   };
@@ -209,6 +211,11 @@ export async function startAuthFixture(
           }
           if (state.failPasswordUpdate)
             return respond(503, { msg: "fake-sensitive-fixture" });
+          if (state.rejectPasswordUpdate)
+            return respond(422, {
+              error_code: "weak_password",
+              msg: "fake-sensitive-fixture",
+            });
           passwords.set(id, body.password);
           if (state.failPasswordSession) blockedPasswordSessions.add(id);
           for (const [refresh, owner] of refreshTokens) {

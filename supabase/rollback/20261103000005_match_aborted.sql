@@ -1,0 +1,11 @@
+BEGIN;
+SET LOCAL search_path=pg_catalog,public;
+LOCK TABLE public.matches IN ACCESS EXCLUSIVE MODE;
+DO $$ BEGIN
+  IF EXISTS(SELECT 1 FROM public.matches WHERE outcome->>'reason'='ABORTED') THEN
+    RAISE EXCEPTION 'Cannot remove ABORTED outcomes while aborted matches exist';
+  END IF;
+END $$;
+ALTER TABLE public.matches DROP CONSTRAINT matches_status_and_outcome_invariants;
+ALTER TABLE public."matches" ADD CONSTRAINT "matches_status_and_outcome_invariants" CHECK ((((status = 'ACTIVE'::text) AND (outcome IS NULL) AND (ended_at IS NULL)) OR ((status = 'INTERRUPTED'::text) AND (ended_at IS NOT NULL) AND (ended_at >= created_at) AND (proposal IS NULL) AND (outcome IS NOT NULL) AND COALESCE(((jsonb_typeof(outcome) = 'object'::text) AND (outcome ? 'reason'::text) AND (outcome ? 'winner'::text) AND ((outcome ->> 'reason'::text) = ANY (ARRAY['BOTH_OFFLINE'::text, 'SERVER_RESTART'::text, 'AI_UNAVAILABLE'::text])) AND (jsonb_typeof((outcome -> 'winner'::text)) = 'null'::text)), false)) OR ((status = 'FINISHED'::text) AND (ended_at IS NOT NULL) AND (ended_at >= created_at) AND (proposal IS NULL) AND (outcome IS NOT NULL) AND COALESCE(((jsonb_typeof(outcome) = 'object'::text) AND (outcome ? 'reason'::text) AND (outcome ? 'winner'::text) AND ((((outcome ->> 'reason'::text) = ANY (ARRAY['AGREED_DRAW'::text, 'REPETITION'::text, 'DRAW_REPETITION'::text, 'DRAW_NO_CAPTURE'::text, 'DRAW_AGREEMENT'::text])) AND (jsonb_typeof((outcome -> 'winner'::text)) = 'null'::text)) OR (((outcome ->> 'reason'::text) = ANY (ARRAY['CHECKMATE'::text, 'STALEMATE'::text, 'TIMEOUT'::text, 'RESIGN'::text, 'DISCONNECT'::text, 'INACTIVITY'::text])) AND ((outcome ->> 'winner'::text) = ANY (ARRAY['RED'::text, 'BLACK'::text])))) OR (((outcome ->> 'reason'::text) = 'PERPETUAL_CHECK'::text) AND (((outcome ->> 'winner'::text) = ANY (ARRAY['RED'::text, 'BLACK'::text])) OR (jsonb_typeof((outcome -> 'winner'::text)) = 'null'::text)))), false))));
+COMMIT;

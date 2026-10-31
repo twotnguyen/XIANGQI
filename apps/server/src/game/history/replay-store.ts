@@ -71,7 +71,7 @@ export class ReplayStore {
       fail("REPLAY_FORBIDDEN", 403);
     const row = (
       await scope.client.query<Row>(
-        "SELECT id,mode,status,room_id,red_user_id,black_user_id,ai_side,ai_level,rule_set_version,position,version,ply,active_move_ids,outcome,ended_at FROM public.matches WHERE id=$1 AND status IN('FINISHED','INTERRUPTED') AND (red_user_id=$2 OR black_user_id=$2)",
+        "SELECT id,mode,status,room_id,red_user_id,black_user_id,ai_side,ai_level,rule_set_version,position,version,ply,active_move_ids,outcome,ended_at FROM public.matches WHERE id=$1 AND status IN('FINISHED','INTERRUPTED') AND outcome->>'reason' IS DISTINCT FROM 'ABORTED' AND (red_user_id=$2 OR black_user_id=$2)",
         [id, scope.actor.userId],
       )
     ).rows[0];

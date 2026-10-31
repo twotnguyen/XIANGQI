@@ -1,8 +1,8 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { PoolClient } from "pg";
 import { ClockService } from "@server/game/clock/clock.service.js";
 import { MatchStore } from "@server/game/match/match-store.js";
-import { apply, databaseUrl, pool } from "./match.test-helper.js";
+import { databaseUrl, pool } from "./match.test-helper.js";
 import {
   black,
   red,
@@ -64,9 +64,6 @@ async function waitForAdvisoryWaiter() {
 
 describe.skipIf(!databaseUrl)("match draw expiry under room-lock wait", () => {
   useMatchHooks();
-  beforeAll(async () => {
-    await apply("supabase/migrations/20261011000009_match_draw.sql");
-  });
   it("re-samples the offer deadline after waiting on the room lock, so a late acceptance expires", async () => {
     const s = await start(new Date());
     const offer = await run(s.room, red, (scope) =>

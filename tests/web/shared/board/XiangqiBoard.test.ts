@@ -254,6 +254,50 @@ it("cancels selected pieces through repeated click, invalid target and Escape", 
   fireEvent.keyDown(pawn, { key: "Escape" });
   expect(pawn.getAttribute("aria-pressed")).toBe("false");
 });
+it("switches the selection to another own piece and shows only its destinations (AC-YC4-RV-01)", () => {
+  const move = vi.fn();
+  renderDom(
+    createElement(XiangqiBoard, { position: initialPosition(), onMove: move }),
+  );
+  const pawn = screen.getByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" });
+  const horse = screen.getByRole("button", { name: "Mã đỏ, cột 2 hàng 10" });
+  const pawnTarget = screen.getByRole("button", {
+    name: "Trống, cột 1 hàng 6",
+  });
+  const horseTarget = screen.getByRole("button", {
+    name: "Trống, cột 1 hàng 8",
+  });
+  fireEvent.click(pawn);
+  expect(pawnTarget.getAttribute("data-legal")).toBe("true");
+  fireEvent.click(horse);
+  expect(pawn.getAttribute("aria-pressed")).toBe("false");
+  expect(horse.getAttribute("aria-pressed")).toBe("true");
+  expect(pawnTarget.getAttribute("data-legal")).not.toBe("true");
+  expect(horseTarget.getAttribute("data-legal")).toBe("true");
+  expect(move).not.toHaveBeenCalled();
+  fireEvent.click(horse);
+  expect(horse.getAttribute("aria-pressed")).toBe("false");
+  fireEvent.click(horse);
+  fireEvent.keyDown(horse, { key: "Enter" });
+  expect(horse.getAttribute("aria-pressed")).toBe("false");
+  fireEvent.keyDown(pawn, { key: "Enter" });
+  fireEvent.keyDown(horse, { key: " " });
+  expect(pawn.getAttribute("aria-pressed")).toBe("false");
+  expect(horse.getAttribute("aria-pressed")).toBe("true");
+});
+it("locks further input with aria-busy and shows no sending text while a move is pending (AC-YC4-RV-02)", () => {
+  const view = renderDom(
+    createElement(XiangqiBoard, {
+      position: initialPosition(),
+      onMove: vi.fn(),
+      pending: true,
+    }),
+  );
+  expect(view.container.querySelector("svg")!.getAttribute("aria-busy")).toBe(
+    "true",
+  );
+  expect(screen.queryByText(/Đang gửi nước/)).toBeNull();
+});
 it("prevents selection for disabled, pending or the wrong side", () => {
   const move = vi.fn();
   const view = renderDom(

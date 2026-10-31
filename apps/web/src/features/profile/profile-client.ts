@@ -19,6 +19,7 @@ export class ProfileRequestError extends Error {
   constructor(
     public readonly code: string,
     public readonly status: number,
+    public readonly retryAfterDays?: number,
   ) {
     super("Chưa thể cập nhật hồ sơ. Vui lòng thử lại.");
   }
@@ -92,13 +93,25 @@ export function createProfileClient(authorizedFetch: AuthorizedFetch) {
     });
     if (!response.ok) {
       let code = "PROFILE_UNAVAILABLE";
+      let retryAfterDays: number | undefined;
       try {
-        const value = (await response.json()) as { code?: unknown };
+        const value = (await response.json()) as {
+          code?: unknown;
+          retryAfterDays?: unknown;
+        };
         if (typeof value.code === "string") code = value.code;
+        if (
+          code === "USERNAME_CHANGE_LIMITED" &&
+          typeof value.retryAfterDays === "number" &&
+          Number.isInteger(value.retryAfterDays) &&
+          value.retryAfterDays >= 1 &&
+          value.retryAfterDays <= 7
+        )
+          retryAfterDays = value.retryAfterDays;
       } catch {
         /* Do not display upstream response bodies. */
       }
-      throw new ProfileRequestError(code, response.status);
+      throw new ProfileRequestError(code, response.status, retryAfterDays);
     }
     try {
       return parse(await response.json());

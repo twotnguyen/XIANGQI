@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from "../../shared/api.js";
+import { tabSessionFetch } from "../../shared/tab-session.js";
 export interface GoogleIdentity {
   initialize(config: {
     client_id: string;
@@ -62,6 +63,8 @@ const messages: Record<string, string> = {
   EMAIL_TAKEN: "Email này đã được đăng ký",
   USERNAME_TAKEN: "Username đã có người dùng. Vui lòng chọn Username khác.",
   USERNAME_FORBIDDEN: "Username chứa từ không được phép sử dụng.",
+  PASSWORD_PROVIDER_REJECTED:
+    "Dịch vụ xác thực không chấp nhận mật khẩu này, vui lòng chọn mật khẩu khác",
   GOOGLE_EXPIRED: "Phiên thiết lập đã hết hạn. Vui lòng xác thực Google lại.",
   GOOGLE_INVALID:
     "Phiên xác thực Google không hợp lệ. Vui lòng xác thực Google lại.",
@@ -81,7 +84,7 @@ async function request(
   signal?: AbortSignal,
 ): Promise<unknown> {
   const base = getApiBaseUrl();
-  const response = await fetch(`${base}${path}`, {
+  const response = await tabSessionFetch(`${base}${path}`, {
     method: body === undefined ? "GET" : "POST",
     credentials: "include",
     redirect: "error",

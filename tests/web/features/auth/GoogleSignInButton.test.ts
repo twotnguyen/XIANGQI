@@ -102,7 +102,11 @@ it("uses configured audience and nonce with the official popup button and snapsh
     url.endsWith("/authenticate"),
   );
   expect(authentication).toBeTruthy();
-  expect(storage).not.toHaveBeenCalled();
+  expect(
+    storage.mock.calls.every(
+      ([key, value]) => key === "xiangqi.tab" && /^[a-f0-9-]{36}$/.test(value),
+    ),
+  ).toBe(true);
   // Inspect the HTTP boundary, not the Google SDK fixture.
   const fetchInit = (
     request.mock.calls as unknown as [string, RequestInit][]

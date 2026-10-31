@@ -1,5 +1,6 @@
 import type { Pool, PoolClient } from "pg";
 import { actorLock, transaction } from "../../core/postgres.js";
+import { reserveOtpSend, OTP_LIMIT_MESSAGE } from "../auth/otp.store.js";
 import { LoginError } from "../login/login.types.js";
 import {
   invalidRecovery,
@@ -16,7 +17,7 @@ const accountSql = `SELECT a.id AS "userId",p.username,a.email AS "credentialEma
   LEFT JOIN xiangqi_auth.username_accounts u ON u.user_id=a.id`;
 const recoverySql = `SELECT user_id AS "userId",request_hash AS "requestHash",contact_email AS "contactEmail",
   otp_hash AS "otpHash",sent_at AS "sentAt",expires_at AS "expiresAt",attempts,
-  reset_hash AS "resetHash",consumed_at AS "consumedAt" FROM xiangqi_auth.password_recoveries`;
+  reset_hash AS "resetHash",reset_expires_at AS "resetExpiresAt",reset_operation_hash AS "resetOperationHash",consumed_at AS "consumedAt" FROM xiangqi_auth.password_recoveries`;
 
 /** Password and login locks serialize credential proofs; actor locks cover short DB writes only. */
 export class PasswordStore {
@@ -151,16 +152,31 @@ export class PasswordTx {
   prepareChange(sessionHash: string, changeHash: string, now: Date) {
     return this.run(async () => {
       const session = await this.readSession(sessionHash, now);
-      await this.revokeOthers(sessionHash, now);
       await this.client.query(
         "UPDATE xiangqi_auth.app_sessions SET password_change_hash=$2 WHERE token_hash=$1",
         [sessionHash, changeHash],
       );
+      return session;
+    });
+  }
+
+  cancelChange(sessionHash: string, changeHash: string, now: Date) {
+    return this.run(async () => {
+      await this.readSession(sessionHash, now);
+      await this.client.query(
+        "UPDATE xiangqi_auth.app_sessions SET password_change_hash=NULL WHERE token_hash=$1 AND password_change_hash=$2",
+        [sessionHash, changeHash],
+      );
+    });
+  }
+
+  acceptChange(sessionHash: string, now: Date) {
+    return this.run(async () => {
+      await this.revokeOthers(sessionHash, now);
       await this.client.query(
         "DELETE FROM xiangqi_auth.password_recoveries WHERE user_id=$1",
         [this.userId],
       );
-      return session;
     });
   }
 
@@ -199,11 +215,13 @@ export class PasswordTx {
           429,
         );
       const expiresAt = new Date(now.getTime() + 180_000);
+      if (!(await reserveOtpSend(this.client, this.userId, contactEmail, now)))
+        throw new PasswordError("PASSWORD_OTP_LIMITED", OTP_LIMIT_MESSAGE, 429);
       await this.client.query(
         `INSERT INTO xiangqi_auth.password_recoveries(user_id,request_hash,contact_email,otp_hash,sent_at,expires_at)
          VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT(user_id) DO UPDATE SET
            request_hash=EXCLUDED.request_hash,contact_email=EXCLUDED.contact_email,otp_hash=EXCLUDED.otp_hash,
-           sent_at=EXCLUDED.sent_at,expires_at=EXCLUDED.expires_at,attempts=0,reset_hash=NULL,consumed_at=NULL`,
+           sent_at=EXCLUDED.sent_at,expires_at=EXCLUDED.expires_at,attempts=0,reset_hash=NULL,reset_expires_at=NULL,reset_operation_hash=NULL,consumed_at=NULL`,
         [this.userId, requestHash, contactEmail, otpHash, now, expiresAt],
       );
       return {
@@ -217,7 +235,7 @@ export class PasswordTx {
     return this.run(async () => {
       // Keep cooldown, but an undelivered challenge must not be verifiable.
       await this.client.query(
-        `UPDATE xiangqi_auth.password_recoveries SET otp_hash=NULL,reset_hash=NULL
+        `UPDATE xiangqi_auth.password_recoveries SET otp_hash=NULL,reset_hash=NULL,reset_expires_at=NULL,reset_operation_hash=NULL
          WHERE user_id=$1 AND request_hash=$2 AND otp_hash=$3`,
         [this.userId, requestHash, otpHash],
       );
@@ -279,24 +297,94 @@ export class PasswordTx {
         return false;
       }
       await this.client.query(
-        "UPDATE xiangqi_auth.password_recoveries SET otp_hash=NULL,reset_hash=$2 WHERE user_id=$1",
-        [this.userId, resetHash],
+        "UPDATE xiangqi_auth.password_recoveries SET otp_hash=NULL,reset_hash=$2,reset_expires_at=$3,reset_operation_hash=NULL WHERE user_id=$1",
+        [this.userId, resetHash, new Date(now.getTime() + 600_000)],
       );
       return true;
     });
   }
 
-  consumeReset(requestHash: string, resetHash: string, now: Date) {
+  prepareReset(
+    requestHash: string,
+    resetHash: string,
+    operationHash: string,
+    now: Date,
+  ) {
     return this.run(async () => {
-      const row = await this.readRecovery(requestHash, now);
-      if (!row.resetHash || row.resetHash !== resetHash)
+      const row = await this.readRecovery(requestHash, now, false);
+      if (!row.resetHash || row.resetHash !== resetHash || !row.resetExpiresAt)
         throw invalidRecovery();
-      // Consume and revoke before the remote write: even an ambiguous provider failure cannot leave a replayable grant.
+      if (row.resetExpiresAt.getTime() <= now.getTime()) {
+        if (!row.resetOperationHash) throw invalidRecovery();
+        await this.consumePreparedReset(now);
+        return "expired" as const;
+      }
+      if (row.resetOperationHash && row.resetOperationHash !== operationHash)
+        throw invalidRecovery();
       await this.client.query(
-        "UPDATE xiangqi_auth.password_recoveries SET otp_hash=NULL,reset_hash=NULL,consumed_at=$2 WHERE user_id=$1",
-        [this.userId, now],
+        "UPDATE xiangqi_auth.password_recoveries SET reset_operation_hash=$2 WHERE user_id=$1",
+        [this.userId, operationHash],
       );
-      await this.revokeOthers(null, now);
+      return row.resetOperationHash ? ("resume" as const) : ("new" as const);
+    });
+  }
+
+  cancelReset(
+    requestHash: string,
+    resetHash: string,
+    operationHash: string,
+    now: Date,
+  ) {
+    return this.run(async () => {
+      const row = await this.readRecovery(requestHash, now, false);
+      if (
+        row.resetHash !== resetHash ||
+        row.resetOperationHash !== operationHash
+      )
+        throw invalidRecovery();
+      await this.client.query(
+        "UPDATE xiangqi_auth.password_recoveries SET reset_operation_hash=NULL WHERE user_id=$1",
+        [this.userId],
+      );
+    });
+  }
+
+  finishReset(
+    requestHash: string,
+    resetHash: string,
+    operationHash: string,
+    now: Date,
+  ) {
+    return this.run(async () => {
+      const row = await this.readRecovery(requestHash, now, false);
+      if (
+        row.resetHash !== resetHash ||
+        row.resetOperationHash !== operationHash
+      )
+        throw invalidRecovery();
+      const withinDeadline =
+        !!row.resetExpiresAt && row.resetExpiresAt.getTime() > now.getTime();
+      await this.consumePreparedReset(now);
+      return withinDeadline;
+    });
+  }
+
+  private async consumePreparedReset(now: Date) {
+    await this.client.query(
+      "UPDATE xiangqi_auth.password_recoveries SET otp_hash=NULL,reset_hash=NULL,reset_expires_at=NULL,reset_operation_hash=NULL,consumed_at=$2 WHERE user_id=$1",
+      [this.userId, now],
+    );
+    await this.revokeOthers(null, now);
+  }
+
+  resetLoginAttempts() {
+    return this.run(async () => {
+      const account = await this.readAccount();
+      if (!account?.active) throw invalidRecovery();
+      await this.client.query(
+        "DELETE FROM xiangqi_auth.login_attempts WHERE username_key=lower($1)",
+        [account.username],
+      );
     });
   }
 }
