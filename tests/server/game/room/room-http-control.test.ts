@@ -187,7 +187,10 @@ describe.skipIf(!databaseUrl)(
         ["to-spectator", {}],
         ["move-to-spectator", { targetId: f.b.id }],
         ["invite-down", { targetId: f.w.id }],
-        ["respond-down", { accept: true }],
+        ["respond-down", { accept: true, offerId: randomUUID() }],
+        ["request-seat", {}],
+        ["respond-seat-request", { accept: true, requestId: randomUUID() }],
+        ["invite-leave", { targetId: f.b.id }],
         ["kick", { targetId: f.w.id }],
         ["leave", {}],
         ["swap-propose", {}],
@@ -285,21 +288,20 @@ describe.skipIf(!databaseUrl)(
           })
         ).status,
       ).toBe(200);
-      expect(
-        (
-          await f.post(f.a, "invite-down", {
-            expectedVersion: (await f.view()).version,
-            targetId: f.w.id,
-            control: host.control,
-          })
-        ).status,
-      ).toBe(200);
+      const invite = await f.post(f.a, "invite-down", {
+        expectedVersion: (await f.view()).version,
+        targetId: f.w.id,
+        control: host.control,
+      });
+      expect(invite.status).toBe(200);
+      const offerId = (await invite.json()).room.downOffer.id as string;
       const expectedVersion = (await f.view(f.w)).version;
       expect(
         (
           await f.post(f.w, "respond-down", {
             expectedVersion,
             accept: false,
+            offerId,
             control: old.control,
           })
         ).status,
@@ -309,6 +311,7 @@ describe.skipIf(!databaseUrl)(
           await f.post(f.w, "respond-down", {
             expectedVersion,
             accept: false,
+            offerId,
             control: owner.control,
           })
         ).status,

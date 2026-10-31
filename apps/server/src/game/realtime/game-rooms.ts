@@ -246,6 +246,9 @@ export class GameRooms implements RoomCollaborator {
         swapOffer: current.swapOffer ?? null,
         swapCooldownUntil: current.swapCooldownUntil ?? null,
         downOffer: current.downOffer ?? null,
+        downCooldownUntil: current.downCooldownUntil ?? null,
+        seatRequests: current.seatRequests ?? [],
+        seatRequestCooldownUntil: current.seatRequestCooldownUntil ?? null,
         spectators: current.spectators ?? [],
       },
       match: match

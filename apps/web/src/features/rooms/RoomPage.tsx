@@ -183,7 +183,16 @@ export function RoomPage({
   const receivedAt = useMemo(() => Date.now(), [view?.serverNow]);
   const clockSkew = view ? Date.parse(view.serverNow) - receivedAt : 0;
   const liveMatch = snapshot?.match ?? null;
-  const timed = Boolean(swapOfferId || cooldownUntil);
+  const downOffer = view?.room.downOffer ?? null;
+  const seatRequests = view?.room.seatRequests ?? [];
+  const timed = Boolean(
+    swapOfferId ||
+    cooldownUntil ||
+    downOffer ||
+    seatRequests.length ||
+    view?.room.downCooldownUntil ||
+    view?.room.seatRequestCooldownUntil,
+  );
   useEffect(() => {
     if (!timed) return;
     setNowMs(Date.now());
@@ -196,6 +205,38 @@ export function RoomPage({
       : 0;
   const swapSeconds = remainingSeconds(swapExpiresAt);
   const cooldownSeconds = remainingSeconds(cooldownUntil);
+  const downSeconds = remainingSeconds(downOffer?.expiresAt ?? null);
+  const inviteCooldownSeconds = remainingSeconds(
+    view?.room.downCooldownUntil ?? null,
+  );
+  const seatRequestCooldownSeconds = remainingSeconds(
+    view?.room.seatRequestCooldownUntil ?? null,
+  );
+  const liveRequests = seatRequests
+    .map((q) => ({
+      id: q.id,
+      userId: q.userId,
+      seconds: remainingSeconds(q.expiresAt),
+    }))
+    .filter((q) => q.seconds > 0);
+  // Yêu cầu của chính mình biến mất khi vẫn là người xem: báo vì sao (ghế đã có người hoặc yêu cầu đã kết thúc).
+  const requestLive = liveRequests.some((q) => q.userId === userId);
+  const seatsFull = Boolean(view?.room.seats.red && view?.room.seats.black);
+  const [seatNotice, setSeatNotice] = useState("");
+  const hadRequest = useRef(false);
+  useEffect(() => {
+    if (requestLive) {
+      hadRequest.current = true;
+      setSeatNotice("");
+      return;
+    }
+    if (!hadRequest.current) return;
+    hadRequest.current = false;
+    if (view?.role === "spectator")
+      setSeatNotice(
+        seatsFull ? "Ghế đã có người." : "Yêu cầu ngồi ghế đã kết thúc.",
+      );
+  }, [requestLive, view?.role, seatsFull]);
   const swapOfferOpen = Boolean(
     swapOfferId &&
     view?.room.swapOffer?.responderId === userId &&
@@ -695,8 +736,16 @@ export function RoomPage({
       | "move-to-spectator"
       | "invite-down"
       | "respond-down"
+      | "request-seat"
+      | "respond-seat-request"
+      | "invite-leave"
       | "kick",
-    extra: { targetId?: string; accept?: boolean } = {},
+    extra: {
+      targetId?: string;
+      accept?: boolean;
+      offerId?: string;
+      requestId?: string;
+    } = {},
   ) {
     if (!view || busy || !ownsHttpControl()) return;
     if (
@@ -709,6 +758,7 @@ export function RoomPage({
     const requestEpoch = epoch.current;
     setBusy(true);
     setError("");
+    setSeatNotice("");
     try {
       const control = await connection.current!.getControl();
       if (
@@ -717,36 +767,58 @@ export function RoomPage({
         latest.current?.control.generation !== control.generation
       )
         return;
-      const next =
-        action === "to-spectator"
-          ? await client.toSpectator(roomId, view.version, control)
-          : action === "move-to-spectator"
-            ? await client.moveToSpectator(
-                roomId,
-                view.version,
-                extra.targetId!,
-                control,
-              )
-            : action === "invite-down"
-              ? await client.inviteDown(
-                  roomId,
-                  view.version,
-                  extra.targetId!,
-                  control,
-                )
-              : action === "respond-down"
-                ? await client.respondDown(
-                    roomId,
-                    view.version,
-                    extra.accept === true,
-                    control,
-                  )
-                : await client.kickViewer(
-                    roomId,
-                    view.version,
-                    extra.targetId!,
-                    control,
-                  );
+      const send = () => {
+        switch (action) {
+          case "to-spectator":
+            return client.toSpectator(roomId, view.version, control);
+          case "move-to-spectator":
+            return client.moveToSpectator(
+              roomId,
+              view.version,
+              extra.targetId!,
+              control,
+            );
+          case "invite-down":
+            return client.inviteDown(
+              roomId,
+              view.version,
+              extra.targetId!,
+              control,
+            );
+          case "respond-down":
+            return client.respondDown(
+              roomId,
+              view.version,
+              extra.offerId!,
+              extra.accept === true,
+              control,
+            );
+          case "request-seat":
+            return client.requestSeat(roomId, control);
+          case "respond-seat-request":
+            return client.respondSeatRequest(
+              roomId,
+              extra.requestId!,
+              extra.accept === true,
+              control,
+            );
+          case "invite-leave":
+            return client.inviteLeave(
+              roomId,
+              view.version,
+              extra.targetId!,
+              control,
+            );
+          case "kick":
+            return client.kickViewer(
+              roomId,
+              view.version,
+              extra.targetId!,
+              control,
+            );
+        }
+      };
+      const next = await send();
       if (
         epoch.current === requestEpoch &&
         next.version >= versionFloor.current
@@ -754,6 +826,15 @@ export function RoomPage({
         versionFloor.current = next.version;
         setView(next);
         setSnapshot(null);
+        // Chấp nhận nhưng vẫn là người xem: lời mời đã hết hạn hoặc ghế/phòng đã đổi.
+        if (
+          action === "respond-down" &&
+          extra.accept === true &&
+          next.role === "spectator"
+        )
+          setError(
+            "Chưa vào được ghế: lời mời đã hết hạn hoặc ghế/phòng đã thay đổi.",
+          );
       }
     } catch (e) {
       if (epoch.current !== requestEpoch) return;
@@ -1026,15 +1107,16 @@ export function RoomPage({
             ) : (
               <ErrorState message={error} onRetry={retry} />
             ))}
-          {room.downOffer?.inviteeId === userId && (
+          {seatNotice && <Notice message={seatNotice} />}
+          {downOffer?.inviteeId === userId && downSeconds > 0 && (
             <div
               className="xq-down-prompt"
               role="group"
               aria-label="Lời mời xuống ghế"
             >
               <p>
-                Chủ phòng mời bạn xuống ghế chơi. Ghế có thể đã bị lấy trước khi
-                bạn đồng ý.
+                Chủ phòng mời bạn xuống ghế chơi · còn {downSeconds} giây. Ghế
+                có thể đã bị lấy trước khi bạn đồng ý.
               </p>
               <Button
                 loading={busy}
@@ -1044,7 +1126,10 @@ export function RoomPage({
                     : undefined
                 }
                 onClick={() =>
-                  void viewerAction("respond-down", { accept: true })
+                  void viewerAction("respond-down", {
+                    accept: true,
+                    offerId: downOffer.id,
+                  })
                 }
               >
                 Chấp nhận
@@ -1058,7 +1143,10 @@ export function RoomPage({
                     : undefined
                 }
                 onClick={() =>
-                  void viewerAction("respond-down", { accept: false })
+                  void viewerAction("respond-down", {
+                    accept: false,
+                    offerId: downOffer.id,
+                  })
                 }
               >
                 Từ chối
@@ -1105,6 +1193,11 @@ export function RoomPage({
             onAction={(action) => void httpAction(action)}
             onMoveToSpectator={(targetId) =>
               void viewerAction("move-to-spectator", { targetId })
+            }
+            onInviteLeave={
+              room.hostId === userId
+                ? (targetId) => void viewerAction("invite-leave", { targetId })
+                : undefined
             }
           />
           {clockState?.clocks && (
@@ -1239,7 +1332,34 @@ export function RoomPage({
               !(room.seats.red && room.seats.black)
             }
             canKick={player}
-            downOfferInviteeId={room.downOffer?.inviteeId ?? null}
+            downOfferInviteeId={
+              downOffer && downSeconds > 0 ? downOffer.inviteeId : null
+            }
+            inviteCooldownSeconds={inviteCooldownSeconds}
+            seatRequests={
+              room.hostId === userId
+                ? liveRequests
+                : liveRequests.filter((q) => q.userId === userId)
+            }
+            canRespondRequests={
+              room.hostId === userId && room.status === "WAITING" && !seatsFull
+            }
+            canRequestSeat={view.role === "spectator"}
+            requestSeatReason={
+              room.status !== "WAITING"
+                ? "Đang trong ván"
+                : seatsFull
+                  ? "Ghế đã đủ người"
+                  : room.countdown
+                    ? "Phòng đang đếm ngược"
+                    : seatRequestCooldownSeconds > 0
+                      ? `Chờ ${seatRequestCooldownSeconds} giây để xin lại`
+                      : undefined
+            }
+            onRequestSeat={() => void viewerAction("request-seat")}
+            onRespondRequest={(requestId, accept) =>
+              void viewerAction("respond-seat-request", { requestId, accept })
+            }
             busy={busy}
             writable={writable}
             onMoveToSpectator={() => void viewerAction("to-spectator")}

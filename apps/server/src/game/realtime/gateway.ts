@@ -6,6 +6,7 @@ import type {
   ServerRealtimeEvents,
   RoomSnapshot,
   ChatChannel,
+  RoomClosedMessage,
 } from "@xiangqi/shared";
 import { bindRoomChat, type RoomChatGateway } from "../chat/chat-gateway.js";
 import { RoomError } from "../room/room.types.js";
@@ -43,6 +44,7 @@ export interface RealtimePublisher {
   publishRoomClosed(
     roomId: string,
     recipientIds: readonly string[],
+    message?: RoomClosedMessage,
   ): Promise<void>;
   connections(roomId: string): RealtimeConnection[];
 }
@@ -319,13 +321,19 @@ export function attachRealtime(
   function publishRoomClosed(
     roomId: string,
     recipientIds: readonly string[],
+    message?: RoomClosedMessage,
   ): Promise<void> {
     if (stopping) return Promise.reject(publicationFailure());
-    return track(() => doPublishRoomClosed(roomId, recipientIds));
+    return track(() => doPublishRoomClosed(roomId, recipientIds, message));
   }
+  /**
+   * `message` mặc định là phòng đóng; lý do gỡ khỏi phòng chỉ đổi nội dung thông báo cho đúng người nhận.
+   * Phiên không còn hợp lệ thì không nhận thông báo và bị ngắt.
+   */
   async function doPublishRoomClosed(
     roomId: string,
     recipientIds: readonly string[],
+    message: RoomClosedMessage = "Phòng đã đóng",
   ) {
     const room = uuid(roomId),
       recipients = new Set(recipientIds.map(uuid));
@@ -341,10 +349,7 @@ export function attachRealtime(
           track(async () => {
             try {
               await authorize(peer);
-              peer.socket.emit("room.closed", {
-                roomId: room,
-                message: "Phòng đã đóng",
-              });
+              peer.socket.emit("room.closed", { roomId: room, message });
             } catch (error) {
               if (!denied(error)) throw publicationFailure();
               peer.socket.disconnect(true);

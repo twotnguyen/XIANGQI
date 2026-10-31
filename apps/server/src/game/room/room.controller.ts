@@ -316,7 +316,7 @@ export class RoomController {
     });
   }
   /**
-   * Endpoint POST /rooms/:roomId/respond-down: Khán giả phản hồi chấp nhận hoặc từ chối lời mời xuống ghế.
+   * Endpoint POST /rooms/:roomId/respond-down: Khán giả phản hồi chấp nhận hoặc từ chối đúng lời mời `offerId`.
    */
   @Post(":roomId/respond-down")
   @HttpCode(200)
@@ -329,12 +329,90 @@ export class RoomController {
     return this.respond(() => {
       const authority = readRoomProof(request),
         input = object(body);
-      if (typeof input.accept !== "boolean") invalidRoomInput();
+      if (
+        typeof input.accept !== "boolean" ||
+        typeof input.offerId !== "string"
+      )
+        invalidRoomInput();
       return this.service.respondDown(
         authority,
         id(roomId),
         this.versioned(input),
+        input.offerId as string,
         input.accept as boolean,
+        this.control(input),
+      );
+    });
+  }
+  /**
+   * Endpoint POST /rooms/:roomId/request-seat: Người xem xin ngồi ghế trống.
+   */
+  @Post(":roomId/request-seat")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  requestSeat(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readRoomProof(request),
+        input = object(body);
+      return this.service.requestSeat(
+        authority,
+        id(roomId),
+        this.control(input),
+      );
+    });
+  }
+  /**
+   * Endpoint POST /rooms/:roomId/respond-seat-request: Chủ phòng đồng ý hoặc từ chối một yêu cầu xin ngồi.
+   */
+  @Post(":roomId/respond-seat-request")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  respondSeatRequest(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readRoomProof(request),
+        input = object(body);
+      if (
+        typeof input.accept !== "boolean" ||
+        typeof input.requestId !== "string"
+      )
+        invalidRoomInput();
+      return this.service.respondSeatRequest(
+        authority,
+        id(roomId),
+        input.requestId as string,
+        input.accept as boolean,
+        this.control(input),
+      );
+    });
+  }
+  /**
+   * Endpoint POST /rooms/:roomId/invite-leave: Chủ phòng mời người chơi thứ hai rời ghế (không chặn).
+   */
+  @Post(":roomId/invite-leave")
+  @HttpCode(200)
+  @Header("Cache-Control", "no-store")
+  inviteLeave(
+    @Req() request: IncomingMessage,
+    @Param("roomId") roomId: string,
+    @Body() body: unknown,
+  ) {
+    return this.respond(() => {
+      const authority = readRoomProof(request),
+        input = object(body);
+      if (typeof input.targetId !== "string") invalidRoomInput();
+      return this.service.inviteLeave(
+        authority,
+        id(roomId),
+        this.versioned(input),
+        input.targetId as string,
         this.control(input),
       );
     });

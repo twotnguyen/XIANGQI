@@ -404,3 +404,9 @@ Hủy ván hiện theo `match.canAbort` từ server, không suy từ bàn khai c
 Công cụ demo chỉ hiện sau grant server, nằm trong header và dùng Tooltip giải thích giới hạn tab khác còn kết nối. Khi ngắt thật, modal reconnect vẫn chặn thao tác ván nhưng có Nối lại; đợi snapshot/quyền thật trước mở thao tác. Production từ chối direct command dù client cố hiện nút.
 
 Kiểm Chromium với RoomPage thật qua harness tạm nối Nest/Socket.IO/PostgreSQL 17 cô lập: gửi Undo, demo ngắt/nối và mở lại quyền, Hủy ván/focus Giữ ván/kết quả trung tính; desktop 1366×768 giữ bàn/hành động trong viewport, mobile 360×800 không tràn ngang. Không dùng harness này làm bằng chứng shell đăng nhập, chat/media hoặc nghiệm thu Supabase thật; chi tiết số đo và giới hạn ở YC5 mục 18.
+
+## YC6: người xem, Xin ngồi ghế và bộ lọc Sảnh (31/10/2026)
+
+`SpectatorsPanel` hiện danh sách tên cho mọi vai trò (kèm “(Khách)”); chỉ người chơi thấy Đuổi. Host thấy hàng yêu cầu Xin ngồi ghế (tên, đếm ngược theo giờ server, Đồng ý/Từ chối), người xem chỉ thấy yêu cầu của mình (“Đang chờ chủ phòng · còn N giây”). Nút Xin ngồi ghế luôn hiện cho người xem và bị khóa kèm lý do (ghế đủ người, đang đếm ngược, “Chờ N giây để xin lại”); Mời xuống ghế khóa khi đang có lời mời hoặc trong 10 giây cooldown. Lời mời xuống ghế và yêu cầu gắn `offerId`/`requestId`; khung lời mời nonmodal, chỉ Chấp nhận/Từ chối, có đếm ngược, hết hạn thì ẩn. Nếu yêu cầu của mình biến mất khi vẫn là người xem, hiện “Ghế đã có người.” hoặc “Yêu cầu ngồi ghế đã kết thúc.”
+
+`RoomSeats` thêm Mời rời ghế cho Host (WAITING, đủ hai người) với hộp xác nhận mặc định focus Hủy và câu “vẫn có thể vào lại nếu phòng chưa bị khóa”. Người bị Đuổi hoặc Mời rời ghế nhận `room.closed` với lý do riêng và quay về Sảnh kèm thông báo. `LobbyShell` thêm hai nút lọc Đang chờ / Còn chỗ xem (tắt mặc định, lọc phía client trên ≤50 phòng, giữ thứ tự mới nhất).

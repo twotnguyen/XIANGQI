@@ -33,6 +33,9 @@ function client(join: RoomClient["join"]): RoomClient {
     moveToSpectator: vi.fn(),
     inviteDown: vi.fn(),
     respondDown: vi.fn(),
+    requestSeat: vi.fn(),
+    respondSeatRequest: vi.fn(),
+    inviteLeave: vi.fn(),
     kickViewer: vi.fn(),
   };
 }

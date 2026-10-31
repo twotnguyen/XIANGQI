@@ -35,6 +35,7 @@ const migrations = [
   "20261103000005_match_aborted",
   "20261103000006_online_undo",
   "20261103000007_match_simultaneous_disconnect",
+  "20261103000008_seat_requests",
   "20261102000004_direct_messages",
   "20261102000005_account_theme",
   "20261103000001_username_otp_delivery",

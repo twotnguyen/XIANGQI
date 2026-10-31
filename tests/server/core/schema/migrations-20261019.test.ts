@@ -40,6 +40,7 @@ describe.skipIf(!databaseUrl)(
         "20261103000005_match_aborted",
         "20261103000006_online_undo",
         "20261103000007_match_simultaneous_disconnect",
+        "20261103000008_seat_requests",
       ])
         await apply(`supabase/migrations/${migration}.sql`);
     });

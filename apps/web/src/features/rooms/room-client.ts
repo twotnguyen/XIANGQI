@@ -4,6 +4,7 @@ import {
   networkDemoClient,
   type NetworkDemoClient,
 } from "./network-demo-client.js";
+import { ROOM_REMOVAL_MESSAGES } from "@xiangqi/shared";
 import type { PublicRoomAuthProof } from "@xiangqi/shared";
 import { handshakeAuth } from "../../shared/realtime-proof.js";
 import type {
@@ -181,9 +182,25 @@ function parseView(value: unknown, roomId: string): RoomView {
     if (
       typeof watcher.userId !== "string" ||
       !isId(watcher.userId) ||
-      typeof watcher.displayName !== "string"
+      typeof watcher.displayName !== "string" ||
+      (watcher.guest !== undefined && typeof watcher.guest !== "boolean")
     )
       invalidResponse();
+  }
+  for (const key of ["downCooldownUntil", "seatRequestCooldownUntil"])
+    if (room[key] !== null && room[key] !== undefined && !isDate(room[key]))
+      invalidResponse();
+  if (room.seatRequests !== undefined) {
+    if (!Array.isArray(room.seatRequests)) invalidResponse();
+    for (const entry of room.seatRequests as unknown[]) {
+      const seatRequest = record(entry);
+      if (
+        !isId(seatRequest.id) ||
+        !isId(seatRequest.userId) ||
+        !isDate(seatRequest.expiresAt)
+      )
+        invalidResponse();
+    }
   }
   return view as unknown as RoomView;
 }
@@ -504,13 +521,42 @@ export function createRoomClient(authorizedFetch: AuthorizedFetch) {
     respondDown: (
       roomId: string,
       expectedVersion: number,
+      offerId: string,
       accept: boolean,
       control: RoomControlProof,
     ) =>
       request(
         `/rooms/${encodeURIComponent(roomId)}/respond-down`,
         (value) => parseView(value, roomId),
-        { control, expectedVersion, accept },
+        { control, expectedVersion, offerId, accept },
+      ),
+    requestSeat: (roomId: string, control: RoomControlProof) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/request-seat`,
+        (value) => parseView(value, roomId),
+        { control },
+      ),
+    respondSeatRequest: (
+      roomId: string,
+      requestId: string,
+      accept: boolean,
+      control: RoomControlProof,
+    ) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/respond-seat-request`,
+        (value) => parseView(value, roomId),
+        { control, requestId, accept },
+      ),
+    inviteLeave: (
+      roomId: string,
+      expectedVersion: number,
+      targetId: string,
+      control: RoomControlProof,
+    ) =>
+      request(
+        `/rooms/${encodeURIComponent(roomId)}/invite-leave`,
+        (value) => parseView(value, roomId),
+        { control, expectedVersion, targetId },
       ),
     kickViewer: (
       roomId: string,
@@ -763,15 +809,17 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     input.onSnapshot(parsed);
   });
   socket.on("room.closed", (notice) => {
+    const message = notice?.message;
     if (
       !closed &&
       !closureNotified &&
       notice?.roomId === input.roomId &&
-      notice.message === "Phòng đã đóng"
+      (message === "Phòng đã đóng" ||
+        (ROOM_REMOVAL_MESSAGES as readonly unknown[]).includes(message))
     ) {
       closureNotified = true;
       invalidateChat();
-      input.onClosed?.("Phòng đã đóng");
+      input.onClosed?.(message);
     }
   });
   socket.on("session.read_only", () => {

@@ -128,6 +128,7 @@ it("answers a host seat invite as the invited viewer", async () => {
   expect(fixture.client.respondDown).toHaveBeenCalledWith(
     "room",
     7,
+    "44444444-4444-4444-8444-444444444444",
     true,
     fixture.control,
   );

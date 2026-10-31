@@ -3,12 +3,22 @@ import { Button, Dialog } from "../../shared/ui/primitives.js";
 export interface SpectatorSeat {
   userId: string;
   displayName: string;
+  guest?: boolean;
+}
+export interface SeatRequestRow {
+  id: string;
+  userId: string;
+  seconds: number;
 }
 
+const BUSY = "Cần kết nối và quyền điều khiển phòng.";
+const nameOf = (watcher: SpectatorSeat | undefined) =>
+  `${watcher?.displayName || "Khách"}${watcher?.guest ? " (Khách)" : ""}`;
+
 /**
- * Component hiển thị danh sách người xem (khán giả) trong phòng cờ.
- * Hỗ trợ các hành động: người chơi chuyển xuống làm người xem,
- * chủ phòng mời người xem lên ghế chơi cờ, hoặc đuổi người xem khỏi phòng (kèm popup xác nhận).
+ * Component hiển thị danh sách người xem (khán giả) trong phòng cờ cho mọi người trong phòng.
+ * Hành động theo vai trò: người chơi chuyển xuống xem, Host mời người xem lên ghế hoặc duyệt yêu cầu xin ngồi,
+ * người xem xin ngồi ghế, hai người chơi đuổi người xem (kèm popup xác nhận).
  */
 export function SpectatorsPanel({
   spectators,
@@ -18,10 +28,17 @@ export function SpectatorsPanel({
   canInviteDown,
   canKick,
   downOfferInviteeId,
+  inviteCooldownSeconds = 0,
+  seatRequests = [],
+  canRequestSeat = false,
+  canRespondRequests = false,
+  requestSeatReason,
   busy,
   writable = true,
   onMoveToSpectator,
   onInviteDown,
+  onRequestSeat,
+  onRespondRequest,
   onKick,
 }: {
   spectators: SpectatorSeat[];
@@ -31,16 +48,28 @@ export function SpectatorsPanel({
   canInviteDown: boolean;
   canKick: boolean;
   downOfferInviteeId: string | null;
+  inviteCooldownSeconds?: number;
+  /** Host: mọi yêu cầu còn hạn; người xem: chỉ yêu cầu của chính mình. */
+  seatRequests?: SeatRequestRow[];
+  canRequestSeat?: boolean;
+  canRespondRequests?: boolean;
+  /** Có lý do thì nút Xin ngồi ghế bị khóa nhưng vẫn hiện. */
+  requestSeatReason?: string;
   busy: boolean;
   writable?: boolean;
   onMoveToSpectator: () => void;
   onInviteDown: (userId: string) => void;
+  onRequestSeat?: () => void;
+  onRespondRequest?: (requestId: string, accept: boolean) => void;
   onKick: (userId: string) => void;
 }) {
   const [pendingKick, setPendingKick] = useState<SpectatorSeat | null>(null);
   useEffect(() => {
     if (!writable) setPendingKick(null);
   }, [writable]);
+  const mine = seatRequests.find((q) => q.userId === selfId);
+  const byId = new Map(spectators.map((w) => [w.userId, w]));
+  const hostRequests = canRespondRequests;
   return (
     <section className="xq-viewers" aria-label="Người xem">
       <h2>
@@ -53,7 +82,7 @@ export function SpectatorsPanel({
           {spectators.map((watcher) => (
             <li key={watcher.userId}>
               <span>
-                {watcher.displayName || "Khách"}
+                {nameOf(watcher)}
                 {watcher.userId === selfId ? " (bạn)" : ""}
               </span>{" "}
               {canInviteDown && (
@@ -62,8 +91,12 @@ export function SpectatorsPanel({
                   loading={busy}
                   disabledReason={
                     !writable
-                      ? "Cần kết nối và quyền điều khiển phòng."
-                      : undefined
+                      ? BUSY
+                      : downOfferInviteeId
+                        ? "Đang có lời mời xuống ghế chờ trả lời."
+                        : inviteCooldownSeconds > 0
+                          ? `Chờ ${inviteCooldownSeconds} giây để mời lại.`
+                          : undefined
                   }
                   onClick={() => onInviteDown(watcher.userId)}
                 >
@@ -74,11 +107,7 @@ export function SpectatorsPanel({
                 <Button
                   variant="danger"
                   loading={busy}
-                  disabledReason={
-                    !writable
-                      ? "Cần kết nối và quyền điều khiển phòng."
-                      : undefined
-                  }
+                  disabledReason={!writable ? BUSY : undefined}
                   onClick={() => setPendingKick(watcher)}
                 >
                   Đuổi
@@ -91,13 +120,52 @@ export function SpectatorsPanel({
           ))}
         </ul>
       )}
+      {hostRequests && seatRequests.length > 0 && (
+        <ul aria-label="Yêu cầu xin ngồi ghế" className="xq-seat-requests">
+          {seatRequests.map((q) => (
+            <li key={q.id}>
+              <span>
+                {nameOf(byId.get(q.userId))} xin ngồi ghế · còn {q.seconds} giây
+              </span>{" "}
+              <Button
+                loading={busy}
+                disabledReason={!writable ? BUSY : undefined}
+                onClick={() => onRespondRequest?.(q.id, true)}
+              >
+                Đồng ý
+              </Button>{" "}
+              <Button
+                variant="secondary"
+                loading={busy}
+                disabledReason={!writable ? BUSY : undefined}
+                onClick={() => onRespondRequest?.(q.id, false)}
+              >
+                Từ chối
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {canRequestSeat &&
+        (mine ? (
+          <p role="status">Đang chờ chủ phòng · còn {mine.seconds} giây</p>
+        ) : (
+          <Button
+            variant="secondary"
+            loading={busy}
+            disabledReason={!writable ? BUSY : requestSeatReason}
+            onClick={() => onRequestSeat?.()}
+          >
+            Xin ngồi ghế
+          </Button>
+        ))}
       {canMoveToSpectator && (
         <Button
           variant="secondary"
           loading={busy}
           disabledReason={
             !writable
-              ? "Cần kết nối và quyền điều khiển phòng."
+              ? BUSY
               : spectators.length >= limit
                 ? "Phòng không còn chỗ cho người xem"
                 : undefined
@@ -121,8 +189,8 @@ export function SpectatorsPanel({
         }}
       >
         <p>
-          Đuổi {pendingKick?.displayName || "Khách"} khỏi phòng? Người này sẽ
-          được đưa về Sảnh và không vào lại phòng được.
+          Đuổi {nameOf(pendingKick ?? undefined)} khỏi phòng? Người này sẽ được
+          đưa về Sảnh và không vào lại phòng được cho đến khi phòng đóng.
         </p>
       </Dialog>
     </section>

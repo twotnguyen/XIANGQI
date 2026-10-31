@@ -73,8 +73,11 @@ export interface RoomView {
       expiresAt: string;
     } | null;
     swapCooldownUntil?: string | null;
-    spectators: { userId: string; displayName: string }[];
+    spectators: { userId: string; displayName: string; guest?: boolean }[];
     downOffer: { id: string; inviteeId: string; expiresAt: string } | null;
+    downCooldownUntil?: string | null;
+    seatRequests?: { id: string; userId: string; expiresAt: string }[];
+    seatRequestCooldownUntil?: string | null;
   };
   role: "red" | "black" | "spectator";
 }

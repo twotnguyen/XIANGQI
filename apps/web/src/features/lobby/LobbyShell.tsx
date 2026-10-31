@@ -60,6 +60,8 @@ export function LobbyShell({
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
   const [timeFilter, setTimeFilter] = useState<"all" | 5 | 10 | 15>("all");
+  const [waitingOnly, setWaitingOnly] = useState(false);
+  const [watchableOnly, setWatchableOnly] = useState(false);
   const rulesRef = useRef<HTMLDivElement>(null);
 
   const joinDisabledReason = blockedReason
@@ -70,10 +72,13 @@ export function LobbyShell({
         ? "Đang vào phòng. Vui lòng chờ."
         : undefined;
 
-  const filteredRooms = rooms.filter((room) => {
-    if (timeFilter === "all") return true;
-    return room.timeMinutes === timeFilter;
-  });
+  // Lọc phía client trên đúng danh sách ≤50 phòng mới nhất; giữ nguyên thứ tự.
+  const filteredRooms = rooms.filter(
+    (room) =>
+      (timeFilter === "all" || room.timeMinutes === timeFilter) &&
+      (!waitingOnly || room.status === "waiting") &&
+      (!watchableOnly || room.viewers < room.spectatorLimit),
+  );
 
   return (
     <div className="xq-lobby xq-stack">
@@ -371,6 +376,28 @@ export function LobbyShell({
                 15 phút
               </button>
             </div>
+            <div
+              className="xq-filter-pill-group"
+              role="group"
+              aria-label="Lọc trạng thái phòng"
+            >
+              <button
+                type="button"
+                aria-pressed={waitingOnly}
+                className={`xq-filter-btn ${waitingOnly ? "active" : ""}`}
+                onClick={() => setWaitingOnly((value) => !value)}
+              >
+                Đang chờ
+              </button>
+              <button
+                type="button"
+                aria-pressed={watchableOnly}
+                className={`xq-filter-btn ${watchableOnly ? "active" : ""}`}
+                onClick={() => setWatchableOnly((value) => !value)}
+              >
+                Còn chỗ xem
+              </button>
+            </div>
 
             <Button onClick={onCreate} disabledReason={blockedReason}>
               <AppIcon name="plus" />
@@ -405,7 +432,7 @@ export function LobbyShell({
           >
             {rooms.length === 0
               ? "Hãy tạo phòng rồi mở Công khai để mời kỳ hữu."
-              : "Thử chọn mục 'Tất cả' để xem toàn bộ phòng."}
+              : "Thử bỏ bớt bộ lọc để xem toàn bộ phòng."}
           </EmptyState>
         ) : (
           <div className="xq-target-room-list">

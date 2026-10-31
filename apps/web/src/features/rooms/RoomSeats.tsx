@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { Button } from "../../shared/ui/primitives.js";
+import { useState, type ReactNode } from "react";
+import { Button, Dialog } from "../../shared/ui/primitives.js";
 import type { RoomView } from "./room-client.js";
 
 export type SeatAction =
@@ -26,6 +26,7 @@ export function RoomSeats({
   onTransferHost,
   onAction,
   onMoveToSpectator,
+  onInviteLeave,
 }: {
   room: RoomView["room"];
   userId: string;
@@ -41,7 +42,15 @@ export function RoomSeats({
   onTransferHost: () => void;
   onAction: (action: SeatAction) => void;
   onMoveToSpectator?: (userId: string) => void;
+  onInviteLeave?: (userId: string) => void;
 }) {
+  const [leaving, setLeaving] = useState<string | null>(null);
+  const leavingSide =
+    leaving === room.seats.red
+      ? "Đỏ"
+      : leaving === room.seats.black
+        ? "Đen"
+        : null;
   return (
     <div className="xq-room-seats">
       {(["red", "black"] as const).map((side) => {
@@ -105,22 +114,38 @@ export function RoomSeats({
             {!playingLayout &&
               occupant !== userId &&
               (canMoveOpponent ? (
-                <Button
-                  variant="secondary"
-                  loading={busy}
-                  disabledReason={
-                    !writable
-                      ? "Cần kết nối và quyền điều khiển ghế."
-                      : (room.spectators?.length ?? 0) >= room.viewerLimit
-                        ? "Phòng không còn chỗ cho người xem"
-                        : undefined
-                  }
-                  onClick={() => {
-                    if (occupant) onMoveToSpectator?.(occupant);
-                  }}
-                >
-                  Chuyển sang người xem
-                </Button>
+                <>
+                  <Button
+                    variant="secondary"
+                    loading={busy}
+                    disabledReason={
+                      !writable
+                        ? "Cần kết nối và quyền điều khiển ghế."
+                        : (room.spectators?.length ?? 0) >= room.viewerLimit
+                          ? "Phòng không còn chỗ cho người xem"
+                          : undefined
+                    }
+                    onClick={() => {
+                      if (occupant) onMoveToSpectator?.(occupant);
+                    }}
+                  >
+                    Chuyển sang người xem
+                  </Button>
+                  {onInviteLeave && (
+                    <Button
+                      variant="secondary"
+                      loading={busy}
+                      disabledReason={
+                        !writable
+                          ? "Cần kết nối và quyền điều khiển ghế."
+                          : undefined
+                      }
+                      onClick={() => setLeaving(occupant)}
+                    >
+                      Mời rời ghế
+                    </Button>
+                  )}
+                </>
               ) : (
                 <p className="xq-room-seat-hint">
                   {occupant
@@ -219,6 +244,24 @@ export function RoomSeats({
           )}
         </div>
       )}
+      <Dialog
+        open={Boolean(leaving)}
+        danger
+        title="Mời rời ghế"
+        confirmLabel="Mời rời ghế"
+        cancelLabel="Hủy"
+        onClose={() => setLeaving(null)}
+        onConfirm={() => {
+          const target = leaving;
+          setLeaving(null);
+          if (target && writable && !busy) onInviteLeave?.(target);
+        }}
+      >
+        <p>
+          Mời người chơi phe {leavingSide ?? ""} rời ghế? Người này vẫn có thể
+          vào lại phòng nếu phòng chưa bị khóa.
+        </p>
+      </Dialog>
     </div>
   );
 }

@@ -235,18 +235,60 @@ export class RoomHttpService {
     });
   }
   /**
-   * Khán giả phản hồi chấp nhận hoặc từ chối lời mời xuống ghế thi đấu từ chủ phòng.
+   * Khán giả phản hồi chấp nhận hoặc từ chối đúng lời mời `offerId` xuống ghế thi đấu từ chủ phòng.
    */
   async respondDown(
     proof: RoomRequestProof,
     roomId: string,
     expectedVersion: number,
+    offerId: string,
     accept: boolean,
     control: RoomControlProof,
   ) {
     return this.mutate(proof, roomId, control, async (scope) => {
       await this.requireVersion(scope, roomId, expectedVersion);
-      return this.store.respondDown(scope, roomId, accept);
+      return this.store.respondDown(scope, roomId, offerId, accept);
+    });
+  }
+  /**
+   * Người xem xin ngồi ghế trống (idempotent, không gắn phiên bản phòng: lệnh chỉ thêm yêu cầu của chính mình).
+   */
+  async requestSeat(
+    proof: RoomRequestProof,
+    roomId: string,
+    control: RoomControlProof,
+  ) {
+    return this.mutate(proof, roomId, control, (scope) =>
+      this.store.requestSeat(scope, roomId),
+    );
+  }
+  /**
+   * Chủ phòng đồng ý hoặc từ chối đúng yêu cầu `requestId`; định danh yêu cầu thay cho phiên bản phòng.
+   */
+  async respondSeatRequest(
+    proof: RoomRequestProof,
+    roomId: string,
+    requestId: string,
+    accept: boolean,
+    control: RoomControlProof,
+  ) {
+    return this.mutate(proof, roomId, control, (scope) =>
+      this.store.respondSeatRequest(scope, roomId, requestId, accept),
+    );
+  }
+  /**
+   * Chủ phòng mời người chơi thứ hai rời ghế (không chặn vào lại).
+   */
+  async inviteLeave(
+    proof: RoomRequestProof,
+    roomId: string,
+    expectedVersion: number,
+    targetId: string,
+    control: RoomControlProof,
+  ) {
+    return this.mutate(proof, roomId, control, async (scope) => {
+      await this.requireVersion(scope, roomId, expectedVersion);
+      return this.store.inviteLeave(scope, roomId, targetId);
     });
   }
   /**

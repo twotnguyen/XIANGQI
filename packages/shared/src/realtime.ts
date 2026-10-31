@@ -50,8 +50,11 @@ export interface RoomStateSnapshot {
       inviteeId: string;
       expiresAt: string;
     } | null;
-    spectators: { userId: string; displayName: string }[];
+    spectators: { userId: string; displayName: string; guest?: boolean }[];
     swapCooldownUntil?: string | null;
+    downCooldownUntil?: string | null;
+    seatRequests?: { id: string; userId: string; expiresAt: string }[];
+    seatRequestCooldownUntil?: string | null;
   };
   match: {
     id: string;
@@ -236,9 +239,16 @@ export interface ReadOnlyNotice {
   message: "Phiên này đã được mở ở tab khác";
   stopMedia: true;
 }
+/** Lý do được phép gửi kèm `room.closed`: phòng đóng, hoặc người nhận bị đưa khỏi phòng (không đóng phòng). */
+export const ROOM_REMOVAL_MESSAGES = [
+  "Chủ phòng đã mời bạn rời ghế",
+  "Bạn đã bị đuổi khỏi phòng và không thể vào lại.",
+] as const;
+export type RoomClosedMessage =
+  "Phòng đã đóng" | (typeof ROOM_REMOVAL_MESSAGES)[number];
 export interface RoomClosedNotice {
   roomId: string;
-  message: "Phòng đã đóng";
+  message: RoomClosedMessage;
 }
 export interface EngineFailureEvent {
   matchId: string;

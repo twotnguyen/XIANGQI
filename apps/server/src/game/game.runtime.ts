@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
-import { maskForbiddenChat } from "@xiangqi/shared";
+import { maskForbiddenChat, ROOM_REMOVAL_MESSAGES } from "@xiangqi/shared";
 import { FriendStore } from "../account/friend/friend.store.js";
 import { RoomFriendInvites } from "./room/friend-room-port.js";
 import { RoomSessionSeats } from "./room/session-seat-port.js";
@@ -284,10 +284,14 @@ async function bootRoomRuntime(
     {
       deliver: async (event) => {
         if (!publisher) throw new Error("Realtime publisher is not attached");
-        if (event.type === "room.closed") {
+        if (event.type === "room.closed" || event.type === "room.removed") {
           const recipients = event.payload.recipients;
+          const message = event.payload.message;
+          const removal = event.type === "room.removed";
           if (
-            event.payload.message !== "Phòng đã đóng" ||
+            (removal
+              ? !(ROOM_REMOVAL_MESSAGES as readonly unknown[]).includes(message)
+              : message !== "Phòng đã đóng") ||
             !Array.isArray(recipients) ||
             recipients.some(
               (id) =>
@@ -302,7 +306,25 @@ async function bootRoomRuntime(
               "Sự kiện phòng chưa hợp lệ",
               503,
             );
-          await publisher.publishRoomClosed(event.roomId, recipients);
+          // Người ở lại cần snapshot mới. Người bị gỡ nhận thông báo, trừ ai đã vào lại phòng trước khi sự kiện này tới.
+          let notify: string[] = recipients;
+          if (removal) {
+            await publisher.publishSnapshots(event.roomId, event.version);
+            const back = await pool.query<{ user_id: string }>(
+              "SELECT user_id FROM public.room_members WHERE room_id=$1 AND user_id=ANY($2::uuid[])",
+              [event.roomId, recipients],
+            );
+            const present = new Set(back.rows.map((row) => row.user_id));
+            notify = recipients.filter((id) => !present.has(id));
+          }
+          if (notify.length)
+            await publisher.publishRoomClosed(
+              event.roomId,
+              notify,
+              removal
+                ? (message as (typeof ROOM_REMOVAL_MESSAGES)[number])
+                : undefined,
+            );
           return;
         }
         await publisher.publishSnapshots(event.roomId, event.version);

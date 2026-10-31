@@ -109,6 +109,7 @@ it.each([false, true])(
       expect(f.client.respondDown).toHaveBeenCalledExactlyOnceWith(
         "room",
         state.version,
+        "offer",
         true,
         f.control,
       );

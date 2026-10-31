@@ -255,3 +255,55 @@ it("blocks code submission by Enter while the actor is already occupied", async 
     .type(screen.getByLabelText("Mã phòng"), "12345678{Enter}");
   expect(props.onJoinCode).not.toHaveBeenCalled();
 });
+it("filters Đang chờ and Còn chỗ xem independently, keeps order and explains an empty result", async () => {
+  const rooms: PublicRoom[] = [
+    { ...room, id: "a", name: "Chờ, còn chỗ" },
+    {
+      ...room,
+      id: "b",
+      name: "Đang đấu, còn chỗ",
+      status: "playing",
+      seats: 2,
+    },
+    {
+      ...room,
+      id: "c",
+      name: "Chờ, hết chỗ xem",
+      viewers: 5,
+      spectatorLimit: 5,
+    },
+    {
+      ...room,
+      id: "d",
+      name: "Chờ, không cho xem",
+      viewers: 0,
+      spectatorLimit: 0,
+    },
+  ];
+  render(createElement(LobbyShell, { ...callbacks(), rooms }));
+  const list = screen.getByRole("region", { name: "Phòng công khai" });
+  const names = () =>
+    within(list)
+      .queryAllByRole("heading", { level: 3 })
+      .map((heading) => heading.textContent);
+  const user = userEvent.setup();
+  const waiting = screen.getByRole("button", { name: "Đang chờ" });
+  const watchable = screen.getByRole("button", { name: "Còn chỗ xem" });
+  expect(waiting.getAttribute("aria-pressed")).toBe("false");
+  expect(watchable.getAttribute("aria-pressed")).toBe("false");
+  expect(names()).toEqual(rooms.map((entry) => entry.name));
+  await user.click(waiting);
+  expect(names()).toEqual([
+    "Chờ, còn chỗ",
+    "Chờ, hết chỗ xem",
+    "Chờ, không cho xem",
+  ]);
+  await user.click(watchable);
+  expect(names()).toEqual(["Chờ, còn chỗ"]);
+  await user.click(waiting);
+  expect(names()).toEqual(["Chờ, còn chỗ", "Đang đấu, còn chỗ"]);
+  await user.click(waiting);
+  await user.click(screen.getByRole("button", { name: "15 phút" }));
+  expect(names()).toEqual([]);
+  expect(screen.getByText("Không tìm thấy phòng phù hợp")).toBeTruthy();
+});
