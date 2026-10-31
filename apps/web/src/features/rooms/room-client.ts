@@ -1,5 +1,9 @@
 import { io, type Socket } from "socket.io-client";
 import { isSingleMove } from "../../shared/room-snapshot.js";
+import {
+  networkDemoClient,
+  type NetworkDemoClient,
+} from "./network-demo-client.js";
 import type { PublicRoomAuthProof } from "@xiangqi/shared";
 import { handshakeAuth } from "../../shared/realtime-proof.js";
 import type {
@@ -542,6 +546,7 @@ export interface RoomConnection {
     content: string,
     commandId: string,
   ): Promise<ChatSent>;
+  networkDemo?: NetworkDemoClient;
   close(): void;
 }
 export interface RoomConnectionInput {
@@ -552,6 +557,7 @@ export interface RoomConnectionInput {
   onError: (message: string) => void;
   onClosed?: (message: string) => void;
   onChatChanged?: (notice: ChatChanged) => void;
+  onDemoCapability?: (enabled: boolean) => void;
 }
 
 /**
@@ -635,6 +641,8 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     },
   });
   const tabId = generateUuid();
+  const demo = networkDemoClient(socket as unknown as Socket);
+  let demoAuthority: string | undefined;
   socket.on("connect", () => {
     controlReady = false;
     invalidateChat();
@@ -661,6 +669,37 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
       return;
     }
     observeSnapshot(parsed);
+    const capabilityKey = JSON.stringify([
+      socket.id,
+      parsed.match?.status,
+      parsed.role,
+      parsed.control.mode,
+      parsed.control.generation,
+    ]);
+    if (input.onDemoCapability && demoAuthority !== capabilityKey) {
+      const physicalId = socket.id;
+      demoAuthority = capabilityKey;
+      void demo.capability().then(
+        (enabled) => {
+          if (
+            !closed &&
+            socket.connected &&
+            socket.id === physicalId &&
+            demoAuthority === capabilityKey
+          )
+            input.onDemoCapability?.(enabled);
+        },
+        () => {
+          if (
+            !closed &&
+            socket.connected &&
+            socket.id === physicalId &&
+            demoAuthority === capabilityKey
+          )
+            input.onDemoCapability?.(false);
+        },
+      );
+    }
     input.onSnapshot(parsed);
   });
   socket.on("room.closed", (notice) => {
@@ -707,6 +746,7 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
   });
   return {
     tabId,
+    networkDemo: demo,
     getControl() {
       if (
         closed ||

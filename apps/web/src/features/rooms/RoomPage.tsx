@@ -32,6 +32,7 @@ import { RoomSettings } from "./RoomSettings.js";
 import { MatchActions, type MatchAction } from "./match/MatchActions.js";
 import { ReconnectStatus } from "./match/ReconnectStatus.js";
 import { InactivityBanner } from "./match/InactivityBanner.js";
+import { NetworkDemo } from "./NetworkDemo.js";
 import { SpectatorsPanel } from "./SpectatorsPanel.js";
 import { Countdown } from "./RoomCountdown.js";
 import { RoomDetails } from "./RoomDetails.js";
@@ -119,6 +120,10 @@ export function RoomPage({
     error,
     setError,
     retry,
+    demoEnabled,
+    demoDisconnected,
+    disconnectDemo,
+    reconnectDemo,
     busy,
     setBusy,
     actionError,
@@ -886,6 +891,12 @@ export function RoomPage({
           )}
         </div>
         <div className="xq-room-header-actions">
+          <NetworkDemo
+            enabled={demoEnabled}
+            disconnected={demoDisconnected}
+            onDisconnect={() => void disconnectDemo()}
+            onReconnect={reconnectDemo}
+          />
           {canManage && (
             <Button
               variant="ghost"
@@ -1057,6 +1068,7 @@ export function RoomPage({
           <ReconnectStatus
             connected={connected}
             waitingForSnapshot={connected && !snapshot}
+            onReconnect={demoDisconnected ? reconnectDemo : undefined}
             ownRole={clockState?.role ?? view.role}
             matchStatus={clockState?.match?.status ?? null}
             opponentGraceUntil={
