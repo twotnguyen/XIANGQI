@@ -85,6 +85,7 @@ export interface RoomStateSnapshot {
     offers: { id: string; sender: "red" | "black"; expiresAt: string }[];
     remainingMoves: { red: number; black: number };
     used: { red: number; black: number };
+    moved: { red: boolean; black: boolean };
   } | null;
 }
 

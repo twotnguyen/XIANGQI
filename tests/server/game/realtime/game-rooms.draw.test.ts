@@ -28,6 +28,7 @@ describe("draw capability projection and dispatch", () => {
         offers: [],
         remainingMoves: { red: 0, black: 0 },
         used: { red: 0, black: 0 },
+        moved: { red: false, black: false },
       })),
       offerDraw: vi.fn(async () => ({ applied: true, match: f.match, draw })),
       withdrawDraw: vi.fn(async () => ({

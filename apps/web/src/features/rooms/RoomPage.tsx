@@ -1156,6 +1156,7 @@ export function RoomPage({
               role={snapshot.role}
               serverNow={snapshot.serverNow}
               busy={busy}
+              canAct={Boolean(writable && player && active)}
               onStillHere={() =>
                 matchAction({
                   type: "match.still-here",
@@ -1191,9 +1192,11 @@ export function RoomPage({
             snapshot.match.status !== "ACTIVE" && (
               <Notice
                 message={
-                  snapshot.match.status === "INTERRUPTED"
-                    ? "Ván vừa gián đoạn. Hai bên có thể Sẵn sàng cho ván mới."
-                    : "Ván đã kết thúc. Hai bên có thể Sẵn sàng cho ván mới."
+                  snapshot.match.result === "ABORTED"
+                    ? "Ván bị hủy. Hai bên có thể Sẵn sàng cho ván mới."
+                    : snapshot.match.status === "INTERRUPTED"
+                      ? "Ván vừa gián đoạn. Hai bên có thể Sẵn sàng cho ván mới."
+                      : "Ván đã kết thúc. Hai bên có thể Sẵn sàng cho ván mới."
                 }
               />
             )}

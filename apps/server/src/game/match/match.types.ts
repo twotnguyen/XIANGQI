@@ -82,6 +82,7 @@ export type MatchDrawCommandResult = MatchCommandResult & {
 };
 export type MatchUndoView = MatchDrawView & {
   used: { red: number; black: number };
+  moved: { red: boolean; black: boolean };
 };
 export type MatchUndoCommandResult = MatchCommandResult & {
   undo: MatchUndoView;

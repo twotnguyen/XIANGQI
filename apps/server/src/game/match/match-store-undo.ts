@@ -38,6 +38,7 @@ export class MatchUndoStore extends MatchDrawStore {
       offers: [],
       remainingMoves: { red: 0, black: 0 },
       used: { red: 0, black: 0 },
+      moved: { red: match.ply >= 1, black: match.ply >= 2 },
     };
     for (const offer of rows) {
       const side = offer.sender === "RED" ? "red" : "black";
@@ -336,6 +337,12 @@ export class MatchUndoStore extends MatchDrawStore {
         status === "DECLINED" ? await count(offer.sender, at) : null,
       ],
     );
+    // Offers sent for the pre-rewind position would otherwise re-target the new branch.
+    if (status === "ACCEPTED")
+      await scope.client.query(
+        "UPDATE xiangqi_room.match_undo_offers SET status='CLOSED',resolved_at=$2 WHERE match_id=$1 AND status='PENDING' AND id<>$3",
+        [row.id, at, offer.id],
+      );
     await event(offer.id, offer.sender, status);
     return result(true);
   }

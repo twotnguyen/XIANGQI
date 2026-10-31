@@ -60,6 +60,61 @@ describe.skipIf(!databaseUrl)(
       expect(aborted.error?.code).toBe("MATCH_ABORT_NOT_ALLOWED");
       expect(persisted.rows[0]).toEqual({ active_move_ids: [], ply: 0 });
     });
+    it("accepting one undo closes the other side's pending offer so it cannot re-target the rewound branch", async () => {
+      const f = await fixture();
+      const first = await run(f, f.red, (s) =>
+        store.move(s, {
+          matchId: f.matchId,
+          matchVersion: 0,
+          from: 54,
+          to: 45,
+        }),
+      );
+      const second = await run(f, f.black, (s) =>
+        store.move(s, {
+          matchId: f.matchId,
+          matchVersion: first.match.version,
+          from: 27,
+          to: 36,
+        }),
+      );
+      const red = await run(f, f.red, (s) =>
+        store.offerUndo(s, {
+          matchId: f.matchId,
+          matchVersion: second.match.version,
+        }),
+      );
+      const black = await run(f, f.black, (s) =>
+        store.offerUndo(s, {
+          matchId: f.matchId,
+          matchVersion: red.match.version,
+        }),
+      );
+      expect(black.undo.offers).toHaveLength(2);
+      const redOffer = black.undo.offers.find((o) => o.sender === "red")!;
+      const blackOffer = black.undo.offers.find((o) => o.sender === "black")!;
+      const accepted = await run(f, f.black, (s) =>
+        store.respondUndo(s, {
+          matchId: f.matchId,
+          matchVersion: black.match.version,
+          offerId: redOffer.id,
+          accept: true,
+        }),
+      );
+      expect(accepted.applied).toBe(true);
+      expect(accepted.match.ply).toBe(0);
+      expect(accepted.undo.offers).toEqual([]);
+      const late = await run(f, f.red, (s) =>
+        store.respondUndo(s, {
+          matchId: f.matchId,
+          matchVersion: accepted.match.version,
+          offerId: blackOffer.id,
+          accept: true,
+        }),
+      );
+      expect(late.error?.code).toBe("MATCH_UNDO_EXPIRED");
+      expect(late.match.ply).toBe(0);
+    });
     it("receiver move declines undo and starts three own-move cooldown", async () => {
       const f = await fixture();
       const first = await run(f, f.red, (s) =>

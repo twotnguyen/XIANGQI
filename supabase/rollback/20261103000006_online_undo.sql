@@ -1,4 +1,5 @@
 BEGIN;
+LOCK TABLE public.matches, xiangqi_room.match_undo_offers, public.match_events IN ACCESS EXCLUSIVE MODE;
 DO $$ BEGIN
  IF EXISTS (SELECT 1 FROM xiangqi_room.match_undo_offers) OR EXISTS (SELECT 1 FROM public.match_events WHERE type='STILL_HERE') THEN
    RAISE EXCEPTION 'Online undo or still-here data exists; rollback would lose history';

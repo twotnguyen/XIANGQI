@@ -187,13 +187,15 @@ export function MatchActions({
     ? "Kết nối hoặc quyền điều khiển chưa sẵn sàng."
     : !undo
       ? "Xin đi lại chưa sẵn sàng."
-      : ownPending
-        ? "Đang chờ trả lời đề nghị trước."
-        : undo.used[role] >= 3
-          ? "Bạn đã sử dụng hết 3 lượt xin đi lại trong ván này."
-          : undo.remainingMoves[role] > 0
-            ? `Cần đi thêm ${undo.remainingMoves[role]} nước của bạn để xin đi lại.`
-            : null;
+      : !undo.moved[role]
+        ? "Bạn chưa đi nước nào."
+        : ownPending
+          ? "Đang chờ trả lời đề nghị trước."
+          : undo.used[role] >= 3
+            ? "Bạn đã sử dụng hết 3 lượt xin đi lại trong ván này."
+            : undo.remainingMoves[role] > 0
+              ? `Cần đi thêm ${undo.remainingMoves[role]} nước của bạn để xin đi lại.`
+              : null;
   const reason = !canAct
     ? "Kết nối hoặc quyền điều khiển chưa sẵn sàng."
     : !draw

@@ -425,6 +425,7 @@ it("shows nonmodal undo and sends explicit acceptance", async () => {
       offers: [incoming],
       remainingMoves: { red: 0, black: 0 },
       used: { red: 0, black: 0 },
+      moved: { red: true, black: true },
     },
   });
   const panel = screen.getByRole("group", {
@@ -451,11 +452,26 @@ it("shows nonmodal undo and sends explicit acceptance", async () => {
     },
   });
 });
+it("disables undo with a reason until the player has moved", () => {
+  setup({
+    undo: {
+      offers: [],
+      remainingMoves: { red: 0, black: 0 },
+      used: { red: 0, black: 0 },
+      moved: { red: false, black: false },
+    },
+  });
+  expect(
+    screen.getByRole("button", { name: "Xin đi lại" }).matches(":disabled"),
+  ).toBe(true);
+  expect(document.body.textContent).toContain("Bạn chưa đi nước nào.");
+});
 it("notifies the sender when the opponent moves instead of accepting undo", () => {
   const undo = {
     offers: [own],
     remainingMoves: { red: 0, black: 0 },
     used: { red: 0, black: 0 },
+    moved: { red: true, black: true },
   };
   const view = setup({ undo });
   view.rerender(

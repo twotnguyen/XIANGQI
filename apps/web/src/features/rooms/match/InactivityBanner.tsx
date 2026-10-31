@@ -7,6 +7,7 @@ export interface InactivityBannerProps {
   role: RoomStateSnapshot["role"];
   serverNow: string;
   busy?: boolean;
+  canAct?: boolean;
   onStillHere: () => Promise<void>;
 }
 
@@ -20,6 +21,7 @@ export function InactivityBanner({
   role,
   serverNow,
   busy = false,
+  canAct = true,
   onStillHere,
 }: InactivityBannerProps) {
   const inactivity = match?.inactivity ?? null;
@@ -74,7 +76,7 @@ export function InactivityBanner({
         <button
           type="button"
           className="inactivity-banner__action"
-          disabled={busy}
+          disabled={busy || !canAct}
           onClick={() => void onStillHere()}
         >
           Tôi còn đây

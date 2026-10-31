@@ -140,6 +140,13 @@ it("offers confirmation only while the server allows another extension", () => {
   advance(1000);
   expect(countdown()).toBe("29s");
 });
+it("disables the confirmation on a tab without control rights", () => {
+  const view = setup({ serverNow: "2026-10-31T00:03:00Z", canAct: false });
+  const button = screen.getByRole("button", { name: "Tôi còn đây" });
+  expect(button.matches(":disabled")).toBe(true);
+  fireEvent.click(button);
+  expect(view.props.onStillHere).not.toHaveBeenCalled();
+});
 
 it("catches up after background suspension and ignores changes to the local wall clock", () => {
   const view = setup();

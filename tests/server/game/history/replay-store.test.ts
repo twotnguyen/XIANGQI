@@ -218,6 +218,15 @@ describe.skipIf(!databaseUrl)("ReplayStore actual synthetic PostgreSQL", () => {
         status: 404,
       });
   });
+  it("returns 404 for an aborted match so it has no Replay, FEN or PGN (AC-YC5-RV-06)", async () => {
+    const a = await member(),
+      b = await member(),
+      g = await game(a, b, { status: "INTERRUPTED", reason: "ABORTED" });
+    await expect(read(a, g.id)).rejects.toMatchObject({
+      code: "REPLAY_NOT_FOUND",
+      status: 404,
+    });
+  });
   it("denies guest, forged member kind and missing actor lock", async () => {
     const a = await member(),
       b = await guest(),

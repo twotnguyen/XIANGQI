@@ -310,10 +310,13 @@ function parseSnapshot(value: unknown, roomId: string): RoomSnapshot {
       invalidResponse();
     const undo = record(snapshot.undo),
       remaining = record(undo.remainingMoves),
-      used = record(undo.used);
+      used = record(undo.used),
+      moved = record(undo.moved);
     if (
       !Array.isArray(undo.offers) ||
       undo.offers.length > 2 ||
+      typeof moved.red !== "boolean" ||
+      typeof moved.black !== "boolean" ||
       ![remaining.red, remaining.black, used.red, used.black].every(
         (value) =>
           Number.isInteger(value) &&
@@ -349,6 +352,7 @@ function parseSnapshot(value: unknown, roomId: string): RoomSnapshot {
         black: remaining.black as number,
       },
       used: { red: used.red as number, black: used.black as number },
+      moved: { red: moved.red as boolean, black: moved.black as boolean },
     };
   }
   return {
