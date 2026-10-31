@@ -406,6 +406,17 @@ export class FriendTx {
     return row ?? null;
   }
 
+  /** Số lời mời phòng còn hạn, chưa trả lời của một người nhận. */
+  async countPendingInvites(inviteeId: string): Promise<number> {
+    return (
+      await this.client.query(
+        `SELECT count(*)::int AS n FROM xiangqi_social.room_invites
+          WHERE invitee_id=$1 AND status='PENDING' AND expires_at>clock_timestamp()`,
+        [inviteeId],
+      )
+    ).rows[0].n;
+  }
+
   /** Dedupe lời mời phòng: trả lời mời PENDING còn hạn giống nhau, không gia hạn. */
   async findPendingInviteFor(
     roomId: string,
