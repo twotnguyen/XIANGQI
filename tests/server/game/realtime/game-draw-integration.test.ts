@@ -235,6 +235,7 @@ describe.skipIf(!databaseUrl)(
       await apply("supabase/migrations/20261011000007_match_outcomes.sql");
       await apply("supabase/migrations/20261011000009_match_draw.sql");
       await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+      await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );

@@ -238,6 +238,7 @@ describe.skipIf(!databaseUrl)(
       await reset();
       await apply("supabase/migrations/20261011000007_match_outcomes.sql");
       await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+      await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );
@@ -584,6 +585,7 @@ describe.skipIf(!databaseUrl)(
       await reset();
       await apply("supabase/migrations/20261011000007_match_outcomes.sql");
       await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+      await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );

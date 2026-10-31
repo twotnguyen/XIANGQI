@@ -201,6 +201,7 @@ export async function resetLegacy() {
     "20261017000018_room_code_digits",
     "20261031000001_session_devices",
     "20261102000002_custom_rematch",
+    "20261103000004_room_issued_codes",
   ]);
 }
 // Full current schema (1-9 + 2 + 3) in order: 8 must precede 3 because 3 replaces guard_settings from 6.
@@ -218,6 +219,7 @@ export async function reset() {
     "20261017000018_room_code_digits",
     "20261031000001_session_devices",
     "20261102000002_custom_rematch",
+    "20261103000004_room_issued_codes",
     "20261102000003_unlimited_inactivity",
   ]);
 }

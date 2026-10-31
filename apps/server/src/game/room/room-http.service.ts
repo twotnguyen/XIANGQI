@@ -10,6 +10,7 @@ import {
   type RoomScope,
   type RoomView,
 } from "./room.types.js";
+import { FailureLimiter } from "./command-limiter.js";
 import type { RoomStore } from "./room-store.js";
 import type {
   RoomActorProof,
@@ -32,6 +33,7 @@ export interface MemberRoomAuthorizer {
  * Quản lý vòng đời phòng, vào/rời phòng, phân bổ ghế, đổi bên và điều chỉnh quyền truy cập.
  */
 export class RoomHttpService {
+  private readonly wrongCodes = new FailureLimiter();
   constructor(
     private readonly store: RoomStore,
     private readonly transactions: RoomTransactions,
@@ -97,13 +99,25 @@ export class RoomHttpService {
     },
   ) {
     const actor = await this.actor(proof);
+    const wait = this.wrongCodes.retryAfterSeconds(actor.userId);
+    if (wait > 0)
+      throw new RoomError(
+        "ROOM_CODE_RATE_LIMITED",
+        `Bạn nhập mã sai quá nhiều lần, vui lòng thử lại sau ${wait} giây`,
+        429,
+      );
     const roomId = await this.run<string>(
       proof,
       actor,
       [],
       (scope) => this.store.resolveCode(scope.client, input.code),
       "join-room",
-    );
+    ).catch((error: unknown) => {
+      // Chỉ mã sai/phòng đóng mới tính; nhập đúng không làm tăng bộ đếm.
+      if (error instanceof RoomError && error.code === "ROOM_FORBIDDEN")
+        this.wrongCodes.record(actor.userId);
+      throw error;
+    });
     return this.run<Awaited<ReturnType<RoomStore["join"]>>>(
       proof,
       actor,

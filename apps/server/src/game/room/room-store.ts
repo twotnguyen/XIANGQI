@@ -1,4 +1,4 @@
-import { createHash, randomInt, randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import {
   invalidRoomInput,
   RoomError,
@@ -9,7 +9,7 @@ import {
   type RoomView,
 } from "./room.types.js";
 import { RoomViewerStore } from "./room-store-viewers.js";
-import { alphabet, uuid } from "./room-store-core.js";
+import { uuid } from "./room-store-core.js";
 /**
  * Lớp Store hoàn chỉnh quản lý trạng thái và dữ liệu phòng chơi cờ (kế thừa RoomViewerStore):
  * Đảm nhiệm tạo phòng, tham gia, sẵn sàng, đổi bên, ngắt kết nối/hiện diện, bắt đầu và kết thúc trận đấu.
@@ -82,26 +82,21 @@ export class RoomStore extends RoomViewerStore {
         "Khách chỉ được mở 1 phòng cùng lúc",
       );
     const id = randomUUID();
-    let code = "";
-    for (let attempt = 0; attempt < 5; attempt++) {
-      code = Array.from({ length: 8 }, () => alphabet[randomInt(10)]!).join("");
-      const row = await s.client.query(
-        "INSERT INTO public.rooms(id,owner_id,name,visibility,time_control,viewer_limit,invite_code,room_version) VALUES($1,$2,$3,$7,$4,$5,$6,1) ON CONFLICT(invite_code) WHERE invite_code IS NOT NULL DO NOTHING RETURNING id",
-        [
-          id,
-          s.actor.userId,
-          `Phòng ${code}`,
-          time * 60,
-          viewers,
-          code,
-          visibility,
-        ],
-      );
-      if (row.rowCount) break;
-      code = "";
-    }
+    const code = await this.claimCode(s);
     if (!code)
       throw new RoomError("ROOM_UNAVAILABLE", "Chưa thể tạo mã phòng", 503);
+    await s.client.query(
+      "INSERT INTO public.rooms(id,owner_id,name,visibility,time_control,viewer_limit,invite_code,room_version) VALUES($1,$2,$3,$7,$4,$5,$6,1)",
+      [
+        id,
+        s.actor.userId,
+        `Phòng ${code}`,
+        time * 60,
+        viewers,
+        code,
+        visibility,
+      ],
+    );
     if (visibility === "PUBLIC")
       await s.client.query(
         "UPDATE public.rooms SET public_opened_at=clock_timestamp() WHERE id=$1",
@@ -168,29 +163,13 @@ export class RoomStore extends RoomViewerStore {
         "Chỉ khoá được khi đã đủ 2 người chơi",
       );
     if (r.visibility === "LOCKED") {
-      let rotated = false;
-      for (let attempt = 0; attempt < 5; attempt++) {
-        const code = Array.from(
-          { length: 8 },
-          () => alphabet[randomInt(10)]!,
-        ).join("");
-        if (code === r.invite_code) continue;
-        await s.client.query("SAVEPOINT room_code_rotation");
-        try {
-          const row = await s.client.query(
-            "UPDATE public.rooms SET invite_code=$2,visibility=$3,public_opened_at=CASE WHEN $3='PUBLIC' THEN clock_timestamp() ELSE public_opened_at END WHERE id=$1 AND NOT EXISTS(SELECT 1 FROM public.rooms WHERE invite_code=$2) RETURNING id",
-            [id, code, visibility],
-          );
-          rotated = !!row.rowCount;
-        } catch (error) {
-          await s.client.query("ROLLBACK TO SAVEPOINT room_code_rotation");
-          if ((error as { code?: string }).code !== "23505") throw error;
-        }
-        await s.client.query("RELEASE SAVEPOINT room_code_rotation");
-        if (rotated) break;
-      }
-      if (!rotated)
+      const code = await this.claimCode(s, r.invite_code);
+      if (!code)
         throw new RoomError("ROOM_UNAVAILABLE", "Chưa thể tạo mã phòng", 503);
+      await s.client.query(
+        "UPDATE public.rooms SET invite_code=$2,visibility=$3,public_opened_at=CASE WHEN $3='PUBLIC' THEN clock_timestamp() ELSE public_opened_at END WHERE id=$1",
+        [id, code, visibility],
+      );
     } else {
       await s.client.query(
         "UPDATE public.rooms SET visibility=$2,public_opened_at=CASE WHEN $2='PUBLIC' THEN clock_timestamp() ELSE public_opened_at END WHERE id=$1",

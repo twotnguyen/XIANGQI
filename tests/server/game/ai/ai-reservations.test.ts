@@ -58,6 +58,7 @@ describe.skipIf(!databaseUrl)(
       await apply(migration);
       await apply("supabase/migrations/20261017000018_room_code_digits.sql");
       await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+      await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
       await apply(
         "supabase/migrations/20261102000003_unlimited_inactivity.sql",
       );

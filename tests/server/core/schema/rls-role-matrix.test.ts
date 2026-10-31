@@ -30,6 +30,7 @@ const migrations = [
   "20261101000001_friend_presence_invites",
   "20261102000001_username_management",
   "20261102000002_custom_rematch",
+  "20261103000004_room_issued_codes",
   "20261102000003_unlimited_inactivity",
   "20261102000004_direct_messages",
   "20261102000005_account_theme",

@@ -1,6 +1,6 @@
 import type { RoomControlProof } from "@xiangqi/shared";
 import type { PoolClient, QueryResultRow } from "pg";
-import { randomUUID } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 import {
   RoomError,
   RoomRosterChanged,
@@ -387,6 +387,25 @@ export class RoomStoreCore {
     );
     await this.event(s, id, version, type, payload);
     return version;
+  }
+  /** Sinh một mã 8 chữ số ngẫu nhiên (ghi đè được trong test). */
+  protected generateCode(): string {
+    return Array.from({ length: 8 }, () => alphabet[randomInt(10)]!).join("");
+  }
+  /**
+   * Cấp mã 8 chữ số chưa từng cấp cho phòng nào (cả mã đã xoay đi); trùng thì sinh lại, null sau 5 lần.
+   */
+  protected async claimCode(s: RoomScope, notEqual?: string) {
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const code = this.generateCode();
+      if (code === notEqual) continue;
+      const row = await s.client.query(
+        "INSERT INTO xiangqi_room.issued_codes(code) VALUES($1) ON CONFLICT DO NOTHING",
+        [code],
+      );
+      if (row.rowCount) return code;
+    }
+    return null;
   }
   protected async cancel(s: RoomScope, id: string) {
     await s.client.query(

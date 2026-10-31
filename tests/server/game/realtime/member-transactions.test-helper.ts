@@ -38,6 +38,7 @@ export async function reset() {
     "20261011000007_match_outcomes",
     "20261017000018_room_code_digits",
     "20261102000002_custom_rematch",
+    "20261103000004_room_issued_codes",
     "20261102000003_unlimited_inactivity",
     "20261031000001_session_devices",
   ])

@@ -83,7 +83,9 @@ export async function resetRoomSchema() {
   );
   await reset();
   await apply("supabase/migrations/20261011000006_rooms.sql");
+  await apply("supabase/migrations/20261011000008_room_modes.sql");
   await apply("supabase/migrations/20261017000018_room_code_digits.sql");
   await apply("supabase/migrations/20261102000002_custom_rematch.sql");
   await apply("supabase/migrations/20261011000013_side_swap.sql");
+  await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
 }

@@ -34,3 +34,36 @@ export class CommandLimiter {
     return w.count <= MAX;
   }
 }
+
+/**
+ * Giới hạn số lần sai trong cửa sổ trượt (nhập mã phòng sai: 10 lần/60 giây mỗi tài khoản hoặc phiên Khách).
+ */
+// shortcut: bộ đếm trong bộ nhớ, đúng vì chỉ một instance chạy (khóa runtime); cần kho chung khi chạy nhiều instance.
+export class FailureLimiter {
+  private readonly failures = new Map<string, number[]>();
+  constructor(
+    private readonly now: () => number = Date.now,
+    private readonly max = 10,
+    private readonly windowMs = 60_000,
+  ) {}
+  /** Số giây phải chờ; 0 nếu chưa bị chặn. */
+  retryAfterSeconds(key: string): number {
+    const at = this.now();
+    const recent = (this.failures.get(key) ?? []).filter(
+      (t) => t > at - this.windowMs,
+    );
+    if (recent.length) this.failures.set(key, recent);
+    else this.failures.delete(key);
+    return recent.length >= this.max
+      ? Math.ceil((recent[0]! + this.windowMs - at) / 1000)
+      : 0;
+  }
+  record(key: string) {
+    const at = this.now();
+    const recent = (this.failures.get(key) ?? []).filter(
+      (t) => t > at - this.windowMs,
+    );
+    recent.push(at);
+    this.failures.set(key, recent);
+  }
+}

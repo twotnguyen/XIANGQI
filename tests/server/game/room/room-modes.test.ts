@@ -67,6 +67,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
     await apply("supabase/migrations/20261011000008_room_modes.sql");
     await apply("supabase/migrations/20261102000003_unlimited_inactivity.sql");
@@ -109,6 +110,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
     const owner = await actor(),
       id = randomUUID();
@@ -138,6 +140,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     await apply("supabase/migrations/20261011000006_rooms.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
     const client = await pool.connect();
     try {
@@ -165,6 +168,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     await apply("supabase/migrations/20261011000006_rooms.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
+    await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
     const client = await pool.connect();
     try {
