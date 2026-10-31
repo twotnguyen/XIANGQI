@@ -438,7 +438,7 @@ Môi trường: Node 22.22.3, PostgreSQL 17 test cô lập trên `127.0.0.1` qua
 
 ### 18.3 Rollout và giới hạn nghiệm thu
 
-Chưa push, chưa áp migration Cloud. Phải áp theo thứ tự `20261103000005`, `...000006`, `...000007` trước runtime mới; guard History từ chối schema cũ. Rollback không phải cách xóa kết quả mới để quay lui.
+Đã push `develop`; CI xanh ở commit `25a8818`. Ngày 31/10/2026 đã áp lên Supabase Cloud `20261103000005`, `...000006`, `...000007` theo thứ tự (qua `psql` DIRECT_URL, có ghi `supabase_migrations.schema_migrations`); lúc áp không có ván ACTIVE, constraint khớp baseline, đã kiểm lại bảng `match_undo_offers` (RLS + trigger), constraint kết quả/sự kiện. Triển khai server trước web: web mới từ chối snapshot Undo nếu server chưa có trường `undo.moved`. Guard History từ chối schema cũ. Rollback không phải cách xóa kết quả mới để quay lui.
 
 Không tự đánh dấu Jira Done hoặc PO nghiệm thu. Safari/Firefox, loa/cảm ứng thật, hai thiết bị/mạng thật, Google/SMTP/LiveKit và gate DOM/p95 từ xa chưa được kiểm trong lượt này. Vòng đời Casual/Ranked và giới hạn mode mới phải nghiệm thu cùng YC9; mã YC5 không dựng queue giả hoặc tự mở mode chưa được YC9 triển khai.
 
