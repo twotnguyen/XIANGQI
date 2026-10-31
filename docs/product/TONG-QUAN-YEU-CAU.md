@@ -927,7 +927,7 @@ Báo cáo hiện trạng mã của PR #157 (nhánh feat/product-p1-completion), 
 
 | Yêu cầu / truy vết | Thay đổi thực tế |
 |---|---|
-| YC1, AC-P2-20.1 / XIAN-178 | Đổi Username có hạn OTP/resend theo deadline máy chủ; chặn mã hết hạn và phản hồi muộn sau đóng/reset/rời. |
+| YC1, AC-P2-20.1 / XIAN-178 | Đổi Username lấy hạn OTP/resend từ mốc `expiresAt`/`resendAt` máy chủ trả về (đếm ngược theo đồng hồ trình duyệt); chặn gửi mã đã hết hạn và bỏ phản hồi muộn sau đóng/reset/rời. |
 | YC1, AC-P2-21.1–2 / XIAN-180 | Khôi phục Username có đếm ngược, hướng dẫn gửi mã mới, không để response cũ ghi đè email/luồng mới. |
 | YC1, AC-YC1-MK-18/20 | Quên/Reset mật khẩu bỏ phản hồi cũ sau chuyển mode, đổi đầu vào, thay request hoặc rời trang; không tự điều hướng ghi đè luồng mới. Chưa gán Jira Task không xác định. |
 | YC2, AC-02.1.3 / XIAN-54 | Tạo phòng giữ input và commandId khi mất phản hồi; replay cùng biên lai, kể cả retry bị chặn bởi auth/rate limit; khóa lựa chọn khi đang khôi phục. |
@@ -948,7 +948,7 @@ Riêng lượt đầu ở mục 16.1 không mở thêm phạm vi BA, không đ�
 - Đã chạy hồi quy tập trung: 19 file / 221 test đạt (18 file web và một file service AI), gồm tạo phòng, Sảnh, OTP/mật khẩu, DM, Thách đấu, kết quả/Tái đấu, người xem, bàn cờ và chống treo. Bao gồm hồi quy tích hợp Router/AI; không coi test service giả biên xác thực là nghiệm thu API/PostgreSQL thật.
 - TypeScript web/server/tests, ESLint các file TS/TSX đổi, Prettier code/CSS và git diff --check đạt. Không chạy build trong phiên này.
 - Đã xem Sảnh local: nhãn 2/5, 1/5 và Không cho xem cập nhật đúng; không tràn ngang. Preview dùng dữ liệu minh họa, không thay nghiệm thu tài khoản/phòng thật.
-- Hồi quy PostgreSQL cho cặp Tái đấu bị thay người, custom LOCKED và API Khách Undo AI đã được chạy ở lượt tiếp: 12 ca Tái đấu và 9 ca Khách đạt. Dùng PostgreSQL 17 tạm, dữ liệu tổng hợp riêng trên loopback; không trỏ fixture vào Supabase/production.
+- Hồi quy PostgreSQL cho cặp Tái đấu bị thay người, custom LOCKED và API Khách Undo AI đã được chạy ở lượt tiếp (báo cáo PR ghi 12 ca Tái đấu và 9 ca Khách đạt; `room-rematch.test.ts` hiện có 11 `it(`, `ai-guest-runtime.test.ts` có 9, chưa đếm lại tổng). Dùng PostgreSQL 17 tạm, dữ liệu tổng hợp riêng trên loopback; không trỏ fixture vào Supabase/production.
 - Chưa nghiệm thu SMTP/Google/LiveKit thiết bị thật, Cloud migrations, p95/tải 50 người, toàn bộ kịch bản demo (D1–D14) hoặc PO. Không coi unit/component xanh là PASS cho các cổng này.
 
 ### 16.3 Phần còn lại sau lượt này
@@ -972,7 +972,7 @@ Tiếp tục trên cùng nhánh/PR #157. Sửa các đường đã triển khai 
 | YC7, AC-P2-24.2–3 — XIAN-186 | Đổi mức chia sẻ camera/mic cũng yêu cầu proof kết nối hiện hành dưới actor lock; tab cũ/mất kết nối không đổi cấu hình chia sẻ. |
 | YC7, AC-07.2 — XIAN-94 | LiveKit ngắt cuối phiên dừng mọi track private/stage, hiện Camera/mic tạm thời không dùng được và cho thử lại chỉ nhận; không phát lệnh phòng/ván hoặc tự bật lại thiết bị. |
 | Chức năng AI đã có, AC-P2-12.2 — XIAN-162 | Hết ân hạn 30 phút kiểm lại đúng reservation/boot/presence dưới khóa; lưu phần nước hiệu lực và Bỏ dở trung lập cho thành viên trước COMMIT rồi mới hủy job/xóa RAM. Rollback giữ RAM/ghế, candidate cũ không đụng ván mới, terminal thật được giữ; Khách không lưu history. Metadata phân biệt mất kết nối với lỗi engine/restart. |
-| Chức năng xuất đã có, AC-P2-15 — XIAN-168 | Response FEN/PGN sau rời replay, đổi biên bản hoặc mất quyền không còn ghi clipboard/tải tệp/ghi đè trạng thái mới. |
+| Chức năng xuất đã có, AC-P2-15 — XIAN-168 | Response FEN/PGN sau rời replay hoặc đổi biên bản không còn ghi clipboard/tải tệp/ghi đè trạng thái mới (có test). Khi mất quyền xuất (`exportAt` không còn), mã cũng đặt lại trạng thái xuất theo cùng cơ chế, nhưng chưa có test riêng cho trường hợp này. |
 | Hạ tầng kiểm chứng Windows | Chuẩn hóa CRLF thành LF khi nạp SQL test để checksum function khớp migration đã audit; không sửa migration cũ hoặc giá trị checksum. |
 
 **Kiểm chứng quan sát được:** 69 file / 763 test đạt, không skip (24 file server, 45 file web; lấy kết quả mới nhất từng file sau khi sửa fixture). Có 45 ca runtime HTTP/Socket.IO/PostgreSQL cho rời phòng, đổi ghế/quyền, tái đấu và vòng đời Khách; fixture lấy proof từ socket đang điều khiển thật. Có API/session/coordinator/RealtimeStore/presence/PostgreSQL thật cho quyền phòng; PostgreSQL cho OTP, AI expiry/concurrency/rollback, media và ma trận RLS. Các provider/engine được thay bằng biên tổng hợp theo fixture, không xem là E2E dịch vụ thật. Cặp Tái đấu và API Khách của lượt đầu cũng đã chạy trên DB như mục 16.2.
