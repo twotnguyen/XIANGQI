@@ -269,11 +269,12 @@ PO chốt khi rà soát [YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md) (chi tiết và A
 3. **Đổi Username tối đa 1 lần mỗi 7 ngày**; lấy lại tên cũ cũng tính (thay "không cooldown" ở 1.4 và 0.21).
 4. **Cảnh báo khi bỏ qua email/OTP** lúc đăng ký bằng khung xác nhận "Vẫn bỏ qua / Thêm email".
 5. **Khôi phục Username** vào từ link "Quên tên đăng nhập?" ở `/login`, mở tab thứ hai của `/forgot-password`; không route mới.
-6. **Trần gửi OTP** 5 mã/giờ cho mỗi email và mỗi username, chung mọi mục đích OTP của tài khoản (trừ đăng ký ba bước theo nhà cung cấp Auth).
+6. **Trần gửi OTP** 5 lần trong cửa sổ trượt 60 phút cho mỗi email chuẩn hóa và mỗi tài khoản (UUID bất biến, không reset khi đổi username), chung mọi mục đích OTP của tài khoản (trừ đăng ký ba bước theo nhà cung cấp Auth). Giữ chỗ nguyên tử trước khi gửi; lần đã bắt đầu gọi SMTP tính cả khi gửi lỗi, nhưng yêu cầu bị từ chối trước gửi không tính. Riêng Khôi phục Username luôn phản hồi chung cả khi hết quota hoặc lỗi SMTP để không dò email; máy chủ vẫn chặn thật.
 7. **Display Name** chỉ chữ (có dấu), số, khoảng trắng và `. - _ '`; không emoji hay ký tự điều khiển.
 8. **Thông báo thiếu email** dùng chữ "email" thay "Gmail".
 9. PO không chọn thêm điều khoản/chính sách quyền riêng tư hay giới hạn tạo Khách theo địa chỉ mạng: giữ 10.2.
-10. **PO xác nhận 31/10:** mật khẩu tối đa 72 ký tự; tên Khách dùng cùng bộ ký tự như Display Name; khi luật thiết bị tắt, cùng tài khoản đăng nhập nơi khác lúc đang ván được xử như mở tab mới (tiếp quản, không xử thua).
+10. **PO xác nhận 31/10:** mật khẩu tối thiểu 8 ký tự và tối đa **72 byte UTF-8** (khớp giới hạn bcrypt của nhà cung cấp Auth, nên không bị cắt ngầm; chữ có dấu và biểu tượng chiếm nhiều byte, thông báo phải nói rõ), không trim; giới hạn riêng khác của nhà cung cấp Auth vẫn phải báo lỗi thật đã làm sạch. Tên Khách dùng cùng bộ ký tự như Display Name; khi luật thiết bị tắt, cùng tài khoản đăng nhập nơi khác lúc đang ván được xử như mở tab mới (tiếp quản, không xử thua).
+11. **PO làm rõ khi triển khai YC1 ngày 31/10:** sau OTP đúng, quyền đặt mật khẩu mới và quyền đổi Username đều có hạn **10 phút từ lúc xác minh thành công**, dùng một lần và đúng mục đích/tài khoản. Hạn OTP trước xác minh vẫn 180 giây; không dùng hết hạn OTP gốc để cắt quyền mới đã cấp. Dữ liệu mới không hợp lệ không tiêu thụ quyền; bước ghi cuối vẫn kiểm hạn/quyền hiện tại.
 
 ### 0.29 Rà soát YC2 — PO chốt 31/10/2026
 
@@ -1153,7 +1154,7 @@ PO chốt khi rà soát [YC9](P1-YC9-GHEP-TRAN-CASUAL-RANKED.md) (chi tiết và
 | STT | Nghiệp Vụ Cốt Lõi | Quyết Định Đã Chốt | Phân Loại & Thứ Tự Ưu Tiên |
 |:---:|---|---|:---:|
 | 1 | **Chế độ Khách (Guest Mode)** | **[1B] Nút "Guest" nổi bật tại Login kèm ghi chú cấm tham gia Ranked Elo** | **P1 (lên P1 07/10, Phần 0 mục 0.3)** |
-| 2 | Kích hoạt Email | **[2B] Tài khoản chỉ được tạo/kích hoạt sau khi xác thực OTP email lúc đăng ký** (không có bước kích hoạt thứ hai; Email cũng dùng cho OTP đổi Username và quên mật khẩu) | **P1 — MVP** |
+| 2 | Email tùy chọn | Tài khoản hoàn tất khi OTP đúng **hoặc chủ động xác nhận bỏ qua Email/OTP**; email chỉ dùng khôi phục sau xác minh, theo 0.2/0.18/0.28 | **P1 — MVP** |
 | 3 | Đổi Username / email bất biến | OTP tới email đã xác minh, giữ tên cũ 30 ngày, bảo toàn UUID/dữ liệu theo 0.21/1.4/1.6; không đổi email đã xác minh | **P1** |
 | 4 | **Google OAuth Onboarding** | **[1D] Tạo tài khoản qua Google OAuth kết hợp thiết lập Username + Password**; dọn bản Google mới chưa hoàn tất sau 60 phút, kiểm mỗi 5 phút khi dịch vụ hoạt động (1.2) | **P1 — MVP (PO kéo lên 04/10/2026)** |
 | 5 | Đồng hồ thi đấu | Custom Không giới hạn/5/10/15 và chống treo theo 0.20; Casual 15, Ranked 10; không cộng giây | **P1** custom, Casual và Ranked (0.27) |

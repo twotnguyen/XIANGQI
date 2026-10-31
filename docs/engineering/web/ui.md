@@ -374,6 +374,14 @@ hộp thoại, hiện lỗi đã làm sạch và cho gửi lại; chỉ điều 
 
 `features/rooms/match/InactivityBanner.tsx` chỉ hiện cho bên đang đến lượt khi snapshot có `match.inactivity`. Banner không modal, không khóa focus, không che bàn cờ hay nút Đầu hàng; có `role="status"`. Đếm lùi lấy từ `expiresAt` của server. Khi `confirmsLeft` = 0 thì ẩn nút "Tôi còn đây". Ván không giới hạn không có đồng hồ từng bên (snapshot không gửi `clocks`).
 
+## Hoàn thiện YC1 theo rà soát 31/10/2026
+
+Đăng ký mở Dialog xác nhận trước khi bỏ qua Email/OTP; đóng/Escape không hoàn tất tài khoản, “Thêm email” quay lại bước Email, chỉ “Vẫn bỏ qua” mới gửi lệnh. `/forgot-password` dùng Tabs sẵn có cho hai mục đích OTP riêng; link “Quên tên đăng nhập?” tại Login chọn tab bằng `?tab=username`, không đưa email/token lên URL. Rời tab recovery hủy hiệu lực callback cũ.
+
+Các form dùng validation shared cho mật khẩu tối thiểu 8 ký tự, tối đa 72 byte UTF-8 và tên NFC/gộp dấu cách/allowlist. Quota OTP chung có thông báo riêng với cooldown gửi lại; đổi Username hiển thị số ngày server trả (chỉ nhận số nguyên 1–7), không render message lỗi thô. Provider từ chối password được báo đúng, không giả thành lỗi gửi OTP.
+
+SessionProvider và client auth dùng `tabSessionFetch`; sessionStorage chỉ giữ selector tab, secret vẫn trong cookie HttpOnly/bộ nhớ. Web Locks nhận biết tab nhân đôi; khi không có Web Locks, mỗi lượt tải có namespace mới và chỉ bootstrap từ nguồn trước. Đổi username giữ danh tính UUID và phiên, không làm refresh lỗi do tên cũ. Chưa xem giao diện trong lượt YC1 này vì không có dev server đang chạy; không thay bằng chứng trình duyệt/thiết bị thật bằng typecheck.
+
 ## Nâng cấp giao diện kỳ đài (31/10/2026)
 
 - Đồng bộ nền nâu trầm, viền mảnh và vàng dịu bằng token hiện có; giữ hai chủ đề, phông/ảnh local và palette bàn cờ. Không thêm dependency UI.

@@ -4,7 +4,7 @@
 
 **Ngày cập nhật:** 30/10/2026. **Phạm vi:** YC1 P1 gồm baseline, hai chức năng mật khẩu theo BA 0.18 và bốn bổ sung theo **BA 0.21** (mục 18). Hạn P1 giữ 04/11/2026.
 
-**Rà soát 31/10/2026:** PO chốt thêm chín điểm tại mục 20 (thiết bị = trình duyệt, reset xóa khóa, đổi Username 1 lần/7 ngày, cảnh báo bỏ qua email, lối vào Quên tên đăng nhập, trần OTP, ký tự tên, chữ "email"); **chưa triển khai**, các mục 9–11, 13, 18 dưới đây đã sửa theo.
+**Rà soát 31/10/2026:** PO chốt thêm chín điểm tại mục 20 (thiết bị = trình duyệt, reset xóa khóa, đổi Username 1 lần/7 ngày, cảnh báo bỏ qua email, lối vào Quên tên đăng nhập, trần OTP, ký tự tên, chữ "email"); **đã có mã local trong lượt triển khai 31/10 nhưng chưa có bằng chứng nghiệm thu** (chưa áp migration, chưa kiểm dịch vụ thật; xem mục 20.2), các mục 9–11, 13, 18 dưới đây đã sửa theo.
 
 **Trạng thái:** baseline tại mục 17; bổ sung BA 0.21 đã triển khai và kiểm chứng local tại mục 19. Cloud: đã áp hai migration `20261030000001_password_recovery` và `20261031000001_session_devices` (PO chọn, mục 17); đã áp ngày 31/10/2026 (PO yêu cầu) các migration còn lại `20261019060000`, `20261101000001`–`20261102000005`, `20261103000001`, sổ khớp local (BACKLOG-P1 mục 11 dòng 8); chưa xác nhận CI hoặc nghiệm thu PO; không tự Jira Done.
 
@@ -61,11 +61,11 @@ Nguồn: [BA Phần 0 và Phần 1](BA-SCOPE-DECISIONS.md), [Backlog P1 — EP-0
 | Trường | Quy tắc |
 |---|---|
 | Username | 3–20 ký tự, `^[a-zA-Z0-9_]{3,20}$`, duy nhất không phân biệt hoa thường; từ chối từ cấm; giữ cách viết hiển thị đã nhập |
-| Mật khẩu | 8–72 ký tự (72 theo giới hạn bcrypt của nhà cung cấp Auth; PO xác nhận 31/10); mọi ô xác nhận phải khớp; không tự trim hoặc đổi hoa/thường mật khẩu |
+| Mật khẩu | tối thiểu 8 ký tự, tối đa 72 byte UTF-8 (khớp giới hạn bcrypt, không bị cắt ngầm; chữ có dấu và biểu tượng chiếm nhiều byte; PO làm rõ 31/10); mọi ô xác nhận phải khớp; không tự trim hoặc đổi hoa/thường mật khẩu. Auth có giới hạn riêng thì báo lỗi thật đã làm sạch, không giả thành công |
 | Display Name | Mặc định bằng username, kể cả Google; 2–30 ký tự; chỉ chữ (kể cả tiếng Việt có dấu), số, khoảng trắng và `. - _ '`; tự bỏ khoảng trắng đầu/cuối và gộp khoảng trắng liên tiếp; không emoji, không ký tự điều khiển; không cần duy nhất; từ cấm bị từ chối |
 | Tên Khách | 2–20 ký tự, cùng bộ ký tự như Display Name (PO xác nhận 31/10), không cần duy nhất, qua bộ lọc; luôn kèm nhãn “(Khách)” |
 | Email | Phân biệt chưa có, đang chờ xác minh, đã xác minh; chỉ trạng thái cuối được dùng khôi phục |
-| OTP | 6 chữ số, hạn 180 giây; gửi lại sau 60 giây; tối đa 5 mã/giờ cho mỗi email và mỗi username (mục 20); kiểm hạn ở server, không tin đồng hồ client |
+| OTP | 6 chữ số, hạn 180 giây; gửi lại sau 60 giây; tối đa 5 lần bắt đầu gửi trong cửa sổ trượt 60 phút, chung mỗi email chuẩn hóa và UUID tài khoản, kể cả SMTP lỗi; đăng ký ba bước theo nhà cung cấp Auth. Kiểm hạn/quota nguyên tử ở server, không tin đồng hồ client |
 | user_id | Bất biến khi đổi mật khẩu, thêm email hoặc đổi Display Name; quan hệ bạn bè/phòng/ván không được tạo lại |
 
 Kiểm tra tại client giúp nhập liệu; máy chủ vẫn kiểm lại mọi quyền, giá trị và trạng thái. Không nhận user_id/email khôi phục do client tự chọn thay cho danh tính đã xác minh.
@@ -197,8 +197,9 @@ Không trả địa chỉ email đầy đủ cho người chưa xác minh. Mọi
 - `/reset-password` dùng ngữ cảnh yêu cầu khôi phục đã tạo, không tin chỉ username/ID client gửi.
 - OTP 6 số/180 giây, gửi lại sau 60 giây; giới hạn xác minh theo BA 1.5 (mục tiêu 5 lần sai qua Supabase, gần đúng, không hứa chính xác từng mã).
 - Mã đúng và còn hiệu lực chỉ cho quyền đổi mật khẩu của **tài khoản, yêu cầu và mục đích đó**. Mã đăng ký/thêm email không được dùng thay mã recovery.
+- Quyền reset có hạn **10 phút mới tính từ xác minh OTP thành công**, độc lập với hạn OTP gốc 180 giây; dùng một lần, dữ liệu mật khẩu không hợp lệ không tiêu thụ quyền, bước ghi cuối kiểm hạn lại (PO chốt trong lượt triển khai 31/10).
 - Chưa xác minh OTP không đổi mật khẩu dù gọi API trực tiếp; mở URL reset không tự có quyền.
-- Sau xác minh, nhập **Mật khẩu mới** + **Xác nhận mật khẩu mới**, tối thiểu 8 ký tự, khớp nhau. Không yêu cầu mật khẩu cũ.
+- Sau xác minh, nhập **Mật khẩu mới** + **Xác nhận mật khẩu mới**, tối thiểu 8 ký tự và tối đa 72 byte UTF-8 (mục 3), khớp nhau. Không yêu cầu mật khẩu cũ.
 - Thành công: đổi mật khẩu cùng user_id, vô hiệu quyền reset đã dùng, thu hồi các phiên đăng nhập cũ, **xóa khóa thử sai của username**, thông báo và về `/login`; phải đăng nhập bằng mật khẩu mới.
 - Không tạo phiên ứng dụng từ OTP hoặc tự vào Sảnh/phòng mời. Đăng nhập thực sự tiếp theo mới áp luật thiết bị/vị trí chơi.
 
@@ -443,6 +444,7 @@ gate môi trường thật; cột cuối nêu phần chưa được local chứn
 
 - Tại `/login` chọn link “Quên tên đăng nhập?” (mở tab thứ hai của `/forgot-password`, không thêm route), nhập email liên hệ đã xác minh. Phản hồi chung có/không tài khoản: “Nếu email này đã đăng ký, mã khôi phục đã được gửi”; không lộ Username/presence trước xác minh.
 - OTP 6 số/180 giây, resend 60 giây, giới hạn theo BA 1.5. Sai/hết hạn/khác tài khoản/mục đích/đã dùng không mở quyền. Email/OTP/capability không nằm trên URL/log.
+- PO làm rõ 31/10: luôn giữ phản hồi chung cả khi SMTP lỗi hoặc quota bị chặn; máy chủ vẫn giới hạn thật, không dùng phản hồi để xác nhận email có tài khoản.
 - Mã đúng chỉ hiện **Username hiện tại**, không tự đổi mật khẩu/cấp phiên app. Về Login dùng mật khẩu hiện có; muốn reset phải chủ động vào Quên mật khẩu P1 bằng Username vừa tìm, dùng quyền riêng. Tài khoản Google có email hợp lệ cũng dùng được; Khách/không email verified không có đường này.
 - Nghiệm thu **AC-P2-21.1–3**: phản hồi không dò email, OTP thật/giới hạn/lỗi SMTP, đổi tên trong khi recovery chờ, không lộ tên trước OTP, không nâng quyền thành login/reset.
 
@@ -451,6 +453,7 @@ gate môi trường thật; cột cuối nêu phần chưa được local chứn
 - Hồ sơ → Đổi Username → gửi mã tới **email đã xác minh của chính tài khoản** → xác minh → nhập/xác nhận tên mới. Không có email hợp lệ dẫn đến thêm/xác minh; không cho nhập email tùy ý để nhận OTP đổi tên.
 - Tên mới 3–20 ký tự, mẫu/từ cấm/unique không phân biệt hoa thường như đăng ký; recheck khi ghi, không coi kiểm trước là giữ chỗ. **Tối đa 1 lần đổi mỗi 7 ngày (PO 31/10):** tính từ lần đổi thành công gần nhất; lấy lại tên cũ trong 30 ngày cũng tính một lần đổi. Vượt giới hạn: “Bạn vừa đổi Username, vui lòng thử lại sau {n} ngày”, không gửi OTP.
 - Tên cũ giữ **30 ngày** chỉ chủ cũ lấy lại; người khác thấy đã có người dùng; đúng hạn mới giải phóng. Giữ chỗ không phải alias đăng nhập; đăng nhập mới dùng Username hiện tại.
+- Sau OTP đúng, quyền đổi tên có hạn **10 phút tính từ xác minh thành công**, cùng hạn với quyền reset mật khẩu nhưng khác mục đích; tên trùng/không hợp lệ không tiêu thụ quyền, ghi cuối kiểm hạn/cooldown lại (PO làm rõ 31/10).
 - Giữ UUID/bạn bè/DM/phòng/ván/dữ liệu khác; không tự sửa Display Name/email/mật khẩu. **PO chốt giữ mọi phiên hợp lệ và hạn cũ**, không tự thu hồi/gia hạn/đầu hàng ván.
 - Nghiệm thu **AC-P2-20.1–3**: OTP thật/quyền, thiếu email, race đăng ký/đổi tên/lấy lại, biên 30 ngày, login/tìm bạn tên mới, bảo toàn dữ liệu và API/socket/refresh/ghế/ván trên phiên đang có.
 
@@ -492,12 +495,12 @@ Các quyết định dưới đây sửa hoặc làm rõ mục 4, 6, 10, 11, 13,
 | 3 | **Đổi Username tối đa 1 lần mỗi 7 ngày**, tính từ lần đổi thành công gần nhất; lấy lại tên cũ cũng tính. Thay "không cooldown" của BA 1.4 và 0.21 | AC-YC1-RV-03 |
 | 4 | **Cảnh báo khi bấm Bỏ qua email/OTP lúc đăng ký:** khung xác nhận “Vẫn bỏ qua / Thêm email” (mục 4.2) | AC-YC1-RV-04 |
 | 5 | **Lối vào Khôi phục Username:** link “Quên tên đăng nhập?” ở `/login`, mở tab thứ hai của `/forgot-password`; không route mới | AC-YC1-RV-05 |
-| 6 | **Trần gửi OTP:** tối đa 5 mã/giờ cho mỗi email và mỗi username/tài khoản, tính chung cho khôi phục mật khẩu, khôi phục Username, thêm email trong Hồ sơ và đổi Username; vượt trần báo “Bạn đã yêu cầu quá nhiều mã, vui lòng thử lại sau” và không gửi. Đăng ký ba bước vẫn theo giới hạn của nhà cung cấp Auth | AC-YC1-RV-06 |
+| 6 | **Trần gửi OTP:** tối đa 5 lần bắt đầu gửi trong cửa sổ trượt 60 phút cho mỗi email chuẩn hóa và UUID tài khoản bất biến, tính chung khôi phục mật khẩu, khôi phục Username, thêm email và đổi Username. Lần gọi SMTP lỗi vẫn tính; yêu cầu bị từ chối trước gửi không tính. Vượt trần báo “Bạn đã yêu cầu quá nhiều mã, vui lòng thử lại sau” và không gửi, **trừ Khôi phục Username giữ phản hồi chung để bảo vệ danh tính**. Đăng ký ba bước theo nhà cung cấp Auth | AC-YC1-RV-06 |
 | 7 | **Ký tự tên:** Display Name chỉ chữ (có dấu), số, khoảng trắng và `. - _ '`, bỏ khoảng trắng đầu/cuối, gộp khoảng trắng liên tiếp, không emoji hay ký tự điều khiển, 2–30 ký tự | AC-YC1-RV-07 |
 | 8 | **Thông báo thiếu email dùng chữ “email”**, không “Gmail”: “Tài khoản không có email đã xác minh nên không thể khôi phục mật khẩu.” | AC-YC1-RV-08 |
 | — | PO không chọn thêm: điều khoản/chính sách quyền riêng tư, giới hạn tạo Khách/đăng ký theo địa chỉ mạng. Giữ BA 10.2 (loại trừ) và không giới hạn theo IP | — |
 
-**PO xác nhận 31/10/2026:** mật khẩu tối đa 72 ký tự (AC-YC1-RV-09); tên Khách dùng cùng bộ ký tự như Display Name; khi luật thiết bị tắt, cùng tài khoản đăng nhập nơi khác lúc đang ván được xử như mở tab mới (tiếp quản, không xử thua).
+**PO xác nhận 31/10/2026:** mật khẩu tối đa 72 byte UTF-8 (AC-YC1-RV-09, làm rõ từ “72 ký tự”); tên Khách dùng cùng bộ ký tự như Display Name; khi luật thiết bị tắt, cùng tài khoản đăng nhập nơi khác lúc đang ván được xử như mở tab mới (tiếp quản, không xử thua).
 
 ### 20.1 Tiêu chí bổ sung
 
@@ -508,15 +511,15 @@ Các quyết định dưới đây sửa hoặc làm rõ mục 4, 6, 10, 11, 13,
 | AC-YC1-RV-03 | Thành viên vừa đổi Username thành công; yêu cầu đổi tiếp (kể cả lấy lại tên cũ) trong 7 ngày | Từ chối ngay, không gửi OTP, báo số ngày còn lại; đủ 7 ngày thì đổi được. Biên 6 ngày 23:59 và 7 ngày kiểm tại server |
 | AC-YC1-RV-04 | Đăng ký, bước Email hoặc OTP, bấm Bỏ qua | Hiện khung cảnh báo với **Vẫn bỏ qua** (hoàn tất không email) và **Thêm email** (quay lại bước email); đóng khung không hoàn tất tài khoản |
 | AC-YC1-RV-05 | Ở `/login` bấm “Quên tên đăng nhập?” | Mở tab Quên tên đăng nhập của `/forgot-password`; luồng OTP riêng, không gộp với đặt lại mật khẩu |
-| AC-YC1-RV-06 | Yêu cầu mã lần thứ sáu trong một giờ cho cùng email hoặc cùng username, qua bất kỳ luồng OTP nào | Không gửi, báo quá nhiều mã; bộ đếm theo email và theo username độc lập; không tiết lộ email nào đã có tài khoản |
+| AC-YC1-RV-06 | Yêu cầu lần thứ sáu trong cửa sổ trượt 60 phút cho cùng email chuẩn hóa hoặc cùng tài khoản, qua các luồng OTP ứng dụng; gồm gửi đồng thời, đổi username và SMTP lỗi | Không gửi; hai bộ đếm email/UUID độc lập, đổi username không reset; đúng mốc 60 phút lần cũ ra khỏi cửa sổ. Báo quá nhiều mã, riêng Khôi phục Username vẫn phản hồi chung; không lộ tài khoản |
 | AC-YC1-RV-07 | Lưu Display Name có emoji, ký tự điều khiển, 1 ký tự, 31 ký tự hoặc nhiều khoảng trắng liên tiếp | Từ chối hoặc chuẩn hóa đúng mục 3; tên tiếng Việt có dấu, `O'Brien`, `A.B` hợp lệ; kiểm lại ở server |
 | AC-YC1-RV-08 | Username không có email đã xác minh bấm Gửi mã khôi phục | Hiện đúng câu có chữ “email”; không còn chữ “Gmail” ở giao diện, API và test |
-| AC-YC1-RV-09 | Mật khẩu mới 73 ký tự | Từ chối tại client và server, báo “Mật khẩu tối đa 72 ký tự”; mật khẩu 72 ký tự được chấp nhận |
+| AC-YC1-RV-09 | Mật khẩu mới 73 byte UTF-8 (ví dụ 25 chữ “ế” = 75 byte); chuỗi đúng 72 byte (72 chữ ASCII hoặc 24 chữ “ế”) | Client/server từ chối >72 byte với “Mật khẩu tối đa 72 byte (chữ có dấu tính nhiều byte)”; đúng 72 byte qua validation độ dài, giữ nguyên chuỗi. Nếu Auth từ chối do giới hạn riêng thì báo lỗi thật đã làm sạch, không giả thành công |
 
-### 20.2 Tác động triển khai (chưa làm)
+### 20.2 Tác động triển khai (đã có mã local 31/10, chưa nghiệm thu)
 
-- Chữ “Gmail” còn trong `apps/web/src/features/auth/ForgotPasswordPage.tsx`, `apps/server/src/account/password/password.types.ts` và hai file test `tests/web/features/auth/password-recovery.test.ts`, `tests/server/account/password/password-recovery.test.ts`.
-- Cần mã thiết bị theo trình duyệt (AC-YC1-RV-01), xóa bộ đếm khóa khi reset (RV-02), cột/mốc đổi Username gần nhất (RV-03), bộ đếm OTP theo email và username (RV-06), kiểm ký tự Display Name ở shared validation (RV-07).
+- Đã có mã và ca kiểm viết sẵn: bỏ chữ “Gmail” (RV-08), xóa bộ đếm khóa khi reset (RV-02), cột `username_changed_at` và cooldown 7 ngày (RV-03), quota OTP chung theo email và UUID (RV-06), kiểm ký tự tên và mật khẩu (tối thiểu 8 ký tự, tối đa 72 byte) ở `packages/shared/src/auth-validation.ts` (RV-07, RV-09), Dialog bỏ qua email (RV-04), tab Quên tên đăng nhập (RV-05), phiên theo tab và cờ `SESSION_DEVICE_ENFORCEMENT_ENABLED` (RV-10, RV-11). Chi tiết ở [login.md](../engineering/server/login.md) và [ui.md](../engineering/web/ui.md).
+- Chưa làm hoặc chưa kiểm: mã thiết bị theo trình duyệt (RV-01) vẫn dùng cookie `xiangqi_device` chung hồ sơ trình duyệt; hai migration `20261103000002`, `20261103000003` chưa áp DB; chưa chạy test, chưa kiểm dịch vụ thật, chưa xem giao diện.
 - Bằng chứng ở mục 17 và 19 là trước các thay đổi này; không kế thừa PASS.
 - Luật thiết bị tắt/bật: theo mã nguồn hiện tại mã thiết bị (`xiangqi_device`) và phiên đều lưu bằng cookie dùng chung cả hồ sơ trình duyệt, nên chỉ tắt luật xử thua thì hai tab vẫn ghi đè phiên của nhau; cần tách phiên theo tab (mục 20.3).
 
@@ -526,7 +529,7 @@ Các quyết định dưới đây sửa hoặc làm rõ mục 4, 6, 10, 11, 13,
 - **Trạng thái mặc định hiện tại: luật thiết bị TẮT.** Khi tắt: không xử thua và không đăng xuất tài khoản khác khi đăng nhập ở tab khác; mỗi tab giữ phiên độc lập theo tài khoản (cần tách phiên theo tab, không dùng một cookie phiên chung). Đăng xuất ở tab này không đăng xuất tab kia.
 - **Không đổi khi luật tắt:** một tài khoản chỉ ngồi một vị trí chơi (kể cả AI); cùng một tài khoản mở thêm tab thì tab mới tiếp quản, tab cũ chỉ đọc (BA 1.8). Đăng nhập cùng tài khoản ở nơi khác khi đang ván được xử như mở tab mới (tiếp quản), **không** xử thua (PO xác nhận 31/10).
 - **Bật lại:** bằng cờ cấu hình (tên do dev đặt khi triển khai). Điều kiện bật: PO yêu cầu, hoặc hoàn thiện dự án trước nghiệm thu. **Trước D10 và GATE-SESSION luật phải BẬT**; D10 và AC-01.4 về thiết bị khác không được ghi PASS khi luật đang tắt.
-- **Release:** cờ phải mặc định BẬT ở môi trường demo/phát hành; chế độ nhiều tài khoản chỉ dành cho phát triển.
+- **Release:** cờ phải mặc định BẬT ở môi trường demo/phát hành; chế độ nhiều tài khoản chỉ dành cho phát triển. Khi cờ BẬT, máy chủ bỏ qua header tab và dùng cookie phiên chung như cũ; cơ chế cookie theo tab chỉ chạy khi cờ TẮT.
 
 | Mã | Given / When | Then bắt buộc |
 |---|---|---|
