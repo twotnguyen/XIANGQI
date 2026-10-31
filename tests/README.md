@@ -126,7 +126,7 @@ mức tăng tốc fixture ổn định.
 
 **PR chỉ sửa tài liệu:** workflow vẫn chạy với Markdown, `docs/` hoặc `.env.example`; kiểm tra nguồn PR và bộ lọc vẫn chạy, nhưng bỏ qua cài dependency/lint/typecheck/build/unit/database. Hai required checks vẫn kết thúc thành công nếu các kiểm tra nhẹ đạt. Không đọc được diff thì chạy đầy đủ thay vì coi là tài liệu.
 
-**Protection `main`:** bắt buộc PR, áp dụng cả admin, required checks `Fast Checks & Build (full tests on main)` và `Database Integration Gate`, yêu cầu cập nhật theo base mới nhất; không bắt người khác approve trong repo cá nhân. Giữ tên check cũ để không làm đứt protection. Quy tắc nhánh nguồn do required CI check kiểm tra cả tên `develop` và repository nguồn; GitHub không có bộ lọc nhánh nguồn tương đương trong branch protection. Dùng merge commit cho PR phát hành rồi fast-forward `develop` theo `main`.
+**Protection `main`:** bắt buộc PR, áp dụng cả admin, required checks `Scope, Lint, Typecheck & Build` và `Database Integration Gate`, yêu cầu cập nhật theo base mới nhất; không bắt người khác approve trong repo cá nhân. Khi đổi tên job, phải đồng bộ required check trên GitHub để không làm đứt protection. Quy tắc nhánh nguồn do required CI check kiểm tra cả tên `develop` và repository nguồn; GitHub không có bộ lọc nhánh nguồn tương đương trong branch protection. Dùng merge commit cho PR phát hành rồi fast-forward `develop` theo `main`.
 
 Core chạy một lần với coverage, sau đó `test:unit` loại thư mục core để không chạy trùng. Các lệnh local giữ nguyên để dùng khi chủ động yêu cầu kiểm tra toàn diện, không phải thủ tục trước mỗi commit/push:
 

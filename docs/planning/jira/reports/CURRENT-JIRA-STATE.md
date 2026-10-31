@@ -18,7 +18,7 @@ Nguồn hiện hành: [current-jira-snapshot.json](../data/current-jira-snapshot
 
 ## Cấu hình GitHub hiện hành
 
-Theo `AGENTS.md` (30/10/2026): chỉ có `main` và `develop`; `develop` là nhánh mặc định và tích hợp; `main` có branch protection với hai check bắt buộc `Fast Checks & Build (full tests on main)` và `Database Integration Gate`, chỉ nhận PR từ `develop`. Đây thay ghi chú ngày 10/10 "không còn bộ quy tắc bảo vệ nhánh"; chưa đối chiếu cấu hình GitHub thực tế. AC-00.1.2 và Description T01 trong Jira còn câu cũ; đồng bộ lại khi có yêu cầu cập nhật Jira. Xem [BACKLOG-P1 AC-00.1.2](../../../product/BACKLOG-P1.md).
+Theo `AGENTS.md`, đồng bộ tên check ngày 31/10/2026: chỉ có `main` và `develop`; `develop` là nhánh mặc định và tích hợp; `main` có branch protection với hai check bắt buộc `Scope, Lint, Typecheck & Build` và `Database Integration Gate`, chỉ nhận PR từ `develop`. Đây thay ghi chú ngày 10/10 "không còn bộ quy tắc bảo vệ nhánh". AC-00.1.2 và Description T01 trong Jira còn câu cũ; đồng bộ lại khi có yêu cầu cập nhật Jira. Xem [BACKLOG-P1 AC-00.1.2](../../../product/BACKLOG-P1.md).
 
 ## Dữ liệu đã đồng bộ
 

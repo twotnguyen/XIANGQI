@@ -66,7 +66,7 @@
 
 ### 2.2 Definition of Done (chức năng của một Story được nghiệm thu khi — kiểm tại các Task được giao trong bản đồ nghiệm thu)
 - [ ] Mọi AC đạt; mỗi AC có TC tương ứng **PASS** và được ghi kết quả trong Jira.
-- [ ] Code đã review (ít nhất 1 người, phần lõi do Tình review), tích hợp vào `develop`, kiểm tra lint/typecheck/unit test đạt. Đây là tiêu chuẩn chất lượng của nhóm; GitHub: `main` có branch protection với hai check bắt buộc `Fast Checks & Build (full tests on main)` và `Database Integration Gate`, chỉ nhận PR từ `develop` (theo AGENTS.md, cập nhật 30/10; chưa đối chiếu cấu hình GitHub thực tế); `develop` là nhánh mặc định và tích hợp; merge vào `develop` không bắt buộc PR hay Approve.
+- [ ] Code đã review (ít nhất 1 người, phần lõi do Tình review), tích hợp vào `develop`, kiểm tra lint/typecheck/unit test đạt. Đây là tiêu chuẩn chất lượng của nhóm; GitHub: `main` có branch protection với hai check bắt buộc `Scope, Lint, Typecheck & Build` và `Database Integration Gate`, chỉ nhận PR từ `develop` (đồng bộ tên check ngày 31/10/2026); `develop` là nhánh mặc định và tích hợp; merge vào `develop` không bắt buộc PR hay Approve.
 - [ ] Luật nghiệp vụ kiểm ở **máy chủ**, không tin dữ liệu client gửi.
 - [ ] Màn hình đủ **5 trạng thái** (`SUCCESS`, `LOADING`, `EMPTY`, `ERROR`, `DISABLED` có tooltip) theo DANH-MUC §2 và đúng `DESIGN.md`.
 - [ ] Chạy được ở môi trường demo local; responsive từ 360 px; tiếng Việt.
@@ -141,7 +141,7 @@
 | AC-00.1.5 | Có đăng nhập, gửi OTP, chat | Đọc log | Log dạng JSON có thời gian, mức, mã sự kiện; **không** chứa mật khẩu, OTP, token, nội dung chat | M |
 | AC-00.1.6 | Log và biên lai lệnh | Quá hạn lưu giữ | Biên lai lệnh xoá sau 24 giờ; log giữ tối đa 14 ngày | I |
 
-> **Cấu hình nhánh (đồng bộ AGENTS.md 30/10, thay ghi chú 10/10 "không bảo vệ nhánh"):** chỉ `main`/`develop`; `main` có branch protection với hai check bắt buộc `Fast Checks & Build (full tests on main)` và `Database Integration Gate`, chỉ nhận PR từ `develop` (theo AGENTS.md, cập nhật 30/10; chưa đối chiếu cấu hình GitHub thực tế); `develop` là nhánh mặc định và tích hợp. AC-00.1.2 và T01 đã đồng bộ yêu cầu CI báo kết quả kiểm tra; việc cập nhật đặc tả không phải bằng chứng CI đã triển khai hoặc đã PASS. Xem [quy trình Git hiện hành](../../README.md#quy-trình-git).
+> **Cấu hình nhánh (đồng bộ tên check 31/10/2026, thay ghi chú 10/10 "không bảo vệ nhánh"):** chỉ `main`/`develop`; `main` có branch protection với hai check bắt buộc `Scope, Lint, Typecheck & Build` và `Database Integration Gate`, chỉ nhận PR từ `develop`; `develop` là nhánh mặc định và tích hợp. AC-00.1.2 và T01 đã đồng bộ yêu cầu CI báo kết quả kiểm tra; việc cập nhật đặc tả không phải bằng chứng CI đã triển khai hoặc đã PASS. Xem [quy trình Git hiện hành](../../README.md#quy-trình-git).
 
 #### US-00.2 · Cơ sở dữ liệu và phân quyền P1
 **Là** nhóm phát triển, **tôi muốn** lược đồ dữ liệu P1 có migration và RLS, **để** dữ liệu nhất quán và client không ghi trái phép.

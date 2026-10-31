@@ -11,7 +11,7 @@ permissions:
   contents: read
 jobs:
   checks:
-    name: Fast Checks & Build (full tests on main)
+    name: Scope, Lint, Typecheck & Build
     runs-on: ubuntu-latest
     permissions:
       contents: read
