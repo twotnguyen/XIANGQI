@@ -353,11 +353,11 @@ Giữ AC/TC chi tiết tại [BACKLOG-P2.md](BACKLOG-P2.md), tích hợp ở [YC
 | AC-02.2.3 | B bấm "Đồng ý" | Hệ thống | Hai người hoán đổi Đỏ ↔ Đen; Sẵn sàng của đối thủ về chưa sẵn sàng | E2E |
 | AC-02.2.4 | B từ chối hoặc hết 30 giây | A muốn gửi lại | Nút của A `DISABLED` 60 giây kèm tooltip đếm giây còn lại | E2E |
 | AC-02.2.5 | A đang có đề nghị chờ | A bấm lại | Không gửi được đề nghị thứ hai (tối đa 1 đề nghị chờ) | I |
-| AC-02.2.6 | Đề nghị đang chờ | Cả hai Sẵn sàng và bắt đầu đếm, hoặc một người rời ghế | Đề nghị tự huỷ | I |
+| AC-02.2.6 | Đề nghị đang chờ | Đối thủ Sẵn sàng và Host bấm Bắt đầu (bắt đầu đếm, BA 0.29), hoặc một người rời ghế | Đề nghị tự huỷ | I |
 | AC-02.2.7 | Đang đếm 3-2-1 hoặc đang ván | Xem cụm nút | Không có nút "Xin đổi bên" | E2E |
 | AC-02.2.8 | Ván vừa kết thúc | Hệ thống | Hộp kết quả có "Ở lại phòng" và "Rời phòng"; phòng đã ở `WAITING`, Sẵn sàng của đối thủ = chưa | E2E |
 | AC-02.2.9 | Bấm "Ở lại phòng" | Hệ thống | Về phòng chờ; giữ nguyên ghế/phe, người xem, chế độ phòng, mức giờ, Host, Kênh Riêng và Kênh Chung | E2E |
-| AC-02.2.10 | Cả hai Sẵn sàng | Hệ thống | Ván mới với Match ID mới, đồng hồ đặt lại đầy đủ theo mức giờ phòng | E2E |
+| AC-02.2.10 | Đối thủ Sẵn sàng và Host bấm Bắt đầu (BA 0.29) | Hệ thống | Ván mới với Match ID mới, đồng hồ đặt lại đầy đủ theo mức giờ phòng | E2E |
 | AC-02.2.11 | Một người chơi bấm "Rời phòng" | Hệ thống | Ghế đó trống; phòng vẫn `WAITING`; Host chuyển cho người còn lại nếu người rời là Host; phòng `LOCKED` vẫn khoá | E2E |
 | AC-02.2.12 | Sau ván, không ai rời | 10 phút trôi qua | Phòng **không** tự đóng | I |
 | AC-02.2.13 | Người thứ hai vừa ngồi vào ghế còn lại | Xem cụm nút | Nút "Đổi ghế" biến mất, chỉ còn "Xin đổi bên" (US-02.2); người thứ hai rời ghế thì "Đổi ghế" xuất hiện lại | E2E |

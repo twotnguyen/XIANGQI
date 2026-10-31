@@ -21,14 +21,14 @@ Các vai trò lấy từ yêu cầu khách hàng, không phải kết quả nghi
 
 1. Đăng ký/đăng nhập (hoặc vào Khách) → Sảnh.
 2. Tạo phòng hoặc nhận lời mời/link/mã; ở Sảnh có danh sách phòng PUBLIC với **Vào chơi** và **Vào xem**.
-3. Hai người ngồi ghế, có thể **Xin đổi bên**, cùng Sẵn sàng → đếm 3-2-1 → chơi; máy chủ quyết định mọi luật.
+3. Hai người ngồi ghế, có thể **Xin đổi bên**, đối thủ Sẵn sàng rồi Host bấm Bắt đầu → đếm 3-2-1 → chơi; máy chủ quyết định mọi luật.
 4. Trò chuyện ở Kênh Riêng, bật camera/mic (mặc định tắt, không ghi). Người xem chat Kênh Chung, không phát media, không đọc Kênh Riêng.
 5. Hết ván: **Ở lại phòng** để đánh tiếp (giữ người xem), đổi bên nếu muốn; hoặc rời phòng.
 6. Từ Sảnh chọn **Đánh với máy**: ba cấp độ, chọn phe, hết ván bấm Ván mới để đổi phe/cấp.
 
 ## 4. Phạm vi và ưu tiên
 
-**P1 (hạn 04/11/2026):** tám mục tiêu khách hàng — đăng ký/đăng nhập (kể cả Google và Khách; email/OTP đăng ký tùy chọn), tạo phòng, mời vào phòng, khởi tạo bàn cờ, đánh online, phòng PUBLIC/CODE_ONLY/LOCKED tối đa 5 người xem (7 người/phòng), chat + camera + mic, đánh máy ba cấp. **PO bổ sung 30/10: Đổi mật khẩu trong Hồ sơ và Quên mật khẩu bằng username/OTP thuộc P1**, xem [đặc tả YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md). Chỉ giao diện Kỳ Đài Cổ Phong.
+**P1 (hạn 04/11/2026):** tám mục tiêu khách hàng — đăng ký/đăng nhập (kể cả Google và Khách; email/OTP đăng ký tùy chọn), tạo phòng, mời vào phòng, khởi tạo bàn cờ, đánh online, phòng PUBLIC/CODE_ONLY/LOCKED tối đa 5 người xem (7 người/phòng), chat + camera + mic, đánh máy ba cấp. **PO bổ sung 30/10: Đổi mật khẩu trong Hồ sơ và Quên mật khẩu bằng username/OTP thuộc P1**, xem [đặc tả YC1](P1-YC1-TAI-KHOAN-VA-XAC-THUC.md). Giao diện mặc định Kỳ Đài Cổ Phong; thành viên chọn thêm Giấy Sáng hoặc Theo hệ thống ở Hồ sơ (BA 0.21).
 
 **Từ BA 0.27 (31/10/2026) không còn mục P2:** Đánh Hạng/Elo/bảng xếp hạng, ghép ngẫu nhiên, Tái đấu chọn phe, Xin đi lại, Lịch sử/Replay, chat 1-1, Thách đấu, sticker, khôi phục/đổi Username, tiện ích demo và giao diện bổ sung đều thuộc P1. QR vẫn bị loại. Chưa tái ước lượng giờ/Jira.
 

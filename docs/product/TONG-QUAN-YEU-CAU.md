@@ -51,7 +51,7 @@ Mỗi phần được xem theo sáu câu hỏi: phục vụ ai; giải quyết v
 
 Ứng dụng web cờ tướng tiếng Việt cho người muốn giao lưu qua phòng online và luyện với máy. Trải nghiệm kết hợp bàn cờ, người xem, chat và camera/mic tự chọn. Đây đồng thời là đồ án môn Quản trị Dự án CNTT: phải chứng minh cả sản phẩm chạy được và kế hoạch triển khai có truy vết.
 
-P1 tập trung **tám mục tiêu khách hàng**, không phải nền tảng thi đấu chuyên nghiệp đầy đủ. P2 là mở rộng có đặc tả nhưng không mặc định cùng hạn P1.
+P1 tập trung **tám mục tiêu khách hàng**, không phải nền tảng thi đấu chuyên nghiệp đầy đủ. Từ BA 0.27 không còn mục P2: phần từng thuộc P2 cũng thuộc P1 và cùng hạn 04/11/2026; nhãn `P2` trong tài liệu này chỉ để truy vết.
 
 | Mã gốc | Mục tiêu P1 | Epic / Story |
 |---|---|---|
@@ -73,9 +73,9 @@ Baseline kế hoạch: **9 Epic, 27 Story, 71 Task, 268 AC, 880 giờ, hạn 04/
 
 **Mục tiêu:** XIANGQI là ứng dụng web cờ tướng tiếng Việt, giúp người dùng dễ dàng chơi cùng bạn bè, luyện tập với máy và thi đấu xếp hạng. Trải nghiệm ưu tiên bàn cờ dễ dùng, luật và đồng hồ nhất quán, kết nối ổn định; chat, camera và mic là tiện ích giao lưu tự chọn.
 
-**Ưu tiên sản phẩm:** hoàn thiện chơi cùng bạn bè và luyện máy trước, sau đó thi đấu cộng đồng. Giữ cả ba trong tầm nhìn, không đưa Ranked hoặc tính năng P2 khác lên P1 chỉ vì có trong mục tiêu dài hạn.
+**Ưu tiên sản phẩm:** hoàn thiện chơi cùng bạn bè và luyện máy trước, sau đó thi đấu cộng đồng. Từ BA 0.27, Ranked và mọi tính năng từng thuộc P2 đã thuộc P1; thứ tự này chỉ là ưu tiên hoàn thiện (YC1–YC8 trước YC9).
 
-**Ràng buộc PO xác nhận:** giữ hạn **04/11/2026** và phân kỳ P1/P2 hiện hành. Đánh giá và xử lý lần lượt **YC1 → YC8 của P1**; P1 ổn hết mới chuyển P2. Phân quyền và chất lượng nền tảng được rà trong từng yêu cầu liên quan, không đợi cuối mới xử lý.
+**Ràng buộc PO xác nhận:** giữ hạn **04/11/2026**; từ BA 0.27 không còn phân kỳ P2. Đánh giá và xử lý lần lượt **YC1 → YC8**, hoàn thiện trước YC9 (Ranked/Casual). Phân quyền và chất lượng nền tảng được rà trong từng yêu cầu liên quan, không đợi cuối mới xử lý.
 
 “Ổn” không đồng nghĩa chỉ chốt đặc tả: khi triển khai/nghiệm thu vẫn phải có bằng chứng theo AC, NFR/gate liên quan và hồi quy tích hợp; chưa có bằng chứng thì không tuyên bố đạt. Không tự giảm phạm vi hoặc hạ ngưỡng để giữ hạn; thay đổi ảnh hưởng hạn phải báo PO.
 
@@ -86,7 +86,7 @@ Nguồn: BA 0.1, 10.1, 11; Backlog P1 mục 4, 10.
 | Vai trò | Quyền hiện hành trong P1 | Giới hạn quan trọng |
 |---|---|---|
 | Thành viên | Tạo/vào phòng, đánh online/AI, kết bạn, mời bạn, hồ sơ, chat/media theo vai trò | Một vị trí ngồi chơi tại một thời điểm; không tự quyết luật/kết quả |
-| Khách | Tạo một phòng đang mở, vào chơi/xem, chia sẻ link/mã, đánh AI, chat/media khi có quyền | Không kết bạn, không gửi/nhận lời mời bạn bè, không dùng P2, không sửa hồ sơ ngoài Đăng xuất |
+| Khách | Tạo một phòng đang mở, vào chơi/xem, chia sẻ link/mã, đánh AI, Đánh Thường ghép ngẫu nhiên, Xin đi lại online, chat/media khi có quyền | Không kết bạn, không gửi/nhận lời mời bạn bè, không Đánh Hạng/Elo/bảng xếp hạng, không Undo AI/Tái đấu/History/Replay, không sửa hồ sơ ngoài Đăng xuất |
 | Host | Cài đặt quyền phòng, quản lý ghế/người xem theo trạng thái | Phải đang ngồi ghế; không được sửa luật hay kết quả |
 | Người chơi không phải Host | Đi cờ, Sẵn sàng, đề nghị đổi bên/hòa, chat/media, đuổi người xem | Không có toàn bộ quyền cài đặt của Host |
 | Người xem | Xem realtime, chat Kênh Chung, nhận media được chia sẻ | Không đi cờ, không đọc Kênh Riêng, không phát camera/mic |
@@ -174,7 +174,7 @@ Danh sách PUBLIC tối đa 50 phòng, sắp theo lần mở PUBLIC gần nhất
 
 - Host khởi đầu ghế Đỏ; một mình thì đổi Đỏ/Đen tự do. Có hai người phải Xin đổi bên, hạn 30 giây; đồng ý reset Sẵn sàng cả hai.
 - Từ chối/hết hạn đổi bên → người gửi chờ 60 giây; đề nghị bị hủy khi bắt đầu đếm hoặc thành phần ghế đổi.
-- Hai người Sẵn sàng → đếm 3 giây → server kiểm lại ghế/kết nối/Sẵn sàng trước khi tạo ván.
+- Đối thủ Sẵn sàng → Host bấm Bắt đầu (BA 0.29) → đếm 3 giây → server kiểm lại ghế/kết nối/Sẵn sàng trước khi tạo ván.
 - Mất mạng trong đếm ngược → hủy đếm, reset Sẵn sàng, giữ ghế theo ân hạn; chưa tạo ván thì không ghi thua.
 - Kết thúc ván tự tạo → WAITING ngay, giữ ghế, Host, người xem, chế độ và chat theo luật; đồng hồ reset cho ván mới. Kết quả có “Ở lại phòng”/“Rời phòng”.
 - P1 thêm **Tái đấu custom chọn Giữ/Đổi phe**: đối thủ đồng ý trong 30 giây → kiểm lại → đếm 3 giây → ván mới không Ready lại. Không dùng thì vẫn Ở lại → Xin đổi bên nếu muốn → đối thủ Sẵn sàng, Host Bắt đầu (BA 0.29). Khách không gửi/nhận Tái đấu theo quyền nguồn.
@@ -515,9 +515,9 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 ### 13.8 P2-07 — Ghép ngẫu nhiên Casual
 
 - Thành viên chưa có vị trí chơi tìm tối đa 2 phút (BA 0.36), hủy khi đang tìm không phạt. Hết hạn báo không tìm được, không thay bằng máy.
-- Khách bị từ chối theo BA 0.3. Mất mạng quá 30 giây rút queue.
+- Khách được tìm Casual như thành viên (BA 0.27 mục 5), không có Replay phía Khách. Mất mạng quá 30 giây rút queue.
 - Ghép được: người chờ trước là Host, phe ngẫu nhiên, 15 phút/bên không cộng giây.
-- Hai người xác nhận Sẵn sàng trong 10 giây rồi mới đếm 3 giây. Người không xác nhận về Sảnh; người đã xác nhận tự tìm tiếp; cả hai không xác nhận thì cùng về Sảnh. Chưa bắt đầu không ghi thua.
+- Ghép được thì hiện hộp xác nhận 30 giây (Xác nhận/Từ chối, BA 0.36) rồi mới đếm 3 giây. Người từ chối hoặc không xác nhận về Sảnh; người đã xác nhận tự tìm tiếp; cả hai không xác nhận thì cùng về Sảnh. Chưa bắt đầu không ghi thua.
 - Không Elo, PUBLIC, người xem, chia sẻ hoặc Kênh Chung; không được dùng settings mở người xem. Có chat/media riêng, Undo/Tái đấu theo P2-08–09.
 - Sau ván FINISHED đến khi cả hai rời hoặc 10 phút từ kết thúc; không về WAITING, không nhận người mới.
 
@@ -529,7 +529,7 @@ Chưa có ván Ranked nào thì nhãn Chưa xếp hạng dù Elo khởi tạo 12
 
 ### 13.9 P2-08 — Xin đi lại online
 
-- Chỉ phòng tự tạo hoặc Casual ngẫu nhiên; Ranked cấm. Khách không có quyền P2.
+- Chỉ phòng tự tạo hoặc Casual ngẫu nhiên; Ranked cấm. Thành viên và Khách đều được gửi/trả lời (BA 0.22 mục 6, 0.27 mục 5); Khách vẫn không Undo AI.
 - Người xin đã đi ít nhất một nước; mỗi người chỉ một đề nghị đang chờ, hạn 30 giây, được rút. Trong lúc chờ người xin không đi nước mới.
 - Đồng ý thì lùi tới **trước nước gần nhất của người xin**: lùi một nước nếu đối thủ chưa đi tiếp, hai nước nếu đã đi tiếp.
 - Tối đa 3 lần thành công/bên/ván; chỉ thành công mới trừ lượt. Từ chối/hết hạn chờ 3 nước tiếp theo của chính người xin.
@@ -779,7 +779,7 @@ PO bỏ theo BA 0.20: không QR/ảnh/nút tải hoặc copy QR ở P1/P2; chỉ
 
 | Điểm | Vì sao cần chốt |
 |---|---|
-| Thành viên dùng Undo/Tái đấu với đối thủ Khách | Undo vẫn P2; Tái đấu custom lên P1 nhưng giữ quyền nguồn không cho Khách gửi/nhận; không tự đồng ý thay họ |
+| Thành viên dùng Undo/Tái đấu với đối thủ Khách | Undo online đã P1 và Khách được gửi/trả lời (BA 0.22 mục 6, 0.27 mục 5); Tái đấu giữ quyền nguồn không cho Khách gửi/nhận; không tự đồng ý thay họ |
 | Khách trong phòng Không giới hạn — đã chốt 0.21 | Được chơi/xem theo quyền/chỗ trống, chịu chống treo; vẫn không tự tạo mức này |
 | Sticker trong kênh có Khách — chốt0.24 | Khách được gửi/đọc theo vai trò; người xem chỉ Chung, không DM hoặc quyền phát media |
 | Đổi/tìm Username thiếu email — đã chốt 0.21 | Đổi tên cần bổ sung/xác minh trước; tìm tên không có đường recovery nếu thiếu email verified. Không dùng email kỹ thuật |

@@ -322,17 +322,17 @@ Undo AI/lưu AI và theme cũng đã lên P1 nhưng thuộc YC8/YC1; chỉ kiể
 | Chức năng | Mã | Liên quan / phụ thuộc | Khả năng và đề xuất |
 |---|---|---|---|
 |**Demo mạng**|US-P2-23 / **XIAN-137**, AC-P2-23.1–3|Ngắt/nối để biểu diễn grace 60 giây/snapshot thật; đúng chủ thể; production chặn UI/API/socket|**PO đã đưa lên P1 theo BA 0.23**, chỉ môi trường demo; không thêm Admin hoặc giả kết quả, không thay kiểm thiết bị thật|
-|**Ghép ngẫu nhiên Casual**|US-P2-07 / **XIAN-121**, AC-P2-07.1–3|Queue 3 phút, xác nhận 10 giây, 15 phút/bên, Ready/đếm 3 giây; phòng kín, FINISHED 10 phút|**PO chọn giữ cả gói ở P2**, gồm phần Casual của Undo/Tái đấu; không chỉ thêm nút Tìm trận|
+|**Ghép ngẫu nhiên Casual**|US-P2-07 / **XIAN-121**, AC-P2-07.1–3|Tìm 2 phút, xác nhận 30 giây (BA 0.36), 15 phút/bên, đếm 3 giây; phòng kín, FINISHED 10 phút|**P1 theo BA 0.27**, gồm phần Casual của Undo/Tái đấu; không chỉ thêm nút Tìm trận|
 |**Undo/Tái đấu Casual**|Phần còn US-P2-08/09 / **XIAN-122/123**|Luật cơ bản đã thuộc custom P1, nhưng vòng đời phòng ghép khác custom; không nhận người mới hoặc reset WAITING|**Giữ cùng gói Casual**, không có lợi ích độc lập khi chưa ghép Casual. Tái sử dụng phần chung, không đánh dấu toàn Story Done từ custom|
-|**Vòng đời Ranked**|US-P2-04 / **XIAN-118**|10 phút/bên, cấm Khách/Undo/Tái đấu/người xem; hòa sau 20 nước/bên, kết quả Elo, FINISHED 10 phút|**Giữ P2**; không đem ngưỡng 20 nước/cấm Undo áp vào custom P1|
+|**Vòng đời Ranked**|US-P2-04 / **XIAN-118**|10 phút/bên, cấm Khách/Undo/Tái đấu/người xem; hòa sau 20 nước/bên, kết quả Elo, FINISHED 10 phút|**P1 theo BA 0.27**; không đem ngưỡng 20 nước/cấm Undo áp vào custom|
 
 ### 14.3 Liên quan gián tiếp và gói không nên tách sai
 
 | Chức năng / mã | Quan hệ | Đề xuất |
 |---|---|---|
-|Elo US-P2-01/XIAN-115; queue Ranked US-P2-02/XIAN-116; giới hạn cặp US-P2-03/XIAN-117|Tính điểm đúng một lần theo kết quả YC5, chống bơm/ghép đồng thời|Giữ P2 cùng Ranked; không tự tính Elo cho custom/AI|
-|Leaderboard US-P2-06/XIAN-120|Đọc thống kê Ranked, không có nghĩa mọi ván P1 phải xếp hạng|Giữ P2; không giả số liệu|
-|Ranked media US-P2-05/XIAN-119|Quyền nhận/phát, không người xem, chỉ Kênh Riêng|Giữ P2 theo Ranked, thuộc YC7; không cần để giải quyết mạng/đồng hồ P1|
+|Elo US-P2-01/XIAN-115; queue Ranked US-P2-02/XIAN-116; giới hạn cặp US-P2-03/XIAN-117|Tính điểm đúng một lần theo kết quả YC5, chống bơm/ghép đồng thời|P1 cùng Ranked (BA 0.27); không tự tính Elo cho custom/AI|
+|Leaderboard US-P2-06/XIAN-120|Đọc thống kê Ranked, không có nghĩa mọi ván custom phải xếp hạng|P1 (BA 0.27); không giả số liệu|
+|Ranked media US-P2-05/XIAN-119|Quyền nhận/phát, không người xem, chỉ Kênh Riêng|P1 theo Ranked (BA 0.27), thuộc YC7; không cần để giải quyết mạng/đồng hồ|
 |Widget AI US-P2-22/XIAN-136; sticker US-P2-17/XIAN-131|Cạnh bàn/chat nhưng không phân xử ván online|Widget AI đã P1 theo BA0.26, mọi môi trường/chỉ thành viên, chỉ nước máy đã áp; sticker P1 theo BA0.24 cho cả Khách đúng vai trò|
 
 **Phạm vi sau khi PO chốt:** demo mạng lên P1; Casual và phần Undo/Tái đấu Casual P1 theo BA 0.27, Ranked/Elo P1 theo BA 0.27. Ưu tiên hoàn thiện quyền Khách, timer, ưu tiên deadline, reason hòa mới và gate P1; công cụ demo không thay kiểm mạng/thiết bị thật.

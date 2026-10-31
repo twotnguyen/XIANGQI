@@ -42,7 +42,7 @@ Bắt đầu từ code và caller bị ảnh hưởng. Chỉ mở tài liệu kh
 - Mã Jira: dùng `XIAN-…` thật (`T01` không phải `XIAN-1`), không suy bằng phép cộng hay gán gần đúng. Task đã chốt trong phiên và phạm vi không đổi thì dùng lại. Chưa xác định thì tra `docs/planning/jira/TRA-CUU-TASK-COMMIT.md` (grep theo mục đích công việc, không đọc cả bảng), rồi nêu mã và lý do ngắn. Vẫn chưa xác định thì hỏi. Việc độc lập thuộc nhiều Task thì tách commit; test hồi quy đi cùng Task triển khai.
 - "Chỉ commit/push": kiểm nhánh, `git diff --check`, secret staged; stage từng file; commit; push. Không lint/test/build, không review sâu, không MCP.
 - Push, PR, merge chỉ khi người dùng yêu cầu. Không force push, chỉ fast-forward, rồi xác minh ref local và remote trùng nhau.
-- PR vào `main` đi từ `develop` và là lần duy nhất chạy đủ test; push/PR vào `develop` chỉ lint, typecheck, build. Merge bằng merge commit khi hai required check xanh, rồi fast-forward `develop` theo `main`. PR nhánh tính năng vào `develop`: mô tả ngắn kèm kiểm tra đã chạy, tiêu đề có mã Jira nếu có.
+- PR vào `main` đi từ `develop` và là lần duy nhất chạy đủ test; push/PR vào `develop` chạy lint, typecheck, build và unit/core khi đổi mã (không chạy database). Merge bằng merge commit khi hai required check xanh, rồi fast-forward `develop` theo `main`. PR nhánh tính năng vào `develop`: mô tả ngắn kèm kiểm tra đã chạy, tiêu đề có mã Jira nếu có.
 - Giữ nguyên nhánh local và GitHub (liên kết Jira); chỉ dọn khi người dùng yêu cầu rõ, liệt kê một lần rồi xóa nhóm được xác nhận.
 - Không báo Jira đã ghi nhận khi chưa quan sát được trên issue; Task Done cần bằng chứng triển khai và kiểm thử. Mã commit không tự chuyển Task Done.
 

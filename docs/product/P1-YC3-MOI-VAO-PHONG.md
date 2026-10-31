@@ -40,7 +40,7 @@ BA, Backlog, Danh mục và tổng quan yêu cầu đã được đồng bộ th
 | Chia sẻ/sao chép link và mã; nhập mã tại Sảnh                        | Tạo phòng, mức giờ, Ready, đếm ngược, đổi bên, Host transfer: YC2                                    |
 | Giữ đích qua login/register/onboarding Google/Khách theo quyền YC1   | Tự rời ván/đầu hàng hoặc bỏ ưu tiên phiên để nhận lời mời mới                                        |
 | Xếp ghế trống hoặc người xem khi vào; xử lý đầy/đóng/khóa/bị chặn    | Toàn bộ danh sách phòng PUBLIC, đổi quyền phòng, quản lý ghế/kick: YC6; YC3 kiểm giao điểm vào phòng |
-| Tìm/kết bạn, thu hồi/chấp nhận/từ chối/hết hạn/hủy kết bạn; DM/unread và Thách đấu theo mục 15 | Ranked, ghép ngẫu nhiên, lịch sử/replay: P2; QR bị loại hẳn |
+| Tìm/kết bạn, thu hồi/chấp nhận/từ chối/hết hạn/hủy kết bạn; DM/unread và Thách đấu theo mục 15 | Ranked, ghép ngẫu nhiên, lịch sử/replay: thuộc P1 nhưng ở YC khác (BA 0.27); QR bị loại hẳn |
 | Online/Đang đấu/Offline, chuông kết bạn, badge DM tách biệt | Không tự tạo phòng khi mở Friends; chỉ xác nhận form Thách đấu mới tạo rồi mời |
 | Mời bạn online trong phòng, popup 30 giây và xử lý Tham gia/Từ chối  | Email/push notification ngoài ứng dụng hoặc lời mời phòng lưu trong chuông                           |
 
@@ -129,7 +129,7 @@ flowchart TD
 | Bị kick/chặn trong vòng đời phòng                    | Không vào lại bằng mã/link/lời mời mới của cùng danh tính cho đến khi phòng đóng                                                  |
 | Ghế đang mất mạng nhưng còn 60 giây                  | Giữ ghế cho chủ cũ, không xem là ghế trống                                                                                        |
 | Người xem nối lại trong 5 phút                       | Luồng nối lại giữ chỗ theo YC6, kể cả phòng đã khóa; quá hạn coi là người mới                                                     |
-| Sau ván tự tạo                                       | Phòng về WAITING theo YC2; lời mời/join phải đọc trạng thái hiện tại, không áp dụng quy tắc FINISHED của phòng ghép ngẫu nhiên P2 |
+| Sau ván tự tạo                                       | Phòng về WAITING theo YC2; lời mời/join phải đọc trạng thái hiện tại, không áp dụng quy tắc FINISHED của phòng ghép ngẫu nhiên (YC9) |
 
 Việc có thêm token/link không làm bỏ qua kiểm tra vị trí chơi, danh sách chặn hoặc sức chứa.
 

@@ -138,7 +138,7 @@ Viền tiêu điểm **trên bàn cờ** luôn dùng `#155E75` (3,54 trên gỗ)
 |---|---|---|
 | `--font-ui` | `"Plus Jakarta Sans", -apple-system, system-ui, "Segoe UI", Roboto, sans-serif` | **Chốt:** font giao diện tiếng Việt chuẩn có dấu, tự host hoặc dự phòng hệ thống |
 | `--font-serif` | `"Playfair Display", Georgia, serif` | **Chốt 05/10:** tiêu đề Kỳ Đài, banner chào mừng, tỷ số ván đấu |
-| `--font-han` | `"XQ Han", "Noto Serif TC", "Songti TC", "SimSun", serif` | **Chốt:** font chữ Hán **tự host**, dự phòng serif. 🟡 Đề xuất dùng **Noto Serif TC** (giấy phép SIL OFL 1.1), cắt chỉ 16 ký tự cần dùng, đặt tên `XQ Han`, lưu file giấy phép cạnh font |
+| `--font-han` | `"XQ Han", "Noto Serif TC", "Songti TC", "SimSun", serif` | **Chốt:** font chữ Hán **tự host**, dự phòng serif. 🟡 Đề xuất dùng **Noto Serif TC** (giấy phép SIL OFL 1.1), cắt 18 ký tự cần dùng (14 quân cờ + 4 chữ sông, xem `apps/web/public/fonts/README.md`), đặt tên `XQ Han`, lưu file giấy phép cạnh font |
 | `--font-mono` | `ui-monospace, "SF Mono", Consolas, monospace` | **Chốt 05/10:** đồng hồ đếm ngược, mã phòng, mã lỗi, điểm Elo |
 
 - **`DT-02` (chốt):** ⛔ Không tải font từ dịch vụ ngoài (Google Fonts…). Bản chạy local phải hoạt động **không cần mạng**.
@@ -529,40 +529,42 @@ Bảng dưới mô tả tổ chức thiết kế cho toàn sản phẩm. Bàn gi
 
 ## 12. `tokens.css` tham chiếu
 
-Khi dựng (Giai đoạn 4) frontend chép vào file token CSS của ứng dụng; đường dẫn do Giai đoạn 2 chốt. Mẫu chứa token cho cả hai giao diện ; từ BA 0.21 cả ba lựa chọn (Kỳ Đài Cổ Phong, Giấy Sáng, Theo hệ thống) là P1, mặc định Kỳ Đài Cổ Phong.
+Khi dựng (Giai đoạn 4) frontend chép vào file token CSS của ứng dụng; đường dẫn do Giai đoạn 2 chốt. Mẫu chứa token cho cả hai giao diện; từ BA 0.21 cả ba lựa chọn (Kỳ Đài Cổ Phong, Giấy Sáng, Theo hệ thống) là P1. `:root` là Kỳ Đài Cổ Phong (mặc định khi chưa chọn); Giấy Sáng ghi đè bằng `data-theme="paper-light"`. Không dùng `@media (prefers-color-scheme)` trong CSS: chỉ lựa chọn **Theo hệ thống** phản ứng OS, nên ứng dụng tự đặt `data-theme` (`shared/theme/theme.ts`). Giá trị màu dưới đây theo §2.2–§2.3; bảng màu tạm thời của PR #156 trong `tokens.css` (ghi chú đầu file) chưa được chốt vào đây.
 
 ```css
 :root {
-  /* 7 màu gốc — CHỐT, không đổi */
-  --color-paper: #F5E8CC;
+  color-scheme: dark;
+
+  /* Màu cố định ở mọi giao diện — CHỐT, không đổi */
   --color-wood: #D8AE72;
   --color-wood-edge: #704525;
-  --color-ink: #28221C;
   --color-red: #A51F25;
   --color-black: #24201C;
-  --color-focus: #155E75;
 
-  /* Bổ sung hoàng kim cổ phong & UI 🟡 */
+  /* Kỳ Đài Cổ Phong (tối) — mặc định, §2.3 */
+  --color-paper: #120D0A;
+  --color-surface: #241610;
+  --color-surface-sunken: #180F0A;
+  --color-ink: #FFF5DF;
+  --color-ink-muted: #C8B6A2;
+  --color-border: #9A7550;
+  --color-divider: #3D2012;
+  --color-focus: #F5CA67;
   --color-gold: #C6922A;
   --color-gold-light: #F5CA67;
   --color-gold-dark: #7A4E0F;
-  --color-surface: #FBF5E8;
-  --color-surface-sunken: #EDE0C4;
-  --color-ink-muted: #5E5145;
-  --color-border: #8C6A48;
-  --color-divider: #D9C7A3;
-  --color-success: #2E6B34;
-  --color-warning: #8A4B00;
-  --color-danger: #A51F25;
-  --color-info: #1F5A85;
-  --color-success-bg: #E2EDD6;
-  --color-warning-bg: #F6E1B8;
-  --color-danger-bg: #F5DAD3;
-  --color-info-bg: #DCE7EF;
-  --color-btn-primary-bg: #704525;
-  --color-btn-primary-fg: #F5E8CC;
-  --color-btn-danger-bg: #A51F25;
-  --color-btn-danger-fg: #F5E8CC;
+  --color-success: #86EFAC;
+  --color-warning: #FCD34D;
+  --color-danger: #FCA5A5;
+  --color-info: #93C5FD;
+  --color-success-bg: #152E1B;
+  --color-warning-bg: #3A240E;
+  --color-danger-bg: #3C1412;
+  --color-info-bg: #142236;
+  --color-btn-primary-bg: #C6922A;
+  --color-btn-primary-fg: #120D0A;
+  --color-btn-danger-bg: #8E161C;
+  --color-btn-danger-fg: #FFFFFF;
 
   /* Bàn cờ 🟡 — giống nhau ở mọi chế độ */
   --board-piece-face: #F6E7C8;
@@ -613,53 +615,31 @@ Khi dựng (Giai đoạn 4) frontend chép vào file token CSS của ứng dụn
 :focus-visible { outline: 3px solid var(--color-focus); outline-offset: 2px; }
 body { margin: 0; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-ui); font-size: var(--text-md); line-height: var(--leading-md); }
 
-/* ===== Chế độ tối (Kỳ Đài Cổ Phong) — Đã Chốt chuẩn giao diện ===== */
-:root[data-theme="dark"] {
-  --color-paper: #120D0A;
-  --color-surface: #241610;
-  --color-surface-sunken: #180F0A;
-  --color-ink: #FFF5DF;
-  --color-ink-muted: #C8B6A2;
-  --color-border: #9A7550;
-  --color-divider: #3D2012;
-  --color-focus: #F5CA67;
-  --color-success: #86EFAC;
-  --color-warning: #FCD34D;
-  --color-danger: #FCA5A5;
-  --color-info: #93C5FD;
-  --color-success-bg: #152E1B;
-  --color-warning-bg: #3A240E;
-  --color-danger-bg: #3C1412;
-  --color-info-bg: #142236;
-  --color-btn-primary-bg: #C6922A;
-  --color-btn-primary-fg: #120D0A;
-  --color-btn-danger-bg: #8E161C;
-  --color-btn-danger-fg: #FFFFFF;
-  /* --color-wood, --color-wood-edge, --color-red, --color-black, --board-* giữ nguyên */
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --color-paper: #120D0A;
-    --color-surface: #241610;
-    --color-surface-sunken: #180F0A;
-    --color-ink: #FFF5DF;
-    --color-ink-muted: #C8B6A2;
-    --color-border: #9A7550;
-    --color-divider: #3D2012;
-    --color-focus: #F5CA67;
-    --color-success: #86EFAC;
-    --color-warning: #FCD34D;
-    --color-danger: #FCA5A5;
-    --color-info: #93C5FD;
-    --color-success-bg: #152E1B;
-    --color-warning-bg: #3A240E;
-    --color-danger-bg: #3C1412;
-    --color-info-bg: #142236;
-    --color-btn-primary-bg: #C6922A;
-    --color-btn-primary-fg: #120D0A;
-    --color-btn-danger-bg: #8E161C;
-    --color-btn-danger-fg: #FFFFFF;
-  }
+/* ===== Giấy Sáng — chỉ khi chọn Giấy Sáng, hoặc Theo hệ thống và OS đang sáng (§2.2) ===== */
+:root[data-theme="paper-light"] {
+  color-scheme: light;
+  --color-paper: #F5E8CC;
+  --color-surface: #FBF5E8;
+  --color-surface-sunken: #EDE0C4;
+  --color-ink: #28221C;
+  --color-ink-muted: #5E5145;
+  --color-border: #8C6A48;
+  --color-divider: #D9C7A3;
+  --color-focus: #155E75;
+  --color-gold: #7A4E0F;       /* nền sáng dùng gold-dark thay gold, §2.2 */
+  --color-gold-light: #7A4E0F;
+  --color-success: #2E6B34;
+  --color-warning: #8A4B00;
+  --color-danger: #A51F25;
+  --color-info: #1F5A85;
+  --color-success-bg: #E2EDD6;
+  --color-warning-bg: #F6E1B8;
+  --color-danger-bg: #F5DAD3;
+  --color-info-bg: #DCE7EF;
+  --color-btn-primary-bg: #704525;
+  --color-btn-primary-fg: #F5E8CC;
+  --color-btn-danger-bg: #A51F25;
+  --color-btn-danger-fg: #F5E8CC;
 }
 ```
 

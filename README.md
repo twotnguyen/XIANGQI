@@ -71,11 +71,11 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Web ở `http://localhost:5173`, server ở `http://localhost:3000`. Chạy `curl http://localhost:3000/health` để kiểm tra HTTP 200; `server` là `ok`, `database` phản ánh kết nối khi bật đăng ký, `engine` vẫn là `not_connected`. `/dev/board` hiển thị bàn cờ; `/dev/register` kiểm giao diện đăng ký ba bước. Các route kiểm thành phần này chưa thay thế luồng Sảnh/phòng hoàn chỉnh. Socket.IO từ chối kết nối đến khi T12 tích hợp xác thực.
+Web ở `http://localhost:5173`, server ở `http://localhost:3000`. Chạy `curl http://localhost:3000/health` để kiểm tra HTTP 200; `server` là `ok`, `database` phản ánh kết nối khi bật đăng ký, `engine` vẫn là `not_connected`. `/dev/board` hiển thị bàn cờ; `/dev/register` kiểm giao diện đăng ký ba bước. Socket.IO xác thực handshake bằng phiên thành viên hoặc Khách và chỉ nhận kết nối khi runtime phòng được bật (xem `docs/engineering/server/realtime.md`); `/dev/*` chỉ là route kiểm thành phần, không thay luồng Sảnh/phòng hoàn chỉnh.
 
 Server nạp `apps/server/.env`; Vite nạp `apps/web/.env` và chỉ công khai tiền tố `VITE_`. Bộ khung dùng mặc định local khi không có file môi trường; PORT, CORS_ORIGINS và LOG_LEVEL được kiểm tra mà không in giá trị lỗi. Secret của dịch vụ chưa tích hợp không bắt buộc để chạy bộ khung.
 
-Nhóm lệnh dưới đây dành cho CI hoặc khi người dùng chủ động yêu cầu; agent xem [quy tắc kiểm chứng](AGENTS.md#coding-nhanh-và-phạm-vi-kiểm-chứng-test-scoping-rules).
+Nhóm lệnh dưới đây dành cho CI hoặc khi người dùng chủ động yêu cầu; agent xem [quy tắc kiểm chứng](AGENTS.md#kiểm-chứng).
 
 ```sh
 pnpm lint
@@ -85,11 +85,11 @@ pnpm build
 pnpm format:check
 ```
 
-CI trên push/PR `develop` chỉ lint/typecheck và build ứng dụng bị ảnh hưởng, không chạy các bộ core/unit/database; chỉ PR `develop` → `main` mới chạy đầy đủ (push `main` không chạy CI). Chi tiết lệnh và CI xem [hướng dẫn kiểm thử](tests/README.md#commitpush-nhanh-và-ci-theo-phạm-vi). `packages/shared` chứa kiểu dữ liệu dùng chung; `packages/xiangqi-core` chứa luật; `packages/engine` chứa máy cờ. Các package nội bộ xuất TypeScript source; server chạy trực tiếp `src/main.ts` bằng `tsx` (`pnpm --filter @xiangqi/server start`), còn web được Vite đóng gói. `pnpm build:server` kiểm tra kiểu server và build engine cần cho runtime; không tạo `apps/server/dist`.
+CI trên push/PR `develop` chạy lint/typecheck, build ứng dụng bị ảnh hưởng và unit/core khi đổi mã, không chạy database; chỉ PR `develop` → `main` mới chạy đầy đủ, gồm sáu shard database (push `main` không chạy CI). Chi tiết lệnh và CI xem [hướng dẫn kiểm thử](tests/README.md#commitpush-nhanh-và-ci-theo-phạm-vi). `packages/shared` chứa kiểu dữ liệu dùng chung; `packages/xiangqi-core` chứa luật; `packages/engine` chứa máy cờ. Các package nội bộ xuất TypeScript source; server chạy trực tiếp `src/main.ts` bằng `tsx` (`pnpm --filter @xiangqi/server start`), còn web được Vite đóng gói. `pnpm build:server` kiểm tra kiểu server và build engine cần cho runtime; không tạo `apps/server/dist`.
 
 Build web luôn dùng React production, kể cả khi `.env` dùng `NODE_ENV=development` cho server. CI có PostgreSQL 17 riêng để chạy kiểm thử SQL/HTTP đăng ký; chạy local theo [hướng dẫn database](supabase/README.md). Đăng ký mặc định tắt: chỉ bật `AUTH_REGISTRATION_ENABLED=true` sau khi migration, quyền runtime và cấu hình SMTP/OTP trên đúng project đã được kiểm chứng. Runtime dùng `DIRECT_URL` với direct/session pooler, không dùng transaction pooler 6543. Kiểm thử tự động dùng Auth HTTP fixture; nhận OTP thật, hoàn tất vào Sảnh và các cổng nghiệm thu vẫn cần bằng chứng riêng.
 
-Nhật ký vận hành là JSON trên stdout/stderr, có `time`, `level`, `event`; chỉ chấp nhận mã sự kiện cố định và port dạng số, bỏ chuỗi/payload tùy ý để tránh lộ mật khẩu, OTP, token, chat. Ứng dụng không ghi file hay giữ log bền (thời gian lưu trong ứng dụng là 0 ngày). Nếu triển khai bộ thu log ngoài, phải cấu hình xóa sau tối đa 14 ngày; repo chưa triển khai bộ thu log. Biên lai lệnh và việc xóa sau 24 giờ thuộc T12, chưa tồn tại ở bộ khung.
+Nhật ký vận hành là JSON trên stdout/stderr, có `time`, `level`, `event`; chỉ chấp nhận mã sự kiện cố định và port dạng số, bỏ chuỗi/payload tùy ý để tránh lộ mật khẩu, OTP, token, chat. Ứng dụng không ghi file hay giữ log bền (thời gian lưu trong ứng dụng là 0 ngày). Nếu triển khai bộ thu log ngoài, phải cấu hình xóa sau tối đa 14 ngày; repo chưa triển khai bộ thu log. Biên lai lệnh (idempotent theo `commandId`) lưu trong Postgres và được xóa sau 24 giờ (T12, xem `docs/engineering/server/realtime.md`).
 
 ### 4. Chuẩn bị media và xem giao diện
 
@@ -130,10 +130,10 @@ XIANGQI/
 
 **Quy ước mỗi tính năng ở server:** `x.types.ts` (kiểu, lỗi), `x.module.ts` (khai báo module và
 `createXRuntime` đọc cờ môi trường/kiểm tra schema), `x.controller.ts` (HTTP và kiểm tra đầu vào),
-`x.service.ts` (nghiệp vụ, SQL); tính năng lớn có thêm `*.store.ts`, `*-worker.ts`, `*-port.ts`. Test nằm riêng ở `tests/`
+`x.service.ts` (nghiệp vụ, không viết SQL); `x.store.ts` (toàn bộ SQL của miền); tính năng lớn có thêm `*-worker.ts`, `*-port.ts`. Test nằm riêng ở `tests/`
 theo cùng cấu trúc thư mục.
 
-**Quy tắc phụ thuộc (web):** `features/*` chỉ import `shared/*` (và `features` khác khi thật cần);
+**Quy tắc phụ thuộc (web):** `features/*` chỉ import `shared/*`, không import chéo `features` khác (ghép qua `app/`);
 `shared/*` không import `features/*` hay `app/*`; chỉ `app/` được import tất cả.
 
 ## Tài liệu dự án
@@ -152,7 +152,7 @@ theo cùng cấu trúc thư mục.
 
 ## Đóng góp
 
-Chọn Task trong Jira, đọc Story và tiêu chí nghiệm thu liên quan trước khi sửa. Theo [quy ước nhánh, commit và PR](AGENTS.md#git-commit-và-pull-request) để truy vết thay đổi về issue. `main` và `develop` hiện không có bảo vệ nhánh; nhóm vẫn kiểm tra và review thay đổi trước khi tích hợp.
+Chọn Task trong Jira, đọc Story và tiêu chí nghiệm thu liên quan trước khi sửa. Theo [quy ước nhánh, commit và PR](AGENTS.md#git-và-pull-request) để truy vết thay đổi về issue. `main` có branch protection và cả hai nhánh tích hợp có ruleset giới hạn người cập nhật (xem `tests/README.md`); thay đổi vẫn được kiểm tra và review trước khi tích hợp.
 
 BA Done thể hiện đặc tả đã chốt, không có nghĩa Task triển khai hoặc sản phẩm đã hoàn thành. Cập nhật tiến độ theo kết quả thực tế.
 

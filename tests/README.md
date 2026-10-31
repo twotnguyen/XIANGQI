@@ -31,7 +31,7 @@ Cấu hình ở `vitest.config.ts` (chạy) và `tests/tsconfig.json` (kiểm ki
 
 ## Chạy
 
-**Không tự chạy test local khi coding hoặc hoàn thành tác vụ.** Chỉ dùng các lệnh test/self-check bên dưới khi người dùng yêu cầu rõ; CI GitHub giữ trách nhiệm kiểm thử tự động theo từng nhánh. Nguồn điều phối duy nhất là [AGENTS.md](../AGENTS.md#coding-nhanh-và-phạm-vi-kiểm-chứng-test-scoping-rules).
+**Không tự chạy test local khi coding hoặc hoàn thành tác vụ.** Chỉ dùng các lệnh test/self-check bên dưới khi người dùng yêu cầu rõ; CI GitHub giữ trách nhiệm kiểm thử tự động theo từng nhánh. Nguồn điều phối duy nhất là [AGENTS.md](../AGENTS.md#kiểm-chứng).
 
 Ví dụ chạy đúng phạm vi **sau khi được yêu cầu test**:
 
@@ -79,7 +79,7 @@ Chỉ chạy lệnh trên với database test cô lập này; không trỏ biế
 
 ## Commit/push nhanh và CI theo phạm vi
 
-Phạm vi kiểm chứng khi coding, commit/push và nghiệm thu được điều phối duy nhất tại [AGENTS.md — Coding nhanh và phạm vi kiểm chứng](../AGENTS.md#coding-nhanh-và-phạm-vi-kiểm-chứng-test-scoping-rules). Các lệnh ở đây không cấp quyền tự chạy test local, kể cả một file, test mới hoặc self-check; không chạy lại kết quả còn hiệu lực.
+Phạm vi kiểm chứng khi coding, commit/push và nghiệm thu được điều phối duy nhất tại [AGENTS.md — Coding nhanh và phạm vi kiểm chứng](../AGENTS.md#kiểm-chứng). Các lệnh ở đây không cấp quyền tự chạy test local, kể cả một file, test mới hoặc self-check; không chạy lại kết quả còn hiệu lực.
 
 **Phân quyền thành viên:** ruleset GitHub [Protected branches: owner-only updates](https://github.com/twotnguyen/XIANGQI/rules/26200968) giới hạn tạo/cập nhật/xóa `main` và `develop`, chỉ tài khoản `twotnguyen` (ID `195888848`) được bypass. Thành viên giữ quyền push nhánh riêng và mở PR vào `develop`, nhưng không được push trực tiếp hoặc tự merge vào hai nhánh tích hợp. Chủ repo review rồi merge PR vào `develop`, hoặc có thể code/push thẳng `develop`. `main` vẫn chịu protection riêng, kể cả chủ repo: bắt buộc PR phát hành và required checks. Quyền bypass ruleset này không bỏ qua protection riêng của `main`; không cấp bypass cho cả nhóm admin hay bot.
 

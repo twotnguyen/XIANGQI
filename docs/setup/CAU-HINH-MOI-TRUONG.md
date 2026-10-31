@@ -55,7 +55,7 @@ Cookie không phân biệt cổng: `localhost:5173` và `localhost:3000` dùng c
 | `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | Một bộ cùng project Cloud hoặc cùng máy chủ LiveKit tự chạy |
 | `SUPABASE_PROJECT_REF` | Mã project; dùng để đối chiếu dashboard/CLI |
 | `SUPABASE_ACCESS_TOKEN` | Tùy chọn cho CLI/API quản trị; không dùng thay API key của ứng dụng |
-| `SUPABASE_DB_PASSWORD`, `DATABASE_URL`, `DIRECT_URL` | Mật khẩu riêng cho công cụ và hai URL SQL: transaction pooler 6543 cho runtime, session pooler 5432 cho migration khi công cụ hỗ trợ; không cần chỉ để gọi Supabase SDK |
+| `SUPABASE_DB_PASSWORD`, `DATABASE_URL`, `DIRECT_URL` | Mật khẩu riêng cho công cụ và hai URL SQL: `DIRECT_URL` (direct hoặc session pooler 5432) cho runtime server vì cần khóa advisory và `SET ROLE`, không dùng transaction pooler 6543; `DATABASE_URL` (transaction pooler 6543) chỉ cho công cụ hỗ trợ nó; không cần chỉ để gọi Supabase SDK |
 | `AUTH_SITE_URL`, `AUTH_REDIRECT_URLS` | Phiếu ghi cấu hình nhập thủ công ở Supabase Auth; route callback phải được nhóm triển khai |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_AUTH_REDIRECT_URI` | Phiếu Google OAuth; nhập Client ID/Secret vào Supabase, callback vào Google |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` | Thông tin nhà cung cấp SMTP; nhập ở Supabase Auth |

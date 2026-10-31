@@ -36,7 +36,7 @@ Hệ thống giao diện được thiết kế theo triết lý Cờ Tướng C�
                                    │ kích hoạt theo sự kiện máy chủ
 ┌──────────────────────────────────▼─────────────────────────────────────┐
 │              LỚP 4: 3 LỚP PHỦ HỆ THỐNG & CẢNH BÁO (SYSTEM OVERLAYS)    │
-│  ALERT-INACTIVITY-BANNER · OVERLAY-RECONNECTING · MODAL-MEDIA-SWITCH   │
+│ ALERT-INACTIVITY-BANNER · OVERLAY-RECONNECTING · MODAL-MEDIA-TAB-SWITCH│
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -272,7 +272,7 @@ Hai khung Xin hòa/Xin đi lại giữ mã kế thừa `MODAL-*` nhưng **không
 12. **`MODAL-CONFIRM-RESIGN` (Xác Nhận Đầu Hàng):** Cảnh báo rõ ràng: *"Bạn có chắc chắn muốn đầu hàng? Bạn sẽ bị xử THUA ngay lập tức (và bị trừ điểm Elo nếu là ván Ranked)."*
 13. **`MODAL-CONFIRM-LEAVE` (Xác Nhận Rời Phòng Khi Đang Đấu):** Cảnh báo: *"Rời phòng lúc này được tính là ĐẦU HÀNG (xử Thua; ở Đánh Hạng còn trừ điểm Elo, Đánh Thường và Đánh với máy không đổi Elo)."* Nút *"Rời phòng"* và *"Ở lại"*.
 14. **`MODAL-CONFIRM-KICK` (Xác Nhận Đuổi Người Xem):** Mở khi Host hoặc người chơi còn lại bấm Kick. Thông báo: *"Người này sẽ bị chặn không thể vào lại phòng cho đến khi phòng đóng."*
-15. **`MODAL-MATCH-RESULT` (Kết Quả Ván Cờ):** Thắng/Thua/Hòa và lý do tiếng Việt; Elo chỉ Ranked (P1 theo 0.27). Restart online theo BA0.17/YC5, custom về WAITING/reset Ready với kết quả gián đoạn trung tính. **P1 custom:** Ở lại/Rời, Tái đấu Giữ/Đổi phe cho hai thành viên đủ quyền; Đồng ý trong30giây, kiểm lại cặp/ghế rồi đếm3giây vào ván mới không Ready lại; giữ phòng/mức giờ/quyền/người xem/chat. Không dùng thì Ready/Xin đổi bên. **AI:** Ván mới/Về Sảnh; Retry sự cố theo YC8 không đồng nghĩa Ván mới. **Xem lại P1 custom/AI:** chỉ thành viên có quyền khi bản lưu sẵn sàng, không Khách. **P2:** Tái đấu Casual reset15phút/bên, Ranked không Tái đấu. Đề nghị cũ/thay ghế không hồi sinh ván.
+15. **`MODAL-MATCH-RESULT` (Kết Quả Ván Cờ):** Thắng/Thua/Hòa và lý do tiếng Việt; Elo chỉ Ranked (P1 theo 0.27). Restart online theo BA0.17/YC5, custom về WAITING/reset Ready với kết quả gián đoạn trung tính. **P1 custom:** Ở lại/Rời, Tái đấu Giữ/Đổi phe cho hai thành viên đủ quyền; Đồng ý trong30giây, kiểm lại cặp/ghế rồi đếm3giây vào ván mới không Ready lại; giữ phòng/mức giờ/quyền/người xem/chat. Không dùng thì Ready/Xin đổi bên. **AI:** Ván mới/Về Sảnh; Retry sự cố theo YC8 không đồng nghĩa Ván mới. **Xem lại P1 custom/AI:** chỉ thành viên có quyền khi bản lưu sẵn sàng, không Khách. **Casual (P1 theo 0.27):** Tái đấu Casual reset15phút/bên; Ranked không Tái đấu. Đề nghị cũ/thay ghế không hồi sinh ván.
 
 ---
 
