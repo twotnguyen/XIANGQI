@@ -10,7 +10,7 @@ export function isValidDisplayName(value: string, maxLength = 30): boolean {
   return (
     length >= 2 &&
     length <= maxLength &&
-    /^[\p{L}\p{M}\p{N} ._'\-]+$/u.test(name) &&
+    /^[\p{L}\p{M}\p{N} ._'-]+$/u.test(name) &&
     !containsForbiddenName(name)
   );
 }
