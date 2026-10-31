@@ -44,6 +44,8 @@ export type FriendChallengeTarget = Pick<
 /**
  * Màn hình quản lý bạn bè: danh sách bạn bè, trạng thái trực tuyến/đang đấu, duyệt lời mời kết bạn và tìm kiếm kỳ hữu.
  */
+/** Gợi ý khi tiền tố tìm bạn ngắn hơn 3 ký tự (YC3 AC-YC3-RV-02): thông tin, không phải lỗi. */
+const SEARCH_HINT = "Nhập ít nhất 3 ký tự để tìm bạn";
 export function FriendsPage({
   client,
   onChallenge,
@@ -126,7 +128,7 @@ export function FriendsPage({
     if (busy) return;
     if (q.length < 3) {
       setResults(null);
-      setNotice("Nhập ít nhất 3 ký tự để tìm bạn");
+      setNotice(SEARCH_HINT);
       return;
     }
     const seq = ++searchSeq.current;
@@ -200,7 +202,11 @@ export function FriendsPage({
       </header>
 
       {notice && (
-        <Notice tone="error" message={notice} onDismiss={() => setNotice("")} />
+        <Notice
+          tone={notice === SEARCH_HINT ? "info" : "error"}
+          message={notice}
+          onDismiss={() => setNotice("")}
+        />
       )}
       {failed && (
         <Notice

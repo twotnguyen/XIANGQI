@@ -100,7 +100,11 @@ describe("friends page", () => {
     await user.type(screen.getByLabelText("Tên đăng nhập"), "ba");
     await user.click(screen.getByRole("button", { name: "Tìm" }));
     expect(c.search).not.toHaveBeenCalled();
-    expect(screen.getByText("Nhập ít nhất 3 ký tự để tìm bạn")).toBeTruthy();
+    // Gợi ý nhập thêm là thông tin, không phải lỗi.
+    expect(screen.getByRole("status").textContent).toContain(
+      "Nhập ít nhất 3 ký tự để tìm bạn",
+    );
+    expect(screen.queryByRole("alert")).toBeNull();
   });
   it("asks for confirmation before unfriending and cancels without a call (YC3 mục 17c)", async () => {
     const c = client();
