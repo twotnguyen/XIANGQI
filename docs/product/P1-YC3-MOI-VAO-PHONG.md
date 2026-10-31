@@ -463,7 +463,7 @@ Tái đấu custom và Không giới hạn/chống treo thuộc P1 ở [YC2 mụ
 
 ## 17. Quyết định PO khi rà soát YC3 — 31/10/2026
 
-**Đã có mã và test local 31/10/2026, chưa nghiệm thu, migration `20261103000004` chưa áp Cloud.** Các quyết định dưới đây bổ sung cho mục 5, 6, 8, 11.
+**Đã có mã và test local 31/10/2026, chưa nghiệm thu, migration `20261103000004` đã áp Cloud 31/10/2026 (psql + `migration repair`, backfill 72 mã 8 chữ số; 6 phòng cũ mang mã không phải 8 chữ số, không thể trùng).** Các quyết định dưới đây bổ sung cho mục 5, 6, 8, 11.
 
 | # | Quyết định | AC bổ sung |
 |---|---|---|
