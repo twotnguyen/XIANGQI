@@ -1,4 +1,5 @@
 import type { Pool, PoolClient } from "pg";
+import { transaction } from "../../core/postgres.js";
 import type { RealtimeConnection } from "../realtime/realtime.types.js";
 import { RoomError, RoomRosterChanged, type RoomScope } from "./room.types.js";
 import type { RoomEvent } from "./room.types.js";
@@ -33,27 +34,8 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
     private readonly authorizer: RoomSessionAuthorizer,
     private readonly currentPeers: (roomId: string) => RealtimeConnection[],
   ) {}
-  private async transaction<T>(
-    work: (client: PoolClient) => Promise<T>,
-  ): Promise<T> {
-    const client = await this.pool.connect();
-    let broken = false;
-    try {
-      await client.query("BEGIN");
-      await client.query("SET LOCAL ROLE app_server");
-      const result = await work(client);
-      await client.query("COMMIT");
-      return result;
-    } catch (error) {
-      try {
-        await client.query("ROLLBACK");
-      } catch {
-        broken = true;
-      }
-      throw error;
-    } finally {
-      client.release(broken);
-    }
+  private transaction<T>(work: (client: PoolClient) => Promise<T>): Promise<T> {
+    return transaction(this.pool, work);
   }
   /**
    * Truy vấn danh sách các phòng cờ đến hạn cần xử lý (spectator ngắt kết nối quá 5 phút, đếm ngược bắt đầu ván...).

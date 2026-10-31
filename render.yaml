@@ -17,6 +17,9 @@ services:
         value: info
       - key: DATABASE_URL
         sync: false
+      # Số proxy tin cậy trước server; xem docs/setup/CAU-HINH-MOI-TRUONG.md.
+      - key: TRUST_PROXY_HOPS
+        sync: false
       # Mọi origin web công khai (scheme+host+port), không wildcard; web gọi API qua /api cùng origin.
       - key: CORS_ORIGINS
         sync: false

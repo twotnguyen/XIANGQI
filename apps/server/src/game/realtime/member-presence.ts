@@ -3,6 +3,7 @@ import type { RoomSnapshot } from "@xiangqi/shared";
 import type { RoomTransactions } from "../room/room-transactions.js";
 import type { RoomStore } from "../room/room-store.js";
 import { uuid } from "../match/position-codec.js";
+import { transaction } from "../../core/postgres.js";
 import type { RoomRealtimeTransactions } from "./member-transactions.js";
 import {
   RealtimeError,
@@ -106,30 +107,23 @@ export class RoomRealtimePresence implements RealtimePresence {
       tabId: connection.tabId,
       connectionId: connection.connectionId,
     };
-    const client = await this.pool.connect();
-    let exists: boolean;
-    let broken = false;
-    try {
-      await client.query("BEGIN READ ONLY; SET LOCAL ROLE app_server");
-      exists = Boolean(
-        (
-          await client.query(
-            `SELECT 1 FROM xiangqi_auth.principals n JOIN public.room_members m ON m.user_id=n.id WHERE n.id=$1 AND n.kind=$2 AND m.room_id=$3`,
-            [captured.identity.userId, captured.identity.kind, captured.roomId],
-          )
-        ).rowCount,
-      );
-      await client.query("COMMIT");
-    } catch (error) {
-      try {
-        await client.query("ROLLBACK");
-      } catch {
-        broken = true;
-      }
-      throw error;
-    } finally {
-      client.release(broken);
-    }
+    const exists = await transaction(
+      this.pool,
+      async (client) =>
+        Boolean(
+          (
+            await client.query(
+              `SELECT 1 FROM xiangqi_auth.principals n JOIN public.room_members m ON m.user_id=n.id WHERE n.id=$1 AND n.kind=$2 AND m.room_id=$3`,
+              [
+                captured.identity.userId,
+                captured.identity.kind,
+                captured.roomId,
+              ],
+            )
+          ).rowCount,
+        ),
+      { readOnly: true },
+    );
     if (!exists) return;
     await this.coordinator.withRoom(
       { actor: { ...captured.identity }, roomIds: [captured.roomId] },

@@ -55,6 +55,7 @@ import { RealtimeStore } from "./realtime/store.js";
 import type { RealtimePublisher } from "./realtime/gateway.js";
 import type { RealtimeTransactions } from "./realtime/realtime.types.js";
 import { logEvent } from "../core/logger.js";
+import { transaction } from "../core/postgres.js";
 import {
   acquireRuntimeLock,
   fenceClient,
@@ -337,25 +338,8 @@ async function bootRoomRuntime(
     dueMatches: (cursor) => clockPort.dueMatches(cursor),
     withMatch,
   });
-  const read = async <T>(work: (client: PoolClient) => Promise<T>) => {
-    const client = await pool.connect();
-    let broken = false;
-    try {
-      await client.query("BEGIN READ ONLY; SET LOCAL ROLE app_server");
-      const result = await work(client);
-      await client.query("COMMIT");
-      return result;
-    } catch (error) {
-      try {
-        await client.query("ROLLBACK");
-      } catch {
-        broken = true;
-      }
-      throw error;
-    } finally {
-      client.release(broken);
-    }
-  };
+  const read = <T>(work: (client: PoolClient) => Promise<T>) =>
+    transaction(pool, work, { readOnly: true });
   const disconnectWorker = new DisconnectWorker(matches, {
     dueMatches: (cursor) =>
       read((client) => dueDisconnectMatches(client, cursor)),
@@ -436,6 +420,18 @@ async function bootRoomRuntime(
     stopping: Promise<void> | undefined;
   let nextReceiptCleanup = 0;
   let nextGuestExpiry = 0;
+  // Hạn ngắt kết nối (60 giây) và hạn cầu hòa (30 giây) tính theo giờ DB và xử lý theo thứ tự hạn,
+  // nên worker trễ tối đa 1 giây không đảo thứ tự; chỉ đồng hồ, outbox phòng và chat cần nhịp 100 ms.
+  const everySecond = (run: () => Promise<void>) => {
+    let next = 0;
+    return async () => {
+      if (Date.now() < next) return;
+      next = Date.now() + 1000;
+      await run();
+    };
+  };
+  const slowDisconnect = everySecond(() => disconnectWorker.tick());
+  const slowDraw = drawWorker ? everySecond(() => drawWorker.tick()) : null;
   let nextMediaSweep = 0;
   let mediaInFlight: Promise<void> | null = null;
   const drainMedia = async () => {
@@ -492,8 +488,8 @@ async function bootRoomRuntime(
           await guests.expireDue();
         },
         () => clockWorker.tick(),
-        () => disconnectWorker.tick(),
-        ...(drawWorker ? [() => drawWorker.tick()] : []),
+        slowDisconnect,
+        ...(slowDraw ? [slowDraw] : []),
         () => worker.tick(),
         ...(chatWorker ? [() => chatWorker.tick()] : []),
       ].map(async (run) => {

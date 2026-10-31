@@ -2,6 +2,7 @@ import type { Pool, PoolClient } from "pg";
 import type { RoomActor } from "../room/room.types.js";
 import type { RoomTransactions } from "../room/room-transactions.js";
 import { uuid } from "../match/position-codec.js";
+import { transaction } from "../../core/postgres.js";
 import { dueMatches } from "./clock-worker.js";
 import {
   ClockError,
@@ -20,26 +21,10 @@ export class PostgresClockWorkerPort implements ClockWorkerPort {
     private readonly coordinator: RoomTransactions,
   ) {}
   /**
-   * Mở kết nối giao dịch ở chế độ READ ONLY an toàn để truy vấn dữ liệu từ cơ sở dữ liệu.
+   * Mở giao dịch ở chế độ READ ONLY để truy vấn dữ liệu từ cơ sở dữ liệu.
    */
-  private async read<T>(work: (client: PoolClient) => Promise<T>): Promise<T> {
-    const c = await this.pool.connect();
-    let broken = false;
-    try {
-      await c.query("BEGIN READ ONLY; SET LOCAL ROLE app_server");
-      const value = await work(c);
-      await c.query("COMMIT");
-      return value;
-    } catch (error) {
-      try {
-        await c.query("ROLLBACK");
-      } catch {
-        broken = true;
-      }
-      throw error;
-    } finally {
-      c.release(broken);
-    }
+  private read<T>(work: (client: PoolClient) => Promise<T>): Promise<T> {
+    return transaction(this.pool, work, { readOnly: true });
   }
   /**
    * Truy vấn các ván cờ tới hạn hết giờ suy nghĩ.

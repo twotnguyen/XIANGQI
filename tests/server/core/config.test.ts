@@ -6,6 +6,7 @@ it("uses local defaults without requiring unintegrated service secrets", () => {
     port: 3000,
     corsOrigins: ["http://localhost:5173"],
     logLevel: "info",
+    trustedProxyHops: 0,
   });
 });
 it("rejects invalid port without exposing its value", () => {
@@ -24,7 +25,15 @@ it("reads explicit port, origins and level", () => {
     port: 3100,
     corsOrigins: ["https://example.org", "http://localhost:5173"],
     logLevel: "error",
+    trustedProxyHops: 0,
   });
+});
+it("reads trusted proxy hops and rejects invalid counts without echoing them", () => {
+  expect(readConfig({ TRUST_PROXY_HOPS: "1" }).trustedProxyHops).toBe(1);
+  for (const value of ["-1", "1.5", "x", "6", ""])
+    expect(() => readConfig({ TRUST_PROXY_HOPS: value })).toThrow(
+      "Invalid configuration: TRUST_PROXY_HOPS",
+    );
 });
 it("rejects unsafe origins and unknown log level without including supplied values", () => {
   expect(() => readConfig({ CORS_ORIGINS: "*" })).toThrow(
