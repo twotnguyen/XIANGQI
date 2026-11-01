@@ -57,7 +57,7 @@ export async function baseline() {
     ).split("CREATE SCHEMA auth")[0]!,
   );
   await pool.query(
-    "DROP SCHEMA IF EXISTS xiangqi_realtime CASCADE; DROP SCHEMA IF EXISTS xiangqi_auth CASCADE; DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public AUTHORIZATION postgres",
+    "DROP SCHEMA IF EXISTS xiangqi_room CASCADE; DROP SCHEMA IF EXISTS xiangqi_realtime CASCADE; DROP SCHEMA IF EXISTS xiangqi_auth CASCADE; DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public AUTHORIZATION postgres",
   );
   let managed = await readFile(
     "tests/server/fixtures/managed-auth.test-fixture.sql",

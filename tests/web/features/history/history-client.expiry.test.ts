@@ -39,6 +39,20 @@ function client(value: HistoryItem) {
     ),
   );
 }
+it("accepts ranked Elo changes through the real client and rejects casual Elo", async () => {
+  const value = item();
+  delete value.aiLevel;
+  value.type = "RANKED";
+  value.typeLabel = "Đánh Hạng";
+  value.opponent = { displayName: "Đối thủ", isGuest: false };
+  value.result = { kind: "WIN", reason: "RESIGN", label: "Thắng", countsForWdl: true };
+  value.eloDelta = 16;
+  render(createElement(HistoryPage, { client: client(value), onReplay: vi.fn() }));
+  expect(await screen.findByText("+16")).toBeTruthy();
+  value.type = "CASUAL";
+  value.typeLabel = "Đánh Thường";
+  await expect(client(value).list()).rejects.toThrow();
+});
 it("accepts expiry history through the real client parser and renders Bỏ dở without an engine failure claim", async () => {
   render(
     createElement(HistoryPage, { client: client(item()), onReplay: vi.fn() }),

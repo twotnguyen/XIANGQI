@@ -23,7 +23,7 @@ import {
   oldRoom,
   pool,
   registration,
-  reset,
+  resetBase as reset,
   waitFor,
 } from "./game.runtime.test-helper.js";
 
@@ -252,6 +252,8 @@ describe.skipIf(!databaseUrl)(
         "20261030000001_password_recovery",
         "20261103000002_yc1_account_rules",
         "20261103000003_password_reset_grant",
+        "20261103000011_yc9_ranked",
+        "20261103000012_yc9_ranked_guards",
       ])
         await apply(`supabase/migrations/${migration}.sql`);
       f = await boot();

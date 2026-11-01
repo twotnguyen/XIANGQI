@@ -6,7 +6,7 @@ import type { RoomView } from "@server/game/room/room.types.js";
 import {
   databaseUrl,
   pool,
-  reset,
+  resetBase as reset,
   roomControl,
 } from "./game.runtime.test-helper.js";
 import {

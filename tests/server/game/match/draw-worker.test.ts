@@ -125,7 +125,7 @@ const roomEnd = {
 };
 const matches = new MatchStore(new ClockService(), roomEnd);
 const coordinator = new RoomTransactions(pool);
-async function game(startAgeMs = 0) {
+async function game(startAgeMs = 0, matched = false) {
   const red = randomUUID(),
     black = randomUUID(),
     roomId = randomUUID(),
@@ -151,16 +151,17 @@ async function game(startAgeMs = 0) {
         throw new RoomRosterChanged([black]);
       const client = scope.client;
       await client.query(
-        "INSERT INTO public.rooms(id,owner_id,name,time_control,viewer_limit,invite_code) VALUES($1,$2,'Draw Worker Fixture',600,5,$3)",
+        "INSERT INTO public.rooms(id,owner_id,name,time_control,viewer_limit,invite_code,kind) VALUES($1,$2,'Draw Worker Fixture',600,5,$3,$4)",
         [
           roomId,
           red,
-          randomUUID()
+          matched ? null : randomUUID()
             .replaceAll("-", "")
             .slice(0, 8)
             .split("")
             .map((c) => parseInt(c, 16) % 10)
             .join(""),
+          matched ? "CASUAL" : "CUSTOM",
         ],
       );
       await client.query(
@@ -273,6 +274,16 @@ describe.skipIf(!databaseUrl)(
   "draw expiry actual RoomTransactions/MatchStore on dedicated synthetic SQL",
   () => {
     beforeEach(reset);
+    it("expires offers in matched rooms without invite codes", async () => {
+      const g = await game(0, true);
+      await offer(g);
+      await overdue(g);
+      expect(await sqlPort().dueOffers(null)).toEqual([
+        expect.objectContaining({ roomId: g.roomId, matchId: g.matchId }),
+      ]);
+      await new DrawWorker(matches, sqlPort()).tick();
+      expect((await pool.query("SELECT status FROM xiangqi_room.match_draw_offers WHERE match_id=$1", [g.matchId])).rows[0].status).toBe("EXPIRED");
+    });
     it("selects only due managed current ONLINE ACTIVE offers", async () => {
       const g = await game();
       await offer(g);

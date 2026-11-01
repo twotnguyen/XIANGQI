@@ -11,7 +11,7 @@ import {
 } from "@server/account/login/postgres-login-store.js";
 import { LoginError } from "@server/account/login/login.types.js";
 import { encodePosition } from "@server/game/match/position-codec.js";
-import { apply, databaseUrl, pool, reset } from "../match/match.test-helper.js";
+import { apply, databaseUrl, pool, resetBase as reset } from "../match/match.test-helper.js";
 import { createHistoryRuntime } from "@server/game/history/history.module.js";
 const loginPool = createLoginPool({ connectionString: databaseUrl });
 type Registration = NonNullable<
@@ -114,6 +114,8 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
       );
+      await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+      await apply("supabase/migrations/20261103000012_yc9_ranked_guards.sql");
     });
     afterAll(async () => {
       await pool.end();

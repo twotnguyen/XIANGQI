@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { RoomAction, RoomStateSnapshot } from "@xiangqi/shared";
+import { parsePosition } from "@xiangqi/xiangqi-core";
 import { Dialog } from "../../../shared/ui/primitives.js";
 import "./MatchActions.css";
 export type MatchAction = Extract<
@@ -19,6 +20,7 @@ export type MatchAction = Extract<
 >;
 export interface MatchActionsProps {
   match: RoomStateSnapshot["match"];
+  kind?: "CUSTOM" | "CASUAL" | "RANKED";
   role: RoomStateSnapshot["role"];
   draw: RoomStateSnapshot["draw"];
   undo?: RoomStateSnapshot["undo"];
@@ -41,6 +43,7 @@ function time(ms: number) {
  */
 export function MatchActions({
   match,
+  kind = "CUSTOM",
   role,
   draw,
   undo,
@@ -64,7 +67,7 @@ export function MatchActions({
           ...offer,
           kind: "draw" as const,
         })),
-        ...(undo?.offers ?? []).map((offer) => ({
+        ...(kind === "RANKED" ? [] : (undo?.offers ?? [])).map((offer) => ({
           ...offer,
           kind: "undo" as const,
         })),
@@ -149,12 +152,21 @@ export function MatchActions({
   const remaining = (expiresAt: string) =>
     Math.max(0, Date.parse(expiresAt) - Date.parse(serverNow) - elapsed);
   const working = busy || pending;
+  let rankedDrawReady = kind !== "RANKED";
+  if (kind === "RANKED" && match) {
+    try {
+      rankedDrawReady = parsePosition(match.position).fullmove >= 21;
+    } catch {
+      rankedDrawReady = false;
+    }
+  }
   async function send(action: MatchAction) {
     if (
       !active ||
       !canAct ||
       busy ||
       inFlight.current ||
+      (kind === "RANKED" && (action.type === "match.abort" || action.type.startsWith("match.undo.") || (action.type === "match.draw.offer" && !rankedDrawReady))) ||
       !match ||
       action.payload.matchId !== match.id
     )
@@ -200,8 +212,10 @@ export function MatchActions({
     ? "Kết nối hoặc quyền điều khiển chưa sẵn sàng."
     : !draw
       ? "Xin hòa chưa sẵn sàng trong phòng này."
-      : ownPending
-        ? "Đang chờ trả lời đề nghị trước."
+      : !rankedDrawReady
+        ? "Chỉ xin hòa được sau 20 nước mỗi bên."
+        : ownPending
+          ? "Đang chờ trả lời đề nghị trước."
         : cooldown > 0
           ? `Cần đi thêm ${cooldown} nước của bạn để xin hòa lại.`
           : null;
@@ -218,7 +232,7 @@ export function MatchActions({
           Đầu hàng
         </button>
         {/* Hủy ván chỉ khi chưa có nước đi nào; máy chủ kiểm lại dưới khóa. */}
-        {match.canAbort && (
+        {kind !== "RANKED" && match.canAbort && (
           <button
             type="button"
             className="xq-button xq-button-secondary"
@@ -239,6 +253,7 @@ export function MatchActions({
         >
           Xin hòa
         </button>
+        {kind !== "RANKED" && (
         <button
           type="button"
           className="xq-button xq-button-secondary"
@@ -254,13 +269,14 @@ export function MatchActions({
         >
           Xin đi lại
         </button>
+        )}
       </div>
       {reason && (
         <p id={`${match.id}-draw-reason`} className="match-actions__help">
           {reason}
         </p>
       )}
-      {undoReason && undoReason !== reason && (
+      {kind !== "RANKED" && undoReason && undoReason !== reason && (
         <p id={`${match.id}-undo-reason`} className="match-actions__help">
           {undoReason}
         </p>

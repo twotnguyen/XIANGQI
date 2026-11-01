@@ -18,7 +18,7 @@ import {
   PostgresLoginStore,
 } from "@server/account/login/postgres-login-store.js";
 import { createRoomRuntime } from "@server/game/game.runtime.js";
-import { apply, databaseUrl, pool, reset } from "./game.runtime.test-helper.js";
+import { apply, databaseUrl, pool, resetBase } from "./game.runtime.test-helper.js";
 const loginPool = createLoginPool({ connectionString: databaseUrl });
 const env = { ROOMS_ENABLED: "true", AUTH_LOGIN_ENABLED: "true" };
 type Registration = NonNullable<
@@ -194,6 +194,8 @@ async function roomFixture() {
 
 async function chatSchema() {
   await apply("supabase/migrations/20261011000010_room_chat.sql");
+  await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+  await apply("supabase/migrations/20261103000012_yc9_ranked_guards.sql");
 }
 function request<T>(socket: Socket, event: string, body: object) {
   return new Promise<ChatAcknowledgement<T>>((resolve, reject) => {
@@ -211,15 +213,19 @@ afterAll(async () => {
 describe.skipIf(!databaseUrl)("actual room chat runtime", () => {
   beforeEach(async () => {
     await pool.query("DROP SCHEMA IF EXISTS xiangqi_chat CASCADE");
-    await reset();
+    await resetBase();
   });
   it("retains old room runtime without chat when migration is absent", async () => {
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+    await apply("supabase/migrations/20261103000012_yc9_ranked_guards.sql");
     const runtime = await createRoomRuntime(env, registration().context);
     expect(runtime).not.toBeNull();
     expect(runtime!.realtime).not.toHaveProperty("chat", expect.anything());
     await runtime!.close();
   });
   it("refuses partially installed chat schema rather than enabling or silently omitting chat", async () => {
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+    await apply("supabase/migrations/20261103000012_yc9_ranked_guards.sql");
     await pool.query("CREATE SCHEMA xiangqi_chat");
     await expect(
       createRoomRuntime(env, registration().context),

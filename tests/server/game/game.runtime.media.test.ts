@@ -14,7 +14,7 @@ import {
   loginPool,
   pool,
   registration,
-  reset,
+  resetBase as reset,
   waitFor,
 } from "./game.runtime.test-helper.js";
 
@@ -34,6 +34,8 @@ describe.skipIf(!databaseUrl)("Room runtime media revocation", () => {
     await reset();
     await apply("supabase/migrations/20261011000015_media_share.sql");
     await apply("supabase/migrations/20261103000010_media_generation.sql");
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+    await apply("supabase/migrations/20261103000012_yc9_ranked_guards.sql");
   });
   it("keeps media revocation unacknowledged when no real media port is integrated", async () => {
     const r = registration(),

@@ -11,7 +11,7 @@ import {
 import { PostgresMemberRoomAuthorizer } from "@server/game/room/member-room-auth.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import { encodePosition } from "@server/game/match/position-codec.js";
-import { apply, databaseUrl, pool, reset } from "../match/match.test-helper.js";
+import { apply, databaseUrl, pool, resetBase as reset } from "../match/match.test-helper.js";
 import { HistoryStore } from "@server/game/history/history-store.js";
 import { HistoryHttpService } from "@server/game/history/history-http.service.js";
 import { HistoryModule } from "@server/game/history/history.module.js";
@@ -146,6 +146,7 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
       );
+      await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
       app = await createApp(
         ["http://localhost:5173"],
         [HistoryModule.forRoot(service)],
@@ -198,7 +199,7 @@ describe.skipIf(!databaseUrl)(
         (await fetch(base + "/history/" + id, { headers: a.headers })).status,
       ).toBe(404);
     });
-    it("parses strict filters, limit and microsecond JSON cursor and keeps Ranked explicitly unavailable", async () => {
+    it("parses strict filters, limit and microsecond JSON cursor and serves Ranked", async () => {
       const a = await member("A"),
         b = await member("B");
       const low = await terminal(a.id, b.id, "2026-10-01T00:00:00.123400Z"),
@@ -222,8 +223,7 @@ describe.skipIf(!databaseUrl)(
         "/history/ranked-summary",
       ]) {
         const response = await fetch(base + path, { headers: a.headers });
-        expect(response.status).toBe(503);
-        expect((await response.json()).code).toBe("HISTORY_RANKED_UNAVAILABLE");
+        expect(response.status).toBe(200);
         expect(response.headers.get("cache-control")).toBe("no-store");
       }
       expect(

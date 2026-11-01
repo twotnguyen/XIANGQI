@@ -26,7 +26,7 @@ import {
   member,
   pool,
   registration,
-  reset,
+  resetBase as reset,
 } from "../game.runtime.test-helper.js";
 
 let app: Awaited<ReturnType<typeof createApp>> | undefined;
@@ -163,6 +163,7 @@ describe.skipIf(!databaseUrl)(
     beforeEach(async () => {
       await reset();
       await apply("supabase/migrations/20261011000016_room_viewers.sql");
+      await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
     });
     it("rejects an old tab on all room mutations, requires proof, and fences disconnect and takeover generations", async () => {
       const f = await fixture(),

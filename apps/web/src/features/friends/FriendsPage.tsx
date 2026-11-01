@@ -74,6 +74,7 @@ export function FriendsPage({
   const [notice, setNotice] = useState("");
   const [tabVersion, setTabVersion] = useState(0);
   const [defaultTab, setDefaultTab] = useState(tabFromLocation);
+  const [messageTarget, setMessageTarget] = useState(() => new URLSearchParams(getLocation().search).get("message"));
   const searchSeq = useRef(0);
   const loadSeq = useRef(0);
   const loading = useRef(false);
@@ -118,10 +119,18 @@ export function FriendsPage({
     () =>
       subscribeLocation(() => {
         setDefaultTab(tabFromLocation());
+        setMessageTarget(new URLSearchParams(getLocation().search).get("message"));
         setTabVersion((version) => version + 1);
       }),
     [],
   );
+
+  useEffect(() => {
+    if (!friends || !messageTarget) return;
+    const friend = friends.find((peer) => peer.userId === messageTarget);
+    setMessageTarget(null);
+    if (friend) setChatWith(friend);
+  }, [friends, messageTarget]);
 
   async function search() {
     const q = query.trim();

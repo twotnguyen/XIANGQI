@@ -247,6 +247,12 @@ export class MatchUndoStore extends MatchDrawStore {
       return result(offers.length > 0 || due.length > 0);
     }
     if (action === "offer") {
+      const ranked = await scope.client.query(
+        "SELECT 1 FROM public.rooms r WHERE r.id=$1 AND r.kind='RANKED'",
+        [room.id],
+      );
+      if (ranked.rowCount)
+        return result(false, "MATCH_UNDO_RANKED", "Không thể xin đi lại trong ván xếp hạng.");
       const state = await this.undoState(scope.client, match, at);
       const pendingDraw = await scope.client.query(
         "SELECT 1 FROM xiangqi_room.match_draw_offers WHERE match_id=$1 AND sender=$2 AND status='PENDING' AND expires_at>$3",

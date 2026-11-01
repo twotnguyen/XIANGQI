@@ -203,10 +203,13 @@ export async function resetLegacy() {
     "20261031000001_session_devices",
     "20261102000002_custom_rematch",
     "20261103000004_room_issued_codes",
+    "20261102000003_unlimited_inactivity",
+    "20261103000011_yc9_ranked",
+    "20261103000012_yc9_ranked_guards",
   ]);
 }
 // Full current schema (1-9 + 2 + 3) in order: 8 must precede 3 because 3 replaces guard_settings from 6.
-export async function reset() {
+export async function resetBase() {
   await resetSchemas([
     "20261011000001_email_registration",
     "20261011000002_realtime",
@@ -226,6 +229,11 @@ export async function reset() {
     "20261103000006_online_undo",
     "20261103000007_match_simultaneous_disconnect",
   ]);
+}
+export async function reset() {
+  await resetBase();
+  await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+  await apply("supabase/migrations/20261103000012_yc9_ranked_guards.sql");
 }
 
 export { env, member, oldRoom, registration, waitFor };

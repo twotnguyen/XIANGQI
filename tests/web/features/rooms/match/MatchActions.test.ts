@@ -83,6 +83,16 @@ function advance(ms: number) {
     vi.advanceTimersByTime(ms);
   });
 }
+it("restricts ranked actions and requires twenty moves by each side for a draw", () => {
+  const position = "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 20";
+  const view = setup({ kind: "RANKED", match: { ...match, position } });
+  expect(screen.queryByRole("button", { name: "Hủy ván" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Xin đi lại" })).toBeNull();
+  expect((screen.getByRole("button", { name: "Xin hòa" }) as HTMLButtonElement).disabled).toBe(true);
+  view.rerender(createElement(MatchActions, { ...view.props, kind: "RANKED", match: { ...match, position: position.replace("0 20", "0 21") } }));
+  expect((screen.getByRole("button", { name: "Xin hòa" }) as HTMLButtonElement).disabled).toBe(false);
+});
+
 it.each([
   null,
   { ...match, status: "FINISHED" as const },

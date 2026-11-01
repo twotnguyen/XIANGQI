@@ -110,6 +110,28 @@ it("discovers a permitted unmuted provider source", async () => {
 
 describe.skipIf(!url)("media access", () => {
   beforeEach(resetMediaSchema);
+  it.each(["CASUAL", "RANKED"])("%s forbids stage sharing and spectator access", async (kind) => {
+    const access = new MediaAccess(config, new MediaStore(pool), async () => new Response("{}", { status: 200 }));
+    const a = await actor();
+    const viewer = await actor();
+    const roomId = await makeRoom(a.userId, kind as "CASUAL" | "RANKED");
+    await seat(roomId, a.userId, "RED");
+    await takeControl(roomId, a.userId, TAB);
+    await pool.query("INSERT INTO public.room_members(room_id,user_id,role,side) VALUES($1,$2,'SPECTATOR',NULL)", [roomId, viewer.userId]);
+    await expect(access.setShare(a.userId, roomId, "ALL", CONTROL)).rejects.toMatchObject({ code: "MEDIA_FORBIDDEN" });
+    await access.setShare(a.userId, roomId, "NONE", CONTROL);
+    expect(await access.getShare(a.userId, roomId)).toEqual({ level: "NONE" });
+    await access.setShare(a.userId, roomId, "OPPONENT", CONTROL);
+    const token = await access.tokenFor(a.userId, roomId, { camera: true, mic: false }, TAB);
+    expect(token.stage).toBeNull();
+    expect((decodeJwt(token.token).video as Record<string, unknown>).canPublish).toBe(true);
+    await expect(access.tokenFor(viewer.userId, roomId, { camera: false, mic: false }, TAB)).rejects.toMatchObject({ code: "MEDIA_FORBIDDEN" });
+    await expect(access.sourcesFor(viewer.userId, roomId)).rejects.toMatchObject({ code: "MEDIA_FORBIDDEN" });
+    await expect(access.getShare(viewer.userId, roomId)).rejects.toMatchObject({ code: "MEDIA_FORBIDDEN" });
+    await pool.query("UPDATE xiangqi_room.media_share SET level='ALL' WHERE room_id=$1 AND user_id=$2", [roomId, a.userId]);
+    expect(await access.getShare(a.userId, roomId)).toEqual({ level: "OPPONENT" });
+    expect((await access.tokenFor(a.userId, roomId, { camera: true, mic: false }, TAB)).stage).toBeNull();
+  });
   it("issues player tokens with device-scoped publish rights", async () => {
     const access = new MediaAccess(config, new MediaStore(pool), async () => {
       throw new Error("no fetch expected");

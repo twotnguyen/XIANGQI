@@ -141,6 +141,8 @@ export class MediaAccess {
           "Tab này chỉ có quyền xem",
           403,
         );
+      if (level === "ALL" && await tx.isMatched(roomId))
+        throw new MediaError("MEDIA_FORBIDDEN", "Phòng ghép chỉ chia sẻ với đối thủ", 403);
       const previous = (await tx.findShare(roomId, userId)) ?? "OPPONENT";
       await tx.saveShare(roomId, userId, level);
       const rank = { NONE: 0, OPPONENT: 1, ALL: 2 };
@@ -165,7 +167,11 @@ export class MediaAccess {
   ): Promise<{ level: ShareLevel }> {
     const userId = rawUserId.toLowerCase(),
       roomId = rawRoomId.toLowerCase();
-    return this.store.read((tx) => this.shareIn(tx, roomId, userId));
+    return this.store.read(async (tx) => {
+      if (await tx.isMatched(roomId) && !(await tx.findMemberRole(roomId, userId)))
+        throw new MediaError("MEDIA_FORBIDDEN", "Bạn không ở trong phòng", 403);
+      return this.shareIn(tx, roomId, userId);
+    });
   }
   async sourcesFor(
     rawUserId: string,

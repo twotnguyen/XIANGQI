@@ -4,7 +4,7 @@ import type { RoomScope } from "@server/game/room/room.types.js";
 import { RoomStore } from "@server/game/room/room-store.js";
 import {
   pool,
-  reset,
+  resetBase as reset,
   apply,
   databaseUrl,
 } from "../game.runtime.test-helper.js";
@@ -94,6 +94,7 @@ describe.skipIf(!databaseUrl)(
       await pool.query("DROP SCHEMA IF EXISTS xiangqi_chat CASCADE");
       await reset();
       await apply("supabase/migrations/20261011000010_room_chat.sql");
+      await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
     });
     it("publishes only committed reference room/channel then deletes outbox without deleting message/receipt", async () => {
       const f = await fixture(),

@@ -7,6 +7,7 @@ import { RoomTransactions } from "../room/room-transactions.js";
 import { PostgresMemberRoomAuthorizer } from "../room/member-room-auth.js";
 import { HistoryStore } from "./history-store.js";
 import { ReplayStore } from "./replay-store.js";
+import { readMatchmakingConfig } from "../matchmaking/matchmaking-config.js";
 /**
  * Module NestJS quản lý tính năng lịch sử và xem lại ván cờ (History & Replay).
  */
@@ -64,7 +65,8 @@ export async function createHistoryRuntime(
         ('public.matches','r'),('public.match_events','r'),('public.match_moves','r'),('public.profiles','r'),
         ('public.rooms','r'),('public.room_members','r'),('public.active_players','r'),
         ('xiangqi_auth.principals','r'),('xiangqi_auth.app_sessions','r'),
-        ('xiangqi_auth.guest_sessions','r'),('xiangqi_auth.accounts','v'))
+        ('xiangqi_auth.guest_sessions','r'),('xiangqi_auth.accounts','v'),
+        ('xiangqi_room.ratings','r'),('xiangqi_room.ranked_results','r'))
       SELECT pg_catalog.pg_has_role(current_user,'app_server','SET')
         AND EXISTS(SELECT 1 FROM pg_catalog.pg_roles WHERE rolname='app_server' AND NOT rolsuper AND NOT rolbypassrls)
         AND pg_catalog.has_schema_privilege('app_server','public','USAGE')
@@ -105,7 +107,9 @@ export async function createHistoryRuntime(
         ('public.match_events','type','text'),('public.match_events','payload','jsonb'),
         ('public.profiles','user_id','uuid'),('public.profiles','display_name','text'),
         ('public.profiles','completed_at','timestamptz'),('public.profiles','registration_pending','bool'),
-        ('public.rooms','id','uuid'),('public.rooms','owner_id','uuid'),('public.rooms','closed_at','timestamptz'),
+        ('public.rooms','id','uuid'),('public.rooms','owner_id','uuid'),('public.rooms','closed_at','timestamptz'),('public.rooms','kind','text'),
+        ('xiangqi_room.ratings','user_id','uuid'),('xiangqi_room.ratings','elo','int4'),('xiangqi_room.ratings','completed','int4'),
+        ('xiangqi_room.ranked_results','match_id','uuid'),('xiangqi_room.ranked_results','red_before','int4'),('xiangqi_room.ranked_results','red_after','int4'),('xiangqi_room.ranked_results','black_before','int4'),('xiangqi_room.ranked_results','black_after','int4'),
         ('public.rooms','current_match_id','uuid'),('public.room_members','room_id','uuid'),('public.room_members','user_id','uuid'),
         ('public.active_players','user_id','uuid'),('public.active_players','room_id','uuid'),('public.active_players','match_id','uuid'),
         ('xiangqi_auth.principals','id','uuid'),('xiangqi_auth.principals','kind','text'),('xiangqi_auth.principals','auth_user_id','uuid'),
@@ -138,7 +142,7 @@ export async function createHistoryRuntime(
   const transactions = new RoomTransactions(pool),
     authorizer = new PostgresMemberRoomAuthorizer(registration.sessions);
   const service = new HistoryHttpService(
-    new HistoryStore(),
+    new HistoryStore(readMatchmakingConfig(env).minimumGames),
     transactions,
     authorizer,
   );

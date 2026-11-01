@@ -97,6 +97,7 @@ describe.skipIf(!url)("friendships", () => {
     await apply(
       "supabase/migrations/20261101000001_friend_presence_invites.sql",
     );
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
   });
 
   it("rolls back before feature writes but refuses to drop persisted presence", async () => {

@@ -2,7 +2,7 @@
 
 **Ngày lập:** 31/10/2026. **Phạm vi:** gói Ranked (US-P2-01…06 / XIAN-115…120), Đánh Thường ghép ngẫu nhiên (US-P2-07 / XIAN-121), phần Casual của Xin đi lại (XIAN-122) và Tái đấu (XIAN-123), phần Ranked của Lịch sử/thống kê (XIAN-125). Tất cả thuộc **P1 theo [BA 0.27](BA-SCOPE-DECISIONS.md)**; mã `US-P2-*`/`AC-P2-*` chỉ là định danh truy vết.
 
-**Trạng thái:** mới chốt đặc tả. Chưa có mã, migration (Elo, hàng đợi, bảng xếp hạng), test hay Task Jira riêng. Baseline ước lượng cũ: Ranked 212 giờ, Casual 44 giờ (chưa gồm phần Casual của Xin đi lại/Tái đấu), chưa tái ước lượng. **PO chốt 31/10: giữ hạn 04/11/2026, hạng mục chưa xong ghi BLOCKED, không hạ ngưỡng.**
+**Trạng thái (01/11/2026):** đã có mã YC9, migration Elo/bảng xếp hạng, test và kiểm chứng local/DB Supabase; đang xử lý review theo Must → Should → Nice. Hàng đợi chỉ nằm trong RAM. **Chưa nghiệm thu toàn bộ: NFR-01 vẫn BLOCKED**, không hạ ngưỡng 100 ms. Baseline ước lượng cũ: Ranked 212 giờ, Casual 44 giờ (chưa gồm phần Casual của Xin đi lại/Tái đấu), chưa tái ước lượng. PO giữ hạn 04/11/2026.
 
 > YC9 **không thuộc tám yêu cầu gốc** của khách hàng; PO bổ sung ngày 31/10. Khi thiếu thời gian, ưu tiên hoàn thiện YC1–YC8 trước (điều kiện PO chọn khi giữ hạn).
 
@@ -108,7 +108,7 @@ Mọi số Elo lấy từ ván Ranked thật; không dựng số liệu giả (B
 - Controller → Service → Store: SQL chỉ nằm trong `*.store.ts`; phụ thuộc giữa miền qua `*Port`.
 - Hàng đợi chỉ trong RAM; ghép cặp phải nguyên tử, không ghép một tài khoản với chính nó, không để hai lượt ghép cùng chiếm một người.
 - Đếm cặp 24 giờ đọc từ bảng ván (`started_at`), không từ cache.
-- Migration mới kèm bản `rollback/`; không sửa migration đã áp dụng. Chưa có migration nào cho YC9.
+- Migration mới kèm bản `rollback/`; không sửa migration đã áp dụng. YC9 có `20261103000011_yc9_ranked` và `20261103000012_yc9_ranked_guards`; runtime mới yêu cầu quyền kết quả theo migration 12. Cloud đã áp cả hai; migration 12 không sửa lịch sử hay dữ liệu Elo.
 - API/socket/RLS phải kiểm trực tiếp, không chỉ qua giao diện: Khách gọi lệnh Ranked bị từ chối, đoán ID ván, lệnh cũ/trùng.
 
 ## 11. Ca biên bắt buộc
@@ -162,11 +162,11 @@ Xem D11 (Casual) và D12 (Ranked + bảng xếp hạng) ở [BACKLOG-P1 §8](BAC
 
 ## 15. Bàn giao
 
-Còn thiếu để vào triển khai: Task và ước lượng giờ cho YC9, migration (Elo/ván Ranked/hàng đợi), mockup `MODAL-MATCH-RESULT` có Elo, và gate kiểm chứng cho đồng thời hàng đợi. Chưa cập nhật Jira, giờ hay Sprint trong lượt này.
+Đã triển khai mã và dùng Task Jira hiện có, gồm XIAN-142 (hàng đợi Ranked) và XIAN-152 (Casual), không tự tạo Task hoặc chuyển Done. Ước lượng/Sprint vẫn theo Jira; tình trạng kiểm chứng được ghi dưới đây, không suy ra nghiệm thu từ việc có mã.
 
 ## 16. Quyết định PO khi rà soát YC9 — 31/10/2026
 
-**Chưa triển khai.** Mục này **thay** các con số "tìm 3 phút", "tìm Ranked 60 giây", "xác nhận Casual 10 giây" và "Ranked vào ván ngay" ở mục 4 và 5 (đã sửa tại chỗ) cùng BA 2.0, 7.1, 7.2.
+**Đã triển khai luồng tại mục này; chưa đồng nghĩa nghiệm thu.** Mục này **thay** các con số "tìm 3 phút", "tìm Ranked 60 giây", "xác nhận Casual 10 giây" và "Ranked vào ván ngay" ở mục 4 và 5 (đã sửa tại chỗ) cùng BA 2.0, 7.1, 7.2.
 
 ### 16.1 Luồng ghép trận thống nhất cho Đánh Thường và Đánh Hạng
 
@@ -205,7 +205,18 @@ Còn thiếu để vào triển khai: Task và ước lượng giờ cho YC9, mi
 **PO xác nhận:** hạn tìm 2 phút cho cả hai loại; hộp xác nhận 30 giây cho cả hai loại; có nút Từ chối; người đã xác nhận tìm tiếp với đồng hồ mới 2 phút; không hiện số người đang tìm; cờ dev/demo.
 **PO xác nhận 31/10/2026:** (a) hộp xác nhận không hiện tên/Elo đối thủ; (b) có âm báo khi tìm thấy trận; (c) Từ chối nhiều lần không bị phạt (chấp nhận rủi ro né đối thủ mạnh ở Ranked).
 
-### 16.5 Tác động triển khai (chưa làm)
+### 16.5 Tác động triển khai (đã có mã)
 
 - Hàng đợi trong RAM, bước xác nhận 30 giây hai phía, quay lại hàng đợi, cờ cấu hình ở server; `MODAL-MATCHMAKING` thêm trạng thái hộp xác nhận; thay các hằng 180 giây, 60 giây, 10 giây theo mục 16.1.
 - Cập nhật BACKLOG-P2 AC-P2-02.1/02.2, AC-P2-07.1/07.2 (ghi chú trỏ về mục này), D11/D12 và mockup `index.html` (`MODAL-MATCHMAKING`).
+
+## 17. Review và giới hạn kiểm chứng — 01/11/2026
+
+- Must: lỗi tick chỉ ghi log; lỗi một cặp không ngăn cặp khác; commit chưa rõ giữ nguyên token để phục hồi; người đã xác nhận giữ lượt qua reconnect ngắn; modal offline đóng được mà không hủy reservation.
+- Should: admission ngoài chuỗi mutation, revalidation có giới hạn đồng thời; chặn spam trước DB và giữ biên lai đã nhận 24 giờ. Phòng Casual không tính vào giới hạn một phòng custom của Khách. Fixture dùng migration 11 thật, không giả bảng Elo hoặc fallback loại phòng trong match/room worker. Đồng hồ modal nằm ngoài vùng thông báo động.
+- Luật không đổi: theo BA 0.23, hai người mất kết nối cùng timestamp tạo hòa; Ranked vẫn tính là ván hoàn thành, Elo theo tỷ số 0,5. Không đổi thành ABORTED để tránh tự sửa luật PO; test worker bao phủ trường hợp chưa có nước đi.
+- Schema Cloud: 11 đã áp trong lượt triển khai; 12 kiểm tra định nghĩa/trigger đã biết, thu hồi UPDATE trên `ranked_results` và có rollback không xóa kết quả. Áp server trước web; không áp lại migration 10 (YC7).
+- Tách ngoài YC9: sửa migration media cho phòng legacy đã đóng và hồi quy đi trong commit riêng `8e6bfa0` (XIAN-94). Nền `0edd868` giữ thay đổi liên thuộc từ lượt triển khai, gồm lookup AI qua guest-aware fetch và dùng thời gian deadline thực ở disconnect worker; không coi hai chỗ đó là tính năng ghép trận mới.
+- Schema guard local đã qua các ca quyền/rollback/drift. Smoke Auth + Socket.IO qua server local dùng DB Cloud sau migration 12: người xác nhận reconnect sau hạn offer về SEARCHING; socket ngoài hàng đợi không nhận lỗi tìm trận. Không coi auth synthetic hoặc loopback là bằng chứng WAN hay thiết bị vật lý.
+- NFR-01 chưa đạt: lượt đo Cloud trước review có p50 khoảng 2,1 giây qua server local, p95 khoảng 2,87 giây qua tailnet nội bộ; DB RTT khoảng 30,5 ms. Sửa queue không chứng minh đã giảm latency từng nước đi. Chưa đo lại tải/WAN, chưa kiểm hai thiết bị vật lý hoặc đầy đủ WCAG 2.1 AA.
+- Nice đã xử lý: lỗi Ranked riêng, bỏ mã lỗi lịch sử chết, phản hồi khi bấm ghép trận lúc đang đồng bộ, vùng bấm hạng người chơi, nhãn đếm ngược 3-2-1 và câu xin hòa theo BA 7.2. Chưa làm: tối ưu/chỉ mục bảng xếp hạng (cần đo trước); không thêm ảnh đại diện upload.

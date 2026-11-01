@@ -45,6 +45,7 @@ SELECT count(*) FILTER(WHERE m.role='PLAYER')::integer players,
 count(*) FILTER(WHERE m.role='SPECTATOR' AND (m.disconnected_at IS NULL OR m.disconnected_at+interval '5 minutes'>server_time.at))::integer spectators
 FROM public.room_members m WHERE m.room_id=r.id) occupancy
 WHERE r.visibility='PUBLIC' AND r.closed_at IS NULL AND r.status IN('WAITING','PLAYING','FINISHED')
+AND COALESCE(to_jsonb(r)->>'kind','CUSTOM')='CUSTOM'
 AND r.invite_code IS NOT NULL AND r.time_control IN(0,300,600,900) AND r.viewer_limit BETWEEN 0 AND 5
 AND EXISTS(SELECT 1 FROM public.room_members host WHERE host.room_id=r.id AND host.user_id=r.owner_id AND host.role='PLAYER')
 ORDER BY r.public_opened_at DESC NULLS LAST,r.id DESC LIMIT 50`)
@@ -85,7 +86,7 @@ ORDER BY r.public_opened_at DESC NULLS LAST,r.id DESC LIMIT 50`)
     if (!scope.lockedRoomIds.has(roomId))
       throw new RoomError("ROOM_LOCK_REQUIRED", "Thiếu khóa phòng", 500);
     const current = await scope.client.query(
-      `SELECT 1 FROM public.rooms WHERE id=$1 AND visibility='PUBLIC' AND invite_code IS NOT NULL AND closed_at IS NULL AND status IN('WAITING','PLAYING','FINISHED') FOR UPDATE`,
+      `SELECT 1 FROM public.rooms r WHERE id=$1 AND visibility='PUBLIC' AND invite_code IS NOT NULL AND COALESCE(to_jsonb(r)->>'kind','CUSTOM')='CUSTOM' AND closed_at IS NULL AND status IN('WAITING','PLAYING','FINISHED') FOR UPDATE`,
       [roomId],
     );
     if (!current.rowCount) this.unavailable();

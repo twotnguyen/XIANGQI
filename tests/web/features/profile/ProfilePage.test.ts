@@ -73,6 +73,10 @@ function authorizedFetchStub() {
 }
 
 describe("profile page", () => {
+  it("renders the rating summary supplied by the app inside the profile section", async () => {
+    render(createElement(ProfilePage, { client: client(), guest: false, authorizedFetch: authorizedFetchStub(), onSaved: vi.fn(), onLogout: vi.fn(), ratingSummary: createElement("span", null, "1200 Elo · hạng thử") }));
+    expect(await screen.findByText("1200 Elo · hạng thử")).toBeTruthy();
+  });
   it("shows avatar letter, username and read-only email and saves a name", async () => {
     const user = userEvent.setup();
     const onSaved = vi.fn();

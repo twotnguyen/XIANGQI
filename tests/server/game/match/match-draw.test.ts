@@ -11,6 +11,47 @@ useProposalHooks();
 describe.skipIf(!databaseUrl)(
   "durable draw agreements on synthetic PostgreSQL",
   () => {
+    it("ranked requires 20 moves by each side and five requester moves after refusal", async () => {
+      const f = await fixture(600, 0, "RANKED");
+      await pool.query(
+        `INSERT INTO public.match_events(match_id,version,type,payload)
+         SELECT $1,100+n,'MOVE',jsonb_build_object('side', CASE WHEN n<=20 THEN 'RED' ELSE 'BLACK' END)
+         FROM generate_series(1,39) n`,
+        [f.matchId],
+      );
+      const early = await run(f, f.red, (s) =>
+        store.offerDraw(s, { matchId: f.matchId, matchVersion: 0 }),
+      );
+      expect(early.error?.code).toBe("MATCH_DRAW_MIN_MOVES");
+      await pool.query(
+        "INSERT INTO public.match_events(match_id,version,type,payload) VALUES($1,140,'MOVE','{\"side\":\"BLACK\"}')",
+        [f.matchId],
+      );
+      const offered = await run(f, f.red, (s) =>
+        store.offerDraw(s, { matchId: f.matchId, matchVersion: 0 }),
+      );
+      expect(offered.applied).toBe(true);
+      const declined = await run(f, f.black, (s) =>
+        store.respondDraw(s, { matchId: f.matchId, matchVersion: offered.match.version, offerId: offered.draw.offers[0]!.id, accept: false }),
+      );
+      expect(declined.draw.remainingMoves.red).toBe(5);
+      await pool.query(
+        `INSERT INTO public.match_events(match_id,version,type,payload)
+         SELECT $1,150+n,'MOVE','{"side":"RED"}'::jsonb FROM generate_series(1,4) n`,
+        [f.matchId],
+      );
+      const blocked = await run(f, f.red, (s) =>
+        store.offerDraw(s, { matchId: f.matchId, matchVersion: declined.match.version }),
+      );
+      expect(blocked.error?.code).toBe("MATCH_DRAW_COOLDOWN");
+      await pool.query(
+        "INSERT INTO public.match_events(match_id,version,type,payload) VALUES($1,155,'MOVE','{\"side\":\"RED\"}')",
+        [f.matchId],
+      );
+      expect((await run(f, f.red, (s) =>
+        store.offerDraw(s, { matchId: f.matchId, matchVersion: declined.match.version }),
+      )).applied).toBe(true);
+    });
     it("persists an offer without pausing the clock and only the receiver can accept it", async () => {
       const f = await fixture();
       const before = (

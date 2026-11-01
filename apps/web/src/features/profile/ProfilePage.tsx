@@ -104,6 +104,7 @@ export function ProfilePage({
   onLogout,
   authorizedFetch,
   emailSection,
+  ratingSummary,
 }: {
   client: ProfileClient;
   authorizedFetch: AuthorizedFetch;
@@ -111,6 +112,7 @@ export function ProfilePage({
   onSaved: (displayName: string) => void;
   onLogout: () => void;
   emailSection?: ReactNode;
+  ratingSummary?: ReactNode;
 }) {
   const emailRef = useRef<HTMLDivElement>(null);
   const [section, setSection] =
@@ -348,6 +350,7 @@ export function ProfilePage({
                 <header className="xq-profile-section-heading">
                   <h2 id="xq-profile-title">Hồ sơ cá nhân</h2>
                 </header>
+                {ratingSummary && <p>{ratingSummary}</p>}
                 <div className="xq-profile-grid-top">
                   <div className="xq-profile-field-readonly">
                     <label

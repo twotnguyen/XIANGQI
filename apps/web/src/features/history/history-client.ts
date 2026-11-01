@@ -10,7 +10,7 @@ export interface HistoryInput {
 }
 export interface HistoryItem {
   id: string;
-  type: "CASUAL" | "AI";
+  type: "CASUAL" | "AI" | "RANKED";
   typeLabel: string;
   side: "red" | "black";
   opponent: { displayName: string; isGuest: boolean };
@@ -21,7 +21,7 @@ export interface HistoryItem {
     label: string;
     countsForWdl: boolean;
   };
-  eloDelta: null;
+  eloDelta: number | null;
   startedAt: string;
   endedAt: string;
   replayPath: string;
@@ -109,12 +109,12 @@ function item(v: unknown): HistoryItem {
     result = object(r.result, ["kind", "reason", "label", "countsForWdl"]);
   if (
     !isId(r.id) ||
-    !["CASUAL", "AI"].includes(r.type as string) ||
+    !["CASUAL", "AI", "RANKED"].includes(r.type as string) ||
     !["red", "black"].includes(r.side as string) ||
     typeof o.displayName !== "string" ||
     !o.displayName.trim() ||
     typeof o.isGuest !== "boolean" ||
-    r.eloDelta !== null ||
+    !(r.eloDelta === null || (r.type === "RANKED" && Number.isInteger(r.eloDelta))) ||
     !timestamp(r.startedAt) ||
     !timestamp(r.endedAt) ||
     r.startedAt > r.endedAt ||
@@ -131,7 +131,7 @@ function item(v: unknown): HistoryItem {
       o.isGuest !== false
     )
       invalid();
-  } else if (r.typeLabel !== "Đánh Thường") invalid();
+  } else if (r.typeLabel !== (r.type === "RANKED" ? "Đánh Hạng" : "Đánh Thường")) invalid();
   const valid =
     ((result.kind === "WIN" || result.kind === "LOSS") &&
       decisive.includes(result.reason as string) &&
@@ -151,6 +151,7 @@ function item(v: unknown): HistoryItem {
       result.reason === "AI_UNAVAILABLE" &&
       result.countsForWdl === false &&
       result.label === "Bỏ dở");
+  if (r.type === "RANKED" && ((result.kind === "INTERRUPTED") !== (r.eloDelta === null))) invalid();
   if (!valid) invalid();
   return r as unknown as HistoryItem;
 }
@@ -187,7 +188,6 @@ const codes = [
   "HISTORY_FORBIDDEN",
   "HISTORY_INPUT_INVALID",
   "HISTORY_CORRUPT",
-  "HISTORY_RANKED_UNAVAILABLE",
   "AUTH_REQUIRED",
 ];
 export class HistoryRequestError extends Error {
@@ -198,9 +198,7 @@ export class HistoryRequestError extends Error {
     super(
       status === 401
         ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
-        : code === "HISTORY_RANKED_UNAVAILABLE"
-          ? "Lịch sử Đánh Hạng chưa sẵn sàng."
-          : "Chưa thể tải lịch sử. Vui lòng thử lại.",
+        : "Chưa thể tải lịch sử. Vui lòng thử lại.",
     );
   }
 }

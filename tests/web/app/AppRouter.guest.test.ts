@@ -213,8 +213,10 @@ it("starts a Guest from login and resumes the invitation exactly once without ex
   mock.startGuest.mockImplementation(async () => {
     mock.state = guest;
   });
-  mock.guestFetch.mockResolvedValue(
-    reply({ roomId, version: 2, role: "black", inviteCode: "12345678" }),
+  mock.guestFetch.mockImplementation(async (url: string) =>
+    reply(url === "/rooms/join"
+      ? { roomId, version: 2, role: "black", inviteCode: "12345678" }
+      : []),
   );
   render(createElement(AppRouter));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/login"));
@@ -239,9 +241,9 @@ it("starts a Guest from login and resumes the invitation exactly once without ex
     expect(window.location.pathname).toBe(`/rooms/${roomId}`),
   );
   expect(mock.startGuest).toHaveBeenCalledOnce();
-  expect(mock.sessionFetch).toHaveBeenCalledOnce();
-  const [url, options] = mock.sessionFetch.mock.calls[0]!;
-  expect(url).toBe("/rooms/join");
+  const joins = mock.sessionFetch.mock.calls.filter(([url]) => url === "/rooms/join");
+  expect(joins).toHaveLength(1);
+  const [, options] = joins[0]!;
   expect(options).toMatchObject({ method: "POST" });
   expect(mock.authorizedFetch).not.toHaveBeenCalled();
   expect(window.location.href).not.toContain(GUEST_CAPABILITY);

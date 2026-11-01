@@ -67,7 +67,7 @@ export class RoomStore extends RoomViewerStore {
     const limits = (
       await s.client.query<{ seated: boolean; guestRoom: boolean }>(
         `SELECT EXISTS(SELECT 1 FROM public.active_players WHERE user_id=$1) AS seated,
-         ($2::boolean AND EXISTS(SELECT 1 FROM public.rooms WHERE owner_id=$1 AND closed_at IS NULL)) AS "guestRoom"`,
+         ($2::boolean AND EXISTS(SELECT 1 FROM public.rooms WHERE owner_id=$1 AND closed_at IS NULL AND kind='CUSTOM')) AS "guestRoom"`,
         [s.actor.userId, s.actor.kind === "guest"],
       )
     ).rows[0]!;
@@ -145,6 +145,8 @@ export class RoomStore extends RoomViewerStore {
       id,
     ]);
     const { r, members } = await this.member(s, id);
+    if (r.kind && r.kind !== "CUSTOM")
+      throw new RoomError("ROOM_FORBIDDEN", "Không thể đổi chế độ phòng ghép", 403);
     if (r.owner_id !== s.actor.userId)
       throw new RoomError(
         "ROOM_FORBIDDEN",
@@ -233,6 +235,8 @@ export class RoomStore extends RoomViewerStore {
               ? "black"
               : "spectator",
       };
+    if (r.kind && r.kind !== "CUSTOM")
+      throw new RoomError("ROOM_FORBIDDEN", "Phòng ghép không nhận người mới", 403);
     if (r.visibility === "LOCKED")
       throw new RoomError("ROOM_LOCKED", "Phòng đã khóa", 403);
     if (await this.kickedOut(s, input.roomId, s.actor.userId))
@@ -320,6 +324,8 @@ export class RoomStore extends RoomViewerStore {
   async switchSeat(s: RoomScope, id: string) {
     this.throttle(s, "switchSeat");
     const { r, members, member } = await this.member(s, id);
+    if (r.kind && r.kind !== "CUSTOM")
+      throw new RoomError("SEAT_SWITCH_DENIED", "Không thể đổi ghế phòng ghép");
     if (
       r.status !== "WAITING" ||
       r.owner_id !== s.actor.userId ||
@@ -351,6 +357,8 @@ export class RoomStore extends RoomViewerStore {
     this.throttle(s, "ready");
     if (typeof value !== "boolean") invalidRoomInput();
     const { r, member } = await this.member(s, id);
+    if (r.kind && r.kind !== "CUSTOM")
+      throw new RoomError("READY_DENIED", "Phòng ghép không cần sẵn sàng");
     if (r.status !== "WAITING" || member.role !== "PLAYER")
       throw new RoomError("READY_DENIED", "Không thể Sẵn sàng lúc này");
     if (r.owner_id === s.actor.userId)
@@ -385,6 +393,8 @@ export class RoomStore extends RoomViewerStore {
   async start(s: RoomScope, id: string) {
     this.throttle(s, "start");
     const { r, member } = await this.member(s, id);
+    if (r.kind && r.kind !== "CUSTOM")
+      throw new RoomError("START_DENIED", "Phòng ghép tự bắt đầu");
     if (
       r.status !== "WAITING" ||
       member.role !== "PLAYER" ||
@@ -500,6 +510,7 @@ export class RoomStore extends RoomViewerStore {
     if (
       connected &&
       member.role === "PLAYER" &&
+      !(r.kind && r.kind !== "CUSTOM" && r.status === "FINISHED") &&
       (
         await s.client.query(
           "SELECT 1 FROM public.room_members WHERE room_id=$1 AND user_id=$2 AND disconnected_at+interval '60 seconds'<=clock_timestamp()",
@@ -548,7 +559,11 @@ export class RoomStore extends RoomViewerStore {
         "UPDATE public.room_members SET disconnected_at=COALESCE(disconnected_at,clock_timestamp()) WHERE room_id=$1 AND user_id=$2",
         [id, s.actor.userId],
       );
-      if (member.role === "PLAYER") await this.cancel(s, id);
+      if (member.role === "PLAYER") {
+        await this.cancel(s, id);
+        if (r.kind === "CASUAL" && r.status === "FINISHED" && await this.expireDisconnected(s, id))
+          return;
+      }
     }
     await this.bump(s, id, "room.connection-changed");
   }
@@ -572,7 +587,7 @@ export class RoomStore extends RoomViewerStore {
       )
     ).rows.map((p) => p.user_id);
     if (
-      r.status !== "WAITING" ||
+      (r.status !== "WAITING" && !(r.kind === "CASUAL" && r.status === "FINISHED")) ||
       players.length !== 2 ||
       !players.every(
         (m) =>
@@ -584,14 +599,20 @@ export class RoomStore extends RoomViewerStore {
       players.find((m) => m.side === "BLACK")?.user_id !== d.black_id
     ) {
       await this.cancel(s, id);
+      if (r.kind === "CASUAL" && r.status === "FINISHED" && await this.expireDisconnected(s, id))
+        return;
       await this.bump(s, id, "room.countdown-cancelled");
       return;
     }
     if (!this.matches) {
       await this.cancel(s, id);
+      if (r.kind === "CASUAL" && r.status === "FINISHED" && await this.expireDisconnected(s, id))
+        return;
       await this.bump(s, id, "room.match-start-unavailable");
       return;
     }
+    if (r.kind === "CASUAL" && r.status === "FINISHED")
+      await s.client.query("UPDATE public.rooms SET status='WAITING',current_match_id=NULL,finished_at=NULL WHERE id=$1", [id]);
     const startedAt = (await s.client.query("SELECT clock_timestamp() AS t"))
       .rows[0].t as Date;
     const result = await this.matches.start(s.client, {
@@ -634,6 +655,16 @@ export class RoomStore extends RoomViewerStore {
       ).rowCount
     )
       throw new RoomError("MATCH_NOT_ENDED", "Ván chưa kết thúc");
+    if (r.kind && r.kind !== "CUSTOM") {
+      await this.cancel(s, input.roomId);
+      await s.client.query(
+        "UPDATE public.rooms SET status='FINISHED',finished_at=(SELECT ended_at FROM public.matches WHERE id=$2) WHERE id=$1",
+        [input.roomId, input.matchId],
+      );
+      await s.client.query("UPDATE public.active_players SET match_id=NULL WHERE room_id=$1", [input.roomId]);
+      await this.bump(s, input.roomId, "room.match-ended", { matchId: input.matchId });
+      return;
+    }
     await this.cancel(s, input.roomId);
     await s.client.query(
       "UPDATE public.rooms SET status='WAITING',current_match_id=NULL,finished_at=NULL WHERE id=$1",
@@ -679,7 +710,7 @@ export class RoomStore extends RoomViewerStore {
       if (
         !current ||
         current.status === "PLAYING" ||
-        current.current_match_id !== null ||
+        (r.kind && r.kind !== "CUSTOM" ? current.current_match_id !== r.current_match_id : current.current_match_id !== null) ||
         !ended ||
         !["FINISHED", "INTERRUPTED"].includes(ended.status)
       )
@@ -754,6 +785,14 @@ export class RoomStore extends RoomViewerStore {
    */
   async expireDisconnected(s: RoomScope, id: string) {
     const { r } = await this.room(s, id);
+    if (r.kind && r.kind !== "CUSTOM" && r.status === "FINISHED") {
+      if (r.finished_at && (r.server_now as Date).getTime() >= (r.finished_at as Date).getTime() + 600000 && !(await s.client.query("SELECT 1 FROM xiangqi_room.countdowns WHERE room_id=$1", [id])).rowCount) {
+        const players = (await s.client.query("SELECT user_id,role FROM public.room_members WHERE room_id=$1 ORDER BY user_id", [id])).rows;
+        for (const p of players) await this.release(s, id, p.user_id, p.role === "PLAYER");
+        return true;
+      }
+      return false;
+    }
     const due = (
       await s.client.query(
         "SELECT user_id,role FROM public.room_members WHERE room_id=$1 AND ((role='SPECTATOR' AND disconnected_at+interval '5 minutes'<=clock_timestamp()) OR (role='PLAYER' AND $2::boolean AND disconnected_at+interval '60 seconds'<=clock_timestamp())) ORDER BY user_id",
@@ -778,6 +817,7 @@ export class RoomStore extends RoomViewerStore {
   async recoverWaiting(s: RoomScope, id: string, instance: string) {
     const { r } = await this.room(s, id);
     if (r.status !== "WAITING" && r.status !== "FINISHED") return;
+    if (r.kind && r.kind !== "CUSTOM" && r.status === "FINISHED") return;
     await s.client.query(
       "UPDATE xiangqi_room.presence SET connected=false WHERE room_id=$1 AND server_instance<>$2 AND connected",
       [id, instance],

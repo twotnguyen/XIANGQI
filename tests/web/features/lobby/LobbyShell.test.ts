@@ -22,6 +22,7 @@ const callbacks = () => ({
   onPlayAI: vi.fn(),
   onJoinRoom: vi.fn(),
   onRetry: vi.fn(),
+  onMatchmaking: vi.fn(),
 });
 it("invites players and spectators through separate callbacks with a Guest host label", async () => {
   const props = callbacks();
@@ -55,15 +56,28 @@ it.each([
     ),
   ).toBeTruthy();
 });
-it("blocks unfinished P2 actions and dispatches an eight-digit room code", async () => {
+it("starts either matchmaking mode and dispatches an eight-digit room code", async () => {
   const props = callbacks();
   render(createElement(LobbyShell, { ...props, rooms: [] }));
   const user = userEvent.setup();
+  await user.click(screen.getByRole("button", { name: "Ghép trận" }));
   await user.click(screen.getByRole("button", { name: "Đánh hạng" }));
-  expect(props.onCreate).not.toHaveBeenCalled();
+  expect(props.onMatchmaking.mock.calls).toEqual([["CASUAL"], ["RANKED"]]);
   await user.type(screen.getByLabelText("Mã phòng"), "70521348");
   await user.click(screen.getByRole("button", { name: "Vào phòng" }));
   expect(props.onJoinCode).toHaveBeenCalledWith("70521348");
+});
+it("blocks ranked for guests and both modes when busy", async () => {
+  const props = callbacks();
+  const view = render(createElement(LobbyShell, { ...props, rooms: [], guest: true }));
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("button", { name: "Đánh hạng" }));
+  await user.click(screen.getByRole("button", { name: "Ghép trận" }));
+  expect(props.onMatchmaking.mock.calls).toEqual([["CASUAL"]]);
+  view.rerender(createElement(LobbyShell, { ...props, rooms: [], blockedReason: "Bạn đang ở trong một ván/phòng khác." }));
+  await user.click(screen.getByRole("button", { name: "Ghép trận" }));
+  await user.click(screen.getByRole("button", { name: "Đánh hạng" }));
+  expect(props.onMatchmaking).toHaveBeenCalledTimes(1);
 });
 it("rejects a malformed code without invoking a room action", async () => {
   const props = callbacks();

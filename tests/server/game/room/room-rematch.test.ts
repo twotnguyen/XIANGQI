@@ -79,16 +79,26 @@ async function admitted() {
   return { a: { userId: id, kind: "member" as const } as RoomActor, proof };
 }
 /** Phòng tùy chỉnh có hai người, cả hai đang kết nối, và một ván FINISHED vừa kết thúc. */
-async function finishedCustomRoom() {
+async function finishedCustomRoom(kind: "CUSTOM" | "CASUAL" | "RANKED" = "CUSTOM") {
   const h = await admitted(),
     b = await admitted();
-  const e = await run(h.a, h.proof, [], (s) =>
-    store.create(s, { commandId: randomUUID() }),
-  );
-  const roomId = e.roomId;
-  await run(b.a, b.proof, [roomId], (s) =>
-    store.join(s, { commandId: randomUUID(), roomId, intent: "auto" }),
-  );
+  let roomId: string;
+  if (kind === "CUSTOM") {
+    const e = await run(h.a, h.proof, [], (s) =>
+      store.create(s, { commandId: randomUUID() }),
+    );
+    roomId = e.roomId;
+    await run(b.a, b.proof, [roomId], (s) =>
+      store.join(s, { commandId: randomUUID(), roomId, intent: "auto" }),
+    );
+  } else {
+    roomId = randomUUID();
+    await transaction([h.a.userId, b.a.userId], [roomId], async (client) => {
+      await client.query("INSERT INTO public.rooms(id,owner_id,name,time_control,viewer_limit,kind) VALUES($1,$2,'Matched',600,0,$3)", [roomId, h.a.userId, kind]);
+      await client.query("INSERT INTO public.room_members(room_id,user_id,role,side) VALUES($1,$2,'PLAYER','RED'),($1,$3,'PLAYER','BLACK')", [roomId, h.a.userId, b.a.userId]);
+      await client.query("INSERT INTO public.active_players(user_id,room_id) VALUES($1,$3),($2,$3)", [h.a.userId, b.a.userId, roomId]);
+    });
+  }
   const bServer = randomUUID();
   for (const p of [h, b])
     await run(p.a, p.proof, [roomId], (s) =>
@@ -173,9 +183,63 @@ describe.skipIf(!databaseUrl)("custom room rematch offers", () => {
       "20261103000005_match_aborted",
       "20261103000006_online_undo",
       "20261103000007_match_simultaneous_disconnect",
+      "20261103000011_yc9_ranked",
     ])
       await apply(`supabase/migrations/${migration}.sql`);
   });
+  it("matched rooms keep the result after one player leaves and reject outsiders", async () => {
+    const { h, b, roomId } = await finishedCustomRoom("CASUAL");
+    const match = await pool.query("SELECT id,ended_at FROM public.matches WHERE room_id=$1", [roomId]);
+    await pool.query("UPDATE public.rooms SET status='FINISHED',current_match_id=$2,finished_at=$3 WHERE id=$1", [roomId, match.rows[0].id, match.rows[0].ended_at]);
+    const outsider = await admitted();
+    await expect(run(outsider.a, outsider.proof, [roomId], (s) =>
+      store.join(s, { commandId: randomUUID(), roomId, intent: "watch" }),
+    )).rejects.toMatchObject({ code: "ROOM_FORBIDDEN" });
+    await run(b.a, b.proof, [roomId], (s) => store.leave(s, roomId));
+    const result = await run(h.a, h.proof, [roomId], (s) => store.snapshot(s, roomId));
+    expect(result.room.status).toBe("FINISHED");
+    expect(result.room.finishedUntil).toBe(new Date(match.rows[0].ended_at.getTime() + 600000).toISOString());
+    await run(h.a, h.proof, [roomId], (s) => store.leave(s, roomId));
+    expect((await pool.query("SELECT status FROM public.rooms WHERE id=$1", [roomId])).rows[0].status).toBe("CLOSED");
+  });
+
+  it("casual rematch accepts before the fixed deadline and ranked rejects it", async () => {
+    const ranked = await finishedCustomRoom("RANKED");
+    const rankedMatch = await pool.query("SELECT id,ended_at FROM public.matches WHERE room_id=$1", [ranked.roomId]);
+    await pool.query("UPDATE public.rooms SET status='FINISHED',current_match_id=$2,finished_at=$3 WHERE id=$1", [ranked.roomId, rankedMatch.rows[0].id, rankedMatch.rows[0].ended_at]);
+    await expect(run(ranked.h.a, ranked.h.proof, [ranked.roomId], (s) => store.proposeRematch(s, ranked.roomId, "KEEP"))).rejects.toMatchObject({ code: "REMATCH_DENIED" });
+    const { h, b, roomId } = await finishedCustomRoom("CASUAL");
+    const match = await pool.query("SELECT id,ended_at FROM public.matches WHERE room_id=$1", [roomId]);
+    await pool.query("UPDATE public.rooms SET status='FINISHED',current_match_id=$2,finished_at=$3 WHERE id=$1", [roomId, match.rows[0].id, match.rows[0].ended_at]);
+    await run(h.a, h.proof, [roomId], (s) => store.proposeRematch(s, roomId, "KEEP"));
+    const accepted = await run(b.a, b.proof, [roomId], (s) => store.respondRematch(s, roomId, true));
+    expect(accepted.room.countdown).not.toBeNull();
+    expect(accepted.room.finishedUntil).toBeNull();
+    const stored = await pool.query("SELECT finished_at FROM public.rooms WHERE id=$1", [roomId]);
+    expect(stored.rows[0].finished_at).toEqual(match.rows[0].ended_at);
+    await pool.query("UPDATE public.rooms SET created_at=clock_timestamp()-interval '11 minutes',finished_at=clock_timestamp()-interval '10 minutes' WHERE id=$1", [roomId]);
+    expect(await run(h.a, h.proof, [roomId], (s) => store.expireDisconnected(s, roomId))).toBe(false);
+    await pool.query("DELETE FROM xiangqi_room.countdowns WHERE room_id=$1", [roomId]);
+    expect(await run(h.a, h.proof, [roomId], (s) => store.expireDisconnected(s, roomId))).toBe(true);
+  });
+  it("expires a matched room at the original ten-minute deadline", async () => {
+    const { h, b, roomId } = await finishedCustomRoom("CASUAL");
+    const match = await pool.query("SELECT id FROM public.matches WHERE room_id=$1", [roomId]);
+    await pool.query("UPDATE public.rooms SET status='FINISHED',current_match_id=$2,created_at=clock_timestamp()-interval '11 minutes',finished_at=clock_timestamp()-interval '10 minutes' WHERE id=$1", [roomId, match.rows[0].id]);
+    await expect(run(h.a, h.proof, [roomId], (s) => store.proposeRematch(s, roomId, "KEEP"))).rejects.toMatchObject({ code: "REMATCH_DENIED" });
+    expect(await run(h.a, h.proof, [roomId], (s) => store.expireDisconnected(s, roomId))).toBe(true);
+    expect((await pool.query("SELECT status FROM public.rooms WHERE id=$1", [roomId])).rows[0].status).toBe("CLOSED");
+    expect((await pool.query("SELECT count(*)::int AS n FROM public.active_players WHERE user_id=ANY($1::uuid[])", [[h.a.userId, b.a.userId]])).rows[0].n).toBe(0);
+  });
+  it("rejects a guest's casual rematch request", async () => {
+    const { h, roomId } = await finishedCustomRoom("CASUAL");
+    const match = await pool.query("SELECT id,ended_at FROM public.matches WHERE room_id=$1", [roomId]);
+    await pool.query("UPDATE public.rooms SET status='FINISHED',current_match_id=$2,finished_at=$3 WHERE id=$1", [roomId, match.rows[0].id, match.rows[0].ended_at]);
+    await expect(run({ ...h.a, kind: "guest" }, h.proof, [roomId], (s) => store.proposeRematch(s, roomId, "KEEP"))).rejects.toMatchObject({ code: "REMATCH_DENIED" });
+  });
+
+
+
   it("proposes, forbids the proposer from accepting, and swaps seats then counts down", async () => {
     const { h, b, roomId, view } = await finishedCustomRoom();
     const proposed = await run(h.a, h.proof, [roomId], (s) =>

@@ -78,6 +78,7 @@ describe.skipIf(!databaseUrl)("room snapshot", () => {
     await apply(
       "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
     );
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
   });
 
   it("returns seats, online presence and spectators in one snapshot", async () => {

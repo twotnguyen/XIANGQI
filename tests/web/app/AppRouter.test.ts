@@ -14,6 +14,8 @@ import { expect, it, vi } from "vitest";
 import { AppRouter } from "@web/app/AppRouter.js";
 import { navigate } from "@web/shared/navigation/navigation.js";
 
+const rating = { elo: 1200, completed: 0, wins: 0, draws: 0, losses: 0, remaining: 10, tier: "Tân thủ", rank: null };
+
 useAppRouterHooks();
 it("keeps unknown routes readable and focuses the route heading", async () => {
   window.history.replaceState(null, "", "/unknown");
@@ -62,7 +64,7 @@ it("preserves an invalid join destination through registration without claiming 
   expect(
     await screen.findByRole("heading", { name: "Vào phòng được mời" }),
   ).toBeTruthy();
-  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  expect(mock.authorizedFetch.mock.calls.filter(([url]) => url === "/rooms/join")).toHaveLength(0);
 });
 it("preserves a room destination through login and handles browser Back/Forward reactively", async () => {
   window.history.replaceState(null, "", "/rooms/fixture-room?intent=spectator");
@@ -93,7 +95,9 @@ it("preserves a room destination through login and handles browser Back/Forward 
 it("loads validated public rooms and opens the actual create dialog", async () => {
   mock.state = member;
   window.history.replaceState(null, "", "/lobby");
-  mock.authorizedFetch.mockResolvedValue(reply([room]));
+  mock.authorizedFetch.mockImplementation(async (url: string) =>
+    reply(url === "/public-rooms" ? [room] : rating),
+  );
   render(createElement(AppRouter));
   await vi.waitFor(() => expect(screen.getByText(room.name)).toBeTruthy());
   expect(mock.authorizedFetch).toHaveBeenCalledWith("/public-rooms", {
@@ -103,8 +107,10 @@ it("loads validated public rooms and opens the actual create dialog", async () =
   expect(screen.getByRole("dialog")).toBeTruthy();
   fireEvent.click(screen.getByRole("button", { name: "Huỷ" }));
   feedRooms([room]);
-  mock.authorizedFetch.mockResolvedValueOnce(
-    reply({ roomId: room.roomId, version: 2, role: "spectator" }),
+  mock.authorizedFetch.mockImplementation(async (url: string) =>
+    reply(url === `/public-rooms/${room.roomId}/join`
+      ? { roomId: room.roomId, version: 2, role: "spectator" }
+      : url === "/public-rooms" ? [room] : rating),
   );
   fireEvent.click(screen.getByRole("button", { name: "Vào xem" }));
   await vi.waitFor(() =>
@@ -121,7 +127,9 @@ it.each([
   async (response) => {
     mock.state = member;
     window.history.replaceState(null, "", "/lobby");
-    mock.authorizedFetch.mockResolvedValue(response);
+    mock.authorizedFetch.mockImplementation(async (url: string) =>
+      url === "/public-rooms" ? response.clone() : reply(rating),
+    );
     render(createElement(AppRouter));
     await vi.waitFor(() => expect(screen.getByRole("alert")).toBeTruthy());
     expect(screen.queryByText("Chưa có phòng công khai")).toBeNull();
@@ -135,16 +143,21 @@ it.each([
 ])("rejects values that are not a valid PublicRoom", async (invalidRoom) => {
   mock.state = member;
   window.history.replaceState(null, "", "/lobby");
-  mock.authorizedFetch.mockResolvedValue(reply([invalidRoom]));
+  mock.authorizedFetch.mockImplementation(async (url: string) =>
+    reply(url === "/public-rooms" ? [invalidRoom] : rating),
+  );
   render(createElement(AppRouter));
   await vi.waitFor(() => expect(screen.getByRole("alert")).toBeTruthy());
 });
 it("retries a failed public-room request and renders empty only after valid success", async () => {
   mock.state = member;
   window.history.replaceState(null, "", "/lobby");
-  mock.authorizedFetch
-    .mockRejectedValueOnce(new Error("private upstream"))
-    .mockResolvedValueOnce(reply([]));
+  let attempts = 0;
+  mock.authorizedFetch.mockImplementation(async (url: string) => {
+    if (url !== "/public-rooms") return reply(rating);
+    if (attempts++ === 0) throw new Error("private upstream");
+    return reply([]);
+  });
   render(createElement(AppRouter));
   await vi.waitFor(() => expect(screen.getByRole("alert")).toBeTruthy());
   expect(screen.queryByText("private upstream")).toBeNull();
@@ -152,20 +165,17 @@ it("retries a failed public-room request and renders empty only after valid succ
   await vi.waitFor(() =>
     expect(screen.getByText("Chưa có phòng công khai")).toBeTruthy(),
   );
-  expect(mock.authorizedFetch).toHaveBeenCalledTimes(2);
+  expect(mock.authorizedFetch.mock.calls.filter(([url]) => url === "/public-rooms")).toHaveLength(2);
 });
 it("closes feed on route leave and ignores its stale HTTP response", async () => {
   mock.state = member;
   window.history.replaceState(null, "", "/lobby");
-  let resolve!: (response: Response) => void;
-  mock.authorizedFetch.mockImplementationOnce(
-    () =>
-      new Promise<Response>((done) => {
-        resolve = done;
-      }),
+  const { promise, resolve } = Promise.withResolvers<Response>();
+  mock.authorizedFetch.mockImplementation((url: string) =>
+    url === "/public-rooms" ? promise : Promise.resolve(reply(rating)),
   );
   render(createElement(AppRouter));
-  await vi.waitFor(() => expect(mock.authorizedFetch).toHaveBeenCalledOnce());
+  await vi.waitFor(() => expect(mock.authorizedFetch.mock.calls.filter(([url]) => url === "/public-rooms")).toHaveLength(1));
   act(() => navigate("/friends"));
   expect(mock.sockets[0]!.closed).toBe(true);
   await act(async () => {
@@ -210,7 +220,7 @@ it("preserves a validated invitation through Google registration, pending onboar
   await vi.waitFor(() => expect(window.location.pathname).toBe("/rooms/join"));
   expect(window.location.search).toBe("?token=fixture-google-invite");
   expect(window.history.state?.xiangqiAuthDestination).toBeUndefined();
-  expect(mock.authorizedFetch).not.toHaveBeenCalled();
+  expect(mock.authorizedFetch.mock.calls.filter(([url]) => url === "/rooms/join")).toHaveLength(0);
 });
 it("rejects a forged external history destination after Google onboarding", async () => {
   window.history.replaceState(

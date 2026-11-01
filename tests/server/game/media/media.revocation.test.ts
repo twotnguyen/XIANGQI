@@ -158,6 +158,38 @@ describe.skipIf(!url)("media revocation", () => {
     ]);
     expect(token.generation).toMatch(/^[0-9a-f-]{36}$/);
   });
+  it("migration skips closed rooms whose legacy invite code predates the digit check", async () => {
+    await apply("supabase/rollback/20261103000010_media_generation.sql");
+    const owner = await actor(),
+      roomId = await makeRoom(owner.userId);
+    const c = await pool.connect();
+    try {
+      await c.query("BEGIN");
+      await c.query("SET LOCAL session_replication_role = replica");
+      await c.query("ALTER TABLE public.rooms DROP CONSTRAINT rooms_invite_code_check");
+      await c.query(
+        "UPDATE public.rooms SET status='CLOSED', closed_at=now(), invite_code='38PP2YM8' WHERE id=$1",
+        [roomId],
+      );
+      await c.query(
+        "ALTER TABLE public.rooms ADD CONSTRAINT rooms_invite_code_check CHECK(invite_code IS NULL OR invite_code ~ '^[0-9]{8}$') NOT VALID",
+      );
+      await c.query("COMMIT");
+    } catch (error) {
+      await c.query("ROLLBACK");
+      throw error;
+    } finally {
+      c.release();
+    }
+    await apply("supabase/migrations/20261103000010_media_generation.sql");
+    expect(
+      (
+        await pool.query("SELECT invite_code FROM public.rooms WHERE id=$1", [
+          roomId,
+        ])
+      ).rows[0].invite_code,
+    ).toBe("38PP2YM8");
+  });
   it("settles a revoke committed during provider I/O before issuing the new generation", async () => {
     const owner = await actor(),
       player = await actor();

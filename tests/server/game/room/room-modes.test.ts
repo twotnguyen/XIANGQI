@@ -76,6 +76,7 @@ describe.skipIf(!databaseUrl)("managed room modes (synthetic PG only)", () => {
     await apply(
       "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
     );
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
   });
   it("serializes simultaneous changes so only one wins the version CAS", async () => {
     const { host, entry, view } = await room(true);

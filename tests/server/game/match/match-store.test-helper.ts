@@ -40,16 +40,25 @@ export const end = {
   ),
 };
 export let red: string, black: string, viewer: string;
-export async function setup(time = at) {
-  red = (await actor()).userId;
-  black = (await actor()).userId;
+export async function setup(time = at, kind: "CUSTOM" | "CASUAL" | "RANKED" = "CUSTOM") {
+  if (kind === "RANKED") {
+    red = randomUUID();
+    black = randomUUID();
+    for (const id of [red, black]) {
+      await pool.query("INSERT INTO auth.users(id,email,email_confirmed_at) VALUES($1,$2,clock_timestamp())", [id, `${id}@example.invalid`]);
+      await pool.query("INSERT INTO public.profiles(user_id,username,display_name) VALUES($1,$2,'Synthetic Member')", [id, "m" + id.replaceAll("-", "").slice(0, 18)]);
+    }
+  } else {
+    red = (await actor()).userId;
+    black = (await actor()).userId;
+  }
   viewer = (await actor()).userId;
   const room = randomUUID(),
     token = randomUUID();
   await transaction([red, black], [room], async (c) => {
     await c.query(
-      "INSERT INTO public.rooms(id,owner_id,name,time_control) VALUES($1,$2,'Synthetic Board',600)",
-      [room, red],
+      "INSERT INTO public.rooms(id,owner_id,name,time_control,kind) VALUES($1,$2,'Synthetic Board',600,$3)",
+      [room, red, kind],
     );
     await c.query(
       "INSERT INTO public.room_members(room_id,user_id,role,side,ready) VALUES($1,$2,'PLAYER','RED',true),($1,$3,'PLAYER','BLACK',true),($1,$4,'SPECTATOR',NULL,false)",
@@ -69,8 +78,8 @@ export async function setup(time = at) {
 export function store() {
   return new implementation.MatchStore(clock, end, () => at);
 }
-export async function start(time = at) {
-  const fixture = await setup(time);
+export async function start(time = at, kind: "CUSTOM" | "CASUAL" | "RANKED" = "CUSTOM") {
+  const fixture = await setup(time, kind);
   const result = await transaction([red, black], [fixture.room], async (c) => {
     const r = await store().start(c, {
       roomId: fixture.room,
@@ -132,6 +141,7 @@ export function useMatchHooks() {
     await apply(
       "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
     );
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
     red = (await actor()).userId;
     black = (await actor()).userId;
     viewer = (await actor()).userId;

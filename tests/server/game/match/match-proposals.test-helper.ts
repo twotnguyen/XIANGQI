@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 import { afterAll, beforeEach } from "vitest";
 import type { PoolClient } from "pg";
 import { ClockService } from "@server/game/clock/clock.service.js";
@@ -33,7 +33,7 @@ const roomEnd = {
   },
 };
 export const store = new MatchStore(new ClockService(), roomEnd);
-export async function fixture(timeControlSeconds: 0 | 600 = 600, ageMs = 0) {
+export async function fixture(timeControlSeconds: 0 | 600 = 600, ageMs = 0, kind: "CUSTOM" | "CASUAL" | "RANKED" = "CUSTOM") {
   const red = (await actor()).userId,
     black = (await actor()).userId,
     viewer = (await actor()).userId;
@@ -44,8 +44,8 @@ export async function fixture(timeControlSeconds: 0 | 600 = 600, ageMs = 0) {
     [roomId],
     async (client) => {
       await client.query(
-        "INSERT INTO public.rooms(id,owner_id,name,time_control,viewer_limit,invite_code) VALUES($1,$2,'Synthetic Draw',$3,5,'12345678')",
-        [roomId, red, timeControlSeconds],
+        "INSERT INTO public.rooms(id,owner_id,name,time_control,viewer_limit,invite_code,kind) VALUES($1,$2,'Synthetic Draw',$3,5,$4,$5)",
+        [roomId, red, timeControlSeconds, String(randomInt(10_000_000, 100_000_000)), kind],
       );
       await client.query(
         "INSERT INTO public.room_members(room_id,user_id,role,side,ready) VALUES($1,$2,'PLAYER','RED',true),($1,$3,'PLAYER','BLACK',true),($1,$4,'SPECTATOR',NULL,false)",
@@ -119,5 +119,6 @@ export function useProposalHooks() {
     await apply(
       "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
     );
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
   });
 }

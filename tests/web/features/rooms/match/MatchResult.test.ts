@@ -83,6 +83,16 @@ function setup(
   );
   return { ...view, onStay, onLeave };
 }
+it("shows both ranked rating changes and preserves Elo on interruption", () => {
+  const props = { role: "red" as const, onStay: vi.fn(), onLeave: vi.fn(), kind: "RANKED" as const };
+  const rating = { red: { before: 1200, after: 1216, delta: 16, tier: "Sơ cấp" }, black: { before: 1200, after: 1184, delta: -16, tier: "Người mới" } };
+  const view = render(createElement(MatchResult, { ...props, match: { ...match(), rating } }));
+  expect(screen.getByText(/1200 → 1216 \(\+16\)/)).toBeTruthy();
+  expect(screen.getByText(/1200 → 1184 \(-16\)/)).toBeTruthy();
+  view.rerender(createElement(MatchResult, { ...props, match: { ...match(), status: "INTERRUPTED", rating: null } }));
+  expect(screen.getByText("Elo giữ nguyên")).toBeTruthy();
+});
+
 it.each([
   ["CHECKMATE", "Chiếu hết"],
   ["STALEMATE", "Hết nước đi"],

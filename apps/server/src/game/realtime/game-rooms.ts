@@ -32,6 +32,7 @@ const messages = {
   MATCH_ILLEGAL_MOVE: "Nước đi không hợp lệ.",
   MATCH_TIME_EXPIRED: "Thời gian suy nghĩ đã hết.",
   MATCH_ABORT_NOT_ALLOWED: "Chỉ hủy được ván khi chưa có nước đi.",
+  MATCH_ABORT_RANKED: "Không thể hủy ván xếp hạng.",
   MATCH_ID_MISMATCH: "Ván trong phòng đã thay đổi.",
   MATCH_PLAYER_REQUIRED: "Chỉ người chơi được điều khiển ván.",
   MATCH_READ_ONLY: "Tab này chỉ theo dõi ván.",
@@ -39,6 +40,7 @@ const messages = {
   MATCH_NOT_FOUND: "Không tìm thấy ván.",
   MATCH_DRAW_PENDING: "Bạn đã có đề nghị đang chờ.",
   MATCH_DRAW_COOLDOWN: "Chưa đủ số nước để xin hòa lại.",
+  MATCH_DRAW_MIN_MOVES: "Chỉ xin hòa được sau 20 nước mỗi bên.",
   MATCH_DRAW_EXPIRED: "Đề nghị không còn hiệu lực.",
   MATCH_DRAW_SENDER_REQUIRED: "Chỉ người gửi được rút đề nghị.",
   MATCH_DRAW_RECEIVER_REQUIRED: "Chỉ người nhận được phản hồi đề nghị.",
@@ -48,6 +50,7 @@ const messages = {
   MATCH_UNDO_NO_MOVE: "Bạn chưa đi nước nào.",
   MATCH_UNDO_EXPIRED: "Đề nghị không còn hiệu lực.",
   MATCH_UNDO_FORBIDDEN: "Không có quyền phản hồi đề nghị này.",
+  MATCH_UNDO_RANKED: "Không thể xin đi lại trong ván xếp hạng.",
   MATCH_NOT_UNLIMITED: "Ván này có đồng hồ, không cần xác nhận.",
   MATCH_INACTIVITY_NOT_DUE: "Chưa đến lúc hỏi xác nhận.",
   MATCH_INACTIVITY_LIMIT: "Đã xác nhận tối đa, cần đi nước để tiếp tục.",
@@ -223,6 +226,8 @@ export class GameRooms implements RoomCollaborator {
       role: room.role,
       room: {
         status: current.status,
+        kind: current.kind,
+        finishedUntil: current.finishedUntil,
         hostId: current.hostId,
         name: current.name,
         visibility: current.visibility,
@@ -260,6 +265,7 @@ export class GameRooms implements RoomCollaborator {
             position: match.position,
             canAbort:
               match.status === "ACTIVE" &&
+              current.kind !== "RANKED" &&
               room.role !== "spectator" &&
               match.ply === 0 &&
               (undo?.used.red ?? 0) === 0 &&
@@ -276,6 +282,7 @@ export class GameRooms implements RoomCollaborator {
             winner: match.outcome?.winner ?? null,
             endedAt: match.endedAt,
             result: match.outcome?.reason ?? null,
+            rating: match.rating ?? null,
             inactivity: match.inactivity ?? null,
           }
         : null,

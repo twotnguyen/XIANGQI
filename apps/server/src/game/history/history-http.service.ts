@@ -24,10 +24,6 @@ const errors: Record<string, { status: number; message: string }> = {
     message: "Bộ lọc lịch sử không hợp lệ",
   },
   HISTORY_CORRUPT: { status: 409, message: "Lịch sử ván không nhất quán" },
-  HISTORY_RANKED_UNAVAILABLE: {
-    status: 503,
-    message: "Lịch sử Đánh Hạng chưa sẵn sàng",
-  },
   ROOM_ROSTER_UNSTABLE: {
     status: 409,
     message: "Phòng đang thay đổi, vui lòng thử lại",
@@ -109,9 +105,9 @@ export class HistoryHttpService {
     return this.run(proof, (scope) => this.store.list(scope, input));
   }
   /**
-   * Tóm tắt thống kê đấu hạng của thành viên (chưa hỗ trợ, trả về 503).
+   * Tóm tắt thống kê đấu hạng của thành viên.
    */
-  rankedSummary(proof: MemberRoomRequestProof): Promise<never> {
+  rankedSummary(proof: MemberRoomRequestProof) {
     return this.run(proof, (scope) => this.store.rankedSummary(scope));
   }
 }

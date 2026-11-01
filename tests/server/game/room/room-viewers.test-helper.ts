@@ -122,4 +122,5 @@ export async function migrateViewers() {
   await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
   await apply("supabase/migrations/20261011000016_room_viewers.sql");
   await apply("supabase/migrations/20261103000008_seat_requests.sql");
+  await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
 }

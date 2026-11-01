@@ -349,6 +349,15 @@ export class MatchDrawStore extends MatchStoreCore {
       return result(pending.length > 0);
     }
     if (action === "offer") {
+      const ranked = await scope.client.query<{ eligible: boolean }>(
+        `SELECT (SELECT count(*) FILTER (WHERE payload->>'side'='RED') >= 20
+            AND count(*) FILTER (WHERE payload->>'side'='BLACK') >= 20
+           FROM public.match_events WHERE match_id=$2 AND type='MOVE') AS eligible
+         FROM public.rooms r WHERE r.id=$1 AND r.kind='RANKED'`,
+        [room.id, row.id],
+      );
+      if (ranked.rows[0] && !ranked.rows[0].eligible)
+        return result(false, "MATCH_DRAW_MIN_MOVES", "Chỉ xin hòa được sau 20 nước mỗi bên.");
       const state = await this.drawState(scope.client, match, at);
       const undoPending = await scope.client.query(
         "SELECT 1 FROM xiangqi_room.match_undo_offers WHERE match_id=$1 AND sender=$2 AND status='PENDING' AND expires_at>$3",

@@ -1,6 +1,7 @@
 import { EmailVerification } from "../features/profile/EmailVerification.js";
 import { EmailStatusBanner } from "../features/profile/EmailStatusBanner.js";
 import { AccountThemeSync } from "../features/profile/AccountThemeSync.js";
+import { SelfRating } from "../features/rankings/SelfRating.js";
 import {
   Fragment,
   lazy,
@@ -19,7 +20,6 @@ import {
 } from "../features/auth/SessionProvider.js";
 import { GuestNameDialog } from "../features/auth/GuestNameDialog.js";
 import { AppShell } from "./layouts/AppShell.js";
-import { P2ScopePage } from "./P2ScopePage.js";
 import {
   LobbyShell,
   type DataState,
@@ -65,6 +65,7 @@ import {
   type Route,
 } from "../shared/navigation/routes.js";
 import { makeHistoryClient } from "../features/history/history-client.js";
+import { useMatchmaking, MatchmakingModal } from "../features/matchmaking/index.js";
 
 // Keep non-current feature graphs out of the session/lobby bootstrap.
 const LoginPage = lazy(() =>
@@ -147,6 +148,11 @@ const ReplayRoute = lazy(() =>
     default: module.ReplayRoute,
   })),
 );
+const RankingsPage = lazy(() =>
+  import("../features/rankings/RankingsPage.js").then((module) => ({
+    default: module.RankingsPage,
+  })),
+);
 
 /**
  * Component bọc nội dung route để hỗ trợ trợ năng, tự động focus vào thẻ heading h1 khi chuyển trang.
@@ -178,6 +184,7 @@ function Lobby({
   banner,
   requestLogout,
   performLogout,
+  onMatchmaking,
 }: {
   client: RoomClient;
   onEntered: (entry: RoomEntry) => void;
@@ -185,6 +192,7 @@ function Lobby({
   banner?: ReactNode;
   requestLogout: (run: (confirmedResign: boolean) => Promise<void>) => void;
   performLogout: (confirmedResign: boolean) => Promise<void>;
+  onMatchmaking: (mode: "CASUAL" | "RANKED") => void;
 }) {
   const { sessionFetch, getRealtimeProof, state: sessionState } = useSession();
   const publicClient = useMemo(
@@ -341,6 +349,8 @@ function Lobby({
           navigate(`/rooms/join?token=${encodeURIComponent(code)}`)
         }
         onPlayAI={() => setAiDialog(true)}
+        onMatchmaking={onMatchmaking}
+        guest={sessionState.status === "guest"}
         admissionReady={admissionReady}
         joiningRoomId={joiningRoomId}
         blockedReason={blockedReason}
@@ -439,6 +449,13 @@ export function AppRouter() {
       ? `${session.state.status}:${session.state.userId}`
       : null;
   const currentIdentity = useRef(identity);
+  const [ratingRevision, setRatingRevision] = useState(0);
+  const refreshRating = useCallback(() => setRatingRevision((value) => value + 1), []);
+  const matchmaking = useMatchmaking({
+    userId: identity,
+    getProof: session.getRealtimeProof,
+    onMatched: (roomId) => navigate(`/rooms/${roomId}`),
+  });
   currentIdentity.current = identity;
   const client = useMemo(
     () => createRoomClient(session.sessionFetch),
@@ -521,6 +538,7 @@ export function AppRouter() {
     navigate(`/rooms/${entry.roomId}`);
   };
   const [location, setLocation] = useState(getLocation);
+  useEffect(() => { matchmaking.sync(); }, [location.pathname, matchmaking.sync]);
   const pending = useRef<string | null>(getAuthDestination());
   const [googleFlow, setGoogleFlow] = useState(0);
   const container = useRef<HTMLDivElement>(null);
@@ -660,24 +678,26 @@ export function AppRouter() {
     const lookup = ++locationLookup.current;
     let alive = true;
     void import("../features/ai/ai-client.js")
-      .then(({ makeAiClient }) =>
-        makeAiClient(session.sessionFetch, async () => {
+      .then(({ makeAiClient }) => {
+        if (!alive || currentIdentity.current !== identity) return null;
+        return makeAiClient(session.guestFetch, async () => {
           throw Error("Không có quyền điều khiển");
-        }).current(),
-      )
-      .then(({ gameId }) => {
+        }).current();
+      })
+      .then((result) => {
         if (
+          result &&
           alive &&
           lookup === locationLookup.current &&
           currentIdentity.current === identity
         )
-          setGuestAi(gameId ? { owner: identity, gameId } : null);
+          setGuestAi(result.gameId ? { owner: identity, gameId: result.gameId } : null);
       })
       .catch(() => undefined);
     return () => {
       alive = false;
     };
-  }, [session.state.status, session.sessionFetch, identity, route.name]);
+  }, [session.state.status, session.guestFetch, identity, route.name]);
   useEffect(() => {
     if (decision.kind !== "redirect") return;
     if (decision.preserveDestination && route.name !== "onboarding")
@@ -792,9 +812,10 @@ export function AppRouter() {
         client={client}
         onEntered={enterRoom}
         requestLogout={guardedLogout}
+        onMatchmaking={matchmaking.join}
         performLogout={performSessionLogout}
         blockedReason={
-          where && where.kind !== "none"
+          (where && where.kind !== "none") || matchmaking.state?.occupiedElsewhere || (matchmaking.state && ["SEARCHING", "CONFIRMING", "WAITING", "COUNTDOWN"].includes(matchmaking.state.status))
             ? "Bạn đang ở trong một ván/phòng khác."
             : undefined
         }
@@ -839,6 +860,7 @@ export function AppRouter() {
         authorizedFetch={session.authorizedFetch}
         client={profileClient}
         guest={session.state.status === "guest"}
+        ratingSummary={<SelfRating authorizedFetch={session.authorizedFetch} guest={session.state.status === "guest"} />}
         onSaved={(displayName) => {
           if (memberId && currentIdentity.current === identity) {
             profileLookup.current++;
@@ -869,7 +891,7 @@ export function AppRouter() {
         rooms={client}
         onEntered={enterRoom}
         blockedReason={
-          where && where.kind !== "none"
+          (where && where.kind !== "none") || matchmaking.state?.occupiedElsewhere || (matchmaking.state && ["SEARCHING", "CONFIRMING", "WAITING", "COUNTDOWN"].includes(matchmaking.state.status))
             ? "Bạn đang ở trong một ván/phòng khác."
             : undefined
         }
@@ -914,9 +936,10 @@ export function AppRouter() {
   else if (route.name === "reset-password") content = <ResetPasswordPage />;
   else if (route.name === "leaderboard")
     content = (
-      <P2ScopePage
-        route="leaderboard"
-        signedIn={session.state.status === "active-member"}
+      <RankingsPage
+        authorizedFetch={session.authorizedFetch}
+        guest={session.state.status === "guest"}
+        onMessage={(userId) => navigate(`/friends?message=${encodeURIComponent(userId)}`)}
       />
     );
   else if (route.name === "room" && actor)
@@ -932,6 +955,7 @@ export function AppRouter() {
           getProof={session.getRealtimeProof}
           mediaClient={mediaClient}
           isMember={actor.status === "active-member"}
+          onRankedFinished={refreshRating}
           renderInviteFriends={(roomId) => (
             <RoomFriendInvite client={friendClient} roomId={roomId} />
           )}
@@ -984,6 +1008,7 @@ export function AppRouter() {
         }
         authorizedFetch={session.authorizedFetch}
       />
+      <MatchmakingModal matchmaking={matchmaking} />
       {roomNotice && signedIn && (
         <Notice message={roomNotice} onDismiss={() => setRoomNotice("")} />
       )}
@@ -991,6 +1016,8 @@ export function AppRouter() {
         <AppShell
           title={title}
           active={location.pathname}
+          authorizedFetch={session.state.status === "active-member" ? session.authorizedFetch : undefined}
+          ratingRevision={ratingRevision}
           user={shellUser}
           bell={
             session.state.status === "active-member" ? (

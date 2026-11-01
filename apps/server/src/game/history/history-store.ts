@@ -1,3 +1,4 @@
+import { readRatings, type RankedRating } from "../ranking/ranked.store.js";
 import { RoomError, type RoomScope } from "../room/room.types.js";
 import { record, uuid } from "../match/position-codec.js";
 export interface HistoryCursor {
@@ -11,7 +12,7 @@ export interface HistoryInput {
 }
 export interface HistoryItem {
   id: string;
-  type: "CASUAL" | "AI";
+  type: "CASUAL" | "RANKED" | "AI";
   typeLabel: string;
   side: "red" | "black";
   opponent: { displayName: string; isGuest: boolean };
@@ -22,7 +23,7 @@ export interface HistoryItem {
     label: string;
     countsForWdl: boolean;
   };
-  eloDelta: null;
+  eloDelta: number | null;
   startedAt: string;
   endedAt: string;
   replayPath: string;
@@ -35,6 +36,8 @@ type Row = {
   id: string;
   mode: string;
   status: string;
+  kind: string | null;
+  elo_delta: number | null;
   room_id: string | null;
   red_user_id: string | null;
   black_user_id: string | null;
@@ -72,6 +75,7 @@ function validCursor(cursor: HistoryCursor) {
  * Tầng lưu trữ truy vấn cơ sở dữ liệu lịch sử ván đấu của thành viên.
  */
 export class HistoryStore {
+  constructor(private readonly minimumRankedGames = 5) {}
   private async member(scope: RoomScope) {
     if (
       scope.actor.kind !== "member" ||
@@ -106,22 +110,24 @@ export class HistoryStore {
       !cursorValid
     )
       fail("HISTORY_INPUT_INVALID", 400);
-    if (filter === "RANKED") fail("HISTORY_RANKED_UNAVAILABLE", 503);
     const rows = (
       await scope.client.query<Row>(
         `
-      SELECT m.id,m.mode,m.status,m.room_id,m.red_user_id,m.black_user_id,m.ai_level,m.ai_side,m.rule_set_version,m.outcome,e.payload AS start,
+      SELECT m.id,m.mode,m.status,m.room_id,m.red_user_id,m.black_user_id,m.ai_level,m.ai_side,m.rule_set_version,m.outcome,e.payload AS start,r.kind,
+        CASE WHEN m.red_user_id=$1 THEN rr.red_after-rr.red_before ELSE rr.black_after-rr.black_before END AS elo_delta,
         to_char(m.created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS started_at,
         to_char(m.ended_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS ended_at,
         n.kind AS opponent_kind,
         CASE WHEN n.kind='guest' THEN CASE WHEN g.ended_at IS NULL AND g.expires_at>clock_timestamp() THEN p.display_name ELSE NULL END ELSE p.display_name END AS opponent_name
       FROM public.matches m
+      LEFT JOIN public.rooms r ON r.id=m.room_id
+      LEFT JOIN xiangqi_room.ranked_results rr ON rr.match_id=m.id
       LEFT JOIN public.match_events e ON e.match_id=m.id AND e.version=0 AND e.type='START'
       LEFT JOIN xiangqi_auth.principals n ON n.id=CASE WHEN m.red_user_id=$1 THEN m.black_user_id ELSE m.red_user_id END
       LEFT JOIN public.profiles p ON p.user_id=n.id
       LEFT JOIN xiangqi_auth.guest_sessions g ON g.guest_id=n.id
       WHERE (m.red_user_id=$1 OR m.black_user_id=$1) AND m.status IN('FINISHED','INTERRUPTED')
-        AND ($2='ALL' OR m.mode=CASE WHEN $2='CASUAL' THEN 'ONLINE' ELSE 'AI' END)
+        AND ($2='ALL' OR ($2='AI' AND m.mode='AI') OR ($2='RANKED' AND r.kind='RANKED') OR ($2='CASUAL' AND m.mode='ONLINE' AND r.kind<>'RANKED'))
         AND ($3::timestamptz IS NULL OR (m.ended_at,m.id)<($3::timestamptz,$4::uuid))
       ORDER BY m.ended_at DESC,m.id DESC LIMIT $5`,
         [
@@ -248,11 +254,11 @@ export class HistoryStore {
     const difficulty = { EASY: "Dễ", MEDIUM: "Trung bình", HARD: "Khó" };
     return {
       id: row.id,
-      type: row.mode === "AI" ? "AI" : "CASUAL",
+      type: row.mode === "AI" ? "AI" : row.kind === "RANKED" ? "RANKED" : "CASUAL",
       typeLabel:
         row.mode === "AI"
           ? "Đấu với Máy - " + difficulty[row.ai_level!]
-          : "Đánh Thường",
+          : row.kind === "RANKED" ? "Đánh Hạng" : "Đánh Thường",
       side,
       opponent:
         row.mode === "AI"
@@ -268,17 +274,20 @@ export class HistoryStore {
             },
       ...(row.mode === "AI" ? { aiLevel: row.ai_level! } : {}),
       result,
-      eloDelta: null,
+      eloDelta: row.elo_delta,
       startedAt: row.started_at,
       endedAt: row.ended_at,
       replayPath: "/history/" + row.id,
     };
   }
   /**
-   * Truy vấn tóm tắt thống kê đấu hạng của thành viên (chưa hỗ trợ, ném lỗi 503).
+   * Truy vấn thống kê đấu hạng của thành viên.
    */
-  async rankedSummary(scope: RoomScope): Promise<never> {
+  async rankedSummary(scope: RoomScope): Promise<RankedRating> {
     await this.member(scope);
-    fail("HISTORY_RANKED_UNAVAILABLE", 503);
+    const ratings = await readRatings(scope.client, [scope.actor.userId], this.minimumRankedGames);
+    const rating = ratings.get(scope.actor.userId);
+    if (!rating) fail("HISTORY_FORBIDDEN", 403);
+    return rating;
   }
 }

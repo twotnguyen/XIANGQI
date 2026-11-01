@@ -5,6 +5,7 @@ import "./MatchResult.css";
 
 export interface MatchResultProps {
   match: RoomStateSnapshot["match"];
+  kind?: "CUSTOM" | "CASUAL" | "RANKED";
   role: RoomStateSnapshot["role"];
   onStay: () => void;
   onLeave: () => void;
@@ -41,6 +42,7 @@ const draws = new Set([
  */
 export function MatchResult({
   match,
+  kind = "CUSTOM",
   role,
   onStay,
   onLeave,
@@ -100,6 +102,16 @@ export function MatchResult({
         <p>{reason}</p>
         {(interrupted || aborted) && <p>Ván cờ không được tính kết quả.</p>}
       </div>
+      {kind === "RANKED" && (interrupted ? (
+        <p>Elo giữ nguyên</p>
+      ) : match.rating && (
+        <div aria-label="Thay đổi Elo">
+          {(["red", "black"] as const).map((side) => {
+            const rating = match.rating![side];
+            return <p key={side}>{side === "red" ? "Đỏ" : "Đen"}: {rating.before} → {rating.after} ({rating.delta > 0 ? "+" : ""}{rating.delta}) · {rating.tier}</p>;
+          })}
+        </div>
+      ))}
     </>
   );
   if (!player)

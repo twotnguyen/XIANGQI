@@ -67,8 +67,8 @@ export class ChatStore {
         pair_epoch: string;
         sequence: string;
       }>(
-        `SELECT m.role,e.floor,c.pair_epoch,c.sequence,m.side FROM public.rooms r JOIN public.room_members m ON m.room_id=r.id JOIN xiangqi_auth.principals p ON p.id=m.user_id JOIN xiangqi_chat.rooms c ON c.room_id=r.id JOIN xiangqi_chat.entries e ON e.room_id=r.id AND e.user_id=m.user_id WHERE r.id=$1 AND m.user_id=$2 AND p.kind=$3 AND r.invite_code IS NOT NULL AND r.closed_at IS NULL AND r.status IN('WAITING','PLAYING','FINISHED')${lockClause}`,
-        [id, s.actor.userId, s.actor.kind],
+        `SELECT m.role,e.floor,c.pair_epoch,c.sequence,m.side FROM public.rooms r JOIN public.room_members m ON m.room_id=r.id JOIN xiangqi_auth.principals p ON p.id=m.user_id JOIN xiangqi_chat.rooms c ON c.room_id=r.id JOIN xiangqi_chat.entries e ON e.room_id=r.id AND e.user_id=m.user_id WHERE r.id=$1 AND m.user_id=$2 AND p.kind=$3 AND (COALESCE(to_jsonb(r)->>'kind','CUSTOM')<>'CUSTOM' OR r.invite_code IS NOT NULL) AND (COALESCE(to_jsonb(r)->>'kind','CUSTOM')='CUSTOM' OR ($4='PLAYERS_PRIVATE' AND m.role='PLAYER')) AND r.closed_at IS NULL AND r.status IN('WAITING','PLAYING','FINISHED')${lockClause}`,
+        [id, s.actor.userId, s.actor.kind, channel],
       )
     ).rows[0];
     if (!row || (channel === "PLAYERS_PRIVATE" && row.role !== "PLAYER"))

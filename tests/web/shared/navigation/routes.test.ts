@@ -88,13 +88,15 @@ it("keeps bootstrap failure distinct from an anonymous session", () => {
     kind: "render",
   });
 });
-it("allows Guest settings for logout but denies friends and P2", () => {
+it("allows Guest settings and the leaderboard explanation but denies member-only routes", () => {
   expect(guardRoute({ name: "settings" }, { status: "guest" })).toEqual({
+    kind: "render",
+  });
+  expect(guardRoute({ name: "leaderboard" }, { status: "guest" })).toEqual({
     kind: "render",
   });
   for (const name of [
     "friends",
-    "leaderboard",
     "history",
     "forgot-password",
     "reset-password",

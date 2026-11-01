@@ -47,7 +47,7 @@ vi.mock("socket.io-client", () => ({
       closed: false,
       auth: undefined as unknown,
     };
-    mock.sockets.push(peer);
+    if (!_url.endsWith("/matchmaking")) mock.sockets.push(peer);
     return {
       on: (name: string, handler: (value?: unknown) => void) => {
         peer.handlers.set(name, handler);

@@ -1,4 +1,5 @@
 import type { RoomControlProof } from "@xiangqi/shared";
+import { readRatings } from "../ranking/ranked.store.js";
 import type { PoolClient, QueryResultRow } from "pg";
 import { randomInt, randomUUID } from "node:crypto";
 import {
@@ -127,7 +128,7 @@ export class RoomStoreCore {
         403,
       );
   }
-  constructor(protected readonly matches?: MatchStartPort) {}
+  constructor(protected readonly matches?: MatchStartPort, protected readonly minimumRankedGames = 5) {}
   protected swapTableReady: boolean | null = null;
   protected seatTableReady: boolean | null = null;
   /** Chỉ nhớ khi bảng đã có: migration áp sau khi tiến trình khởi động vẫn được nhận ra mà không cần restart. */
@@ -213,7 +214,7 @@ export class RoomStoreCore {
   async dueRooms(client: PoolClient): Promise<string[]> {
     return (
       await client.query(
-        "SELECT r.id FROM public.rooms r WHERE r.invite_code IS NOT NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND (EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR EXISTS(SELECT 1 FROM xiangqi_room.rematch_offers o WHERE o.room_id=r.id AND o.status='PENDING' AND o.expires_at<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp())))) ORDER BY r.id LIMIT 50",
+        "SELECT r.id FROM public.rooms r WHERE (r.invite_code IS NOT NULL OR r.kind IN ('CASUAL','RANKED')) AND r.status IN('WAITING','FINISHED','PLAYING') AND ((r.kind IN ('CASUAL','RANKED') AND r.status='FINISHED' AND r.finished_at+interval '10 minutes'<=clock_timestamp() AND NOT EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id)) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR EXISTS(SELECT 1 FROM xiangqi_room.rematch_offers o WHERE o.room_id=r.id AND o.status='PENDING' AND o.expires_at<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR (r.kind='CUSTOM' AND EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp()))))) ORDER BY r.id LIMIT 50",
       )
     ).rows.map((r) => r.id as string);
   }
@@ -360,7 +361,7 @@ export class RoomStoreCore {
     const r = rows[0];
     if (!r || r.status === "CLOSED")
       throw new RoomError("ROOM_FORBIDDEN", "Phòng không còn khả dụng", 403);
-    if (r.invite_code === null)
+    if (r.invite_code === null && (!r.kind || r.kind === "CUSTOM"))
       throw new RoomError(
         "ROOM_LEGACY_UNSUPPORTED",
         "Phòng cũ chưa được hỗ trợ",
@@ -509,6 +510,21 @@ export class RoomStoreCore {
       players,
       occupied_elsewhere,
     } = snap!;
+    const profiles = r.kind === "RANKED"
+      ? (await s.client.query<{ user_id: string; username: string | null; avatar_url: string | null }>(
+          "SELECT user_id,username,to_jsonb(p)->>'avatar_url' AS avatar_url FROM public.profiles p WHERE user_id=ANY($1::uuid[])",
+          [players.map((p) => p.user_id)],
+        )).rows
+      : [];
+    const ratings = r.kind === "RANKED"
+      ? await readRatings(s.client, players.filter((p) => !p.guest).map((p) => p.user_id), this.minimumRankedGames)
+      : new Map();
+    const playerView = (side: "RED" | "BLACK") => {
+      const player = seatPlayer(players, side);
+      if (!player || r.kind !== "RANKED") return player;
+      const profile = profiles.find((p) => p.user_id === player.userId);
+      return { ...player, username: profile?.username ?? null, avatarUrl: profile?.avatar_url ?? null, rating: ratings.get(player.userId) ?? null };
+    };
     const down = down_id
       ? {
           id: down_id,
@@ -537,11 +553,15 @@ export class RoomStoreCore {
       version: Number(r.room_version),
       room: {
         status: r.status,
+        kind: r.kind ?? "CUSTOM",
+        finishedUntil: r.kind && r.kind !== "CUSTOM" && r.finished_at && !d
+          ? new Date((r.finished_at as Date).getTime() + 600000).toISOString()
+          : null,
         hostId: r.owner_id,
         name: r.name,
         visibility: r.visibility,
         inviteCode:
-          r.visibility === "LOCKED" || r.status === "CLOSED"
+          (r.kind && r.kind !== "CUSTOM") || r.visibility === "LOCKED" || r.status === "CLOSED"
             ? null
             : r.invite_code,
         timeMinutes: r.time_control / 60,
@@ -600,8 +620,8 @@ export class RoomStoreCore {
           ? (down_cooldown_until as Date).toISOString()
           : null,
         seatPlayers: {
-          red: seatPlayer(players, "RED"),
-          black: seatPlayer(players, "BLACK"),
+          red: playerView("RED"),
+          black: playerView("BLACK"),
         },
         occupiedElsewhere: occupied_elsewhere,
         spectators: watchers.map((m) => ({

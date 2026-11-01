@@ -60,6 +60,7 @@ export function RoomSeats({
         const occupant = room.seats[side],
           label = side === "red" ? "Đỏ" : "Đen",
           isHost = Boolean(occupant) && occupant === room.hostId,
+          profile = room.seatPlayers?.[side],
           // Host không có Sẵn sàng: Host bấm Bắt đầu (YC2 mục 21.1).
           ready =
             Boolean(occupant) &&
@@ -95,9 +96,16 @@ export function RoomSeats({
                 {occupant
                   ? occupant === userId
                     ? `Bạn · ${label}`
-                    : `Người chơi ${label}${occupant === room.hostId ? " · Chủ phòng" : ""}`
+                    : profile?.displayName ?? `Người chơi ${label}${occupant === room.hostId ? " · Chủ phòng" : ""}`
                   : `Ghế ${label} đang trống`}
               </h2>
+              {room.kind === "RANKED" && occupant && occupant !== userId && profile && (
+                <>
+                  {profile.avatarUrl ? <img src={profile.avatarUrl} alt={`Ảnh đại diện ${profile.displayName}`} width={48} height={48} /> : <span className="xq-seat-avatar" role="img" aria-label={`Ảnh đại diện ${profile.displayName}`}>{Array.from(profile.displayName.trim())[0]?.toUpperCase() || "K"}</span>}
+                  {profile.username && <p>@{profile.username}</p>}
+                  {profile.rating && <p>Elo {profile.rating.elo} · {profile.rating.tier}</p>}
+                </>
+              )}
               {occupant === userId && occupant === room.hostId && (
                 <p>Chủ phòng</p>
               )}
@@ -107,14 +115,16 @@ export function RoomSeats({
                 ? "Đang chờ kỳ hữu"
                 : !room.connected[side]
                   ? "Mất kết nối · đang giữ ghế"
-                  : isHost
-                    ? "Chủ phòng"
-                    : room.ready[side]
-                      ? "Đã sẵn sàng"
-                      : "Chưa sẵn sàng"}
+                  : (room.kind ?? "CUSTOM") !== "CUSTOM"
+                    ? "Đã kết nối"
+                    : isHost
+                      ? "Chủ phòng"
+                      : room.ready[side]
+                        ? "Đã sẵn sàng"
+                        : "Chưa sẵn sàng"}
             </p>
             {!playingLayout && occupant === userId && readyControl}
-            {!playingLayout &&
+            {(room.kind ?? "CUSTOM") === "CUSTOM" && !playingLayout &&
               occupant !== userId &&
               (canMoveOpponent ? (
                 <div className="xq-room-seat-actions">
@@ -168,7 +178,7 @@ export function RoomSeats({
           <span className="xq-room-vs" aria-hidden="true">
             VS
           </span>
-          {room.status === "WAITING" && player && (
+          {(room.kind ?? "CUSTOM") === "CUSTOM" && room.status === "WAITING" && player && (
             <div className="xq-room-actions">
               {solo && room.hostId === userId && (
                 <Button

@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import {
   databaseUrl,
-  reset,
+  resetBase as reset,
   loginPool,
   roomControl,
 } from "./game.runtime.test-helper.js";

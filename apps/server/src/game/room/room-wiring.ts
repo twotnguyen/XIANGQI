@@ -8,7 +8,7 @@ import { RoomTransactions } from "./room-transactions.js";
 /**
  * Nối RoomStore và MatchStore với scope giao dịch đang khóa. Runtime và test dùng cùng cách nối này.
  */
-export function createRoomWiring(pool: Pool, clock: ClockService) {
+export function createRoomWiring(pool: Pool, clock: ClockService, minimumRankedGames = 5) {
   const coordinator = new RoomTransactions(pool);
   const context = new WeakMap<PoolClient, RoomScope>();
   const withScope = async <T>(scope: RoomScope, work: () => Promise<T>) => {
@@ -59,7 +59,7 @@ export function createRoomWiring(pool: Pool, clock: ClockService) {
         { matchId: input.matchId, matchVersion: match.version },
       );
     },
-  });
+  }, minimumRankedGames);
   const matches: MatchStore = new MatchStore(clock, {
     onMatchEnded: async (client, input) => {
       const scope = context.get(client);

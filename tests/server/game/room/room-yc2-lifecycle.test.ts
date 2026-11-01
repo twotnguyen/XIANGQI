@@ -98,6 +98,7 @@ describe.skipIf(!databaseUrl)("YC2 room lifecycle gaps", () => {
     await apply("supabase/migrations/20261102000002_custom_rematch.sql");
     await apply("supabase/migrations/20261103000004_room_issued_codes.sql");
     await apply("supabase/migrations/20261011000013_side_swap.sql");
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
   });
 
   // Q3: rút đề nghị không tạo cooldown, nên gửi lại ngay được.
