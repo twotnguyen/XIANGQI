@@ -22,6 +22,7 @@ import {
   type Move,
   type Side,
 } from "@xiangqi/xiangqi-core";
+import type { AiTelemetry } from "./ai-telemetry.js";
 export type AiOutcome =
   | MatchEnding
   | { reason: "RESIGN"; winner: Side }
@@ -41,6 +42,7 @@ export interface AiSnapshot {
   outcome: AiOutcome | null;
   /** Số lần undo đã dùng trong ván; tối đa `MAX_UNDO`. */
   undoUsed: number;
+  telemetry?: AiTelemetry | null;
 }
 export interface AiOptions {
   engine: Pick<EngineWorker, "ready" | "search">;
@@ -81,7 +83,8 @@ type Game = {
   timer?: NodeJS.Timeout;
 };
 /** Engine output retained for a deferred commit; the engine is never searched again for it. */
-type Completion = { position: string } | { error: unknown };
+type Completion =
+  { position: string; telemetry: AiTelemetry } | { error: unknown };
 type Pending = {
   epoch: number;
   version: number;
@@ -192,6 +195,7 @@ export class AiGames {
   private thinking(snapshot: AiSnapshot): void {
     snapshot.engineState = "THINKING";
     snapshot.engineError = null;
+    snapshot.telemetry = null;
   }
   private finalizing(snapshot: AiSnapshot, outcome: AiOutcome): void {
     snapshot.status = "FINALIZING";
@@ -257,6 +261,7 @@ export class AiGames {
           engineState: side === "black" ? "THINKING" : "IDLE",
           engineError: null,
           outcome: null,
+          telemetry: null,
           undoUsed: 0,
         },
       };
@@ -391,6 +396,7 @@ export class AiGames {
             return { value: null, install: () => {} };
           const draft = this.copy(game);
           if ("error" in completion) {
+            draft.telemetry = null;
             const error = completion.error;
             if (
               error instanceof EngineError &&
@@ -406,6 +412,7 @@ export class AiGames {
               });
             }
           } else {
+            draft.telemetry = completion.telemetry;
             this.apply(draft, completion.position);
             draft.engineState = "IDLE";
             const outcome = ending(draft.history.map(parsePosition));
@@ -554,9 +561,11 @@ export class AiGames {
       side: parsePosition(game.snapshot.position).turn,
       level: game.snapshot.level,
       history: [...game.snapshot.history],
+      randomSeed: randomInt(0x100000000),
     };
     const valid = () =>
       this.current(game, epoch, version) && !abort.signal.aborted;
+    let acceptingProgress = true;
     const job = (async () => {
       let reject!: (error: unknown) => void;
       const interrupted = new Promise<never>((_, rej) => {
@@ -578,6 +587,17 @@ export class AiGames {
               throw new EngineError("ENGINE_TIMEOUT");
             const result = await this.options.engine.search(request, {
               signal: abort.signal,
+              onProgress: (sample) => {
+                if (acceptingProgress && valid())
+                  game.snapshot.telemetry = {
+                    taskVersion: epoch,
+                    completedDepth: sample.completedDepth,
+                    targetDepth: sample.targetDepth,
+                    nodes: sample.nodes,
+                    elapsedMs: sample.elapsedMs,
+                    appliedMove: null,
+                  };
+              },
             });
             if (performance.now() >= deadline)
               throw new EngineError("ENGINE_TIMEOUT");
@@ -590,6 +610,14 @@ export class AiGames {
           throw new EngineError("ENGINE_FAILED");
         try {
           completion = {
+            telemetry: {
+              taskVersion: epoch,
+              completedDepth: result.completedDepth,
+              targetDepth: result.targetDepth,
+              nodes: result.nodes,
+              elapsedMs: result.elapsedMs,
+              appliedMove: result.move,
+            },
             position: serializePosition(
               playMove(parsePosition(request.position), result.move),
             ),
@@ -600,6 +628,7 @@ export class AiGames {
       } catch (error) {
         completion = { error };
       } finally {
+        acceptingProgress = false;
         clearTimeout(timer);
         abort.signal.removeEventListener("abort", onAbort);
       }
@@ -631,6 +660,7 @@ export class AiGames {
             throw new AiError("AI_FINISHED");
           await tx.check(id);
           const draft = this.copy(game);
+          draft.telemetry = null;
           this.finalizing(draft, {
             reason: "RESIGN",
             winner: draft.actualSide === "red" ? "black" : "red",
@@ -670,6 +700,7 @@ export class AiGames {
           draft.position = draft.history[draft.history.length - 1]!;
           draft.engineState = "IDLE";
           draft.engineError = null;
+          draft.telemetry = null;
           draft.undoUsed++;
           draft.version++;
           const staged = this.staged(game, draft, game.epoch + 1);

@@ -16,6 +16,7 @@ import {
   Notice,
   Skeleton,
 } from "../../shared/ui/primitives.js";
+import { breakpoints } from "../../shared/styles/breakpoints.js";
 import {
   connectRoom,
   RoomRequestError,
@@ -96,6 +97,26 @@ export function RoomPage({
   const [confirmTransfer, setConfirmTransfer] = useState(false);
   const [copyStatus, setCopyStatus] = useState("");
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
+  const [area, setArea] = useState<"room" | "chat" | "media">("room");
+  const [chatOpen, setChatOpen] = useState(true);
+  const [mediaControlsHost, setMediaControlsHost] =
+    useState<HTMLDivElement | null>(null);
+  const [unreadChat, setUnreadChat] = useState({
+    PLAYERS_PRIVATE: 0,
+    ROOM_PUBLIC: 0,
+  });
+  const [compact, setCompact] = useState(
+    () =>
+      window.matchMedia(`(max-width: ${breakpoints.desktop - 1}px)`).matches,
+  );
+  useEffect(() => {
+    const query = window.matchMedia(
+      `(max-width: ${breakpoints.desktop - 1}px)`,
+    );
+    const update = () => setCompact(query.matches);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
   useEffect(() => {
     if (!copied || copying) return;
     const timer = setTimeout(() => setCopied(null), 1500);
@@ -968,6 +989,8 @@ export function RoomPage({
   return (
     <main
       className={`xq-ui xq-room-page${playingLayout ? " is-playing" : " is-waiting"}`}
+      data-area={area}
+      data-chat-open={chatOpen}
     >
       <header className="xq-room-header">
         <div>
@@ -991,6 +1014,18 @@ export function RoomPage({
           )}
         </div>
         <div className="xq-room-header-actions">
+          <Button
+            className="xq-room-chat-toggle"
+            variant="ghost"
+            aria-expanded={chatOpen}
+            onClick={() => setChatOpen((open) => !open)}
+          >
+            {chatOpen ? "Ẩn chat" : "Mở chat"}
+            {unreadChat.PLAYERS_PRIVATE > 0 &&
+              ` · Riêng ${Math.min(unreadChat.PLAYERS_PRIVATE, 99)}${unreadChat.PLAYERS_PRIVATE > 99 ? "+" : ""}`}
+            {unreadChat.ROOM_PUBLIC > 0 &&
+              ` · Chung ${Math.min(unreadChat.ROOM_PUBLIC, 99)}${unreadChat.ROOM_PUBLIC > 99 ? "+" : ""}`}
+          </Button>
           <NetworkDemo
             enabled={demoEnabled}
             disconnected={demoDisconnected}
@@ -1065,27 +1100,43 @@ export function RoomPage({
           </Button>
         </div>
       </header>
-      {!playingLayout && (
-        <fieldset className="xq-room-mobile-nav" aria-label="Khu vực phòng chờ">
-          <label>
-            <input
-              type="radio"
-              name={`room-area-${roomId}`}
-              value="room"
-              defaultChecked
-            />
-            Phòng chờ
-          </label>
-          <label>
-            <input type="radio" name={`room-area-${roomId}`} value="media" />
-            Camera
-          </label>
-          <label>
-            <input type="radio" name={`room-area-${roomId}`} value="chat" />
-            Trò chuyện
-          </label>
-        </fieldset>
-      )}
+      <fieldset className="xq-room-mobile-nav" aria-label="Khu vực phòng">
+        <label>
+          <input
+            type="radio"
+            name={`room-area-${roomId}`}
+            value="room"
+            checked={area === "room"}
+            onChange={() => setArea("room")}
+          />
+          Ván
+        </label>
+        <label>
+          <input
+            type="radio"
+            name={`room-area-${roomId}`}
+            value="chat"
+            checked={area === "chat"}
+            onChange={() => setArea("chat")}
+          />
+          Chat
+          {unreadChat.PLAYERS_PRIVATE > 0 &&
+            ` · Riêng ${Math.min(unreadChat.PLAYERS_PRIVATE, 99)}${unreadChat.PLAYERS_PRIVATE > 99 ? "+" : ""}`}
+          {unreadChat.ROOM_PUBLIC > 0 &&
+            ` · Chung ${Math.min(unreadChat.ROOM_PUBLIC, 99)}${unreadChat.ROOM_PUBLIC > 99 ? "+" : ""}`}
+        </label>
+        <label>
+          <input
+            type="radio"
+            name={`room-area-${roomId}`}
+            value="media"
+            checked={area === "media"}
+            onChange={() => setArea("media")}
+          />
+          Camera
+        </label>
+      </fieldset>
+      <div ref={setMediaControlsHost} className="xq-room-media-controls" />
       <fieldset className="match-actions__confirmation" disabled={busy}>
         <Dialog
           open={leaveConfirm !== null}
@@ -1397,6 +1448,9 @@ export function RoomPage({
               {chat ?? (
                 <RoomChat
                   viewerRole={view.role}
+                  userId={userId}
+                  panelVisible={compact ? area === "chat" : chatOpen}
+                  onUnreadChange={setUnreadChat}
                   connected={connected && !!snapshot}
                   channels={roomChat.channels}
                   pendingSend={roomChat.pendingSend}
@@ -1436,6 +1490,9 @@ export function RoomPage({
                     seats={room.seats}
                     userId={userId}
                     writable={writable}
+                    controlsHost={
+                      compact && area !== "media" ? mediaControlsHost : null
+                    }
                     tabId={connection.current?.tabId ?? ""}
                     getControl={() =>
                       connection.current

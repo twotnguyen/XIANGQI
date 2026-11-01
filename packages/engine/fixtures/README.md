@@ -14,6 +14,22 @@ Independent pyffish validation and a second reviewer rerun confirmed all 50 FENs
 
 Run the same 50 positions at each level on the demo machine and retain individual elapsed times, actual completed depth, returned moves, software revision and environment. Calculate p95 against the approved 300/1,000/3,000 ms budgets. A fixture file, structural checks or a successful local engine test alone does not establish GATE-ENGINE PASS.
 
+YC8 adds `yc8-mates.json`: six seeded, composed material families (RR, RC,
+RH, CH, RCP, RHP), each with its own FEN and exhaustive independent winning
+keys. They are not published human games; the source metadata identifies
+the composition seed/family and pyffish method. `verify-oracle.py` now checks
+all eight cases, including every defense and checking finish, without
+importing the project engine/core. Project FEN uses `N` for a horse; the
+oracle accepts the same positions. This finite short-mate suite is not
+exhaustive tactical coverage, and passing it does not waive the depth/timing gate.
+
+`scripts/gate-engine.mjs` records worker compute and full-await wall latency
+separately, returned legal moves, actual depth and all raw samples. Use Node22
+and build first. `scripts/tournament.mjs --pair easy,medium --out <file>` runs
+20 balanced games (ten published starts, each played with reversed level
+colours); repeat for easy,hard and medium,hard. Only core terminal outcomes
+count as draws or wins; a safety cap is INCOMPLETE and blocks acceptance.
+
 ## Independent oracle reproduction
 
 `verify-oracle.py` imports only Python's standard library and optional official `pyffish`; it never imports the project core or engine. It checks all 50 positions and enumerates the complete bounded mate tree. Normal checkmate requires both check and no legal reply; `is_immediate_game_end` alone is not a checkmate detector. `game_result` is queried only when no legal moves remain.

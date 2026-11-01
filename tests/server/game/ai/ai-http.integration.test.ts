@@ -336,6 +336,22 @@ describe.skipIf(!databaseUrl)(
           })
         ).json(),
         newer = await peer(a);
+      const actor = await authorizer.resolve(a.proof);
+      const taken = await coordinator.withRoom(
+        { actor, roomIds: [] },
+        (p) => authorizer.authorize(a.proof, p),
+        (scope) =>
+          presence.attach(scope, { ...newer.origin.tab, takeover: true }),
+      );
+      if (taken.status !== "active") throw Error("inactive takeover");
+      newer.origin.tab.generation = taken.value.control.generation;
+      control.bind(
+        newer.socket,
+        a.id,
+        a.proof,
+        newer.origin.tab.tabId,
+        newer.origin.tab.generation,
+      );
       const prior = await request(old.origin, `/ai/${created.snapshot.id}`);
       expect(prior.status).toBe(200);
       expect((await prior.json()).control.mode).toBe("readonly");

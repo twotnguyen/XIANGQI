@@ -1,8 +1,11 @@
 import { createHash, randomUUID } from "node:crypto";
+import { chatSticker } from "@xiangqi/shared";
+import { consumeChatRate } from "../../core/chat-rate.store.js";
 import { RoomError, type RoomScope } from "../room/room.types.js";
 export type ChatChannel = "PLAYERS_PRIVATE" | "ROOM_PUBLIC";
 export interface ChatMessage {
   messageId: string;
+  senderId: string;
   roomId: string;
   sequence: number;
   channel: ChatChannel;
@@ -17,6 +20,7 @@ export interface ChatMessage {
 export interface ChatPage {
   messages: ChatMessage[];
   nextCursor: number;
+  latestSequence: number;
   hasMore: boolean;
 }
 export interface ChatSent {
@@ -75,7 +79,7 @@ export class ChatStore {
       [id, s.actor.userId],
     );
     if (!fresh.rowCount) denied();
-    return { ...row, floor: row.role === "SPECTATOR" ? Number(row.floor) : 0 };
+    return { ...row, floor: Number(row.floor) };
   }
   /**
    * Truy vấn danh sách tin nhắn chat theo trang từ mốc thứ tự `after`, bảo đảm khán giả không xem được tin trước khi vào phòng.
@@ -93,17 +97,24 @@ export class ChatStore {
         id: string;
         sequence: string;
         content: string;
+        sender_id: string;
         created_at: Date;
         display_name: string;
         kind: string;
         sender_role: "red" | "black" | "spectator";
       }>(
-        `SELECT x.id,x.sequence,x.content,x.created_at,p.display_name,n.kind,x.sender_role FROM xiangqi_chat.messages x JOIN xiangqi_auth.principals n ON n.id=x.sender_id JOIN public.profiles p ON p.user_id=x.sender_id WHERE x.room_id=$1 AND x.channel=$2 AND x.sequence>$3 AND ($2='ROOM_PUBLIC' OR x.pair_epoch=$4) ORDER BY x.sequence LIMIT 51`,
-        [id, channel, Math.max(after, access.floor), access.pair_epoch],
+        `SELECT x.id,x.sequence,x.sender_id,x.content,x.created_at,p.display_name,n.kind,x.sender_role FROM xiangqi_chat.messages x JOIN xiangqi_auth.principals n ON n.id=x.sender_id JOIN public.profiles p ON p.user_id=x.sender_id WHERE x.room_id=$1 AND x.channel=$2 AND x.sequence>$3 AND ($2='ROOM_PUBLIC' OR x.pair_epoch=$4) ORDER BY x.sequence LIMIT 51`,
+        [
+          id,
+          channel,
+          channel === "ROOM_PUBLIC" ? Math.max(after, access.floor) : after,
+          access.pair_epoch,
+        ],
       )
     ).rows;
     const messages = rows.slice(0, 50).map((x) => ({
       messageId: x.id,
+      senderId: x.sender_id,
       roomId: id,
       sequence: Number(x.sequence),
       channel,
@@ -118,6 +129,7 @@ export class ChatStore {
     return {
       messages,
       nextCursor: messages.at(-1)?.sequence ?? after,
+      latestSequence: Number(access.sequence),
       hasMore: rows.length > 50,
     };
   }
@@ -135,7 +147,8 @@ export class ChatStore {
       !uuid.test(input.commandId) ||
       typeof input.content !== "string" ||
       Array.from(input.content).length > 200 ||
-      !input.content.trim()
+      !input.content.trim() ||
+      (/^:[a-z0-9_+-]+:$/i.test(input.content) && !chatSticker(input.content))
     )
       invalidChatInput();
     const access = await this.access(s, id, input.channel),
@@ -167,7 +180,8 @@ export class ChatStore {
       if (
         (input.channel === "PLAYERS_PRIVATE" &&
           receipt.pair_epoch !== access.pair_epoch) ||
-        Number(receipt.sequence) <= access.floor
+        (input.channel === "ROOM_PUBLIC" &&
+          Number(receipt.sequence) <= access.floor)
       )
         throw new RoomError(
           "CHAT_SCOPE_CHANGED",
@@ -187,26 +201,9 @@ export class ChatStore {
       Array.from(content).length > 600
     )
       throw new RoomError("CHAT_UNAVAILABLE", "Chat chưa sẵn sàng", 503);
-    await s.client.query(
-      "INSERT INTO xiangqi_chat.rate(actor_id,sent_at) VALUES($1,'{}') ON CONFLICT DO NOTHING",
-      [s.actor.userId],
-    );
-    const rate = (
-      await s.client.query<{ sent_at: Date[] }>(
-        "SELECT sent_at FROM xiangqi_chat.rate WHERE actor_id=$1 FOR UPDATE",
-        [s.actor.userId],
-      )
-    ).rows[0]!.sent_at;
-    const now = (
-      await s.client.query<{ now: Date }>("SELECT clock_timestamp() AS now")
-    ).rows[0]!.now;
-    const times = rate.filter((t) => t.getTime() > now.getTime() - 10000);
-    if (times.length >= 5)
+    const now = await consumeChatRate(s.client, s.actor.userId);
+    if (!now)
       throw new RoomError("CHAT_RATE_LIMITED", "Bạn gửi quá nhanh", 429);
-    await s.client.query(
-      "UPDATE xiangqi_chat.rate SET sent_at=$2 WHERE actor_id=$1",
-      [s.actor.userId, [...times, now]],
-    );
     const sequence = Number(
         (
           await s.client.query<{ sequence: string }>(

@@ -58,7 +58,11 @@ describe.skipIf(!databaseUrl)("guest AI game acceptance", () => {
     const tab = await boot!.openTab(guest);
     const gameId = await createGuestAiGame(boot!, tab);
 
+    const socketSnapshot = new Promise<AiBody>((resolve) =>
+      tab.client.once("ai.snapshot", resolve),
+    );
     expect(await watch(tab, gameId)).toMatchObject({ ok: true });
+    expect((await socketSnapshot).snapshot).not.toHaveProperty("telemetry");
 
     const moved = await guestAi(boot!, tab, "POST", `/ai/${gameId}/move`, {
       version: 1,
@@ -68,6 +72,7 @@ describe.skipIf(!databaseUrl)("guest AI game acceptance", () => {
     const afterMove = (await moved.json()) as AiBody;
     expect(afterMove.snapshot.version).toBe(2);
     expect(afterMove.snapshot.history).toHaveLength(2);
+    expect(afterMove.snapshot).not.toHaveProperty("telemetry");
 
     const read = await guestAi(boot!, tab, "GET", `/ai/${gameId}`);
     expect(read.status).toBe(200);
@@ -80,6 +85,7 @@ describe.skipIf(!databaseUrl)("guest AI game acceptance", () => {
     const ended = (await resigned.json()) as AiBody;
     expect(ended.snapshot.status).toBe("FINISHED");
     expect(ended.snapshot.outcome?.reason).toBe("RESIGN");
+    expect(ended.snapshot).not.toHaveProperty("telemetry");
     expect(await heldAiSeats(guest.userId)).toBe(0);
   });
 

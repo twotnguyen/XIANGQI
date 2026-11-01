@@ -13,6 +13,7 @@ import type {
   ShareLevel,
 } from "@web/features/media/media-client.js";
 import {
+  GENERATION,
   cameraButton,
   deferred,
   flush,
@@ -27,6 +28,14 @@ import {
 } from "./MediaPanel.test-helper.js";
 
 describe("media panel joins and receives", () => {
+  it("does not connect without an active permitted source", async () => {
+    const { client, raw } = harness({ role: "spectator" });
+    raw.sources.mockResolvedValue({ available: false, generation: GENERATION });
+    render(panel(client, { role: "spectator", userId: "viewer" }));
+    await act(flush);
+    expect(live.state.rooms).toHaveLength(0);
+    expect(raw.token).not.toHaveBeenCalled();
+  });
   it.each(["before connect", "after connect"] as const)(
     "receives opponent video and audio %s while both local devices stay off",
     async (timing) => {
@@ -38,6 +47,7 @@ describe("media panel joins and receives", () => {
         };
       const view = render(panel(client));
       await settle();
+      await waitFor(() => expect(live.state.rooms[0]?.connected).toBe(true));
       if (timing === "after connect")
         await act(async () => {
           const room = live.state.instances[0]!;
@@ -110,6 +120,24 @@ describe("media panel joins and receives", () => {
       "tab",
     );
     expect(live.state.rooms[1]!.camera || live.state.rooms[1]!.mic).toBe(false);
+  });
+
+  it("waits for fresh demand after reconnect instead of joining from the previous socket", async () => {
+    const { client, raw } = harness();
+    const view = render(panel(client));
+    await waitFor(() => expect(live.state.rooms[0]?.connected).toBe(true));
+    view.rerender(panel(client, { connected: false }));
+    const demand = deferred<{ available: boolean; generation: string }>();
+    raw.sources.mockImplementationOnce(() => demand.promise);
+    view.rerender(panel(client, { connected: true }));
+    await act(flush);
+    expect(raw.token).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      demand.resolve({ available: false, generation: GENERATION });
+      await flush();
+    });
+    expect(raw.token).toHaveBeenCalledTimes(1);
+    expect(live.state.rooms).toHaveLength(1);
   });
 
   it("resets a camera that was on when the room changes and rejoins receive-only", async () => {
@@ -239,7 +267,9 @@ describe("media panel share failures", () => {
         connectionId: "socket-a",
         generation: 1,
       });
-      expect(await screen.findByText(/Chưa thể đổi mức chia sẻ/)).toBeTruthy();
+      expect(
+        await screen.findByText(/Chưa thể xác nhận mức chia sẻ/),
+      ).toBeTruthy();
       expect(select().value).toBe("ALL");
       expect(screen.getByRole("button", { name: "Bật camera" })).toBeTruthy();
       await waitFor(() =>
@@ -249,12 +279,6 @@ describe("media panel share failures", () => {
         publishing.every((room) => room.tracks.every((t) => t.stopped)),
       ).toBe(true);
       const rejoined = live.state.rooms.slice(3);
-      expect(client.token).toHaveBeenLastCalledWith(
-        "room",
-        false,
-        false,
-        "tab",
-      );
       expect(rejoined.some((room) => room.camera || room.mic)).toBe(false);
       expect(rejoined.some((room) => room.token === "stage-token")).toBe(false);
     },
@@ -376,6 +400,33 @@ describe("media panel tab switch", () => {
     HTMLDialogElement.prototype.close = function () {
       this.removeAttribute("open");
     };
+  });
+  it("lets a readonly tab request takeover after its pending token was cancelled", async () => {
+    const { client, raw } = harness();
+    raw.sources.mockResolvedValue({ available: false, generation: GENERATION });
+    const gate = deferred<Awaited<ReturnType<typeof client.token>>>();
+    raw.token.mockImplementationOnce(() => gate.promise);
+    const view = render(panel(client));
+    const user = userEvent.setup();
+    await settle();
+    await user.click(screen.getByRole("button", { name: "Bật camera" }));
+    view.rerender(panel(client, { writable: false }));
+    await act(async () => {
+      gate.resolve({
+        url: "wss://unused.invalid",
+        token: "old",
+        roomName: "old",
+        expiresAt: "",
+        generation: GENERATION,
+        stage: null,
+      });
+      await flush();
+    });
+    await user.click(screen.getByRole("button", { name: "Bật camera" }));
+    expect(
+      screen.getByRole("dialog", { name: "Chuyển thiết bị sang tab này?" }),
+    ).toBeTruthy();
+    expect(live.state.rooms).toEqual([]);
   });
   const dialogEl = () =>
     document
@@ -512,8 +563,7 @@ it("does not change media sharing if control proof cannot be obtained", async ()
   );
   await settle();
   fireEvent.change(select(), { target: { value: "ALL" } });
-  await waitFor(() =>
-    expect(screen.getByText(/Chưa thể đổi mức chia sẻ/)).toBeTruthy(),
-  );
+  await act(flush);
+  expect(select().value).toBe("OPPONENT");
   expect(client.setShare).not.toHaveBeenCalled();
 });

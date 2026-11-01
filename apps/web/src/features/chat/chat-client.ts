@@ -103,6 +103,7 @@ export function parseChatPage(
     "canSend",
     "messages",
     "nextCursor",
+    "latestSequence",
     "hasMore",
   ]);
   authority(v, roomId);
@@ -112,6 +113,7 @@ export function parseChatPage(
     !Array.isArray(v.messages) ||
     v.messages.length > 50 ||
     !integer(v.nextCursor) ||
+    !integer(v.latestSequence) ||
     typeof v.hasMore !== "boolean" ||
     (v.hasMore && v.messages.length !== 50)
   )
@@ -121,6 +123,7 @@ export function parseChatPage(
   for (const value of v.messages) {
     const m = body(value, [
       "messageId",
+      "senderId",
       "roomId",
       "sequence",
       "channel",
@@ -131,12 +134,15 @@ export function parseChatPage(
     const sender = body(m.sender, ["displayName", "isGuest", "role"]);
     if (
       typeof m.messageId !== "string" ||
+      typeof m.senderId !== "string" ||
+      !chatUuid.test(m.senderId) ||
       !chatUuid.test(m.messageId) ||
       ids.has(m.messageId.toLowerCase()) ||
       m.roomId !== roomId ||
       m.channel !== channel ||
       !integer(m.sequence, 1) ||
       m.sequence <= previous ||
+      m.sequence > v.latestSequence ||
       typeof m.content !== "string" ||
       Array.from(m.content).length > 600 ||
       !date(m.createdAt) ||

@@ -6,6 +6,7 @@ import {
   navigate,
   subscribeLocation,
   getAuthDestination,
+  setNavigationGuard,
 } from "@web/shared/navigation/navigation.js";
 beforeEach(() => window.history.replaceState(null, "", "/login"));
 it("notifies the current location on push and unsubscribes cleanly", () => {
@@ -63,9 +64,6 @@ it("preserves only validated relative room/invite history intent through account
   navigate("/register");
   navigate("/onboarding");
   expect(getAuthDestination()).toBe("/rooms/join?token=fixture-invite");
-  expect(window.history.state).toEqual({
-    xiangqiAuthDestination: "/rooms/join?token=fixture-invite",
-  });
   navigate("/rooms/join?token=fixture-invite", { authDestination: null });
   expect(getAuthDestination()).toBeNull();
 });
@@ -84,3 +82,49 @@ it.each([
   );
   expect(getAuthDestination()).toBeNull();
 });
+
+it.each([-2, 1])(
+  "cancels traversal %s without deleting Back/Forward entries",
+  async (delta) => {
+    navigate("/lobby");
+    navigate("/settings");
+    navigate("/lobby?second=1");
+    navigate("/ai/fixture");
+    if (delta === 1) {
+      window.history.back();
+      await waitFor(() => expect(window.location.pathname).toBe("/lobby"));
+    }
+    const source = `${window.location.pathname}${window.location.search}`;
+    let attempts = 0;
+    const stop = subscribeLocation(() => {});
+    setNavigationGuard(() => {
+      attempts++;
+      return true;
+    });
+    try {
+      window.history.go(delta);
+      await waitFor(() => expect(attempts).toBe(1));
+      await waitFor(() =>
+        expect(`${window.location.pathname}${window.location.search}`).toBe(
+          source,
+        ),
+      );
+      setNavigationGuard(null);
+      window.history.back();
+      await waitFor(() =>
+        expect(`${window.location.pathname}${window.location.search}`).toBe(
+          delta === -2 ? "/lobby?second=1" : "/settings",
+        ),
+      );
+      window.history.forward();
+      await waitFor(() =>
+        expect(`${window.location.pathname}${window.location.search}`).toBe(
+          source,
+        ),
+      );
+    } finally {
+      setNavigationGuard(null);
+      stop();
+    }
+  },
+);

@@ -7,6 +7,7 @@ export * from "./position.js";
 export {
   pseudoLegalMoves,
   legalMoves,
+  hasLegalMove,
   isInCheck,
   playMove,
   perft,

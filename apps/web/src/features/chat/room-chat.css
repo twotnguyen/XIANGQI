@@ -40,6 +40,15 @@
   outline: var(--focus-ring);
   outline-offset: 2px;
 }
+.room-chat__badge {
+  display: inline-block;
+  margin-inline-start: var(--space-1);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-md);
+  background: var(--color-danger);
+  color: var(--color-surface);
+  font-size: var(--text-xs);
+}
 .room-chat__tabs,
 .room-chat__toggles {
   display: flex;

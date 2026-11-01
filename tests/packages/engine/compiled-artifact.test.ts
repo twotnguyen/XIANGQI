@@ -200,7 +200,7 @@ it("counts cold compiled startup against the original budget", async () => {
 const bootstrap=new URL('./packages/engine/dist/worker-bootstrap.mjs',import.meta.url);
 const delay=new URL('data:text/javascript,'+encodeURIComponent('await new Promise(r=>setTimeout(r,400));await import('+JSON.stringify(bootstrap.href)+');'));
 const worker=new EngineWorker({workerURL:delay});
-try {const r=await worker.search(input);console.log(JSON.stringify({depth:r.completedDepth,timedOut:r.timedOut,nodes:r.nodes,legal:legal(input,r),elapsed:r.elapsedMs}));}finally{await worker.close();}
+try {const started=performance.now(),r=await worker.search(input);console.log(JSON.stringify({depth:r.completedDepth,timedOut:r.timedOut,nodes:r.nodes,legal:legal(input,r),elapsed:performance.now()-started}));}finally{await worker.close();}
 `);
   expect(result).toMatchObject({
     depth: 0,

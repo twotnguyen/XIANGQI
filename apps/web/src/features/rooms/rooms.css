@@ -768,6 +768,12 @@
   align-items: flex-start;
   gap: 6px;
 }
+.is-waiting .xq-room-seat-actions {
+  grid-area: action;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
 .is-waiting .xq-room-ready {
   width: auto;
   min-width: 144px;
@@ -1275,7 +1281,7 @@
 
 /* Native radios keep keyboard navigation and preserve mounted chat/media. */
 @media (max-width: 1023px) {
-  .is-waiting .xq-room-mobile-nav {
+  .xq-room-mobile-nav {
     display: flex;
     flex: none;
     gap: 4px;
@@ -1596,5 +1602,46 @@
   }
   .is-playing .xq-room-header-actions {
     flex-wrap: wrap;
+  }
+}
+
+@media (min-width: 1024px) {
+  .xq-room-page[data-chat-open="false"] .xq-room-chat-slot {
+    display: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .xq-room-chat-toggle {
+    display: none;
+  }
+  .xq-room-page.is-playing .xq-room-info,
+  .xq-room-page.is-playing .xq-room-slots {
+    display: contents;
+  }
+  .is-playing .xq-room-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .is-playing .xq-room-arena {
+    order: 0;
+  }
+  .is-playing :is(.xq-room-chat-slot, .xq-room-media-slot) {
+    order: 1;
+    min-width: 0;
+  }
+  .is-playing[data-area="room"] :is(.xq-room-chat-slot, .xq-room-media-slot),
+  .is-playing[data-area="chat"] .xq-room-media-slot,
+  .is-playing[data-area="media"] .xq-room-chat-slot,
+  .is-playing:not([data-area="room"])
+    :is(
+      .xq-room-board,
+      .xq-room-seats,
+      .xq-room-invite,
+      .xq-viewers,
+      .xq-room-details
+    ) {
+    display: none;
   }
 }

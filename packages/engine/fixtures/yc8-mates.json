@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Six independently composed material families, exhaustive pyffish oracle; complements the two published related fixtures",
+  "cases": [
+    {
+      "id": "yc8-authored-rr-mate1",
+      "fen": "5k3/8R/9/9/2R6/9/9/9/9/3K5 w - - 0 1",
+      "attacker": "red",
+      "mateInPlies": 1,
+      "source": {
+        "kind": "seeded-material-family-composition",
+        "seed": 8008,
+        "family": "RR",
+        "attempt": 1,
+        "oracle": "pyffish 0.0.90",
+        "method": "Enumerate every legal root, every defense and every checking finish, independent of project engine/core"
+      },
+      "winningKeys": [
+        {
+          "move": {
+            "from": 38,
+            "to": 2
+          },
+          "oracleMove": "c6c10",
+          "defenderReplies": []
+        }
+      ]
+    },
+    {
+      "id": "yc8-authored-rc-mate2",
+      "fen": "9/5k3/9/3C5/p8/9/R8/9/9/3K5 w - - 0 1",
+      "attacker": "red",
+      "mateInPlies": 3,
+      "source": {
+        "kind": "seeded-material-family-composition",
+        "seed": 8008,
+        "family": "RC",
+        "attempt": 1,
+        "oracle": "pyffish 0.0.90",
+        "method": "Enumerate every legal root, every defense and every checking finish, independent of project engine/core"
+      },
+      "winningKeys": [
+        {
+          "move": {
+            "from": 84,
+            "to": 85
+          },
+          "oracleMove": "d1e1",
+          "defenderReplies": [
+            {
+              "reply": "a6a5",
+              "matingMoves": [
+                "a4f4"
+              ]
+            },
+            {
+              "reply": "f9f8",
+              "matingMoves": [
+                "a4f4"
+              ]
+            },
+            {
+              "reply": "f9f10",
+              "matingMoves": [
+                "a4f4"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yc8-authored-rh-mate1",
+      "fen": "9/7R1/3k5/p3N4/9/9/9/9/9/5K3 w - - 0 1",
+      "attacker": "red",
+      "mateInPlies": 1,
+      "source": {
+        "kind": "seeded-material-family-composition",
+        "seed": 8008,
+        "family": "RH",
+        "attempt": 25,
+        "oracle": "pyffish 0.0.90",
+        "method": "Enumerate every legal root, every defense and every checking finish, independent of project engine/core"
+      },
+      "winningKeys": [
+        {
+          "move": {
+            "from": 16,
+            "to": 25
+          },
+          "oracleMove": "h9h8",
+          "defenderReplies": []
+        }
+      ]
+    },
+    {
+      "id": "yc8-authored-ch-mate2",
+      "fen": "3k5/9/3p5/3N5/9/5C3/9/9/9/5K3 w - - 0 1",
+      "attacker": "red",
+      "mateInPlies": 3,
+      "source": {
+        "kind": "seeded-material-family-composition",
+        "seed": 8008,
+        "family": "CH",
+        "attempt": 24,
+        "oracle": "pyffish 0.0.90",
+        "method": "Enumerate every legal root, every defense and every checking finish, independent of project engine/core"
+      },
+      "winningKeys": [
+        {
+          "move": {
+            "from": 30,
+            "to": 23
+          },
+          "oracleMove": "d7f8",
+          "defenderReplies": [
+            {
+              "reply": "d8d7",
+              "matingMoves": [
+                "f5d5"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yc8-authored-rcp-mate1",
+      "fen": "5k3/4P4/p8/9/2R6/2C6/9/9/9/3K5 w - - 0 1",
+      "attacker": "red",
+      "mateInPlies": 1,
+      "source": {
+        "kind": "seeded-material-family-composition",
+        "seed": 8008,
+        "family": "RCP",
+        "attempt": 3,
+        "oracle": "pyffish 0.0.90",
+        "method": "Enumerate every legal root, every defense and every checking finish, independent of project engine/core"
+      },
+      "winningKeys": [
+        {
+          "move": {
+            "from": 38,
+            "to": 41
+          },
+          "oracleMove": "c6f6",
+          "defenderReplies": []
+        },
+        {
+          "move": {
+            "from": 38,
+            "to": 2
+          },
+          "oracleMove": "c6c10",
+          "defenderReplies": []
+        }
+      ]
+    },
+    {
+      "id": "yc8-authored-rhp-mate2",
+      "fen": "3k5/8p/7P1/9/9/5N3/4R4/9/9/5K3 w - - 0 1",
+      "attacker": "red",
+      "mateInPlies": 3,
+      "source": {
+        "kind": "seeded-material-family-composition",
+        "seed": 8008,
+        "family": "RHP",
+        "attempt": 0,
+        "oracle": "pyffish 0.0.90",
+        "method": "Enumerate every legal root, every defense and every checking finish, independent of project engine/core"
+      },
+      "winningKeys": [
+        {
+          "move": {
+            "from": 86,
+            "to": 85
+          },
+          "oracleMove": "f1e1",
+          "defenderReplies": [
+            {
+              "reply": "i9i8",
+              "matingMoves": [
+                "e4d4"
+              ]
+            },
+            {
+              "reply": "d10d9",
+              "matingMoves": [
+                "e4d4"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

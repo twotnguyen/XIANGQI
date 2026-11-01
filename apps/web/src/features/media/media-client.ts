@@ -9,6 +9,7 @@ export interface MediaToken {
   token: string;
   roomName: string;
   expiresAt: string;
+  generation: string;
   stage: { token: string; roomName: string } | null;
 }
 export class MediaRequestError extends Error {
@@ -23,6 +24,16 @@ function record(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value))
     throw new MediaRequestError("MEDIA_BAD_RESPONSE", 502);
   return value as Record<string, unknown>;
+}
+function generation(value: unknown): string {
+  if (
+    typeof value !== "string" ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      value,
+    )
+  )
+    throw new MediaRequestError("MEDIA_BAD_RESPONSE", 502);
+  return value.toLowerCase();
 }
 /**
  * Khởi tạo client tương tác API đa phương tiện LiveKit (lấy token kết nối phòng, đọc và cập nhật mức độ chia sẻ camera/mic).
@@ -81,6 +92,7 @@ export function createMediaClient(authorizedFetch: AuthorizedFetch) {
       token: token.token,
       roomName: token.roomName,
       expiresAt: token.expiresAt,
+      generation: generation(token.generation),
       stage:
         stage === null || stage === undefined
           ? null
@@ -91,6 +103,19 @@ export function createMediaClient(authorizedFetch: AuthorizedFetch) {
     };
   }
   return {
+    sources: (roomId: string) =>
+      request(
+        `/media/sources?roomId=${encodeURIComponent(roomId)}`,
+        (value) => {
+          const result = record(value);
+          if (typeof result.available !== "boolean")
+            throw new MediaRequestError("MEDIA_BAD_RESPONSE", 502);
+          return {
+            available: result.available,
+            generation: generation(result.generation),
+          };
+        },
+      ),
     token: (roomId: string, camera: boolean, mic: boolean, tabId: string) =>
       request("/media/token", parseToken, { roomId, camera, mic, tabId }),
     setShare: (roomId: string, level: ShareLevel, control: RoomControlProof) =>

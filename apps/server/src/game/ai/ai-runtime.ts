@@ -370,10 +370,13 @@ export async function createAiRuntime(
           await control.assertRetained(scope, gameId);
         }
         const inspected = await control.inspect(scope, origin());
-        const { ownerId: _owner, ...publicSnapshot } = snapshot;
+        const { ownerId: _owner, telemetry, ...publicSnapshot } = snapshot;
         void _owner;
         return {
-          snapshot: publicSnapshot,
+          snapshot:
+            scope.actor.kind === "member"
+              ? { ...publicSnapshot, telemetry: telemetry ?? null }
+              : publicSnapshot,
           serverNow: new Date().toISOString(),
           control: inspected,
         } satisfies AiSocketSnapshot;

@@ -3,7 +3,7 @@ import {
   legalMoves,
   parsePosition,
   playMove,
-  pseudoLegalMoves,
+  hasLegalMove as coreHasLegalMove,
   serializePosition,
   type Move,
   type PieceType,
@@ -14,6 +14,7 @@ import {
   EngineError,
   type EngineRequest,
   type EngineResult,
+  type EngineProgress,
   type EngineLevel,
 } from "./contracts.js";
 export { ENGINE_LIMITS, EngineError };
@@ -32,7 +33,7 @@ const expired = Symbol("search deadline");
 export interface SearchOptions {
   now?: () => number;
   depth?: number;
-  onIteration?: (depth: number) => void;
+  onProgress?: (progress: EngineProgress) => void;
   deadline?: number;
 }
 /**
@@ -42,10 +43,20 @@ export interface SearchOptions {
  */
 export function readRequest(request: EngineRequest) {
   try {
-    const { position, side, level, history: suppliedHistory } = request;
+    const {
+      position,
+      side,
+      level,
+      history: suppliedHistory,
+      randomSeed,
+    } = request;
     if (
       !Object.hasOwn(ENGINE_LIMITS, level) ||
-      !["red", "black"].includes(side)
+      !["red", "black"].includes(side) ||
+      (randomSeed !== undefined &&
+        (!Number.isSafeInteger(randomSeed) ||
+          randomSeed < 0 ||
+          randomSeed > 0xffffffff))
     )
       throw Error();
     const current = parsePosition(position);
@@ -60,6 +71,7 @@ export function readRequest(request: EngineRequest) {
       position: serializePosition(current),
       side: current.turn,
       level,
+      ...(randomSeed === undefined ? {} : { randomSeed }),
       ...(suppliedHistory === undefined
         ? {}
         : { history: history.map(serializePosition) }),
@@ -100,20 +112,25 @@ function ordered(
   killers: readonly Move[] = [],
   history?: ReadonlyMap<string, number>,
 ) {
-  const priority = (move: Move) =>
-    same(move, preferred)
-      ? 1e9
-      : position.board[move.to]
-        ? 1e8 +
-          10 * values[position.board[move.to]!.type] -
-          values[position.board[move.from]!.type]
-        : same(move, killers[0])
-          ? 1e7
-          : same(move, killers[1])
-            ? 9e6
-            : (history?.get(moveKey(position, move)) ?? 0);
+  const priority = new Map<Move, number>();
+  for (const move of moves)
+    priority.set(
+      move,
+      same(move, preferred)
+        ? 1e9
+        : position.board[move.to]
+          ? 1e8 +
+            10 * values[position.board[move.to]!.type] -
+            values[position.board[move.from]!.type]
+          : same(move, killers[0])
+            ? 1e7
+            : same(move, killers[1])
+              ? 9e6
+              : (history?.get(moveKey(position, move)) ?? 0),
+    );
   return moves.sort(
-    (a, b) => priority(b) - priority(a) || a.from - b.from || a.to - b.to,
+    (a, b) =>
+      priority.get(b)! - priority.get(a)! || a.from - b.from || a.to - b.to,
   );
 }
 type Entry = {
@@ -152,6 +169,13 @@ export function searchPosition(
     timedOut = false;
   const initial = ordered(current, legalMoves(current));
   let bestMove = terminal ? null : (initial[0] ?? null);
+  let seed = request.randomSeed;
+  const random = () => {
+    seed = ((seed ?? 0) + 0x6d2b79f5) >>> 0;
+    let value = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    value ^= value + Math.imul(value ^ (value >>> 7), 61 | value);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
   const table = new Map<string, Entry>();
   const killers = new Map<number, Move[]>();
   const cutoffHistory = new Map<string, number>();
@@ -183,18 +207,9 @@ export function searchPosition(
   function hasLegalMove(position: Position, key: string): boolean {
     const cached = legalBoards.get(key);
     if (cached) return cached.exists;
-    for (const candidate of pseudoLegalMoves(position)) {
-      try {
-        playMove(position, candidate);
-        memo(key, { exists: true });
-        return true;
-      } catch (error) {
-        if (!(error instanceof Error) || error.message !== "ILLEGAL_MOVE")
-          throw error;
-      }
-    }
-    memo(key, { exists: false });
-    return false;
+    const exists = coreHasLegalMove(position);
+    memo(key, { exists });
+    return exists;
   }
   function check() {
     if (now() >= deadline) throw expired;
@@ -236,7 +251,7 @@ export function searchPosition(
               : -(result.reason === "CHECKMATE" ? MATE : MATE - 10) + ply,
       };
     if (depth === 0) return { score: evaluate(position) };
-    // Full branch/counters are deliberately included: different repetition/check histories cannot share a bound.
+    // One request fixes the root history; its exact move path also fixes every counter/check history.
     const cached = table.get(key),
       originalAlpha = alpha,
       originalBeta = beta;
@@ -247,6 +262,8 @@ export function searchPosition(
       else beta = Math.min(beta, cached.score);
       if (alpha >= beta) return { score: cached.score, move: cached.move };
     }
+    const rootChoices: { move: Move; score: number }[] | undefined =
+      ply === 0 && seed !== undefined ? [] : undefined;
     let score = -Infinity,
       move: Move | undefined;
     for (const candidate of ordered(
@@ -267,11 +284,11 @@ export function searchPosition(
       try {
         value = -negamax(
           branch,
-          key + "|" + childFen,
+          key + String.fromCharCode(candidate.from * 90 + candidate.to),
           childIdentity,
           depth - 1,
-          -beta,
-          -alpha,
+          rootChoices ? -Infinity : -beta,
+          rootChoices ? Infinity : -alpha,
           ply + 1,
         ).score;
       } finally {
@@ -279,6 +296,7 @@ export function searchPosition(
         if (previous === 0) occurrences.delete(childIdentity);
         else occurrences.set(childIdentity, previous);
       }
+      rootChoices?.push({ move: candidate, score: value });
       if (value > score) {
         score = value;
         move = candidate;
@@ -306,6 +324,16 @@ export function searchPosition(
       }
     }
     check();
+    if (rootChoices?.length && move) {
+      // 20 points is one fifth of a pawn; never dilute a proven mate/terminal score.
+      const choices = rootChoices.filter((candidate) =>
+        Math.abs(score) >= MATE - 1000
+          ? candidate.score === score
+          : candidate.score >= score - 20 &&
+            Math.abs(candidate.score) < MATE - 1000,
+      );
+      move = choices[Math.floor(random() * choices.length)]!.move;
+    }
     if (move && table.size < 50000)
       table.set(key, {
         depth,
@@ -325,7 +353,7 @@ export function searchPosition(
       try {
         const result = negamax(
           history,
-          serialized.join("|"),
+          "",
           identity(serialized.at(-1)!),
           depth,
           -Infinity,
@@ -335,7 +363,12 @@ export function searchPosition(
         check();
         if (result.move) bestMove = result.move;
         completedDepth = depth;
-        options.onIteration?.(depth);
+        options.onProgress?.({
+          completedDepth,
+          targetDepth,
+          nodes,
+          elapsedMs: Math.max(0, now() - start),
+        });
       } catch (error) {
         if (error !== expired) throw error;
         timedOut = true;

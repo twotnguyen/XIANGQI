@@ -1,0 +1,5 @@
+.xq-chat-sticker { position: relative; }
+.xq-chat-sticker__image { display: inline-block; width: 40px; height: 40px; color: var(--color-gold); vertical-align: middle; }
+.xq-chat-sticker__picker { display: flex; flex-wrap: wrap; gap: var(--space-1); max-height: 180px; overflow-y: auto; padding: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); }
+.xq-chat-sticker__picker button { min-width: var(--touch-min); min-height: var(--touch-min); padding: var(--space-1); color: var(--color-ink); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+.xq-chat-sticker button:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }

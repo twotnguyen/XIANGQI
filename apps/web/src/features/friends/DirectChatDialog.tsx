@@ -5,9 +5,9 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  type FormEvent,
 } from "react";
 import { Button, Dialog } from "../../shared/ui/primitives.js";
+import { ChatContent, StickerPicker } from "../../shared/ui/ChatSticker.js";
 import {
   FriendRequestError,
   friendErrorText as errorText,
@@ -217,10 +217,8 @@ export function DirectChatDialog({
     }
   }
 
-  async function send(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (revokedRef.current || !canSend) return;
-    const content = draft;
+  async function sendContent(content: string) {
+    if (revokedRef.current || sending || !content.trim() || Array.from(content).length > MAX_CHARS) return;
     const commandId =
       pending.current?.content === content
         ? pending.current.commandId
@@ -232,7 +230,7 @@ export function DirectChatDialog({
       await client.sendMessage(friend.userId, content, commandId);
       pending.current = null;
       pinned.current = true;
-      setDraft("");
+      if (content === draft) setDraft("");
       await load();
     } catch (error) {
       const code = error instanceof FriendRequestError ? error.code : "";
@@ -299,8 +297,8 @@ export function DirectChatDialog({
             </Button>
           ) : null}
           {messages === null ? (
-            <p className="xq-dm__status">Đang tải…</p>
-          ) : messages.length === 0 && !revoked ? (
+            !loadFailed && <p className="xq-dm__status">Đang tải…</p>
+          ) : messages.length === 0 && !revoked && !loadFailed ? (
             <p className="xq-dm__status">Chưa có tin nhắn.</p>
           ) : (
             messages.map((message) => {
@@ -313,7 +311,7 @@ export function DirectChatDialog({
                   className={`xq-dm__row${incoming ? "" : " xq-dm__row--mine"}`}
                 >
                   <p className="xq-dm__bubble">
-                    {message.content}
+                    <ChatContent content={message.content} />
                     <time dateTime={message.createdAt}>
                       {" "}
                       {new Date(message.createdAt).toLocaleTimeString("vi-VN", {
@@ -328,13 +326,14 @@ export function DirectChatDialog({
           )}
         </div>
         {sendError ? (
-          <p className="xq-dm__error" role="alert">
-            {sendError}
-          </p>
+          <div className="xq-dm__error">
+            <p role="alert">{sendError}</p>
+            <Button variant="secondary" disabled={sending || !pending.current} onClick={() => pending.current && void sendContent(pending.current.content)}>Thử lại</Button>
+          </div>
         ) : null}
         <form
           className="xq-dm__composer"
-          onSubmit={(event) => void send(event)}
+          onSubmit={(event) => { event.preventDefault(); void sendContent(draft); }}
         >
           <label htmlFor={inputId} className="xq-sr-only">
             Nội dung tin nhắn
@@ -355,6 +354,7 @@ export function DirectChatDialog({
           >
             {length}/{MAX_CHARS}
           </span>
+          <StickerPicker disabled={revoked || sending} label="tin nhắn" onSelect={(content) => void sendContent(content)} />
           <Button type="submit" disabled={!canSend}>
             Gửi
           </Button>

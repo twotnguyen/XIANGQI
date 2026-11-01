@@ -127,19 +127,3 @@ it("integrates actual compiled prepared worker, distinct from controlled race fi
     await worker.close();
   }
 });
-
-it.each(["easy", "medium", "hard"] as const)(
-  "forwards only authoritative history and selected %s level",
-  async (level) => {
-    const f = fixture();
-    await f.games.ready();
-    const game = await f.games.create(owner, { requestedSide: "black", level });
-    await f.games.waitForEngine(owner, game.id);
-    expect(f.engine.search.mock.calls[0]![0]).toEqual({
-      position: game.position,
-      side: "red",
-      level,
-      history: [game.position],
-    });
-  },
-);

@@ -55,13 +55,14 @@ it("initializes once before serving search and keeps the startup busy fence", as
   );
 });
 it("still counts delayed cold startup against a direct search deadline", async () => {
+  const started = performance.now();
   const result = await create({ workerURL: delayedBootstrap() }).search(
     request(),
   );
   expect(result.completedDepth).toBe(0);
   expect(result.nodes).toBe(0);
   expect(result.timedOut).toBe(true);
-  expect(result.elapsedMs).toBeGreaterThanOrEqual(400);
+  expect(performance.now() - started).toBeGreaterThanOrEqual(400);
   expect(legalMoves(parsePosition(request().position))).toContainEqual(
     result.move,
   );
@@ -123,10 +124,11 @@ it("counts input validation against the original host deadline", async () => {
       return fen;
     },
   });
+  const started = performance.now();
   const result = await create().search(input);
   expect(result.completedDepth).toBe(0);
   expect(result.timedOut).toBe(true);
-  expect(result.elapsedMs).toBeGreaterThanOrEqual(350);
+  expect(performance.now() - started).toBeGreaterThanOrEqual(350);
   expect(legalMoves(parsePosition(fen))).toContainEqual(result.move);
 });
 it("serializes only engine fields and ignores unrelated non-cloneable properties", async () => {
@@ -158,7 +160,7 @@ it("keeps native HTTP health responsive during actual hard search", async () => 
     const pending = worker
       .search(input, {
         signal: controller.signal,
-        onIteration: () => iteration(),
+        onProgress: () => iteration(),
       })
       .finally(() => {
         finished = true;

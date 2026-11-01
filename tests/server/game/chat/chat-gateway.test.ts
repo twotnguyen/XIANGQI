@@ -30,6 +30,7 @@ async function fixture() {
     canSend: true,
     messages: [],
     nextCursor: 0,
+    latestSequence: 0,
     hasMore: false,
   };
   const authorize = vi.fn(async () => connection),

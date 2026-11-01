@@ -68,6 +68,7 @@ async function game(
     ply?: number;
     blackAiOwner?: boolean;
     reason?: string;
+    at?: string;
   } = {},
 ) {
   const id = randomUUID(),
@@ -80,7 +81,7 @@ async function game(
     p2 = playMove(p1, { from: 27, to: 36 }),
     mode = options.mode ?? "ONLINE",
     status = options.status ?? "FINISHED",
-    at = "2026-10-11T00:00:00.000Z",
+    at = options.at ?? "2026-10-11T00:00:00.000Z",
     outcome = {
       reason:
         options.reason ??
@@ -201,6 +202,17 @@ describe.skipIf(!databaseUrl)("ReplayStore actual synthetic PostgreSQL", () => {
     expect((await read(b, g.id)).side).toBe("black");
     expect(JSON.stringify(value)).not.toContain(a.userId);
     expect(JSON.stringify(value)).not.toContain(g.discarded);
+  });
+  it("replays a months-old AI result from its full effective branch", async () => {
+    const owner = await member();
+    const saved = await game(owner, null, { mode: "AI", at: "2026-02-01T00:00:00.000Z" });
+    const replay = await read(owner, saved.id);
+    expect(replay.positions.at(-1)!.fen).toBe("rnbakabnr/9/1c5c1/2p1p1p1p/p8/P8/2P1P1P1P/1C5C1/9/RNBAKABNR w - - 2 2");
+    expect(replay.moves).toEqual([
+      { from: 54, to: 45, side: "red" },
+      { from: 27, to: 36, side: "black" },
+    ]);
+    expect(replay.result).toEqual({ reason: "RESIGN", winner: "red" });
   });
   it("returns the same404 for outsiders, missing and active games", async () => {
     const a = await member(),

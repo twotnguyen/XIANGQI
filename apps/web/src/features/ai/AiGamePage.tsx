@@ -11,7 +11,10 @@ import {
 import { createGameAudio } from "../rooms/game-audio.js";
 import type { AuthorizedFetch } from "../rooms/room-client.js";
 import type { PublicRoomAuthProof } from "@xiangqi/shared";
-import { navigate } from "../../shared/navigation/navigation.js";
+import {
+  navigate,
+  setNavigationGuard,
+} from "../../shared/navigation/navigation.js";
 import { Button, Dialog } from "../../shared/ui/primitives.js";
 
 type Proof = () => Promise<PublicRoomAuthProof>;
@@ -28,6 +31,32 @@ const goneCodes: Record<string, true> = {
 function codeOf(cause: unknown): string | undefined {
   const code = (cause as { code?: unknown } | null)?.code;
   return typeof code === "string" ? code : undefined;
+}
+function newerSnapshot(
+  previous: AiGameSnapshot | null,
+  next: AiGameSnapshot,
+): AiGameSnapshot {
+  if (!previous) return next;
+  if (previous.version > next.version) return previous;
+  if (
+    previous.version === next.version &&
+    previous.telemetry &&
+    next.telemetry &&
+    (previous.telemetry.taskVersion > next.telemetry.taskVersion ||
+      (previous.telemetry.taskVersion === next.telemetry.taskVersion &&
+        (previous.telemetry.completedDepth > next.telemetry.completedDepth ||
+          previous.telemetry.nodes > next.telemetry.nodes)))
+  )
+    return previous;
+  if (
+    previous.version === next.version &&
+    previous.telemetry &&
+    !next.telemetry &&
+    previous.engineState === next.engineState &&
+    previous.status === next.status
+  )
+    return previous;
+  return next;
 }
 
 /**
@@ -74,9 +103,14 @@ export async function resignActiveAiGame(
   try {
     await connection.watch(gameId);
     const client = makeAiClient(authorizedFetch, () => connection.getControl());
-    const { snapshot } = await client.read(gameId);
+    const { snapshot, control } = await client.read(gameId);
+    if (snapshot.status === "FINALIZING")
+      throw Error("Kết quả đang chờ lưu. Quay lại ván để thử lưu lại.");
     if (snapshot.status !== "ACTIVE") return;
-    await client.resign(gameId, snapshot.version);
+    if (control.mode !== "controller") throw Error("Tab này chỉ có thể xem.");
+    const response = await client.resign(gameId, snapshot.version);
+    if (response.snapshot.status === "FINALIZING")
+      throw Error("Kết quả đang chờ lưu. Quay lại ván để thử lưu lại.");
   } finally {
     connection.disconnect();
   }
@@ -91,11 +125,13 @@ export function AiGamePage({
   authorizedFetch,
   getProof,
   allowUndo = true,
+  registerResign,
 }: {
   gameId: string;
   authorizedFetch: AuthorizedFetch;
   getProof: Proof;
   allowUndo?: boolean;
+  registerResign?: (action: (() => Promise<void>) | null) => void;
 }) {
   const [snapshot, setSnapshot] = useState<AiGameSnapshot | null>(null);
   const [control, setControl] = useState<AiControl | null>(null);
@@ -105,6 +141,7 @@ export function AiGamePage({
   const [newGameDialog, setNewGameDialog] = useState(false);
   const [creating, setCreating] = useState(false);
   const [leaving, setLeaving] = useState(false);
+  const [leaveTo, setLeaveTo] = useState("/lobby");
   const [lastMove, setLastMove] = useState<Move | null>(null);
   const connection = useRef<AiConnection | null>(null);
   const api = useRef<Api | null>(null);
@@ -142,11 +179,7 @@ export function AiGamePage({
     };
     const apply = (response: AiResponse) => {
       if (!live || !alive.current || response.snapshot.id !== gameId) return;
-      setSnapshot((prev) =>
-        prev && prev.version > response.snapshot.version
-          ? prev
-          : response.snapshot,
-      );
+      setSnapshot((prev) => newerSnapshot(prev, response.snapshot));
     };
     const conn = connectAi({
       getProof,
@@ -218,6 +251,21 @@ export function AiGamePage({
       conn.disconnect();
     };
   }, [gameId, getProof, authorizedFetch]);
+  useEffect(() => {
+    if (snapshot?.status !== "ACTIVE" || gone || control?.mode !== "controller")
+      return;
+    const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const guard = (destination: string) => {
+      if (destination === current) return false;
+      setLeaveTo(destination);
+      setLeaving(true);
+      return true;
+    };
+    setNavigationGuard(guard);
+    return () => {
+      setNavigationGuard(null);
+    };
+  }, [snapshot?.status, gone, gameId, control?.mode]);
 
   const canControl =
     control?.mode === "controller" && control.gameId === gameId;
@@ -247,11 +295,7 @@ export function AiGamePage({
         // Phản hồi của epoch cũ (takeover, reconnect, đổi ván, unmount) không được ghi đè.
         if (!alive.current || token !== fence.current) return null;
         if (response.snapshot.id === gameId) {
-          setSnapshot((prev) =>
-            prev && prev.version > response.snapshot.version
-              ? prev
-              : response.snapshot,
-          );
+          setSnapshot((prev) => newerSnapshot(prev, response.snapshot));
           void audio.current?.unlock();
         }
         return response;
@@ -267,6 +311,18 @@ export function AiGamePage({
     },
     [gameId, snapshot],
   );
+  useEffect(() => {
+    if (!registerResign) return;
+    registerResign(async () => {
+      if (!snapshot) throw Error("Chưa tải ván.");
+      if (snapshot.status !== "ACTIVE") return;
+      const response = await run((client, current) =>
+        client.resign(current.id, current.version),
+      );
+      if (!response) throw Error("Tab này chỉ có thể xem.");
+    });
+    return () => registerResign(null);
+  }, [registerResign, run, snapshot]);
 
   const handleMove = useCallback(
     async (move: Move) => {
@@ -331,8 +387,10 @@ export function AiGamePage({
   }, []);
 
   const requestLeave = useCallback(() => {
-    if (snapshot?.status === "ACTIVE") setLeaving(true);
-    else navigate("/lobby");
+    if (snapshot?.status === "ACTIVE" && writable.current) {
+      setLeaveTo("/lobby");
+      setLeaving(true);
+    } else navigate("/lobby");
   }, [snapshot]);
 
   const confirmLeave = useCallback(async () => {
@@ -340,12 +398,12 @@ export function AiGamePage({
       const response = await run((client, current) =>
         client.resign(current.id, current.version),
       );
-      if (response) navigate("/lobby");
+      if (response) navigate(leaveTo, { bypassGuard: true });
       else if (alive.current) setLeaving(false);
     } catch {
       if (alive.current) setLeaving(false);
     }
-  }, [run]);
+  }, [run, leaveTo]);
 
   if (gone) {
     return (
@@ -364,6 +422,14 @@ export function AiGamePage({
         {newGameDialog && (
           <AiSetupDialog
             open={newGameDialog}
+            initial={
+              snapshot
+                ? {
+                    level: snapshot.level,
+                    requestedSide: snapshot.requestedSide,
+                  }
+                : undefined
+            }
             pending={creating}
             onClose={() => setNewGameDialog(false)}
             onStart={handleStart}
@@ -382,6 +448,13 @@ export function AiGamePage({
       {!canControl && control && (
         <div role="status">
           <p>Ván này đang mở ở tab khác.</p>
+          {control.graceUntil && (
+            <p>
+              Ván được giữ đến{" "}
+              {new Date(control.graceUntil).toLocaleString("vi-VN")}. Tiếp quản
+              trước hạn để tiếp tục.
+            </p>
+          )}
           <Button variant="secondary" disabled={!connected} onClick={takeover}>
             Chuyển quyền điều khiển về tab này
           </Button>
@@ -400,6 +473,9 @@ export function AiGamePage({
         onUndo={allowUndo ? handleUndo : undefined}
         onNewGame={() => setNewGameDialog(true)}
         onLobby={requestLeave}
+        onReplay={
+          allowUndo ? () => navigate(`/history/${snapshot.id}`) : undefined
+        }
       />
       {newGameDialog && (
         <AiSetupDialog

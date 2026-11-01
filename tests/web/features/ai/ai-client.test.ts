@@ -38,6 +38,34 @@ function fixture(value: unknown = envelope()) {
   return { fetch, getControl, client: makeAiClient(fetch, getControl) };
 }
 describe("AI REST client", () => {
+  it("accepts optional member telemetry while rejecting malformed or private fields", async () => {
+    const telemetry = {
+      taskVersion: 2,
+      completedDepth: 3,
+      targetDepth: 4,
+      elapsedMs: 128,
+      nodes: 900,
+      appliedMove: null,
+    };
+    const value = envelope();
+    Object.assign(value.snapshot, { telemetry });
+    expect((await fixture(value).client.read(id)).snapshot).toMatchObject({
+      telemetry,
+    });
+    Object.assign(value.snapshot, { telemetry: null });
+    expect((await fixture(value).client.read(id)).snapshot).toMatchObject({
+      telemetry: null,
+    });
+    for (const bad of [
+      { ...telemetry, nodes: -1 },
+      { ...telemetry, completedDepth: 1.5 },
+      { ...telemetry, appliedMove: { from: 90, to: 0 } },
+      { ...telemetry, futureMove: { from: 0, to: 1 } },
+    ]) {
+      Object.assign(value.snapshot, { telemetry: bad });
+      await expect(fixture(value).client.read(id)).rejects.toThrow("Phản hồi");
+    }
+  });
   it("accepts no current game and sanitizes unknown HTTP errors", async () => {
     const f = fixture({ gameId: null });
     expect(await f.client.current()).toEqual({ gameId: null });

@@ -15,6 +15,7 @@ function page(channel: ChatChannel, sequence = 1): ChatPage {
     messages: [
       {
         messageId: `22222222-2222-4222-8222-${String(sequence).padStart(12, "0")}`,
+        senderId: "11111111-1111-4111-8111-111111111111",
         roomId,
         channel,
         sequence,
@@ -24,6 +25,7 @@ function page(channel: ChatChannel, sequence = 1): ChatPage {
       },
     ],
     nextCursor: sequence,
+    latestSequence: sequence,
     hasMore: false,
   };
 }

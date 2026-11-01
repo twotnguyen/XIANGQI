@@ -81,6 +81,11 @@ export function parseAiResponse(
       "engineState",
       "engineError",
       "outcome",
+      ...(row.snapshot &&
+      typeof row.snapshot === "object" &&
+      "telemetry" in row.snapshot
+        ? ["telemetry"]
+        : []),
     ]),
     c = record(row.control, ["mode", "reason", "generation"]);
   if (
@@ -114,6 +119,39 @@ export function parseAiResponse(
     )
   )
     invalid();
+  if (s.telemetry !== undefined && s.telemetry !== null) {
+    const t = record(s.telemetry, [
+      "taskVersion",
+      "completedDepth",
+      "targetDepth",
+      "elapsedMs",
+      "nodes",
+      "appliedMove",
+    ]);
+    if (
+      !integer(t.taskVersion) ||
+      t.taskVersion === 0 ||
+      !integer(t.completedDepth) ||
+      !integer(t.targetDepth) ||
+      typeof t.elapsedMs !== "number" ||
+      !Number.isFinite(t.elapsedMs) ||
+      t.elapsedMs < 0 ||
+      !integer(t.nodes) ||
+      t.completedDepth > t.targetDepth
+    )
+      invalid();
+    if (t.appliedMove !== null) {
+      const move = record(t.appliedMove, ["from", "to"]);
+      if (
+        !integer(move.from) ||
+        !integer(move.to) ||
+        move.from > 89 ||
+        move.to > 89 ||
+        move.from === move.to
+      )
+        invalid();
+    }
+  } else if ("telemetry" in s && s.telemetry === undefined) invalid();
   if (s.outcome !== null) {
     const o = record(s.outcome, ["reason", "winner"]);
     if (

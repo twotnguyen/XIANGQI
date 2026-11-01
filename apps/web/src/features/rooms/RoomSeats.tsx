@@ -117,7 +117,7 @@ export function RoomSeats({
             {!playingLayout &&
               occupant !== userId &&
               (canMoveOpponent ? (
-                <>
+                <div className="xq-room-seat-actions">
                   <Button
                     variant="secondary"
                     loading={busy}
@@ -148,7 +148,7 @@ export function RoomSeats({
                       Mời rời ghế
                     </Button>
                   )}
-                </>
+                </div>
               ) : (
                 <p className="xq-room-seat-hint">
                   {occupant

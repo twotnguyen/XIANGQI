@@ -30,6 +30,15 @@ function originCopy(origin: Human): Human {
     tab: Object.freeze({ ...origin.tab }),
   });
 }
+function forActor(
+  snapshot: AiSnapshot,
+  kind: RoomScope["actor"]["kind"],
+): AiSnapshot {
+  if (kind === "member") return snapshot;
+  const { telemetry: _telemetry, ...guest } = snapshot;
+  void _telemetry;
+  return guest;
+}
 /**
  * Dịch vụ xử lý các yêu cầu HTTP điều khiển ván đấu cờ tướng với máy AI.
  */
@@ -70,7 +79,11 @@ export class AiHttpService implements AiHttpApi {
           await this.options.control.assertRetained(scope, id);
         }
         const control = await this.options.control.inspect(scope, origin);
-        return { snapshot, control, serverNow: new Date().toISOString() };
+        return {
+          snapshot: forActor(snapshot, scope.actor.kind),
+          control,
+          serverNow: new Date().toISOString(),
+        };
       },
     );
   }
@@ -86,7 +99,7 @@ export class AiHttpService implements AiHttpApi {
     memberOnly = false,
   ): Promise<AiHttpResult> {
     const origin = originCopy(supplied);
-    const { owner, control } = await this.options.transactions.read(
+    const { owner, control, kind } = await this.options.transactions.read(
       origin.proof,
       async (scope, owner) => {
         // P2 Undo chỉ dành cho thành viên; loại actor lấy từ phiên đã xác thực.
@@ -94,14 +107,14 @@ export class AiHttpService implements AiHttpApi {
           sessionNotReady("AI_FORBIDDEN", 403);
         const control = await this.options.control.inspect(scope, origin);
         if (control.mode !== "controller") sessionNotReady("TAB_READ_ONLY");
-        return { owner, control };
+        return { owner, control, kind: scope.actor.kind };
       },
     );
     const committed = await work(owner, origin);
     // A terminal commit may have been the guest's final release, which ends its session; this request already proved authority, so return the canonical committed snapshot without re-reading the session.
     if (committed.status !== "ACTIVE" && committed.status !== "FINALIZING")
       return {
-        snapshot: committed,
+        snapshot: forActor(committed, kind),
         control,
         serverNow: new Date().toISOString(),
       };

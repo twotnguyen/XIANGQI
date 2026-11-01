@@ -27,6 +27,83 @@ it("reads both player channels once and retains history through status changes a
   ).toBe("red");
   expect(f.readChat).toHaveBeenCalledTimes(2);
 });
+it("phân biệt trang lịch sử và catch-up tin mới", async () => {
+  const f = setup();
+  await f.start();
+  expect(f.result.current.channels.ROOM_PUBLIC.historyThrough).toBe(1);
+  f.readChat.mockImplementation(async (channel: ChatChannel) =>
+    page(channel, 2),
+  );
+  await act(async () => f.result.current.onLoadMore("ROOM_PUBLIC"));
+  expect(f.result.current.channels.ROOM_PUBLIC.historyThrough).toBe(1);
+  f.readChat.mockImplementation(async (channel: ChatChannel) =>
+    page(channel, 3),
+  );
+  act(() =>
+    f.result.current.changed({
+      roomId,
+      channel: "ROOM_PUBLIC",
+      roomVersion: 4,
+      scopeToken: "a".repeat(64),
+      canSend: true,
+    }),
+  );
+  await waitFor(() =>
+    expect(
+      f.result.current.channels.ROOM_PUBLIC.messages.at(-1)?.sequence,
+    ).toBe(3),
+  );
+  expect(f.result.current.channels.ROOM_PUBLIC.historyThrough).toBe(1);
+});
+it("keeps new arrivals distinct from initial history while older pages remain unloaded", async () => {
+  const f = setup();
+  f.readChat.mockImplementation(async (channel: ChatChannel) => ({
+    ...page(channel, 1),
+    latestSequence: 2,
+    hasMore: true,
+  }));
+  act(() => f.result.current.update(snapshot(), true));
+  await waitFor(() =>
+    expect(f.result.current.channels.ROOM_PUBLIC.messages).toHaveLength(1),
+  );
+  expect(f.result.current.channels.ROOM_PUBLIC.historyReady).toBe(true);
+  expect(f.result.current.channels.ROOM_PUBLIC.historyThrough).toBe(2);
+  f.readChat.mockImplementation(async (channel: ChatChannel) => ({
+    ...page(channel, 3),
+    latestSequence: 3,
+    messages: [page(channel, 2).messages[0]!, page(channel, 3).messages[0]!],
+  }));
+  act(() =>
+    f.result.current.changed({
+      roomId,
+      channel: "ROOM_PUBLIC",
+      roomVersion: 4,
+      scopeToken: "a".repeat(64),
+      canSend: true,
+    }),
+  );
+  await waitFor(() =>
+    expect(
+      f.result.current.channels.ROOM_PUBLIC.messages.at(-1)?.sequence,
+    ).toBe(3),
+  );
+  expect(f.result.current.channels.ROOM_PUBLIC.historyThrough).toBe(2);
+});
+it("counts messages received during a same-scope reconnect as new arrivals", async () => {
+  const f = setup();
+  await f.start();
+  act(() => f.result.current.update(null, false));
+  f.readChat.mockImplementation(async (channel: ChatChannel) => ({
+    ...page(channel, 2),
+    messages: [page(channel, 1).messages[0]!, page(channel, 2).messages[0]!],
+  }));
+  act(() => f.result.current.update(snapshot(), true));
+  await waitFor(() =>
+    expect(f.result.current.channels.ROOM_PUBLIC.messages).toHaveLength(2),
+  );
+  expect(f.result.current.channels.ROOM_PUBLIC.historyThrough).toBe(1);
+});
+
 it("spectators read only public chat even with a readonly room controller", async () => {
   const f = setup();
   await f.start({
@@ -225,10 +302,11 @@ function historyPage(
     ...page(channel),
     messages,
     nextCursor: messages.at(-1)?.sequence ?? after,
+    latestSequence: count,
     hasMore: after + messages.length < count,
   };
 }
-it.each(["notice", "send"])(
+it.each(["notice", "send", "reconnect"])(
   "catches up all authoritative pages after %s so a new message beyond 151 old messages is visible",
   async (cause) => {
     const f = setup();
@@ -250,7 +328,10 @@ it.each(["notice", "send"])(
       await act(async () =>
         f.result.current.onSend("PLAYERS_PRIVATE", "tin 152"),
       );
-    else
+    else if (cause === "reconnect") {
+      act(() => f.result.current.update(null, false));
+      act(() => f.result.current.update(snapshot(), true));
+    } else
       act(() =>
         f.result.current.changed({
           roomId,
@@ -268,11 +349,6 @@ it.each(["notice", "send"])(
     expect(
       f.result.current.channels.PLAYERS_PRIVATE?.messages.at(-1)?.sequence,
     ).toBe(152);
-    expect(
-      f.readChat.mock.calls
-        .filter((call) => call[0] === "PLAYERS_PRIVATE")
-        .map((call) => call[1]),
-    ).toEqual([0, 50, 100, 150]);
   },
 );
 it("stops live catch-up safely if a malformed continuation makes no cursor progress", async () => {

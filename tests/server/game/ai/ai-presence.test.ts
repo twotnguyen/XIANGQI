@@ -120,11 +120,16 @@ describe.skipIf(!databaseUrl)(
       f.o.tab.generation = 2;
       await run(f.a, (s) => f.port.authorize(s, f.o));
     });
-    it("new tab takes over while known superseded reconnect stays readonly until explicit takeover", async () => {
+    it("keeps a new tab readonly until explicit takeover and fences superseded reconnects", async () => {
       const f = await fixture(),
         id = await game(f),
         newer = origin();
-      const second = await run(f.a, (s) => f.port.attach(s, newer.tab));
+      const viewing = await run(f.a, (s) => f.port.attach(s, newer.tab));
+      expect(viewing.control).toEqual({ mode: "readonly", generation: 1 });
+      await run(f.a, (s) => f.port.authorize(s, f.o));
+      const second = await run(f.a, (s) =>
+        f.port.attach(s, { ...newer.tab, takeover: true }),
+      );
       expect(second.control).toEqual({ mode: "writable", generation: 2 });
       newer.tab.generation = 2;
       await expect(
@@ -140,6 +145,21 @@ describe.skipIf(!databaseUrl)(
       );
       expect(taking.control).toEqual({ mode: "writable", generation: 3 });
     });
+    it("admits a new controlling tab after the prior game releases its position", async () => {
+      const f = await fixture(),
+        id = await game(f);
+      await run(f.a, (scope) =>
+        reservations.release(scope, { gameId: id, bootId: f.boot.id }),
+      );
+      const fresh = origin();
+      const attached = await run(f.a, (scope) =>
+        f.port.attach(scope, fresh.tab),
+      );
+      expect(attached.gameId).toBeNull();
+      expect(attached.control.mode).toBe("writable");
+      fresh.tab.generation = attached.control.generation;
+      await run(f.a, (scope) => f.port.authorize(scope, fresh));
+    });
     it("starts grace once for exact physical generation and ignores old/readonly disconnects", async () => {
       const f = await fixture(),
         id = await game(f);
@@ -153,7 +173,7 @@ describe.skipIf(!databaseUrl)(
           .rows[0].disconnected_at,
       ).toEqual(first);
       const newer = origin();
-      await run(f.a, (s) => f.port.attach(s, newer.tab));
+      await run(f.a, (s) => f.port.attach(s, { ...newer.tab, takeover: true }));
       await run(f.a, (s) => f.port.disconnected(s, { ...f.o.tab, gameId: id }));
       expect(
         (
@@ -393,7 +413,9 @@ describe.skipIf(!databaseUrl)(
         id = await game(f),
         newer = origin();
       newer.tab.generation = (
-        await run(f.a, (s) => f.port.attach(s, newer.tab))
+        await run(f.a, (s) =>
+          f.port.attach(s, { ...newer.tab, takeover: true }),
+        )
       ).control.generation;
       await pool.query(
         "UPDATE auth.users SET email_confirmed_at=NULL WHERE id=$1",

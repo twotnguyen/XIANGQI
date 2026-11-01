@@ -7,6 +7,7 @@ import {
   privateRoomName,
   stageRoomName,
 } from "@server/game/media/media.types.js";
+import { apply } from "../room/room.test-helper.js";
 import {
   actor,
   config,
@@ -33,6 +34,185 @@ function access(fetchFn: typeof fetch) {
 
 describe.skipIf(!url)("media revocation", () => {
   beforeEach(resetMediaSchema);
+  it("rotates atomically and fences every pending generation before another member receives a token", async () => {
+    const owner = await actor();
+    const player = await actor();
+    const roomId = await makeRoom(owner.userId);
+    await seat(roomId, player.userId, "RED");
+    await takeControl(roomId, player.userId, TAB);
+    const p = provider();
+    const media = access(p.fetchFn);
+    const before = await media.tokenFor(
+      player.userId,
+      roomId,
+      { camera: true, mic: false },
+      TAB,
+    );
+    const event = await queueRevoke(roomId, owner.userId);
+    const after = await media.tokenFor(
+      player.userId,
+      roomId,
+      { camera: true, mic: false },
+      TAB,
+    );
+    expect(after.generation).not.toBe(before.generation);
+    expect(after.roomName).not.toBe(before.roomName);
+    expect(p.calls.map((call) => call.body.room)).toEqual([
+      privateRoomName(roomId, before.generation),
+      stageRoomName(roomId, before.generation),
+    ]);
+    expect(await deliveredAt(event)).not.toBeNull();
+    await media.revoke(roomId, owner.userId, event);
+    expect(p.calls).toHaveLength(2);
+  });
+  it("rolls back the generation rotation with the revoke event", async () => {
+    const owner = await actor(),
+      roomId = await makeRoom(owner.userId);
+    const before = (
+      await pool.query(
+        "SELECT media_generation FROM public.rooms WHERE id=$1",
+        [roomId],
+      )
+    ).rows[0].media_generation;
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      await client.query(
+        "INSERT INTO xiangqi_room.outbox(id,room_id,room_version,type,payload) VALUES($1,$2,100,'media.revoke-user',$3)",
+        [randomUUID(), roomId, { userId: owner.userId }],
+      );
+      const during = (
+        await client.query(
+          "SELECT media_generation FROM public.rooms WHERE id=$1",
+          [roomId],
+        )
+      ).rows[0].media_generation;
+      expect(during).not.toBe(before);
+      await client.query("ROLLBACK");
+    } finally {
+      client.release();
+    }
+    expect(
+      (
+        await pool.query(
+          "SELECT media_generation FROM public.rooms WHERE id=$1",
+          [roomId],
+        )
+      ).rows[0].media_generation,
+    ).toBe(before);
+  });
+  it("refuses rollback while rooms are active or media revocations remain pending", async () => {
+    const owner = await actor(),
+      roomId = await makeRoom(owner.userId);
+    const before = (
+      await pool.query(
+        "SELECT media_generation FROM public.rooms WHERE id=$1",
+        [roomId],
+      )
+    ).rows[0].media_generation;
+    await expect(
+      apply("supabase/rollback/20261103000010_media_generation.sql"),
+    ).rejects.toThrow(/Close rooms/);
+    expect(
+      (
+        await pool.query(
+          "SELECT media_generation FROM public.rooms WHERE id=$1",
+          [roomId],
+        )
+      ).rows[0].media_generation,
+    ).toBe(before);
+    const eventId = await queueRevoke(roomId, owner.userId);
+    await pool.query(
+      "UPDATE public.rooms SET closed_at=clock_timestamp(),status='CLOSED' WHERE id=$1",
+      [roomId],
+    );
+    await expect(
+      apply("supabase/rollback/20261103000010_media_generation.sql"),
+    ).rejects.toThrow(/Close rooms/);
+    await access(provider().fetchFn).revoke(roomId, owner.userId, eventId);
+    await apply("supabase/rollback/20261103000010_media_generation.sql");
+    expect(
+      (await pool.query("SELECT id FROM public.rooms WHERE id=$1", [roomId]))
+        .rows,
+    ).toEqual([{ id: roomId }]);
+  });
+
+  it("migration queues legacy cleanup for rooms that already exist", async () => {
+    await apply("supabase/rollback/20261103000010_media_generation.sql");
+    const owner = await actor(),
+      roomId = await makeRoom(owner.userId);
+    await seat(roomId, owner.userId, "RED");
+    await takeControl(roomId, owner.userId, TAB);
+    await apply("supabase/migrations/20261103000010_media_generation.sql");
+    const p = provider(),
+      media = access(p.fetchFn);
+    const token = await media.tokenFor(
+      owner.userId,
+      roomId,
+      { camera: false, mic: false },
+      TAB,
+    );
+    expect(p.calls.map((call) => call.body.room)).toEqual([
+      `xiangqi-${roomId}`,
+      `xiangqi-${roomId}-stage`,
+    ]);
+    expect(token.generation).toMatch(/^[0-9a-f-]{36}$/);
+  });
+  it("settles a revoke committed during provider I/O before issuing the new generation", async () => {
+    const owner = await actor(),
+      player = await actor();
+    const roomId = await makeRoom(owner.userId);
+    await seat(roomId, player.userId, "RED");
+    await takeControl(roomId, player.userId, TAB);
+    const first = await queueRevoke(roomId, owner.userId);
+    const { promise: gate, resolve: release } = deferred();
+    const p = provider({ gate });
+    const media = access(p.fetchFn);
+    const issuing = media.tokenFor(
+      player.userId,
+      roomId,
+      { camera: true, mic: false },
+      TAB,
+    );
+    await p.entered;
+    const second = await queueRevoke(roomId, player.userId);
+    release();
+    const token = await issuing;
+    const generations = (
+      await pool.query(
+        "SELECT media_generation FROM xiangqi_room.outbox WHERE id=ANY($1::uuid[])",
+        [[first, second]],
+      )
+    ).rows.map((row) => row.media_generation);
+    expect(generations).not.toContain(token.generation);
+    expect(await deliveredAt(first)).not.toBeNull();
+    expect(await deliveredAt(second)).not.toBeNull();
+    expect(p.calls.map((call) => call.body.room)).not.toContain(token.roomName);
+  });
+  it("cleans legacy fixed rooms without deleting the current generation", async () => {
+    const owner = await actor(),
+      roomId = await makeRoom(owner.userId);
+    await seat(roomId, owner.userId, "RED");
+    await takeControl(roomId, owner.userId, TAB);
+    const event = await queueRevoke(roomId, owner.userId);
+    await pool.query(
+      "UPDATE xiangqi_room.outbox SET media_generation=NULL WHERE id=$1",
+      [event],
+    );
+    const p = provider(),
+      media = access(p.fetchFn);
+    const token = await media.tokenFor(
+      owner.userId,
+      roomId,
+      { camera: true, mic: false },
+      TAB,
+    );
+    expect(p.calls.map((call) => call.body.room)).toEqual([
+      `xiangqi-${roomId}`,
+      `xiangqi-${roomId}-stage`,
+    ]);
+    expect(p.calls.map((call) => call.body.room)).not.toContain(token.roomName);
+  });
   it("drains a former player's pending revoke before a spectator token without publish rights", async () => {
     const owner = await actor();
     const player = await actor();
@@ -48,15 +228,18 @@ describe.skipIf(!url)("media revocation", () => {
       { camera: true, mic: true },
       TAB,
     );
+    const oldGeneration = (
+      await pool.query(
+        "SELECT media_generation FROM xiangqi_room.outbox WHERE id=$1",
+        [eventId],
+      )
+    ).rows[0].media_generation;
     expect(p.calls.map((call) => call.body.room)).toEqual([
-      privateRoomName(roomId),
-      stageRoomName(roomId),
+      privateRoomName(roomId, oldGeneration),
+      stageRoomName(roomId, oldGeneration),
     ]);
-    expect(p.calls.every((call) => call.body.identity === player.userId)).toBe(
-      true,
-    );
     expect(decodeJwt(token.token).video).toMatchObject({
-      room: stageRoomName(roomId),
+      room: stageRoomName(roomId, token.generation),
       canPublish: false,
       canSubscribe: true,
       canPublishData: false,
@@ -81,7 +264,7 @@ describe.skipIf(!url)("media revocation", () => {
     );
     expect(p.calls).toHaveLength(2);
     expect(decodeJwt(token.token).video).toMatchObject({
-      room: privateRoomName(roomId),
+      room: privateRoomName(roomId, token.generation),
       canPublish: true,
     });
     await expect(

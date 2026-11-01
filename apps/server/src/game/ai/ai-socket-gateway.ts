@@ -2,6 +2,7 @@ import type { Server as HttpServer } from "node:http";
 import { Server, type Socket } from "socket.io";
 import type { RoomRequestProof } from "../room/room-session.js";
 import type { AiSnapshot } from "./ai-games.js";
+import { parseAiTelemetry } from "./ai-telemetry.js";
 
 export type AiSocketProof = RoomRequestProof & { tabId: string };
 export interface AiSocketControl {
@@ -214,6 +215,9 @@ function publicSnapshot(value: unknown): AiSocketSnapshot {
       engineState: s.engineState,
       engineError: s.engineError,
       outcome,
+      ...(Object.hasOwn(s, "telemetry") && s.telemetry !== undefined
+        ? { telemetry: parseAiTelemetry(s.telemetry) }
+        : {}),
     } as AiSocketSnapshot["snapshot"],
     serverNow: row.serverNow,
     control: {

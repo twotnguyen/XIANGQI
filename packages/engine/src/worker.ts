@@ -16,7 +16,7 @@ parentPort.on(
         result: searchPosition(request, {
           now: () => Number(process.hrtime.bigint()) / 1e6,
           deadline,
-          onIteration: (depth) => parentPort!.postMessage({ iteration: depth }),
+          onProgress: (progress) => parentPort!.postMessage({ progress }),
         }),
       });
     } catch {

@@ -13,11 +13,12 @@ export interface MediaToken {
   token: string;
   roomName: string;
   expiresAt: string;
+  generation: string;
 }
 export const SHARE_LEVELS: ShareLevel[] = ["NONE", "OPPONENT", "ALL"];
-export function privateRoomName(roomId: string) {
-  return `xiangqi-${roomId}`;
+export function privateRoomName(roomId: string, generation: string) {
+  return `xiangqi-${roomId}-${generation}`;
 }
-export function stageRoomName(roomId: string) {
-  return `xiangqi-${roomId}-stage`;
+export function stageRoomName(roomId: string, generation: string) {
+  return `xiangqi-${roomId}-${generation}-stage`;
 }

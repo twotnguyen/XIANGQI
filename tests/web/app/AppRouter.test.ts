@@ -209,7 +209,7 @@ it("preserves a validated invitation through Google registration, pending onboar
   fireEvent.click(await screen.findByText("Hoàn tất thiết lập"));
   await vi.waitFor(() => expect(window.location.pathname).toBe("/rooms/join"));
   expect(window.location.search).toBe("?token=fixture-google-invite");
-  expect(window.history.state).toBeNull();
+  expect(window.history.state?.xiangqiAuthDestination).toBeUndefined();
   expect(mock.authorizedFetch).not.toHaveBeenCalled();
 });
 it("rejects a forged external history destination after Google onboarding", async () => {

@@ -12,17 +12,44 @@ export interface MediaFeed {
  * Component hiển thị khung hình camera và phát âm thanh tương ứng với 2 ghế Đỏ và Đen trong phòng cờ.
  */
 export function MediaSeats({
+  roomId = "",
   seats,
   selfId,
   feeds = [],
+  onReceiveChange,
 }: {
+  roomId?: string;
   seats: { red: string | null; black: string | null };
   selfId: string;
   feeds?: MediaFeed[];
+  onReceiveChange?: (mutedIdentities: readonly string[]) => void;
 }) {
-  const [hideOpponent, setHideOpponent] = useState(false);
-  const [muteOpponent, setMuteOpponent] = useState(false);
-  const isPlayer = seats.red === selfId || seats.black === selfId;
+  const storageKey = `xiangqi-media-receive:${roomId}:${selfId}`;
+  const [muted, setMuted] = useState<string[]>(() => {
+    try {
+      const value: unknown = JSON.parse(sessionStorage.getItem(storageKey) ?? "[]");
+      return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+    } catch {
+      return [];
+    }
+  });
+  useEffect(() => {
+    onReceiveChange?.(muted);
+  }, [muted, onReceiveChange]);
+  useEffect(() => {
+    setMuted((previous) => {
+      const next = previous.filter((identity) => identity === seats.red || identity === seats.black);
+      try { sessionStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* Storage may be unavailable. */ }
+      return next;
+    });
+  }, [seats.red, seats.black, storageKey]);
+  function toggleReceive(identity: string) {
+    setMuted((previous) => {
+      const next = previous.includes(identity) ? previous.filter((item) => item !== identity) : [...previous, identity];
+      try { sessionStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* Storage may be unavailable. */ }
+      return next;
+    });
+  }
   const sides =
     seats.red === selfId
       ? (["black", "red"] as const)
@@ -31,7 +58,8 @@ export function MediaSeats({
     <div className="xq-media-feeds" aria-label="Camera hai người chơi">
       {sides.map((side) => {
         const occupant = seats[side];
-        const opponent = isPlayer && occupant !== selfId;
+        const opponent = occupant !== null && occupant !== selfId;
+        const hidden = occupant !== null && muted.includes(occupant);
         const label = `Phe ${side === "red" ? "Đỏ" : "Đen"}${occupant === selfId ? " (Bạn)" : ""}`;
         const video = occupant
           ? feeds.find(
@@ -43,7 +71,7 @@ export function MediaSeats({
           <figure key={side} aria-label={`Camera ${label}`}>
             <figcaption>{label}</figcaption>
             <div className="xq-media-feed">
-              {video && !(opponent && hideOpponent) ? (
+              {video && !hidden ? (
                 <MediaHost element={video.element} />
               ) : (
                 <div className="xq-media-placeholder">
@@ -58,8 +86,8 @@ export function MediaSeats({
                     <path d="M5 29v-3a11 11 0 0 1 22 0v3Z" />
                   </svg>
                   <span>
-                    {occupant && opponent && hideOpponent
-                      ? "Bạn đã ẩn camera đối thủ"
+                    {occupant && hidden
+                      ? "Bạn đã tắt nhận hình/tiếng"
                       : occupant
                         ? "Chưa có hình camera"
                         : "Đang chờ người chơi"}
@@ -67,61 +95,15 @@ export function MediaSeats({
                 </div>
               )}
             </div>
-            {opponent && (
-              <div
-                className="xq-media-receive-controls"
-                aria-label="Hình tiếng đối thủ"
+            {opponent && occupant && (
+              <Button
+                variant="secondary"
+                aria-label={hidden ? "Hiện hình/tiếng" : "Tắt nhận hình/tiếng"}
+                aria-pressed={hidden}
+                onClick={() => toggleReceive(occupant)}
               >
-                <Button
-                  variant="secondary"
-                  aria-label={
-                    hideOpponent ? "Hiện camera đối thủ" : "Ẩn camera đối thủ"
-                  }
-                  title={
-                    hideOpponent ? "Hiện camera đối thủ" : "Ẩn camera đối thủ"
-                  }
-                  aria-pressed={hideOpponent}
-                  onClick={() => setHideOpponent((hidden) => !hidden)}
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    aria-hidden="true"
-                  >
-                    <rect x="2" y="5" width="14" height="14" rx="2" />
-                    <path d="m16 10 6-4v12l-6-4" />
-                    {hideOpponent && <path d="m2 2 20 20" />}
-                  </svg>
-                </Button>
-                <Button
-                  variant="secondary"
-                  aria-label={
-                    muteOpponent ? "Bật tiếng đối thủ" : "Tắt tiếng đối thủ"
-                  }
-                  title={
-                    muteOpponent ? "Bật tiếng đối thủ" : "Tắt tiếng đối thủ"
-                  }
-                  aria-pressed={muteOpponent}
-                  onClick={() => setMuteOpponent((muted) => !muted)}
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    aria-hidden="true"
-                  >
-                    <path d="m11 4-6 5H2v6h3l6 5V4Z" />
-                    {muteOpponent ? (
-                      <path d="m16 9 6 6m0-6-6 6" />
-                    ) : (
-                      <path d="M15 8a6 6 0 0 1 0 8m3-12a11 11 0 0 1 0 16" />
-                    )}
-                  </svg>
-                </Button>
-              </div>
+                {hidden ? "Hiện hình/tiếng" : "Tắt nhận hình/tiếng"}
+              </Button>
             )}
           </figure>
         );
@@ -136,7 +118,7 @@ export function MediaSeats({
           <MediaHost
             key={feed.key}
             element={feed.element}
-            muted={isPlayer && feed.identity !== selfId && muteOpponent}
+            muted={muted.includes(feed.identity)}
           />
         ))}
     </div>

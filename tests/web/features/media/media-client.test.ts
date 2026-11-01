@@ -8,6 +8,7 @@ const control = {
   connectionId: "peer",
   generation: 2,
 };
+const generation = "11111111-1111-4111-8111-111111111111";
 function ok(body: unknown) {
   return { ok: true, json: async () => body } as Response;
 }
@@ -19,6 +20,21 @@ function fail(code: string, status = 409) {
   } as Response;
 }
 describe("media client", () => {
+  it("reads whether the server found a permitted active source", async () => {
+    const client = createMediaClient(
+      vi.fn().mockResolvedValue(ok({ available: true, generation })),
+    );
+    expect(await client.sources("room")).toEqual({
+      available: true,
+      generation,
+    });
+    const broken = createMediaClient(
+      vi.fn().mockResolvedValue(ok({ available: "yes", generation })),
+    );
+    await expect(broken.sources("room")).rejects.toBeInstanceOf(
+      MediaRequestError,
+    );
+  });
   it("requests a role scoped token and validates the payload", async () => {
     const fetch = vi.fn().mockResolvedValue(
       ok({
@@ -26,6 +42,7 @@ describe("media client", () => {
         token: "token-a",
         roomName: "xiangqi-room",
         expiresAt: "2026-10-11T00:10:00Z",
+        generation,
         stage: null,
       }),
     );
@@ -44,6 +61,34 @@ describe("media client", () => {
         }),
       }),
     );
+  });
+  it.each([
+    undefined,
+    "",
+    "not-a-uuid",
+    "11111111-1111-1111-1111-111111111111",
+  ])("rejects invalid generation %s from both endpoints", async (invalid) => {
+    const client = createMediaClient(
+      vi
+        .fn()
+        .mockResolvedValueOnce(ok({ available: true, generation: invalid }))
+        .mockResolvedValueOnce(
+          ok({
+            url: "wss://media.example.invalid",
+            token: "token",
+            roomName: "room",
+            expiresAt: "2026-10-11T00:10:00Z",
+            stage: null,
+            generation: invalid,
+          }),
+        ),
+    );
+    await expect(client.sources("room")).rejects.toBeInstanceOf(
+      MediaRequestError,
+    );
+    await expect(
+      client.token("room", false, false, "tab"),
+    ).rejects.toBeInstanceOf(MediaRequestError);
   });
   it("reads and writes the share level", async () => {
     const fetch = vi

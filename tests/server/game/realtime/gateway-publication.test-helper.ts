@@ -53,6 +53,7 @@ export async function fixture(chatEnabled = false, viewerTabOwnership = false) {
         messages: [
           {
             messageId: randomUUID(),
+            senderId: connection.identity.userId,
             roomId,
             sequence: 1,
             channel: input.channel,
@@ -66,6 +67,7 @@ export async function fixture(chatEnabled = false, viewerTabOwnership = false) {
           },
         ],
         nextCursor: 1,
+        latestSequence: 1,
         hasMore: false,
       };
     },

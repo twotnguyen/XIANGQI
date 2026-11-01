@@ -207,12 +207,6 @@ export class AiPresence {
         };
       }
     }
-    const known = (
-      await scope.client.query(
-        "SELECT 1 FROM xiangqi_ai.tabs WHERE owner_id=$1 AND boot_id=$2 AND tab_id=$3",
-        [scope.actor.userId, this.bootId, p.tabId],
-      )
-    ).rowCount;
     await scope.client.query(
       "INSERT INTO xiangqi_ai.tabs(owner_id,boot_id,tab_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING",
       [scope.actor.userId, this.bootId, p.tabId],
@@ -221,10 +215,7 @@ export class AiPresence {
     if (gameId && !(await this.retained(scope, gameId)))
       sessionNotReady("AI_GAME_EXPIRED");
     const writable =
-      !current ||
-      !known ||
-      input.takeover === true ||
-      current.tab_id === p.tabId;
+      !gameId || !current || input.takeover === true || current.tab_id === p.tabId;
     let generation = Number(current?.generation ?? 0);
     if (writable) {
       if (

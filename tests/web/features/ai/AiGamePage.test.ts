@@ -243,6 +243,31 @@ it("keeps a newer socket snapshot when an older HTTP read resolves later", async
     expect(screen.getByText("Lượt đi lại: 2/3")).toBeTruthy();
   });
 });
+it("accepts newer same-board progress but ignores an older task", async () => {
+  const metrics = (taskVersion: number, nodes: number) => ({
+    taskVersion,
+    completedDepth: 2,
+    targetDepth: 4,
+    elapsedMs: 100,
+    nodes,
+    appliedMove: null,
+  });
+  mount(fetchWith(async () => json(envelope(snapshot()))));
+  await screen.findByText("Lượt đi lại: 3/3");
+  act(() =>
+    socket.onSnapshot?.(
+      envelope({ ...snapshot(), telemetry: metrics(2, 900) }),
+    ),
+  );
+  fireEvent.click(screen.getByRole("button", { name: /Thông số máy/ }));
+  expect(screen.getByText(/900/)).toBeTruthy();
+  act(() =>
+    socket.onSnapshot?.(
+      envelope({ ...snapshot(), telemetry: metrics(1, 100) }),
+    ),
+  );
+  expect(screen.getByText(/900/)).toBeTruthy();
+});
 
 it("shows the recovery alert when the server reports AI_NOT_FOUND", async () => {
   mount(fetchWith(async () => json({ code: "AI_NOT_FOUND" }, 404)));
@@ -321,6 +346,52 @@ it("navigates to the new game ID when an abandoned game is retried into a replac
     f.mock.calls.filter(([p]) => String(p).endsWith("/retry")),
   ).toHaveLength(1);
 });
+
+it.each(["FINISHED", "ABANDONED"] as const)(
+  "opens the durable replay for a member's %s game",
+  async (status) => {
+    const f = fetchWith(async () =>
+      json(
+        envelope(
+          snapshot({
+            status,
+            outcome:
+              status === "FINISHED"
+                ? { reason: "RESIGN", winner: "black" }
+                : { reason: "ENGINE_FAILURE", winner: null },
+          }),
+        ),
+      ),
+    );
+    mount(f);
+    const replay = (
+      await screen.findAllByRole("button", { name: "Xem lại" })
+    )[0]!;
+    fireEvent.click(replay);
+    expect(window.location.pathname).toBe(`/history/${id}`);
+  },
+);
+
+it.each([true, false])(
+  "does not expose replay before persistence or to guests (member=%s)",
+  async (member) => {
+    mount(
+      fetchWith(async () =>
+        json(
+          envelope(
+            snapshot({
+              status: member ? "FINALIZING" : "FINISHED",
+              outcome: { reason: "RESIGN", winner: "black" },
+            }),
+          ),
+        ),
+      ),
+      member,
+    );
+    await screen.findByRole("heading", { name: "Đấu với máy" });
+    expect(screen.queryByRole("button", { name: "Xem lại" })).toBeNull();
+  },
+);
 
 it("retries a transient FINALIZING save on the same game until the exact terminal result lands", async () => {
   const terminal = midGame({
@@ -484,14 +555,9 @@ it("sends no game request while this tab is read-only", async () => {
   expect(undo.getAttribute("aria-disabled")).toBe("true");
   fireEvent.click(undo);
   fireEvent.click(screen.getByRole("button", { name: "Về Sảnh" }));
-  fireEvent.click(
-    await screen.findByRole("button", { name: "Đầu hàng và rời ván" }),
-  );
-  expect(await screen.findByRole("alert")).toBeTruthy();
-  // A read-only confirm is rejected synchronously before any request is made.
   const writes = f.mock.calls.filter(([, init]) => init?.method === "POST");
   expect(writes).toHaveLength(0);
-  expect(window.location.pathname).toBe(`/ai/${id}`);
+  expect(window.location.pathname).toBe("/lobby");
 });
 
 it("keeps the game and closes the leave dialog when a command is still in flight", async () => {

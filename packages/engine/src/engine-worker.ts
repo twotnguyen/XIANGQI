@@ -4,6 +4,7 @@ import {
   EngineError,
   type EngineRequest,
   type EngineResult,
+  type EngineProgress,
 } from "./contracts.js";
 import { readRequest } from "./search.js";
 export interface EngineWorkerOptions {
@@ -156,13 +157,13 @@ export class EngineWorker {
     request: EngineRequest,
     options: {
       signal?: AbortSignal;
-      onIteration?: (depth: number) => void;
+      onProgress?: (progress: EngineProgress) => void;
     } = {},
   ): Promise<EngineResult> {
     if (this.closed) throw new EngineError("ENGINE_CLOSED");
     if (this.pending) throw new EngineError("ENGINE_BUSY");
     if (options.signal?.aborted) throw new EngineError("ENGINE_CANCELLED");
-    const started = performance.now();
+    // Search compute time comes from the worker; callers measure full await latency separately.
     const hostStarted = Number(process.hrtime.bigint()) / 1e6;
     const { current, history, limits, input } = readRequest(request);
     const deadline = hostStarted + limits.milliseconds - 5;
@@ -216,11 +217,26 @@ export class EngineWorker {
         try {
           if (!value || typeof value !== "object") throw Error();
           if ("ready" in value && value.ready === true) return;
-          if ("iteration" in value) {
-            const depth = (value as { iteration: number }).iteration;
-            if (!Number.isInteger(depth) || depth < 1 || depth > limits.depth)
+          if ("progress" in value) {
+            const sample = (value as { progress: EngineProgress }).progress;
+            if (
+              !sample ||
+              sample.targetDepth !== limits.depth ||
+              !Number.isInteger(sample.completedDepth) ||
+              sample.completedDepth < 1 ||
+              sample.completedDepth > limits.depth ||
+              !Number.isSafeInteger(sample.nodes) ||
+              sample.nodes < 0 ||
+              !Number.isFinite(sample.elapsedMs) ||
+              sample.elapsedMs < 0
+            )
               throw Error();
-            options.onIteration?.(depth);
+            options.onProgress?.({
+              completedDepth: sample.completedDepth,
+              targetDepth: sample.targetDepth,
+              nodes: sample.nodes,
+              elapsedMs: sample.elapsedMs,
+            });
             return;
           }
           if (!("result" in value)) throw Error();
@@ -255,7 +271,7 @@ export class EngineWorker {
           cleanup();
           this.pending = null;
           worker.unref();
-          resolve({ ...result, elapsedMs: performance.now() - started });
+          resolve(result);
         } catch {
           void stop("ENGINE_FAILED");
         }

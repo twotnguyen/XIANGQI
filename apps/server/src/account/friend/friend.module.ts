@@ -69,7 +69,10 @@ export async function createFriendRuntime(
         'xiangqi_social.friend_decline_counts','xiangqi_social.room_invites',
         'xiangqi_social.presence_leases','xiangqi_social.invite_cooldowns',
         'xiangqi_social.room_invite_declines','xiangqi_social.direct_messages',
-        'xiangqi_social.direct_message_reads','xiangqi_social.direct_message_rate']) name)
+        'xiangqi_social.direct_message_reads']) name)
+      AND pg_catalog.to_regclass('xiangqi_chat.rate') IS NOT NULL
+      AND has_schema_privilege('app_server','xiangqi_chat','USAGE')
+      AND has_table_privilege('app_server','xiangqi_chat.rate','SELECT,INSERT,UPDATE')
       AND has_table_privilege('app_server','xiangqi_social.friend_decline_counts','DELETE')
       AND EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='xiangqi_social.room_invites'::regclass AND attname='response_body' AND NOT attisdropped)
       AND EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='public.rooms'::regclass AND tgname='social_room_invites_revoked' AND tgenabled='O') AS ready`);

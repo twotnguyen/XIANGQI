@@ -8,6 +8,7 @@ import { FriendStore } from "@server/account/friend/friend.store.js";
 import type { FriendRoomPort } from "@server/account/friend/friend.room-port.js";
 import { DirectMessageService } from "@server/account/friend/direct-message.service.js";
 import { DirectMessageStore } from "@server/account/friend/direct-message.store.js";
+import { actorLock } from "@server/core/postgres.js";
 
 const url = process.env.ROOM_TEST_DATABASE_URL ?? databaseUrl;
 const pool = new Pool({ connectionString: url });
@@ -63,6 +64,7 @@ describe.skipIf(!url)("direct messages", () => {
     );
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261011000010_room_chat.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000014_friendships.sql");
     await apply(
@@ -157,6 +159,62 @@ describe.skipIf(!url)("direct messages", () => {
     await expectError(send(host, mate, "tin thứ sáu"), "DM_RATE_LIMITED", 429);
     // Người nhận có hạn mức riêng.
     await send(mate, host, "tin từ mate");
+  });
+  it("merges live legacy DM and room quota during migration", async () => {
+    await pool.query("INSERT INTO xiangqi_social.direct_message_rate(sender_id,sent_at) VALUES($1, ARRAY[clock_timestamp()])", [host]);
+    await pool.query("INSERT INTO xiangqi_chat.rate(actor_id,sent_at) VALUES($1, ARRAY[clock_timestamp()])", [host]);
+    await apply("supabase/migrations/20261103000009_yc7_chat_quota.sql");
+    const row = await pool.query("SELECT cardinality(sent_at) AS n FROM xiangqi_chat.rate WHERE actor_id=$1", [host]);
+    expect(row.rows[0].n).toBe(2);
+    await apply("supabase/rollback/20261103000009_yc7_chat_quota.sql");
+    const restored = await pool.query("SELECT cardinality(sent_at) AS n FROM xiangqi_social.direct_message_rate WHERE sender_id=$1", [host]);
+    expect(restored.rows[0].n).toBe(2);
+  });
+
+  it("shares quota across friends and does not charge retries or rejected stickers", async () => {
+    await befriend(host, stranger, "dmstranger");
+    const command = randomUUID();
+    await send(host, mate, ":clap:", command);
+    await send(host, mate, ":clap:", command);
+    await expectError(send(host, mate, ":unknown:"), "DM_INPUT_INVALID", 400);
+    await Promise.all(Array.from({ length: 4 }, (_, i) => send(host, stranger, `tin ${i}`)));
+    await expectError(send(host, mate, "quá nhanh"), "DM_RATE_LIMITED", 429);
+  });
+
+  it("cannot replay a command into another friend's conversation", async () => {
+    await befriend(host, stranger, "dmstranger");
+    const command = randomUUID();
+    await send(host, mate, "bí mật", command);
+    await expectError(send(host, stranger, "bí mật", command), "DM_COMMAND_ID_REUSED", 409);
+  });
+
+  it("counts existing room quota for direct messages", async () => {
+    await pool.query("INSERT INTO xiangqi_chat.rate(actor_id,sent_at) VALUES($1,array_fill(clock_timestamp(),ARRAY[5]))", [host]);
+    await expectError(send(host, mate, "tin DM"), "DM_RATE_LIMITED", 429);
+  });
+  it("rolls quota back when the message insert fails", async () => {
+    await pool.query("CREATE FUNCTION xiangqi_social.reject_test_dm() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'test'; END $$");
+    await pool.query("CREATE TRIGGER reject_test_dm BEFORE INSERT ON xiangqi_social.direct_messages FOR EACH ROW EXECUTE FUNCTION xiangqi_social.reject_test_dm()");
+    await expect(send(host, mate, "không lưu")).rejects.toThrow();
+    await pool.query("DROP TRIGGER reject_test_dm ON xiangqi_social.direct_messages");
+    await pool.query("DROP FUNCTION xiangqi_social.reject_test_dm()");
+    for (let i = 0; i < 5; i++) await send(host, mate, `tin ${i}`);
+    await expectError(send(host, mate, "thứ sáu"), "DM_RATE_LIMITED", 429);
+  });
+
+  it("rechecks friendship after a concurrent unfriend commits", async () => {
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      for (const id of [host, mate].sort()) await actorLock(client, id);
+      await client.query("DELETE FROM xiangqi_social.friendships WHERE user_a=LEAST($1::uuid,$2::uuid) AND user_b=GREATEST($1::uuid,$2::uuid)", [host, mate]);
+      const pending = dm.list(host, mate, null);
+      await client.query("COMMIT");
+      await expectError(pending, "DM_NOT_FRIENDS", 403);
+    } finally {
+      await client.query("ROLLBACK");
+      client.release();
+    }
   });
 
   it("blocks read and send after unfriend, then restores history on refriend", async () => {

@@ -62,6 +62,67 @@ function props(): RoomChatProps {
     onLoadMore: () => {},
   };
 }
+it("gửi nguyên khoảng trắng và sticker một chạm", async () => {
+  mobile(false);
+  const p = props();
+  const sent: string[] = [];
+  p.onSend = async (_, content) => { sent.push(content); };
+  render(createElement(RoomChat, p));
+  const user = userEvent.setup();
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "  xin chào  " } });
+  await user.click(screen.getByRole("button", { name: "Gửi Kênh riêng" }));
+  await user.click(screen.getByRole("button", { name: "Sticker Kênh riêng" }));
+  await user.click(screen.getByRole("button", { name: "Nước cờ hay" }));
+  expect(sent).toEqual(["  xin chào  ", ":clap:"]);
+});
+it("thử lại sticker thất bại mà không thay bằng bản nháp", async () => {
+  mobile(false);
+  const p = props();
+  const sent: string[] = [];
+  p.onSend = async (_, value) => { sent.push(value); if (sent.length === 1) throw new Error("Bạn gửi quá nhanh"); };
+  render(createElement(RoomChat, p));
+  const user = userEvent.setup();
+  await user.type(screen.getByRole("textbox"), "bản nháp");
+  await user.click(screen.getByRole("button", { name: "Sticker Kênh riêng" }));
+  await user.click(screen.getByRole("button", { name: "Nước cờ hay" }));
+  await user.click(screen.getByRole("button", { name: "Thử lại Kênh riêng" }));
+  expect(sent).toEqual([":clap:", ":clap:"]);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("bản nháp");
+});
+it("đếm riêng tin mới từ người khác trong kênh đang ẩn và xóa khi đổi scope", () => {
+  mobile(false);
+  const p = props();
+  p.userId = "self";
+  const onUnreadChange = vi.fn();
+  p.onUnreadChange = onUnreadChange;
+  const view = render(createElement(RoomChat, p));
+  const publicState = p.channels.ROOM_PUBLIC;
+  view.rerender(createElement(RoomChat, {
+    ...p,
+    channels: { ...p.channels, ROOM_PUBLIC: { ...publicState, messages: [
+      ...publicState.messages,
+      { ...message("của mình", "red", 2), channel: "ROOM_PUBLIC", senderId: "self" },
+      { ...message("mới", "black", 3), channel: "ROOM_PUBLIC", senderId: "other" },
+    ] } },
+  }));
+  expect(screen.getByLabelText("1 tin chưa xem")).toBeTruthy();
+  expect(onUnreadChange).toHaveBeenLastCalledWith({ PLAYERS_PRIVATE: 0, ROOM_PUBLIC: 1 });
+  view.rerender(createElement(RoomChat, { ...p, channels: { ...p.channels, ROOM_PUBLIC: { ...publicState, scopeToken: "new" } } }));
+  expect(screen.queryByLabelText("1 tin chưa xem")).toBeNull();
+});
+it("không báo tin lịch sử phân trang hay lúc tải scope ban đầu", () => {
+  mobile(false);
+  const p = props();
+  p.userId = "self";
+  const initial = { ...p.channels.ROOM_PUBLIC, messages: [], loading: true };
+  const view = render(createElement(RoomChat, { ...p, channels: { ...p.channels, ROOM_PUBLIC: initial } }));
+  const old = { ...message("cũ", "black", 2), channel: "ROOM_PUBLIC" as const, senderId: "other" };
+  view.rerender(createElement(RoomChat, { ...p, channels: { ...p.channels, ROOM_PUBLIC: { ...initial, loading: false, messages: [old], historyThrough: 2 } } }));
+  expect(screen.queryByLabelText(/tin chưa xem/)).toBeNull();
+  const olderPage = { ...message("lịch sử", "black", 3), channel: "ROOM_PUBLIC" as const, senderId: "other" };
+  view.rerender(createElement(RoomChat, { ...p, channels: { ...p.channels, ROOM_PUBLIC: { ...initial, loading: false, messages: [old, olderPage], historyThrough: 3 } } }));
+  expect(screen.queryByLabelText(/tin chưa xem/)).toBeNull();
+});
 it("opens private only on desktop and permits independently showing and hiding both panes", async () => {
   mobile(false);
   render(createElement(RoomChat, props()));

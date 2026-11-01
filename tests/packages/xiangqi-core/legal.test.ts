@@ -6,6 +6,9 @@ import {
   perft,
   playMove,
   parsePosition,
+  pseudoLegalMoves,
+  hasLegalMove,
+  type PieceType,
 } from "@core/index.js";
 import { fixture, square } from "./fixtures.js";
 
@@ -91,6 +94,49 @@ describe("general safety and move application (T07)", () => {
     position.board[square(3, 8)] = { side: "red", type: "advisor" };
     expect(isInCheck(position, "red")).toBe(false);
   });
+
+  it("keeps targeted check detection equivalent to piece geometry on every attacker square", () => {
+    for (const side of ["red", "black"] as const) {
+      const opponent = side === "red" ? "black" : "red";
+      const king = side === "red" ? 85 : 3;
+      for (const type of [
+        "advisor",
+        "elephant",
+        "horse",
+        "rook",
+        "cannon",
+        "pawn",
+      ] satisfies PieceType[]) {
+        for (let from = 0; from < 90; from++) {
+          const position = fixture([
+            ["red", "king", 4, 9],
+            ["black", "king", 3, 0],
+          ]);
+          if (position.board[from]) continue;
+          position.board[from] = { side: opponent, type };
+          // A fixed screen exercises cannons and blocked lines as well as bare geometry.
+          if (from !== 49) position.board[49] = { side, type: "pawn" };
+          const attacks = pseudoLegalMoves({ ...position, turn: opponent });
+          expect(isInCheck(position, side)).toBe(
+            attacks.some((move) => move.to === king),
+          );
+        }
+      }
+    }
+  });
+
+  it.each([
+    [
+      "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1",
+      true,
+    ],
+    ["4k4/3R1R3/4P4/9/9/9/9/9/9/4K4 b - - 0 1", false],
+  ] as const)(
+    "checks existence of a legal reply without throwing for %s",
+    (fen, exists) => {
+      expect(hasLegalMove(parsePosition(fen))).toBe(exists);
+    },
+  );
 
   it("applies a move without mutation and increments no-capture and move counters", () => {
     const position = initialPosition();

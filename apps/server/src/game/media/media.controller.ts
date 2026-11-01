@@ -177,6 +177,12 @@ export class MediaController {
       )
       .catch(fail);
   }
+  @Get("sources")
+  @Header("Cache-Control", "no-store")
+  sources(@Req() request: AuthenticatedRequest, @Query("roomId") roomId: unknown) {
+    if (typeof roomId !== "string") invalidInput("MEDIA_INPUT_INVALID");
+    return this.media.sourcesFor(this.user(request), roomId).catch(fail);
+  }
   /**
    * Truy vấn trạng thái và quyền chia sẻ media hiện tại của người dùng trong phòng cờ.
    */
