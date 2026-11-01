@@ -4,7 +4,7 @@ ALTER TABLE xiangqi_room.outbox ADD COLUMN media_generation uuid;
 
 -- Existing fixed provider rooms must be removed even when no revoke was pending.
 WITH bumped AS (
-  UPDATE public.rooms SET room_version=room_version+1 RETURNING id,room_version
+  UPDATE public.rooms SET room_version=room_version+1 WHERE closed_at IS NULL RETURNING id,room_version
 )
 INSERT INTO xiangqi_room.outbox(id,room_id,room_version,type,payload)
 SELECT gen_random_uuid(),id,room_version,'media.revoke-room','{"legacyNamespace":true}'::jsonb FROM bumped;
