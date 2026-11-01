@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { setImmediate as nextTurn } from "node:timers/promises";
 import { describe, expect, it } from "vitest";
 import { MatchmakingQueue, type QueueIdentity, type MatchmakingPort } from "../../../../apps/server/src/game/matchmaking/matchmaking-queue.js";
 import { RoomError } from "../../../../apps/server/src/game/room/room.types.js";
@@ -12,6 +13,7 @@ function setup() {
   const cap = new Set<string>();
   const port: MatchmakingPort = {
     authorize: async () => true,
+    authorizeMany: async identities => Promise.allSettled(identities.map(identity=>port.authorize(identity))),
     occupied: async (actor) => { if (occupiedFails) throw Error("temporary database failure"); return reserved.has(actor.userId); },
     reserve: async (identity) => {
       if (reserved.has(identity.actor.userId)) throw Error("busy");
@@ -190,5 +192,63 @@ describe("YC9 matchmaking state transitions", () => {
     await t.queue.tick();
     expect(t.state(t.a)).toMatchObject({status:"MATCHED",roomId:tokens[0]});
     expect(tokens).toEqual([tokens[0],tokens[0]]);
+  });
+  it("does not let a delayed admission block another player's disconnect expiry", async () => {
+    const t=setup(); await t.join(t.a);
+    let unblock!:()=>void, started!:()=>void;
+    const blocked=new Promise<void>(resolve=>{unblock=resolve;});
+    const entered=new Promise<void>(resolve=>{started=resolve;});
+    t.port.occupied=async actor=>{if(actor.userId===t.b.actor.userId){started();await blocked;}return false;};
+    const admission=t.connect(t.b); await entered;
+    try {
+      let finished=false;
+      const expired=t.queue.disconnect(t.a.actor.userId).then(async()=>{t.at(30000);await t.queue.tick();finished=true;});
+      await nextTurn();
+      expect(finished).toBe(true);
+      expect(t.state(t.a).status).toBe("CANCELLED");
+      await expired;
+    } finally {unblock();await admission;}
+  });
+  it("withdraws a revoked session before a countdown can start", async () => {
+    const t=setup();await t.join(t.a);await t.join(t.b);await t.confirm(t.a);await t.confirm(t.b);
+    t.port.authorize=async identity=>identity.actor.userId!==t.b.actor.userId;
+    t.at(3000);await t.queue.tick();
+    expect(t.starts).toEqual([]);expect(t.state(t.b).status).toBe("CANCELLED");
+  });
+  it("bounds simultaneous commands before authorization while preserving accepted receipts", async () => {
+    const t=setup();await t.connect(t.a);
+    let unblock!:()=>void, started!:()=>void, reads=0;
+    const blocked=new Promise<void>(resolve=>{unblock=resolve;});
+    const entered=new Promise<void>(resolve=>{started=resolve;});
+    t.port.authorize=async()=>{reads++;started();await blocked;return true;};
+    const command={commandId:randomUUID(),type:"sync"};
+    const first=t.queue.command(t.a.actor.userId,command);await entered;
+    const flood=Array.from({length:100},()=>t.queue.command(t.a.actor.userId,{commandId:randomUUID(),type:"sync"}).catch(()=>null));
+    unblock();await first;
+    const results=await Promise.all(flood);
+    expect(results.filter(result=>result===null).length).toBeGreaterThan(0);
+    expect(reads).toBeLessThan(101);
+    await t.queue.command(t.a.actor.userId,command);
+  });
+  it("rate limits sequential sync spam before another authorization read", async () => {
+    const t=setup();await t.connect(t.a);let reads=0;
+    t.port.authorize=async()=>{reads++;return true;};
+    for(let i=0;i<120;i++) await t.command(t.a,{type:"sync"});
+    await expect(t.command(t.a,{type:"sync"})).rejects.toThrow();
+    expect(reads).toBe(120);
+    t.at(60000);await t.command(t.a,{type:"sync"});
+  });
+  it("keeps accepted command receipts for 24 hours when the per-user bound is full", async () => {
+    const t=setup();await t.connect(t.a);
+    const first={commandId:randomUUID(),type:"sync"};
+    await t.queue.command(t.a.actor.userId,first);
+    for(let i=1;i<1024;i++) {t.at(Math.floor(i/120)*60000);await t.command(t.a,{type:"sync"});}
+    await expect(t.command(t.a,{type:"sync"})).rejects.toThrow();
+    t.at(86399999);
+    await t.queue.command(t.a.actor.userId,first);
+    await expect(t.queue.command(t.a.actor.userId,{...first,type:"join",mode:"CASUAL"})).rejects.toThrow();
+    expect(t.reserved.size).toBe(0);
+    t.at(86400000);
+    await t.command(t.a,{type:"sync"});
   });
 });

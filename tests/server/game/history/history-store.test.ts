@@ -147,6 +147,14 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
     await apply("supabase/migrations/20261011000014_friendships.sql");
     await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
   });
+  it("keeps room kind and matched-room settings immutable under the real migration", async () => {
+    const a = await member("A"), b = await member("B");
+    const id = await game(a, b, { kind: "RANKED" });
+    const room = (await pool.query("SELECT room_id FROM public.matches WHERE id=$1", [id])).rows[0].room_id;
+    await expect(pool.query("UPDATE public.rooms SET kind='CASUAL' WHERE id=$1", [room])).rejects.toThrow(/immutable/i);
+    await expect(pool.query("UPDATE public.rooms SET time_control=600 WHERE id=$1", [room])).rejects.toThrow(/immutable/i);
+    expect((await pool.query("SELECT kind,time_control FROM public.rooms WHERE id=$1", [room])).rows[0]).toEqual({ kind: "RANKED", time_control: 300 });
+  });
   it("settles ranked once and projects each participant's history delta", async () => {
     const a = await member("A"), b = await member("B");
     const id = await game(a, b, { kind: "RANKED" });
@@ -156,6 +164,15 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
     expect((await run(a, s => store.list(s, {filter:"RANKED"}))).items[0]).toMatchObject({type:"RANKED",eloDelta:16});
     expect((await run(b, s => store.list(s, {filter:"RANKED"}))).items[0]).toMatchObject({type:"RANKED",eloDelta:-16});
     expect(await run(a, s => store.rankedSummary(s))).toMatchObject({elo:1216,completed:1,wins:1});
+  });
+  it("counts a simultaneous-disconnect draw for both ranked players even without moves", async () => {
+    const a = await member("A"), b = await member("B");
+    const id = await game(a, b, { kind: "RANKED", reason: "DRAW_SIMULTANEOUS_DISCONNECT", winner: null });
+    const result = await run(a, s => settleRanked(s.client, id, { reason: "DRAW_SIMULTANEOUS_DISCONNECT", winner: null }, new Date("2026-10-01T00:00:00Z")));
+    expect(result).toMatchObject({ red: { before: 1200, after: 1200, delta: 0 }, black: { before: 1200, after: 1200, delta: 0 } });
+    const ratings = await pool.query("SELECT user_id,elo,completed,draws FROM xiangqi_room.ratings WHERE user_id=ANY($1::uuid[]) ORDER BY user_id", [[a.userId, b.userId]]);
+    expect(ratings.rows).toHaveLength(2);
+    for (const rating of ratings.rows) expect(rating).toMatchObject({ elo: 1200, completed: 1, draws: 1 });
   });
   it("ranks eligible members by tie breaks and exposes messaging only for friends", async () => {
     const a = await member("A"), b = await member("B"), c = await member("C");

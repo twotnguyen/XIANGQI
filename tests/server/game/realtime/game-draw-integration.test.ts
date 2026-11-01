@@ -244,6 +244,7 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
       );
+      await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
     });
     it("commits one durable offer through replay, rejects command ID reuse, and withdraws when sender moves", async () => {
       const f = await fixture(),

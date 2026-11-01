@@ -12,8 +12,7 @@ describe.skipIf(!databaseUrl)(
   "durable draw agreements on synthetic PostgreSQL",
   () => {
     it("ranked requires 20 moves by each side and five requester moves after refusal", async () => {
-      const f = await fixture();
-      await pool.query("UPDATE public.rooms SET kind='RANKED' WHERE id=$1", [f.roomId]);
+      const f = await fixture(600, 0, "RANKED");
       await pool.query(
         `INSERT INTO public.match_events(match_id,version,type,payload)
          SELECT $1,100+n,'MOVE',jsonb_build_object('side', CASE WHEN n<=20 THEN 'RED' ELSE 'BLACK' END)

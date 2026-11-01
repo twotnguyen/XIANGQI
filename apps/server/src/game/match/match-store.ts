@@ -170,7 +170,7 @@ export class MatchStore extends MatchUndoStore {
     const { positions: history, lastMove } = await this.history(client, row);
     const match = this.view(row, history.at(-1)!, lastMove);
     if (row.status !== "ACTIVE") {
-      const ranked = await client.query("SELECT 1 FROM public.rooms r WHERE r.id=$1 AND to_jsonb(r)->>'kind'='RANKED'", [roomId]);
+      const ranked = await client.query("SELECT 1 FROM public.rooms r WHERE r.id=$1 AND r.kind='RANKED'", [roomId]);
       if (ranked.rowCount) match.rating = row.status === "INTERRUPTED" ? null : await readSettlement(client, row.id);
     }
     return match;
@@ -194,7 +194,7 @@ export class MatchStore extends MatchUndoStore {
     );
     const match = this.view(loaded.row, history.at(-1)!, lastMove);
     if (loaded.row.status !== "ACTIVE") {
-      const ranked = await client.query("SELECT 1 FROM public.rooms r WHERE r.id=$1 AND to_jsonb(r)->>'kind'='RANKED'", [roomId]);
+      const ranked = await client.query("SELECT 1 FROM public.rooms r WHERE r.id=$1 AND r.kind='RANKED'", [roomId]);
       if (ranked.rowCount) match.rating = loaded.row.status === "INTERRUPTED" ? null : await readSettlement(client, loaded.row.id);
     }
     return { ...loaded, match };
@@ -428,7 +428,7 @@ export class MatchStore extends MatchUndoStore {
       () => ({ reason: "ABORTED", winner: null }),
       async (row) => {
         const ranked = await scope.client.query(
-          "SELECT 1 FROM public.rooms r WHERE r.id=$1 AND to_jsonb(r)->>'kind'='RANKED'",
+          "SELECT 1 FROM public.rooms r WHERE r.id=$1 AND r.kind='RANKED'",
           [row.room_id],
         );
         if (ranked.rowCount)

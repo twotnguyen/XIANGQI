@@ -12,6 +12,7 @@ export interface QueueIdentity {
 }
 export interface MatchmakingPort {
   authorize(identity: QueueIdentity): Promise<boolean>;
+  authorizeMany(identities: QueueIdentity[]): Promise<PromiseSettledResult<boolean>[]>;
   occupied(actor: RoomActor): Promise<boolean>;
   reserve(identity: QueueIdentity): Promise<number>;
   release(identity: QueueIdentity): Promise<void>;
@@ -61,6 +62,10 @@ export class MatchmakingQueue {
   private readonly receipts = new Map<string, Map<string, { fingerprint: string; at: number }>>();
   private readonly idle = new Map<string, MatchmakingState>();
   private readonly absentSince = new Map<string, number>();
+  private readonly commandInFlight = new Map<string, number>();
+  private readonly commandTails = new Map<string, Promise<void>>();
+  private readonly commandWindows = new Map<string, {count:number; until:number}>();
+  private receiptCount = 0;
   private pending: Promise<unknown> = Promise.resolve();
   private closed = false;
   private nextOrder = 0;
@@ -83,28 +88,30 @@ export class MatchmakingQueue {
     if (!entry) return {...base, queueId:null,mode:null,status:"IDLE",startedAt:null,deadline:null,offerId:null,confirmed:false,roomId:null,...this.idle.get(userId),...base};
     return {...base,queueId:entry.queueId,mode:entry.mode,status:entry.status,startedAt:new Date(entry.startedAt).toISOString(),deadline:active(entry) ? new Date(entry.pair?.deadline ?? entry.deadline).toISOString() : null,offerId:entry.pair?.id ?? null,confirmed:entry.confirmed,roomId:entry.roomId,...(entry.reason ? {reason:entry.reason} : {})};
   }
-  private async refreshIdle(identity: QueueIdentity) {
+  private refreshIdle(identity: QueueIdentity, occupied: boolean) {
     const userId=identity.actor.userId;
-    const occupied=await this.port.occupied(identity.actor);
     if (this.entries.get(userId)?.status === "MATCHED" && !occupied) this.entries.delete(userId);
     if (!this.entries.has(userId)) this.idle.set(userId,{...this.state(userId),occupiedElsewhere:occupied});
   }
-  connect(socketId: string, identity: QueueIdentity) {
+  async connect(socketId: string, identity: QueueIdentity) {
+    const snapshot=this.entries.get(identity.actor.userId);
+    const status=snapshot?.status;
+    const [,occupied]=await Promise.all([this.authorized(identity),!snapshot || snapshot.status==="MATCHED" ? this.port.occupied(identity.actor) : Promise.resolve(undefined)]);
     return this.run(async () => {
-      await this.authorized(identity);
+      if (this.closed) throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
       await this.expireDisconnected();
       let entry = this.entries.get(identity.actor.userId);
       if (entry && entry.identity.sessionKey !== identity.sessionKey) {
+        if (entry!==snapshot || entry.status!==status) fail("Phiên tìm trận đã thay đổi");
+        await this.authorized(identity);
         await this.withdraw(entry, "Phiên tìm trận đã thay đổi");
         this.entries.delete(identity.actor.userId);
         entry = undefined;
       }
-      const needsRead = !entry || entry.status === "MATCHED";
       this.peers.set(socketId, identity);
       this.absentSince.delete(identity.actor.userId);
       if (entry && active(entry)) entry.disconnectedAt = null;
-      try { if (needsRead) await this.refreshIdle(identity); }
-      catch (error) { this.peers.delete(socketId); throw error; }
+      if ((!entry || entry.status === "MATCHED") && entry===snapshot && entry?.status===status && occupied!==undefined) this.refreshIdle(identity,occupied);
       return this.state(identity.actor.userId);
     });
   }
@@ -117,28 +124,46 @@ export class MatchmakingQueue {
       if (![...this.peers.values()].some(peer=>peer.actor.userId===identity.actor.userId)) this.absentSince.set(identity.actor.userId,this.now());
     });
   }
-  command(socketId: string, input: unknown) {
-    return this.run(async () => {
-      const command = parseMatchmakingCommand(input);
-      const identity = this.peers.get(socketId);
-      if (!identity) throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
-      await this.authorized(identity);
+  async command(socketId: string, input: unknown) {
+    const command = parseMatchmakingCommand(input);
+    const identity = this.peers.get(socketId);
+    if (!identity) throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
+    const userId=identity.actor.userId;
+    const inFlight=this.commandInFlight.get(userId) ?? 0;
+    if (inFlight>=8) fail("Quá nhiều lệnh tìm trận");
+    const window=this.commandWindows.get(userId);
+    if (window && this.now()<window.until) {
+      if (window.count>=120) fail("Quá nhiều lệnh tìm trận");
+      window.count++;
+    } else this.commandWindows.set(userId,{count:1,until:this.now()+60000});
+    this.commandInFlight.set(userId,inFlight+1);
+    const prior=this.commandTails.get(userId);
+    let release!:()=>void;
+    const turn=new Promise<void>(resolve=>{release=resolve;});
+    this.commandTails.set(userId,turn);
+    try {
+      if (prior) await prior;
+      const snapshot=this.entries.get(userId), status=snapshot?.status;
+      const [,occupied]=await Promise.all([this.authorized(identity),command.type==="sync" && (!snapshot || !active(snapshot)) ? this.port.occupied(identity.actor) : Promise.resolve(undefined)]);
+      return await this.run(async () => {
+      if (this.closed || this.peers.get(socketId)!==identity) throw new RoomError("AUTH_REQUIRED", "Phiên đăng nhập không hợp lệ", 401);
       await this.expireDisconnected();
-      const userId = identity.actor.userId;
       let entry = this.entries.get(userId);
       if (entry && entry.identity.sessionKey !== identity.sessionKey) fail("Phiên tìm trận đã thay đổi");
       const fingerprint = JSON.stringify([command.type,command.mode,command.queueId,command.offerId,command.bootId]);
       let receipts = this.receipts.get(userId);
-      if (!receipts) { receipts = new Map(); this.receipts.set(userId, receipts); }
+      if (!receipts) receipts = new Map();
+      for (const [id,receipt] of receipts) if (this.now()-receipt.at>=86400000) { receipts.delete(id); this.receiptCount--; }
       const prior = receipts.get(command.commandId);
       if (prior) {
         if (prior.fingerprint !== fingerprint) fail("Mã lệnh đã được sử dụng");
         return this.state(userId);
       }
+      if (receipts.size>=1024 || this.receiptCount>=100000) fail("Quá nhiều lệnh tìm trận");
       if (command.type === "sync") {
         if (!entry && command.bootId && command.bootId !== this.bootId && command.queueId) {
           this.idle.set(userId,{...this.state(userId),status:"CANCELLED",reason:restart});
-        } else if (!entry || !active(entry)) await this.refreshIdle(identity);
+        } else if ((!entry || !active(entry)) && entry===snapshot && entry?.status===status && occupied!==undefined) this.refreshIdle(identity,occupied);
       } else if (command.type === "join") {
         if (!command.mode) fail("Chọn chế độ tìm trận");
         if (command.mode === "RANKED" && identity.actor.kind !== "member") throw new RoomError("MATCHMAKING_MEMBER_REQUIRED","Khách không được Đánh Hạng",403);
@@ -165,10 +190,15 @@ export class MatchmakingQueue {
           }
         }
       }
-      receipts.set(command.commandId,{fingerprint,at:this.now()});
-      for (const [id,receipt] of receipts) if (this.now()-receipt.at>=86400000) receipts.delete(id);
+      receipts.set(command.commandId,{fingerprint,at:this.now()}); this.receipts.set(userId,receipts); this.receiptCount++;
       return this.state(userId);
-    });
+      });
+    } finally {
+      release();
+      if (this.commandTails.get(userId)===turn) this.commandTails.delete(userId);
+      const remaining=(this.commandInFlight.get(userId) ?? 1)-1;
+      if (remaining) this.commandInFlight.set(userId,remaining); else this.commandInFlight.delete(userId);
+    }
   }
   private async cancel(entry: Entry, reason: string) {
     if (active(entry)) await this.port.release(entry.identity);
@@ -234,13 +264,18 @@ export class MatchmakingQueue {
       catch { reportFailure(); }
     }
   }
-  tick() {
+  async tick() {
+    const due=[...this.entries.values()].filter(entry=>active(entry) && !entry.pair?.starting && this.now()-entry.checkedAt>=1000);
+    const checks=await this.port.authorizeMany(due.map(entry=>entry.identity));
     return this.run(async () => {
       if (this.closed) return;
       await this.expireDisconnected();
-      for (const entry of this.entries.values()) if (active(entry) && !entry.pair?.starting && this.now()-entry.checkedAt>=1000) {
+      for (const [index,entry] of due.entries()) {
+        if (this.entries.get(entry.identity.actor.userId)!==entry || !active(entry) || entry.pair?.starting) continue;
+        const check=checks[index]!;
         try {
-          if (!(await this.port.authorize(entry.identity))) await this.withdraw(entry,"Phiên đăng nhập đã hết hiệu lực");
+          if (check.status==="rejected") throw check.reason;
+          if (!check.value) await this.withdraw(entry,"Phiên đăng nhập đã hết hiệu lực");
           entry.checkedAt=this.now();
         } catch { reportFailure(); }
       }
@@ -270,9 +305,10 @@ export class MatchmakingQueue {
         if (!entry || !active(entry)) {this.entries.delete(userId);this.idle.delete(userId);this.absentSince.delete(userId);}
       }
       for (const [userId,receipts] of this.receipts) {
-        for (const [id,receipt] of receipts) if (this.now()-receipt.at>=86400000) receipts.delete(id);
+        for (const [id,receipt] of receipts) if (this.now()-receipt.at>=86400000) { receipts.delete(id); this.receiptCount--; }
         if (!receipts.size) this.receipts.delete(userId);
       }
+      for (const [userId,window] of this.commandWindows) if (this.now()>=window.until) this.commandWindows.delete(userId);
     });
   }
   close() { return this.run(async()=>{this.closed=true;for(const entry of this.entries.values()) if(active(entry) && !entry.pair?.starting) await this.withdraw(entry,restart);this.peers.clear();}); }

@@ -115,6 +115,7 @@ describe.skipIf(!databaseUrl)(
         "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
       );
       await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+      await apply("supabase/migrations/20261103000012_yc9_ranked_guards.sql");
     });
     afterAll(async () => {
       await pool.end();

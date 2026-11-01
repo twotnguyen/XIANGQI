@@ -625,9 +625,9 @@ async function bootRoomRuntime(
     module,
     guests,
     matchmaking: {
-      attach(server: HttpServer, corsOrigins: readonly string[]) {
+      attach(server: HttpServer, corsOrigins: readonly string[], trustedProxyHops = 0) {
         if (matchmakingGateway) throw new Error("Matchmaking gateway is already attached");
-        matchmakingGateway = attachMatchmaking(server, matchmakingQueue, matchmakingService, corsOrigins);
+        matchmakingGateway = attachMatchmaking(server, matchmakingQueue, matchmakingService, corsOrigins, trustedProxyHops);
       },
     },
     authorizer: sessionAuthorizer,

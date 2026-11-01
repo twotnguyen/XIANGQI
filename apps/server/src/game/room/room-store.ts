@@ -67,7 +67,7 @@ export class RoomStore extends RoomViewerStore {
     const limits = (
       await s.client.query<{ seated: boolean; guestRoom: boolean }>(
         `SELECT EXISTS(SELECT 1 FROM public.active_players WHERE user_id=$1) AS seated,
-         ($2::boolean AND EXISTS(SELECT 1 FROM public.rooms WHERE owner_id=$1 AND closed_at IS NULL)) AS "guestRoom"`,
+         ($2::boolean AND EXISTS(SELECT 1 FROM public.rooms WHERE owner_id=$1 AND closed_at IS NULL AND kind='CUSTOM')) AS "guestRoom"`,
         [s.actor.userId, s.actor.kind === "guest"],
       )
     ).rows[0]!;

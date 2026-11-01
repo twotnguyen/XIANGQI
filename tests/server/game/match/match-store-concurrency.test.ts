@@ -122,6 +122,7 @@ describe.skipIf(!databaseUrl)("MatchStore concurrent commands", () => {
     await apply(
       "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
     );
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
   });
 
   it("never produces two results when a move races both resignations", async () => {

@@ -31,6 +31,12 @@ export class MatchmakingStore implements MatchmakingPort {
       throw error;
     }
   }
+  async authorizeMany(identities: QueueIdentity[]) {
+    const results: PromiseSettledResult<boolean>[]=[];
+    for (let i=0;i<identities.length;i+=16)
+      results.push(...await Promise.allSettled(identities.slice(i,i+16).map(identity=>this.authorize(identity))));
+    return results;
+  }
   async occupied(actor: RoomActor) {
     const result=await this.pool.query<{occupied:boolean}>(`SELECT EXISTS(SELECT 1 FROM public.active_players WHERE user_id=$1) OR EXISTS(SELECT 1 FROM public.room_members m JOIN public.rooms r ON r.id=m.room_id WHERE m.user_id=$1 AND r.closed_at IS NULL) AS occupied`,[actor.userId]);
     return result.rows[0]!.occupied;
@@ -106,7 +112,10 @@ export class MatchmakingStore implements MatchmakingPort {
     const result=await this.pool.query<{ready:boolean}>(`SELECT
       EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='public.rooms'::regclass AND attname='kind' AND NOT attisdropped AND attnotnull)
       AND (SELECT bool_and(c.oid IS NOT NULL AND c.relrowsecurity AND c.relforcerowsecurity
-        AND has_table_privilege('app_server',c.oid,'SELECT,INSERT,UPDATE')
+        AND has_table_privilege('app_server',c.oid,'SELECT')
+        AND has_table_privilege('app_server',c.oid,'INSERT')
+        AND (t.name<>'xiangqi_room.ratings' OR has_table_privilege('app_server',c.oid,'UPDATE'))
+        AND (t.name<>'xiangqi_room.ranked_results' OR NOT has_table_privilege('app_server',c.oid,'UPDATE,DELETE'))
         AND NOT has_table_privilege('anon',c.oid,'SELECT,INSERT,UPDATE,DELETE')
         AND NOT has_table_privilege('authenticated',c.oid,'SELECT,INSERT,UPDATE,DELETE'))
         FROM unnest(ARRAY['xiangqi_room.ratings','xiangqi_room.ranked_results']) t(name)

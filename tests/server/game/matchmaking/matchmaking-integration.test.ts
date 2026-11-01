@@ -11,6 +11,7 @@ async function schema() {
   await pool.query("DROP SCHEMA IF EXISTS xiangqi_social CASCADE; DROP SCHEMA IF EXISTS xiangqi_ai CASCADE");
   await resetBase();
   for(const name of ["20261011000010_room_chat","20261011000011_ai_reservations","20261011000012_ai_presence","20261011000013_side_swap","20261011000014_friendships","20261011000015_media_share","20261011000016_room_viewers","20261019000019_principal_foreign_keys","20261102000004_direct_messages","20261103000009_yc7_chat_quota","20261103000010_media_generation","20261103000011_yc9_ranked"]) await apply(`supabase/migrations/${name}.sql`);
+  await apply("supabase/migrations/20261103000012_yc9_ranked_guards.sql");
 }
 async function boot() {
   const r=registration();

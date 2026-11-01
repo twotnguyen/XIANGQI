@@ -18,7 +18,7 @@ const joins = `FROM (SELECT id,match_id,status,expires_at FROM xiangqi_room.matc
 const eligible = `o.status='PENDING' AND o.expires_at<=clock_timestamp()
  AND m.mode='ONLINE' AND m.status='ACTIVE' AND m.time_control IN(0,300,600,900)
  AND m.rule_set_version='xiangqi-simple-v1' AND e.payload->>'encoding'='xiangqi-core-v1'
- AND (r.invite_code IS NOT NULL OR to_jsonb(r)->>'kind' IN ('CASUAL','RANKED')) AND r.status='PLAYING' AND r.current_match_id=m.id`;
+ AND (r.invite_code IS NOT NULL OR r.kind IN ('CASUAL','RANKED')) AND r.status='PLAYING' AND r.current_match_id=m.id`;
 /**
  * Truy vấn danh sách các đề nghị hòa đang chờ (PENDING) đã hết hạn theo đồng hồ máy chủ.
  */

@@ -138,6 +138,8 @@ describe.skipIf(!databaseUrl)(
     beforeEach(async () => {
       await baseline();
       await apply("supabase/migrations/20261011000005_google_guest.sql");
+      await apply("supabase/migrations/20261011000006_rooms.sql");
+      await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
     });
     it("resolves only a hashed server-owned guest identity without expiry cleanup or caller identity", async () => {
       const f = await fixture(false, true);

@@ -76,7 +76,7 @@ async function fixture(fixedTime?: Date, inspectScope?: (scope: RoomScope) => vo
     const proof = { guestCapability: g.capability };
     return { actor: await authorizer.resolve(proof), sessionKey: randomUUID(), proof };
   };
-  return { wiring, store, rooms, person, guest, coordinator, fixedTime };
+  return { wiring, store, rooms, person, guest, coordinator, fixedTime, authorizer };
 }
 
 async function reservePair(store: MatchmakingStore, a: QueueIdentity, b: QueueIdentity) {
@@ -114,6 +114,14 @@ describe.skipIf(!databaseUrl)("MatchmakingStore with real Postgres", () => {
     expect((await pool.query("SELECT user_id FROM public.active_players WHERE user_id=$1", [a.actor.userId])).rowCount).toBe(0);
   });
 
+  it("rejects a revoked session at match start after its queue slot was reserved", async () => {
+    const t = await fixture(), a = await t.person(), b = await t.person();
+    await reservePair(t.store, a, b);
+    await pool.query("UPDATE xiangqi_auth.app_sessions SET revoked_at=clock_timestamp() WHERE user_id=$1", [b.actor.userId]);
+    await expect(t.store.start(a, b, "RANKED", randomUUID())).rejects.toMatchObject({ code: "AUTH_REQUIRED" });
+    expect((await pool.query("SELECT id FROM public.matches WHERE red_user_id=$1 OR black_user_id=$1", [a.actor.userId])).rowCount).toBe(0);
+  });
+
   it("blocks room create, room join and AI reservation until the queue slot is released", async () => {
     const t = await fixture(), a = await t.person(), host = await t.person();
     const room = await t.rooms.create(host.proof, { commandId: randomUUID(), timeMinutes: 5 });
@@ -129,6 +137,25 @@ describe.skipIf(!databaseUrl)("MatchmakingStore with real Postgres", () => {
     await t.store.release(a);
     const joined = await t.rooms.join(a.proof, { commandId: randomUUID(), code: room.inviteCode!, preference: "play" });
     expect(joined.roomId).toBe(room.roomId);
+  });
+
+  it("does not count an owned Casual result room toward a guest's custom room limit", async () => {
+    const t = await fixture(), guest = await t.guest(), opponent = await t.person();
+    await reservePair(t.store, guest, opponent);
+    const casual = await t.store.start(guest, opponent, "CASUAL", randomUUID());
+    const client = await pool.connect();
+    try {
+      expect(await new GuestStore(pool).ownsOpenRoom(client, guest.actor.userId)).toBe(false);
+    } finally { client.release(); }
+    await t.wiring.coordinator.withRoom(
+      { actor: guest.actor, roomIds: [casual] },
+      proof => t.authorizer.authorize(guest.proof, proof),
+      scope => t.wiring.withScope(scope, () => t.wiring.rooms.leave(scope, casual)),
+    );
+    const custom = await t.rooms.create(guest.proof, { commandId: randomUUID(), timeMinutes: 5 });
+    expect(custom.roomId).not.toBe(casual);
+    expect(custom.inviteCode).toMatch(/^\d{8}$/);
+    await expect(t.rooms.create(guest.proof, { commandId: randomUUID(), timeMinutes: 5 })).rejects.toMatchObject({ code: "GUEST_ROOM_LIMIT" });
   });
 
   it("starts both matched seats with one disconnect timestamp so a no-show pair is a simultaneous draw case", async () => {

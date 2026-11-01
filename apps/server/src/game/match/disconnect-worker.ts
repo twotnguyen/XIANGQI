@@ -33,7 +33,7 @@ export async function dueDisconnectMatches(
  FROM public.matches m JOIN public.rooms r ON r.id=m.room_id
  JOIN public.match_events e ON e.match_id=m.id AND e.version=0 AND e.type='START'
  JOIN public.room_members p ON p.room_id=r.id AND p.role='PLAYER' AND p.user_id IN(m.red_user_id,m.black_user_id)
- WHERE (r.invite_code IS NOT NULL OR to_jsonb(r)->>'kind' IN ('CASUAL','RANKED')) AND r.closed_at IS NULL AND r.status='PLAYING' AND r.current_match_id=m.id
+ WHERE (r.invite_code IS NOT NULL OR r.kind IN ('CASUAL','RANKED')) AND r.closed_at IS NULL AND r.status='PLAYING' AND r.current_match_id=m.id
  AND m.mode='ONLINE' AND m.status='ACTIVE' AND m.time_control IN(0,300,600,900)
  AND m.rule_set_version='xiangqi-simple-v1' AND e.payload->>'encoding'='xiangqi-core-v1'
  AND p.disconnected_at IS NOT NULL AND NOT EXISTS(SELECT 1 FROM xiangqi_room.presence q WHERE q.room_id=p.room_id AND q.user_id=p.user_id AND q.connected)
@@ -59,7 +59,7 @@ export async function earliestDisconnect(
 } | null> {
   const room = (
     await client.query<{ managed: boolean }>(
-      "SELECT r.invite_code IS NOT NULL OR to_jsonb(r)->>'kind' IN ('CASUAL','RANKED') AS managed FROM public.rooms r WHERE r.id=$1",
+      "SELECT r.invite_code IS NOT NULL OR r.kind IN ('CASUAL','RANKED') AS managed FROM public.rooms r WHERE r.id=$1",
       [roomId],
     )
   ).rows[0];
@@ -223,7 +223,7 @@ export class DisconnectWorker {
  SELECT m.red_user_id,m.black_user_id,nr.kind AS red_kind,nb.kind AS black_kind FROM public.matches m JOIN public.rooms r ON r.id=m.room_id
  JOIN xiangqi_auth.principals nr ON nr.id=m.red_user_id JOIN xiangqi_auth.principals nb ON nb.id=m.black_user_id
  JOIN public.match_events e ON e.match_id=m.id AND e.version=0 AND e.type='START'
- WHERE m.id=$1 AND m.room_id=$2 AND (r.invite_code IS NOT NULL OR to_jsonb(r)->>'kind' IN ('CASUAL','RANKED')) AND r.closed_at IS NULL AND r.status='PLAYING' AND r.current_match_id=m.id
+ WHERE m.id=$1 AND m.room_id=$2 AND (r.invite_code IS NOT NULL OR r.kind IN ('CASUAL','RANKED')) AND r.closed_at IS NULL AND r.status='PLAYING' AND r.current_match_id=m.id
  AND m.mode='ONLINE' AND m.status='ACTIVE' AND m.time_control IN(0,300,600,900) AND m.rule_set_version='xiangqi-simple-v1' AND e.payload->>'encoding'='xiangqi-core-v1' FOR UPDATE OF m,r`,
         [candidate.matchId, candidate.roomId],
       )

@@ -93,7 +93,7 @@ export class GuestStore {
     return Boolean(
       (
         await c.query(
-          "SELECT 1 FROM public.rooms WHERE owner_id=$1 AND closed_at IS NULL LIMIT 1",
+          "SELECT 1 FROM public.rooms WHERE owner_id=$1 AND closed_at IS NULL AND kind='CUSTOM' LIMIT 1",
           [userId],
         )
       ).rowCount,

@@ -44,7 +44,7 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
     const ids = await this.transaction(async (client) =>
       (
         await client.query<{ id: string }>(
-          "SELECT r.id FROM public.rooms r WHERE ($1::uuid IS NULL OR r.id>$1) AND (r.invite_code IS NOT NULL OR to_jsonb(r)->>'kind' IN ('CASUAL','RANKED')) AND r.status IN('WAITING','FINISHED','PLAYING') AND ((to_jsonb(r)->>'kind' IN ('CASUAL','RANKED') AND r.status='FINISHED' AND r.finished_at+interval '10 minutes'<=clock_timestamp() AND NOT EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id)) OR EXISTS(SELECT 1 FROM xiangqi_room.rematch_offers o WHERE o.room_id=r.id AND o.status='PENDING' AND o.expires_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR (COALESCE(to_jsonb(r)->>'kind','CUSTOM')='CUSTOM' AND EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp()))))) ORDER BY r.id LIMIT 50",
+          "SELECT r.id FROM public.rooms r WHERE ($1::uuid IS NULL OR r.id>$1) AND (r.invite_code IS NOT NULL OR r.kind IN ('CASUAL','RANKED')) AND r.status IN('WAITING','FINISHED','PLAYING') AND ((r.kind IN ('CASUAL','RANKED') AND r.status='FINISHED' AND r.finished_at+interval '10 minutes'<=clock_timestamp() AND NOT EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id)) OR EXISTS(SELECT 1 FROM xiangqi_room.rematch_offers o WHERE o.room_id=r.id AND o.status='PENDING' AND o.expires_at<=clock_timestamp()) OR EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='SPECTATOR' AND m.disconnected_at+interval '5 minutes'<=clock_timestamp()) OR (r.status IN('WAITING','FINISHED') AND (EXISTS(SELECT 1 FROM xiangqi_room.countdowns d WHERE d.room_id=r.id AND d.due_at<=clock_timestamp()) OR (r.kind='CUSTOM' AND EXISTS(SELECT 1 FROM public.room_members m WHERE m.room_id=r.id AND m.role='PLAYER' AND m.disconnected_at+interval '60 seconds'<=clock_timestamp()))))) ORDER BY r.id LIMIT 50",
           [this.cursor],
         )
       ).rows.map((r) => r.id),
@@ -62,7 +62,7 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
     const initial = await this.transaction(async (client) => {
       const owner = (
         await client.query<{ owner_id: string; kind: string }>(
-          "SELECT r.owner_id,p.kind FROM public.rooms r JOIN xiangqi_auth.principals p ON p.id=r.owner_id WHERE r.id=$1 AND (r.invite_code IS NOT NULL OR to_jsonb(r)->>'kind' IN ('CASUAL','RANKED')) AND r.closed_at IS NULL",
+          "SELECT r.owner_id,p.kind FROM public.rooms r JOIN xiangqi_auth.principals p ON p.id=r.owner_id WHERE r.id=$1 AND (r.invite_code IS NOT NULL OR r.kind IN ('CASUAL','RANKED')) AND r.closed_at IS NULL",
           [roomId],
         )
       ).rows[0];
@@ -124,7 +124,7 @@ export class PostgresRoomWorkerPort implements RoomWorkerPort {
       async (proof: RoomActorProof) => {
         const owner = (
           await proof.client.query<{ kind: string; owner_id: string }>(
-            "SELECT r.owner_id,p.kind FROM public.rooms r JOIN xiangqi_auth.principals p ON p.id=r.owner_id WHERE r.id=$1 AND (r.invite_code IS NOT NULL OR to_jsonb(r)->>'kind' IN ('CASUAL','RANKED')) AND r.closed_at IS NULL",
+            "SELECT r.owner_id,p.kind FROM public.rooms r JOIN xiangqi_auth.principals p ON p.id=r.owner_id WHERE r.id=$1 AND (r.invite_code IS NOT NULL OR r.kind IN ('CASUAL','RANKED')) AND r.closed_at IS NULL",
             [roomId],
           )
         ).rows[0];

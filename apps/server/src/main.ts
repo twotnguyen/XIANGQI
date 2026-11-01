@@ -150,7 +150,7 @@ async function boot(): Promise<void> {
     );
     admit();
     ai?.attach(app.getHttpServer());
-    rooms?.matchmaking.attach(app.getHttpServer(), settings.corsOrigins);
+    rooms?.matchmaking.attach(app.getHttpServer(), settings.corsOrigins, settings.trustedProxyHops);
     admit();
     await app.listen(settings.port, process.env.HOST ?? "0.0.0.0");
     admit();

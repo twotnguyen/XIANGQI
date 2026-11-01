@@ -23,8 +23,7 @@ describe.skipIf(!databaseUrl)(
     useMatchHooks();
     it("forbids ranked abort but permits casual abort before the first move", async () => {
       for (const kind of ["RANKED", "CASUAL"] as const) {
-        const s = await start();
-        await pool.query("UPDATE public.rooms SET kind=$2 WHERE id=$1", [s.room, kind]);
+        const s = await start(at, kind);
         const result = await abort(s.room, red, s.matchId);
         if (kind === "RANKED") {
           expect(result).toMatchObject({ applied: false, error: { code: "MATCH_ABORT_NOT_ALLOWED" }, match: { status: "ACTIVE" } });
@@ -34,18 +33,9 @@ describe.skipIf(!databaseUrl)(
       }
     });
     it("projects a stored ranked settlement in snapshot and current match", async () => {
-      const s = await start();
-      await run(s.room, red, (scope) => store().resign(scope, { matchId: s.matchId, matchVersion: 0 }));
-      await pool.query("UPDATE public.rooms SET kind='RANKED',status='FINISHED',finished_at=clock_timestamp(),current_match_id=$2 WHERE id=$1", [s.room, s.matchId]);
-      await pool.query(`CREATE TABLE IF NOT EXISTS xiangqi_room.ranked_results (
-        match_id uuid PRIMARY KEY, red_before integer, red_after integer,
-        black_before integer, black_after integer, red_tier text, black_tier text
-      )`);
-      await pool.query("GRANT SELECT ON xiangqi_room.ranked_results TO app_server");
-      await pool.query(
-        "INSERT INTO xiangqi_room.ranked_results VALUES($1,1200,1216,1200,1184,'Sơ cấp','Người mới')",
-        [s.matchId],
-      );
+      const s = await start(at, "RANKED");
+      await run(s.room, black, (scope) => store().resign(scope, { matchId: s.matchId, matchVersion: 0 }));
+      await pool.query("UPDATE public.rooms SET status='FINISHED',finished_at=clock_timestamp(),current_match_id=$2 WHERE id=$1", [s.room, s.matchId]);
       const expected = {
         red: { before: 1200, after: 1216, delta: 16, tier: "Sơ cấp" },
         black: { before: 1200, after: 1184, delta: -16, tier: "Người mới" },

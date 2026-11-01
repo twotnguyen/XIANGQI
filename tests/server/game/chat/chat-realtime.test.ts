@@ -166,6 +166,7 @@ describe.skipIf(!databaseUrl)(
       await apply(
         "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
       );
+      await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
     });
     it("commits canonical masked messages and metadata ACK; uppercase command UUID deduplicates", async () => {
       const f = await fixture(),

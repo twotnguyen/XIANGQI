@@ -42,6 +42,7 @@ export async function resetAiGuestDatabase(): Promise<void> {
     "20261011000012_ai_presence",
     "20261019060000_guest_privacy_receipt_redaction",
     "20261103000011_yc9_ranked",
+    "20261103000012_yc9_ranked_guards",
   ])
     await apply(`supabase/migrations/${migration}.sql`);
 }

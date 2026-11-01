@@ -1,6 +1,6 @@
 # Khung giao diện — XIAN-39 / T03
 
-> **Lưu ý (31/10/2026):** tài liệu này mô tả mã hiện tại. Quyết định PO [BA 0.27–0.36](../../product/BA-SCOPE-DECISIONS.md) chưa triển khai (xem mục "Tác động triển khai" của từng YC) và thay mọi câu "P2", "chưa mở" hoặc nút Đánh Thường/Đánh Hạng bị vô hiệu hóa ở dưới ([YC9](../../product/P1-YC9-GHEP-TRAN-CASUAL-RANKED.md)), bố cục Sẵn sàng/Bắt đầu của phòng chờ ([YC2 mục 21](../../product/P1-YC2-TAO-PHONG.md)) và nước đi hiện ngay ([YC4](../../product/P1-YC4-BAN-CO-VA-LUAT.md)) khi hai bên khác nhau.
+> **Lưu ý (01/11/2026):** YC9 đã có mã Sảnh/Ghép trận/Đánh Hạng; không còn vô hiệu hóa hai lối vào vì nhãn P2 cũ. Dùng [YC9](../../product/P1-YC9-GHEP-TRAN-CASUAL-RANKED.md) cho luồng xác nhận 30 giây, [YC2 mục 21](../../product/P1-YC2-TAO-PHONG.md) cho Host Bắt đầu và [YC4](../../product/P1-YC4-BAN-CO-VA-LUAT.md) cho nước đi hiện ngay; [BA 0.27–0.36](../../product/BA-SCOPE-DECISIONS.md) thắng mô tả baseline cũ ở dưới. Gate NFR/thiết bị vẫn phải nghiệm thu riêng.
 
 Biến giao diện Kỳ Đài Cổ Phong ở `../styles/tokens.css`. Phông được self-host
 với giấy phép tại `public/fonts/UI-FONTS.md`; giao diện không tải phông từ CDN.
@@ -419,3 +419,9 @@ Kiểm Chromium với RoomPage thật qua harness tạm nối Nest/Socket.IO/Pos
 - Guard điều hướng chặn logo/menu/Back trước khi router đổi location khi tab đang điều khiển ACTIVE. Entry do router quản lý mang chỉ số trong history state; hủy Back/Forward nhiều bước quay lại đúng entry nguồn, không push để cắt forward stack. Hủy giữ ván; đồng ý resign rồi điều hướng. Tab readonly được rời không resign. Refresh/đóng tab chỉ áp grace, không beacon resign; AI dùng cùng định danh tab phiên để reconnect/refresh không tự giành lại sau khi bị tiếp quản.
 - Kết quả `FINISHED`/`ABANDONED` của thành viên có Xem lại dẫn tới `/history/:id`; snapshot terminal được server cài sau commit History. Không hiện đường này cho `FINALIZING` hoặc Khách. Tab chỉ đọc vẫn xem được bản lưu của chính tài khoản.
 - Browser local thật (Nest/Socket.IO, PG17 riêng, compiled worker; chỉ provider Auth synthetic): đã xem360×800 và1366×768 không tràn ngang; thử đi/Undo, widget, nhiều tab, mất mạng/nối lại, banner, xác nhận logo/Back/logout, History/Replay/clipboard/PGN. Không thay cho kiểm thiết bị/Cloud hoặc gate chất lượng engine; [YC8 mục18](../../product/P1-YC8-DAU-VOI-MAY.md#18-triển-khai-và-bằng-chứng-local--01112026) ghi kết quả và BLOCKED cụ thể.
+
+## YC9: ghép trận và Elo
+
+Sảnh mở `MatchmakingModal` qua `useMatchmaking`: tìm tối đa 2 phút, xác nhận 30 giây không lộ đối thủ, rồi đếm 3 giây. Thông báo trạng thái nằm trong `aria-live=polite`, đồng hồ nằm ngoài để không đọc lại mỗi giây. Khi offline, người dùng đóng modal được mà không quên lượt tìm phía server; không gửi Hủy/Xác nhận khi mất kết nối. Reconnect và reload đọc trạng thái server, không tự tạo lượt mới từ dữ liệu cũ.
+
+Các trang `/leaderboard`, `/history`, Hồ sơ/navbar và phòng Ranked đọc Elo thật; Khách không thấy Elo hoặc gọi được API Ranked. Giới hạn NFR và hợp đồng avatar xem [YC9 mục 17](../../product/P1-YC9-GHEP-TRAN-CASUAL-RANKED.md#17-review-và-giới-hạn-kiểm-chứng--01112026); không suy từ browser headless ra thiết bị thật.

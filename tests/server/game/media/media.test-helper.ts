@@ -19,6 +19,7 @@ export async function resetMediaSchema() {
   await apply("supabase/migrations/20261017000018_room_code_digits.sql");
   await apply("supabase/migrations/20261011000015_media_share.sql");
   await apply("supabase/migrations/20261103000010_media_generation.sql");
+  await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
 }
 /** Makes `tabId` the realtime controller of the user in the room, as the gateway's takeover does. */
 export async function takeControl(
@@ -41,12 +42,12 @@ export async function takeControl(
 }
 let inviteSequence = 0;
 /** Creates a room owned by `owner`. Every room gets its own invite code (rooms_invite_code_unique). */
-export async function makeRoom(owner: string) {
+export async function makeRoom(owner: string, kind: "CUSTOM" | "CASUAL" | "RANKED" = "CUSTOM") {
   const roomId = randomUUID();
   const inviteCode = String(++inviteSequence).padStart(8, "0");
   await pool.query(
-    "INSERT INTO public.rooms(id,owner_id,name,visibility,invite_code,time_control,viewer_limit,status,room_version) VALUES($1,$2,'Phong media','CODE_ONLY',$3,600,5,'WAITING',1)",
-    [roomId, owner, inviteCode],
+    "INSERT INTO public.rooms(id,owner_id,name,visibility,invite_code,time_control,viewer_limit,status,room_version,kind) VALUES($1,$2,'Phong media','CODE_ONLY',$3,600,5,'WAITING',1,$4)",
+    [roomId, owner, inviteCode, kind],
   );
   return roomId;
 }

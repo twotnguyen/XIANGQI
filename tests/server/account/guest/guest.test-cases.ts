@@ -44,6 +44,8 @@ describe.skipIf(!databaseUrl)(
     beforeAll(async () => {
       await baseline();
       await apply("supabase/migrations/20261011000005_google_guest.sql");
+      await apply("supabase/migrations/20261011000006_rooms.sql");
+      await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
     });
     it("issues opaque fixed12h proof without creating Auth account and rejects malformed/forbidden names", async () => {
       const count = (await pool.query("SELECT count(*)::int n FROM auth.users"))

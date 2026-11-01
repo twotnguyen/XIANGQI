@@ -13,8 +13,7 @@ describe.skipIf(!databaseUrl)(
   () => {
     it("rejects undo in ranked while allowing a casual guest to request it", async () => {
       for (const kind of ["RANKED", "CASUAL"] as const) {
-        const f = await fixture();
-        await pool.query("UPDATE public.rooms SET kind=$2 WHERE id=$1", [f.roomId, kind]);
+        const f = await fixture(600, 0, kind);
         const moved = await run(f, f.red, (s) =>
           store.move(s, { matchId: f.matchId, matchVersion: 0, from: 54, to: 45 }),
         );

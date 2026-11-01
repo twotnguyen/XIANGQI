@@ -178,6 +178,7 @@ describe.skipIf(!databaseUrl)(
       await apply("supabase/migrations/20261011000016_room_viewers.sql");
       await apply("supabase/migrations/20261103000008_seat_requests.sql");
       await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+      await apply("supabase/migrations/20261103000012_yc9_ranked_guards.sql");
     });
     it("seats an approved viewer over real sockets, then removes players with the right notices", async () => {
       const f = await fixture();

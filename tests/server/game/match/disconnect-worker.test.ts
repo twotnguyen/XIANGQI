@@ -47,7 +47,7 @@ async function read<T>(work: (c: PoolClient) => Promise<T>) {
 async function setup(
   guest: boolean | "mixed" = false,
   timeControl: 0 | 600 = 600,
-  matched = false,
+  matched: boolean | "RANKED" = false,
 ) {
   const red = randomUUID(),
     black = randomUUID(),
@@ -89,7 +89,7 @@ async function setup(
           .map((c) => parseInt(c, 16) % 10)
           .join(""),
         timeControl,
-        matched ? "CASUAL" : "CUSTOM",
+        matched === "RANKED" ? "RANKED" : matched ? "CASUAL" : "CUSTOM",
       ],
     );
     await c.query(
@@ -181,6 +181,12 @@ describe.skipIf(!databaseUrl)("managed disconnect adjudication", () => {
     await apply(
       "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
     );
+    await apply("supabase/migrations/20261011000010_room_chat.sql");
+    await apply("supabase/migrations/20261011000014_friendships.sql");
+    await apply("supabase/migrations/20261102000004_direct_messages.sql");
+    await apply("supabase/migrations/20261103000009_yc7_chat_quota.sql");
+    await apply("supabase/migrations/20261103000010_media_generation.sql");
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
   });
   afterAll(() => pool.end());
   it("adjudicates a matched room without an invite code", async () => {
@@ -191,6 +197,39 @@ describe.skipIf(!databaseUrl)("managed disconnect adjudication", () => {
     );
     await new DisconnectWorker(matches, port()).tick();
     expect((await outcome(s)).outcome).toEqual({ reason: "DISCONNECT", winner: "BLACK" });
+  });
+  it("settles a ranked simultaneous no-show draw once through the disconnect worker", async () => {
+    const s = await setup(false, 600, "RANKED");
+    await offline(s, 61);
+    await pool.query("UPDATE public.room_members SET disconnected_at=(SELECT disconnected_at FROM public.room_members WHERE room_id=$1 AND user_id=$2) WHERE room_id=$1", [s.roomId, s.red]);
+    const worker = new DisconnectWorker(matches, port());
+    await worker.tick();
+    await worker.tick();
+    expect((await outcome(s)).outcome).toEqual({ reason: "DRAW_SIMULTANEOUS_DISCONNECT", winner: null });
+    const ratings = await pool.query("SELECT elo,completed,draws FROM xiangqi_room.ratings WHERE user_id=ANY($1::uuid[])", [[s.red, s.black]]);
+    expect(ratings.rows).toEqual([{ elo: 1200, completed: 1, draws: 1 }, { elo: 1200, completed: 1, draws: 1 }]);
+    expect((await pool.query("SELECT count(*)::int AS n FROM xiangqi_room.ranked_results WHERE match_id=$1", [s.matchId])).rows[0].n).toBe(1);
+  });
+  it("settles a ranked disconnect win through the worker", async () => {
+    const s = await setup(false, 600, "RANKED");
+    await offline(s, 61);
+    await new DisconnectWorker(matches, port()).tick();
+    expect((await outcome(s)).outcome).toEqual({ reason: "DISCONNECT", winner: "BLACK" });
+    expect((await pool.query("SELECT red_after,black_after FROM xiangqi_room.ranked_results WHERE match_id=$1", [s.matchId])).rows[0]).toEqual({ red_after: 1184, black_after: 1216 });
+  });
+  it("settles a ranked timeout through the clock worker", async () => {
+    const s = await setup(false, 600, "RANKED");
+    await pool.query("UPDATE public.matches SET clock=jsonb_set(jsonb_set(clock,'{redMs}','0'),'{runningSinceEpochMs}',to_jsonb(floor(extract(epoch FROM clock_timestamp())*1000)::bigint-1000)) WHERE id=$1", [s.matchId]);
+    await new ClockWorker(clock, matches, port(dueMatches)).tick();
+    expect((await outcome(s)).outcome).toEqual({ reason: "TIMEOUT", winner: "BLACK" });
+    expect((await pool.query("SELECT red_after,black_after FROM xiangqi_room.ranked_results WHERE match_id=$1", [s.matchId])).rows[0]).toEqual({ red_after: 1184, black_after: 1216 });
+  });
+  it("does not settle ranked Elo when a match is interrupted by restart", async () => {
+    const s = await setup(false, 600, "RANKED");
+    await transaction([s.red, s.black], [s.roomId], c => matches.finish(c, { roomId: s.roomId, matchId: s.matchId, outcome: { reason: "SERVER_RESTART", winner: null }, at: new Date() }));
+    expect(await outcome(s)).toMatchObject({ status: "INTERRUPTED", outcome: { reason: "SERVER_RESTART", winner: null } });
+    expect((await pool.query("SELECT count(*)::int AS n FROM xiangqi_room.ranked_results WHERE match_id=$1", [s.matchId])).rows[0].n).toBe(0);
+    expect((await pool.query("SELECT count(*)::int AS n FROM xiangqi_room.ratings WHERE user_id=ANY($1::uuid[])", [[s.red, s.black]])).rows[0].n).toBe(0);
   });
   it("ends at the SQL 60-second boundary, publishes atomically and never repeats", async () => {
     const s = await setup();
@@ -464,6 +503,12 @@ describe.skipIf(!databaseUrl)("managed disconnect adjudication", () => {
     await apply(
       "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
     );
+    await apply("supabase/migrations/20261011000010_room_chat.sql");
+    await apply("supabase/migrations/20261011000014_friendships.sql");
+    await apply("supabase/migrations/20261102000004_direct_messages.sql");
+    await apply("supabase/migrations/20261103000009_yc7_chat_quota.sql");
+    await apply("supabase/migrations/20261103000010_media_generation.sql");
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
     const bad = [];
     for (let i = 0; i < 50; i++) {
       const s = await setup();

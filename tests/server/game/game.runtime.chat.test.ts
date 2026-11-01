@@ -195,6 +195,7 @@ async function roomFixture() {
 async function chatSchema() {
   await apply("supabase/migrations/20261011000010_room_chat.sql");
   await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+  await apply("supabase/migrations/20261103000012_yc9_ranked_guards.sql");
 }
 function request<T>(socket: Socket, event: string, body: object) {
   return new Promise<ChatAcknowledgement<T>>((resolve, reject) => {
@@ -216,6 +217,7 @@ describe.skipIf(!databaseUrl)("actual room chat runtime", () => {
   });
   it("retains old room runtime without chat when migration is absent", async () => {
     await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+    await apply("supabase/migrations/20261103000012_yc9_ranked_guards.sql");
     const runtime = await createRoomRuntime(env, registration().context);
     expect(runtime).not.toBeNull();
     expect(runtime!.realtime).not.toHaveProperty("chat", expect.anything());
@@ -223,6 +225,7 @@ describe.skipIf(!databaseUrl)("actual room chat runtime", () => {
   });
   it("refuses partially installed chat schema rather than enabling or silently omitting chat", async () => {
     await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+    await apply("supabase/migrations/20261103000012_yc9_ranked_guards.sql");
     await pool.query("CREATE SCHEMA xiangqi_chat");
     await expect(
       createRoomRuntime(env, registration().context),

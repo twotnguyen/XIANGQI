@@ -248,7 +248,7 @@ export class MatchUndoStore extends MatchDrawStore {
     }
     if (action === "offer") {
       const ranked = await scope.client.query(
-        "SELECT 1 FROM public.rooms r WHERE r.id=$1 AND to_jsonb(r)->>'kind'='RANKED'",
+        "SELECT 1 FROM public.rooms r WHERE r.id=$1 AND r.kind='RANKED'",
         [room.id],
       );
       if (ranked.rowCount)

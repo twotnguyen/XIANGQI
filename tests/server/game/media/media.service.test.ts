@@ -111,15 +111,13 @@ it("discovers a permitted unmuted provider source", async () => {
 describe.skipIf(!url)("media access", () => {
   beforeEach(resetMediaSchema);
   it.each(["CASUAL", "RANKED"])("%s forbids stage sharing and spectator access", async (kind) => {
-    await pool.query("ALTER TABLE public.rooms ADD COLUMN IF NOT EXISTS kind text NOT NULL DEFAULT 'CUSTOM'");
     const access = new MediaAccess(config, new MediaStore(pool), async () => new Response("{}", { status: 200 }));
     const a = await actor();
     const viewer = await actor();
-    const roomId = await makeRoom(a.userId);
+    const roomId = await makeRoom(a.userId, kind as "CASUAL" | "RANKED");
     await seat(roomId, a.userId, "RED");
     await takeControl(roomId, a.userId, TAB);
     await pool.query("INSERT INTO public.room_members(room_id,user_id,role,side) VALUES($1,$2,'SPECTATOR',NULL)", [roomId, viewer.userId]);
-    await pool.query("UPDATE public.rooms SET kind=$2 WHERE id=$1", [roomId, kind]);
     await expect(access.setShare(a.userId, roomId, "ALL", CONTROL)).rejects.toMatchObject({ code: "MEDIA_FORBIDDEN" });
     await access.setShare(a.userId, roomId, "NONE", CONTROL);
     expect(await access.getShare(a.userId, roomId)).toEqual({ level: "NONE" });

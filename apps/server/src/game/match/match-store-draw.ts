@@ -353,7 +353,7 @@ export class MatchDrawStore extends MatchStoreCore {
         `SELECT (SELECT count(*) FILTER (WHERE payload->>'side'='RED') >= 20
             AND count(*) FILTER (WHERE payload->>'side'='BLACK') >= 20
            FROM public.match_events WHERE match_id=$2 AND type='MOVE') AS eligible
-         FROM public.rooms r WHERE r.id=$1 AND to_jsonb(r)->>'kind'='RANKED'`,
+         FROM public.rooms r WHERE r.id=$1 AND r.kind='RANKED'`,
         [room.id, row.id],
       );
       if (ranked.rows[0] && !ranked.rows[0].eligible)

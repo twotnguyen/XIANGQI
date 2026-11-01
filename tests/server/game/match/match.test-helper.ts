@@ -22,7 +22,7 @@ export async function apply(file: string) {
 export async function resetBase() {
   if (!databaseUrl) throw new Error("Dedicated test URL required");
   await pool.query(
-    "DROP SCHEMA IF EXISTS xiangqi_room CASCADE; DROP SCHEMA IF EXISTS xiangqi_realtime CASCADE; DROP SCHEMA IF EXISTS xiangqi_auth CASCADE; DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public",
+    "DROP SCHEMA IF EXISTS xiangqi_chat CASCADE; DROP SCHEMA IF EXISTS xiangqi_social CASCADE; DROP SCHEMA IF EXISTS xiangqi_room CASCADE; DROP SCHEMA IF EXISTS xiangqi_realtime CASCADE; DROP SCHEMA IF EXISTS xiangqi_auth CASCADE; DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public",
   );
   await apply("tests/server/fixtures/managed-auth.test-fixture.sql");
   await pool.query(
@@ -43,7 +43,6 @@ export async function resetBase() {
 }
 export async function reset() {
   await resetBase();
-  await pool.query("ALTER TABLE public.rooms ADD COLUMN kind text NOT NULL DEFAULT 'CUSTOM'");
 }
 export async function actor() {
   const id = randomUUID();

@@ -40,6 +40,8 @@ async function run<T>(
   );
 }
 async function fixture() {
+  const hasKind = (await pool.query("SELECT EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='public.rooms'::regclass AND attname='kind' AND NOT attisdropped) AS present")).rows[0].present;
+  if (!hasKind) await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
   const a = await actor(),
     b = await actor(),
     c = await actor();
@@ -92,11 +94,18 @@ describe.skipIf(!databaseUrl)(
       );
     });
     it.each(["CASUAL", "RANKED"])("%s permits only player private chat", async (kind) => {
-      await pool.query("ALTER TABLE public.rooms ADD COLUMN IF NOT EXISTS kind text NOT NULL DEFAULT 'CUSTOM'");
-      const f = await fixture();
-      await f.join(f.b, "play");
-      await f.join(f.c, "watch");
-      await pool.query("UPDATE public.rooms SET kind=$2 WHERE id=$1", [f.id, kind]);
+      await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+      const a = await actor(), b = await actor(), c = await actor(), id = randomUUID();
+      await transaction([a.userId, b.userId], [id], async (client) => {
+        await client.query("INSERT INTO public.rooms(id,owner_id,name,time_control,viewer_limit,kind) VALUES($1,$2,'Matched',600,0,$3)", [id, a.userId, kind]);
+        await client.query("INSERT INTO public.room_members(room_id,user_id,role,side) VALUES($1,$2,'PLAYER','RED'),($1,$3,'PLAYER','BLACK'),($1,$4,'SPECTATOR',NULL)", [id, a.userId, b.userId, c.userId]);
+        await client.query("INSERT INTO public.active_players(user_id,room_id) VALUES($1,$3),($2,$3)", [a.userId, b.userId, id]);
+      });
+      const f = {
+        a, b, c,
+        send: (who: RoomActor, channel: "PLAYERS_PRIVATE" | "ROOM_PUBLIC", content = "hello") => run(who, id, s => chat.send(s, id, { commandId: randomUUID(), channel, content })),
+        read: (who: RoomActor, channel: "PLAYERS_PRIVATE" | "ROOM_PUBLIC") => run(who, id, s => chat.read(s, id, channel, 0)),
+      };
       await f.send(f.a, "PLAYERS_PRIVATE", "private");
       expect((await f.read(f.b, "PLAYERS_PRIVATE")).messages).toMatchObject([{ content: "private" }]);
       for (const who of [f.a, f.c]) {
@@ -435,6 +444,7 @@ describe.skipIf(!databaseUrl)(
       }
       const f = await fixture();
       await f.send(f.a, "ROOM_PUBLIC", "retained");
+      await apply("supabase/rollback/20261103000011_yc9_ranked.sql");
       await expect(apply(rollback)).rejects.toThrow(/feature writes/i);
       expect(
         (
@@ -589,6 +599,7 @@ describe.skipIf(!databaseUrl)(
     it("seeds only safe entry metadata and rolls back without changing existing room/member/legacy chat definitions", async () => {
       await apply(rollback);
       const f = await fixture();
+      await apply("supabase/rollback/20261103000011_yc9_ranked.sql");
       const before = (
         await pool.query(
           "SELECT row_to_json(r) AS r FROM public.rooms r WHERE id=$1",
