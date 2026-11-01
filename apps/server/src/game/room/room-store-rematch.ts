@@ -7,12 +7,12 @@ import { RoomSwapStore } from "./room-store-swap.js";
 export class RoomRematchStore extends RoomSwapStore {
   private async rematchPair(s: RoomScope, id: string) {
     const room = (
-      await s.client.query<{ invite_code: string | null }>(
-        "SELECT invite_code FROM public.rooms WHERE id=$1",
+      await s.client.query<{ invite_code: string | null; kind?: string; status: string; finished_at: Date | null; valid: boolean }>(
+        "SELECT *, finished_at + interval '10 minutes' > clock_timestamp() AS valid FROM public.rooms WHERE id=$1",
         [id],
       )
     ).rows[0];
-    if (!room?.invite_code)
+    if (!room || room.kind === "RANKED" || (room.kind === "CASUAL" ? room.status !== "FINISHED" || !room.valid : !room.invite_code))
       throw new RoomError(
         "REMATCH_DENIED",
         "Chỉ tái đấu sau ván phòng tùy chỉnh",
@@ -20,7 +20,7 @@ export class RoomRematchStore extends RoomSwapStore {
     const { r, members, member } = await this.member(s, id);
     if (
       s.actor.kind !== "member" ||
-      r.status !== "WAITING" ||
+      (room.kind === "CASUAL" ? r.status !== "FINISHED" : r.status !== "WAITING") ||
       member.role !== "PLAYER"
     )
       throw new RoomError(
@@ -133,6 +133,8 @@ export class RoomRematchStore extends RoomSwapStore {
       return this.snapshot(s, id);
     }
     const { r, members } = await this.member(s, id);
+    if (r.kind === "RANKED" || (r.kind === "CASUAL" && (!r.finished_at || (r.server_now as Date).getTime() >= (r.finished_at as Date).getTime() + 600000)))
+      throw new RoomError("REMATCH_DENIED", "Đã hết hạn tái đấu");
     const players = members.filter((m) => m.role === "PLAYER");
     const seated = new Set(players.map((m) => m.user_id));
     const latest = (
@@ -153,7 +155,7 @@ export class RoomRematchStore extends RoomSwapStore {
       )
     ).rowCount;
     if (
-      r.status !== "WAITING" ||
+      (r.kind === "CASUAL" ? r.status !== "FINISHED" : r.status !== "WAITING") ||
       players.length !== 2 ||
       seated.size !== 2 ||
       !seated.has(offer.proposer_id) ||

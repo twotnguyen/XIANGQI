@@ -1,4 +1,5 @@
 import { adjudicateDeadline } from "./disconnect-worker.js";
+import { settleRanked } from "../ranking/ranked.store.js";
 import { randomUUID } from "node:crypto";
 import { ending, type Position, type Side } from "@xiangqi/xiangqi-core";
 import type { PoolClient } from "pg";
@@ -626,6 +627,11 @@ export class MatchStoreCore {
       clock: validClock(clock),
     };
     await this.update(client, updated);
+    const ranked = await client.query(
+      "SELECT 1 FROM public.rooms r WHERE r.id=$1 AND to_jsonb(r)->>'kind'='RANKED'",
+      [row.room_id],
+    );
+    const rating = ranked.rowCount ? await settleRanked(client, row.id, outcome, at) : null;
     await this.rooms.onMatchEnded(client, {
       roomId: row.room_id,
       matchId: row.id,
@@ -637,7 +643,7 @@ export class MatchStoreCore {
       outcome,
       endedAt: at.toISOString(),
     });
-    return this.view(updated, position, lastMove);
+    return { ...this.view(updated, position, lastMove), rating };
   }
   /**
    * Thêm sự kiện phòng vào bảng outbox để phát thông báo realtime ra client.

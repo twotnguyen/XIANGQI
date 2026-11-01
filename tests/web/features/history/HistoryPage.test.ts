@@ -9,6 +9,14 @@ import {
   type HistoryPage as Page,
 } from "@web/features/history/history-client.js";
 afterEach(cleanup);
+it("shows ranked Elo changes but dashes for casual and interrupted games", async () => {
+  const p = page();
+  const ranked = { ...p.items[0]!, id: other, type: "RANKED" as const, typeLabel: "Đánh Hạng", eloDelta: 16 };
+  p.items.push(ranked, { ...ranked, id: "33333333-3333-4333-8333-333333333333", eloDelta: null, result: { kind: "INTERRUPTED", reason: "SERVER_RESTART", label: "Bị gián đoạn", countsForWdl: false } });
+  render(createElement(HistoryPage, { client: { list: vi.fn().mockResolvedValue(p) }, onReplay: vi.fn() }));
+  expect(await screen.findByText("+16")).toBeTruthy();
+  expect(screen.getAllByText("—")).toHaveLength(2);
+});
 it.each([
   ["CHECKMATE", "Chiếu hết"],
   ["STALEMATE", "Hết nước đi hợp lệ"],
@@ -111,7 +119,7 @@ it("loads actual account rows, own side/reason and replay callback without Elo/a
   expect(screen.getByText("Đầu hàng")).toBeTruthy();
   await userEvent.click(screen.getByRole("button", { name: /Xem lại/ }));
   expect(onReplay).toHaveBeenCalledWith(id);
-  expect(screen.queryByText(/Elo/)).toBeNull();
+  expect(screen.getByText("—")).toBeTruthy();
   expect(screen.queryByRole("img")).toBeNull();
 });
 it("keyboard filter loads Ranked unavailable instead of fake stats", async () => {

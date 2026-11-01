@@ -47,6 +47,7 @@ async function read<T>(work: (c: PoolClient) => Promise<T>) {
 async function setup(
   guest: boolean | "mixed" = false,
   timeControl: 0 | 600 = 600,
+  matched = false,
 ) {
   const red = randomUUID(),
     black = randomUUID(),
@@ -77,17 +78,18 @@ async function setup(
   );
   const result = await transaction([red, black], [roomId], async (c) => {
     await c.query(
-      "INSERT INTO public.rooms(id,owner_id,name,time_control,invite_code,viewer_limit) VALUES($1,$2,'Synthetic',$4,$3,5)",
+      "INSERT INTO public.rooms(id,owner_id,name,time_control,invite_code,viewer_limit,kind) VALUES($1,$2,'Synthetic',$4,$3,5,$5)",
       [
         roomId,
         red,
-        randomUUID()
+        matched ? null : randomUUID()
           .replaceAll("-", "")
           .slice(0, 8)
           .split("")
           .map((c) => parseInt(c, 16) % 10)
           .join(""),
         timeControl,
+        matched ? "CASUAL" : "CUSTOM",
       ],
     );
     await c.query(
@@ -181,6 +183,15 @@ describe.skipIf(!databaseUrl)("managed disconnect adjudication", () => {
     );
   });
   afterAll(() => pool.end());
+  it("adjudicates a matched room without an invite code", async () => {
+    const s = await setup(false, 600, true);
+    await offline(s, 61);
+    expect(await read((c) => dueDisconnectMatches(c))).toContainEqual(
+      expect.objectContaining({ roomId: s.roomId, matchId: s.matchId }),
+    );
+    await new DisconnectWorker(matches, port()).tick();
+    expect((await outcome(s)).outcome).toEqual({ reason: "DISCONNECT", winner: "BLACK" });
+  });
   it("ends at the SQL 60-second boundary, publishes atomically and never repeats", async () => {
     const s = await setup();
     await offline(s, 60);

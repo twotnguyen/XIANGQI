@@ -19,7 +19,7 @@ import { createRoomRuntime } from "@server/game/game.runtime.js";
 import {
   databaseUrl,
   pool,
-  reset,
+  resetBase as reset,
   roomControl,
 } from "./game.runtime.test-helper.js";
 import {

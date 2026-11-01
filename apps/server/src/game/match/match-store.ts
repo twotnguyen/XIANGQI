@@ -6,6 +6,7 @@ import {
   type Position,
 } from "@xiangqi/xiangqi-core";
 import type { PoolClient } from "pg";
+import { readSettlement } from "../ranking/ranked.store.js";
 import type { Side } from "@xiangqi/xiangqi-core";
 import {
   type MatchCommandResult,
@@ -167,7 +168,12 @@ export class MatchStore extends MatchUndoStore {
   ): Promise<MatchView> {
     const row = await this.row(client, roomId, matchId);
     const { positions: history, lastMove } = await this.history(client, row);
-    return this.view(row, history.at(-1)!, lastMove);
+    const match = this.view(row, history.at(-1)!, lastMove);
+    if (row.status !== "ACTIVE") {
+      const ranked = await client.query("SELECT 1 FROM public.rooms r WHERE r.id=$1 AND to_jsonb(r)->>'kind'='RANKED'", [roomId]);
+      if (ranked.rowCount) match.rating = row.status === "INTERRUPTED" ? null : await readSettlement(client, row.id);
+    }
+    return match;
   }
   /**
    * Đọc phòng, ván hiện tại và ghế của người xem trong một truy vấn đã khóa, kèm ảnh chụp ván (nếu có).
@@ -186,10 +192,12 @@ export class MatchStore extends MatchUndoStore {
       client,
       loaded.row,
     );
-    return {
-      ...loaded,
-      match: this.view(loaded.row, history.at(-1)!, lastMove),
-    };
+    const match = this.view(loaded.row, history.at(-1)!, lastMove);
+    if (loaded.row.status !== "ACTIVE") {
+      const ranked = await client.query("SELECT 1 FROM public.rooms r WHERE r.id=$1 AND to_jsonb(r)->>'kind'='RANKED'", [roomId]);
+      if (ranked.rowCount) match.rating = loaded.row.status === "INTERRUPTED" ? null : await readSettlement(client, loaded.row.id);
+    }
+    return { ...loaded, match };
   }
   /**
    * Thực hiện một nước đi cờ của người chơi, kiểm tra tính hợp lệ luật cờ, cập nhật đồng hồ và phát hiện thắng thua.
@@ -419,6 +427,12 @@ export class MatchStore extends MatchUndoStore {
       input,
       () => ({ reason: "ABORTED", winner: null }),
       async (row) => {
+        const ranked = await scope.client.query(
+          "SELECT 1 FROM public.rooms r WHERE r.id=$1 AND to_jsonb(r)->>'kind'='RANKED'",
+          [row.room_id],
+        );
+        if (ranked.rowCount)
+          return { code: "MATCH_ABORT_NOT_ALLOWED", message: "Không thể hủy ván xếp hạng." };
         const played = await scope.client.query(
           "SELECT 1 FROM public.match_events WHERE match_id=$1 AND type='MOVE' LIMIT 1",
           [row.id],

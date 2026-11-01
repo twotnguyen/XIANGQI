@@ -17,15 +17,18 @@ export function MediaSeats({
   selfId,
   feeds = [],
   onReceiveChange,
+  defaultHidden = false,
 }: {
   roomId?: string;
   seats: { red: string | null; black: string | null };
   selfId: string;
   feeds?: MediaFeed[];
   onReceiveChange?: (mutedIdentities: readonly string[]) => void;
+  defaultHidden?: boolean;
 }) {
   const storageKey = `xiangqi-media-receive:${roomId}:${selfId}`;
   const [muted, setMuted] = useState<string[]>(() => {
+    if (defaultHidden) return [seats.red, seats.black].filter((identity): identity is string => identity !== null && identity !== selfId);
     try {
       const value: unknown = JSON.parse(sessionStorage.getItem(storageKey) ?? "[]");
       return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
@@ -98,11 +101,11 @@ export function MediaSeats({
             {opponent && occupant && (
               <Button
                 variant="secondary"
-                aria-label={hidden ? "Hiện hình/tiếng" : "Tắt nhận hình/tiếng"}
+                aria-label={defaultHidden ? (hidden ? "Hiện hình/tiếng đối thủ" : "Tắt ngay") : (hidden ? "Hiện hình/tiếng" : "Tắt nhận hình/tiếng")}
                 aria-pressed={hidden}
                 onClick={() => toggleReceive(occupant)}
               >
-                {hidden ? "Hiện hình/tiếng" : "Tắt nhận hình/tiếng"}
+                {defaultHidden ? (hidden ? "Hiện hình/tiếng đối thủ" : "Tắt ngay") : (hidden ? "Hiện hình/tiếng" : "Tắt nhận hình/tiếng")}
               </Button>
             )}
           </figure>

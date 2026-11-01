@@ -161,6 +161,7 @@ export function MediaPanel({
   seats,
   userId,
   controlsHost,
+  kind = "CUSTOM",
 }: {
   roomId: string;
   role: "red" | "black" | "spectator";
@@ -175,6 +176,7 @@ export function MediaPanel({
   seats: { red: string | null; black: string | null };
   userId: string;
   controlsHost?: HTMLElement | null;
+  kind?: "CUSTOM" | "CASUAL" | "RANKED";
 }) {
   const player = role !== "spectator";
   const [switching, setSwitching] = useState(false);
@@ -231,7 +233,7 @@ export function MediaPanel({
   const shareVersion = useRef(0);
   const elements = useRef(new Map<string, HTMLElement>());
   const running = useRef(false);
-  const receiverMuted = useRef<readonly string[]>([]);
+  const receiverMuted = useRef<readonly string[]>(kind === "RANKED" ? [seats.red, seats.black].filter((identity): identity is string => identity !== null && identity !== userId) : []);
   const receiveRoom = useRef<Room | null>(null);
   const applyReceiverChoice = useCallback((identities: readonly string[]) => {
     receiverMuted.current = identities;
@@ -890,6 +892,7 @@ export function MediaPanel({
         selfId={userId}
         feeds={feeds}
         onReceiveChange={applyReceiverChoice}
+        defaultHidden={kind === "RANKED"}
       />
       {canPublish ? (
         <>
@@ -928,7 +931,7 @@ export function MediaPanel({
               }
               onChange={(event) => void share(event.target.value as ShareLevel)}
             >
-              {(["NONE", "OPPONENT", "ALL"] as ShareLevel[]).map((option) => (
+              {(kind === "CUSTOM" ? (["NONE", "OPPONENT", "ALL"] as ShareLevel[]) : (["NONE", "OPPONENT"] as ShareLevel[])).map((option) => (
                 <option key={option} value={option}>
                   {LABELS[option]}
                 </option>

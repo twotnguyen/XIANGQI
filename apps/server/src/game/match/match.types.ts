@@ -1,5 +1,6 @@
 import type { MatchEnding, Side } from "@xiangqi/xiangqi-core";
 import type { PoolClient } from "pg";
+import type { RatingChange } from "@xiangqi/shared";
 export type MatchClock = {
   redMs: number;
   blackMs: number;
@@ -51,6 +52,7 @@ export type MatchView = {
   status: "ACTIVE" | "FINISHED" | "INTERRUPTED";
   outcome: MatchOutcome | null;
   endedAt: string | null;
+  rating?: { red: RatingChange; black: RatingChange } | null;
   clock: MatchClock;
   inactivity: {
     promptAt: string;

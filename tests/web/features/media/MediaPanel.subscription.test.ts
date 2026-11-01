@@ -4,6 +4,16 @@ import userEvent from "@testing-library/user-event";
 import { expect, it } from "vitest";
 import { harness, live, panel, settle } from "./MediaPanel.test-helper.js";
 
+it("defaults ranked opponent media to hidden and limits the sharing audience", async () => {
+  const { client } = harness();
+  render(panel(client, { kind: "RANKED" }));
+  await settle();
+  expect(screen.getByRole("button", { name: "Hiện hình/tiếng đối thủ" })).toBeTruthy();
+  expect(screen.queryByRole("option", { name: "Cả đối thủ và người xem" })).toBeNull();
+  await userEvent.setup().click(screen.getByRole("button", { name: "Hiện hình/tiếng đối thủ" }));
+  expect(screen.getByRole("button", { name: "Tắt ngay" })).toBeTruthy();
+});
+
 it("plays opponent audio only from private while publishing ALL and toggling reception", async () => {
   const { client } = harness({ level: "ALL" });
   const view = render(panel(client));

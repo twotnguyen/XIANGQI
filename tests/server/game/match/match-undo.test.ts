@@ -11,6 +11,26 @@ useProposalHooks();
 describe.skipIf(!databaseUrl)(
   "online undo and shared proposal deadlines",
   () => {
+    it("rejects undo in ranked while allowing a casual guest to request it", async () => {
+      for (const kind of ["RANKED", "CASUAL"] as const) {
+        const f = await fixture();
+        await pool.query("UPDATE public.rooms SET kind=$2 WHERE id=$1", [f.roomId, kind]);
+        const moved = await run(f, f.red, (s) =>
+          store.move(s, { matchId: f.matchId, matchVersion: 0, from: 54, to: 45 }),
+        );
+        const offer = await run(f, f.red, (s) =>
+          store.offerUndo(s, { matchId: f.matchId, matchVersion: moved.match.version }),
+        );
+        if (kind === "RANKED") {
+          expect(offer.applied).toBe(false);
+          expect(offer.error?.code).toBe("MATCH_UNDO_FORBIDDEN");
+          expect(offer.undo.offers).toEqual([]);
+        } else {
+          expect(offer.applied).toBe(true);
+          expect(offer.undo.offers).toHaveLength(1);
+        }
+      }
+    });
     it("undo restores the effective branch without refunding clock and charges only acceptance", async () => {
       const f = await fixture();
       const first = await run(f, f.red, (s) =>

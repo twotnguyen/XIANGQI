@@ -74,7 +74,6 @@ export function resolveRoute(pathname: string, search = ""): Route {
 const p2 = new Set<Route["name"]>([
   "forgot-password",
   "reset-password",
-  "leaderboard",
   "history",
   "replay",
 ]);

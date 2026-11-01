@@ -68,6 +68,7 @@ const extraMigrations = [
   "20261103000003_password_reset_grant",
   "20261103000009_yc7_chat_quota",
   "20261103000010_media_generation",
+  "20261103000011_yc9_ranked",
 ];
 
 // Real production boot: Postgres-backed room/guest runtime, Nest HTTP app and

@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 import { afterAll, beforeEach } from "vitest";
 import type { PoolClient } from "pg";
 import { ClockService } from "@server/game/clock/clock.service.js";
@@ -44,8 +44,8 @@ export async function fixture(timeControlSeconds: 0 | 600 = 600, ageMs = 0) {
     [roomId],
     async (client) => {
       await client.query(
-        "INSERT INTO public.rooms(id,owner_id,name,time_control,viewer_limit,invite_code) VALUES($1,$2,'Synthetic Draw',$3,5,'12345678')",
-        [roomId, red, timeControlSeconds],
+        "INSERT INTO public.rooms(id,owner_id,name,time_control,viewer_limit,invite_code) VALUES($1,$2,'Synthetic Draw',$3,5,$4)",
+        [roomId, red, timeControlSeconds, String(randomInt(10_000_000, 100_000_000))],
       );
       await client.query(
         "INSERT INTO public.room_members(room_id,user_id,role,side,ready) VALUES($1,$2,'PLAYER','RED',true),($1,$3,'PLAYER','BLACK',true),($1,$4,'SPECTATOR',NULL,false)",

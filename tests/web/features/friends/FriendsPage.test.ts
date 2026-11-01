@@ -58,6 +58,25 @@ function client(overrides: Partial<FriendClient> = {}): FriendClient {
   };
 }
 describe("friends page", () => {
+  it("opens a requested accepted friend's chat only once", async () => {
+    vi.useFakeTimers();
+    window.history.pushState({}, "", "/friends?message=b");
+    render(createElement(FriendsPage, { client: client() }));
+    await act(async () => {});
+    expect(screen.getByRole("dialog", { name: /Bạn B/ })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Đóng hộp thoại" }));
+    expect(screen.queryByRole("dialog", { name: /Bạn B/ })).toBeNull();
+    await act(async () => { await vi.advanceTimersByTimeAsync(2100); });
+    expect(screen.queryByRole("dialog", { name: /Bạn B/ })).toBeNull();
+    window.history.pushState({}, "", "/");
+  });
+  it("does not open chat for a non-friend from the URL", async () => {
+    window.history.pushState({}, "", "/friends?message=c");
+    render(createElement(FriendsPage, { client: client() }));
+    await screen.findByText("@banb", { exact: false });
+    expect(screen.queryByRole("dialog", { name: /Bạn C/ })).toBeNull();
+    window.history.pushState({}, "", "/");
+  });
   it("shows friends with presence and handles accept", async () => {
     const c = client();
     render(createElement(FriendsPage, { client: c }));

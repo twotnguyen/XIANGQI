@@ -49,4 +49,5 @@ export async function reset() {
   await apply(
     "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
   );
+  await pool.query("ALTER TABLE public.rooms ADD COLUMN kind text NOT NULL DEFAULT 'CUSTOM'");
 }

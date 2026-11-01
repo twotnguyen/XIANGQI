@@ -6,6 +6,7 @@ import {
   ErrorState,
   Skeleton,
   TextField,
+  Tooltip,
 } from "../../shared/ui/primitives.js";
 import { AppIcon } from "../../shared/ui/AppIcon.js";
 import "./LobbyShell.css";
@@ -39,6 +40,8 @@ export interface LobbyShellProps {
   admissionReady?: boolean;
   joiningRoomId?: string | null;
   blockedReason?: string;
+  onMatchmaking?: (mode: "CASUAL" | "RANKED") => void;
+  guest?: boolean;
 }
 
 /**
@@ -56,6 +59,8 @@ export function LobbyShell({
   admissionReady = true,
   joiningRoomId = null,
   blockedReason,
+  onMatchmaking,
+  guest = false,
 }: LobbyShellProps) {
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
@@ -235,18 +240,20 @@ export function LobbyShell({
               />
             </div>
             <div className="xq-card-content">
-              <span className="xq-mode-label">SẮP RA MẮT</span>
+              <span className="xq-mode-label">GIAO HỮU</span>
               <h3>Ghép ngẫu nhiên</h3>
               <p>Gặp gỡ đối thủ mới trong những ván giao hữu.</p>
             </div>
             <div className="xq-card-btn-wrap">
-              <Button variant="secondary" disabledReason="Sắp ra mắt">
-                Ghép trận
-              </Button>
+              <Tooltip text={blockedReason ?? "Tìm đối thủ ngẫu nhiên"}>
+                <Button variant="secondary" onClick={() => onMatchmaking?.("CASUAL")} disabledReason={blockedReason}>
+                  Ghép trận
+                </Button>
+              </Tooltip>
             </div>
           </article>
 
-          <article className="xq-mode-card-target card-ranked card-disabled">
+          <article className="xq-mode-card-target card-ranked">
             <div className="xq-card-art">
               <img
                 src="/images/lobby-mode-ranked.png"
@@ -258,14 +265,16 @@ export function LobbyShell({
               />
             </div>
             <div className="xq-card-content">
-              <span className="xq-mode-label">SẮP RA MẮT</span>
+              <span className="xq-mode-label">XẾP HẠNG</span>
               <h3>Đấu hạng</h3>
-              <p>Chinh phục thứ hạng. Chế độ đang phát triển.</p>
+              <p>Thi đấu và chinh phục thứ hạng.</p>
             </div>
             <div className="xq-card-btn-wrap">
-              <Button variant="secondary" disabledReason="Sắp ra mắt">
-                Đánh hạng
-              </Button>
+              <Tooltip text={blockedReason ?? (guest ? "Đăng ký tài khoản để đánh hạng." : "Tìm trận xếp hạng")}>
+                <Button variant="secondary" onClick={() => onMatchmaking?.("RANKED")} disabledReason={blockedReason ?? (guest ? "Đăng ký tài khoản để đánh hạng." : undefined)}>
+                  Đánh hạng
+                </Button>
+              </Tooltip>
             </div>
           </article>
         </div>

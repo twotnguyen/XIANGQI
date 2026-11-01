@@ -6,6 +6,7 @@ export interface RoomControlProof {
 }
 
 import type { ClientChatEvents, ServerChatEvents } from "./chat.js";
+import type { RankedRating, RankedResult, RoomKind } from "./matchmaking.js";
 export type RoomRole = "red" | "black" | "spectator";
 
 /**
@@ -21,6 +22,8 @@ export interface RoomStateSnapshot {
   version: number;
   room: {
     status: "WAITING" | "PLAYING" | "FINISHED" | "CLOSED";
+    kind?: RoomKind;
+    finishedUntil?: string | null;
     hostId: string | null;
     name: string;
     visibility: "PUBLIC" | "CODE_ONLY" | "LOCKED";
@@ -56,8 +59,8 @@ export interface RoomStateSnapshot {
     seatRequests?: { id: string; userId: string; expiresAt: string }[];
     seatRequestCooldownUntil?: string | null;
     seatPlayers?: {
-      red: { userId: string; displayName: string; guest: boolean } | null;
-      black: { userId: string; displayName: string; guest: boolean } | null;
+      red: SeatPlayer | null;
+      black: SeatPlayer | null;
     };
     occupiedElsewhere?: boolean;
   };
@@ -72,6 +75,7 @@ export interface RoomStateSnapshot {
     winner: "red" | "black" | null;
     endedAt: string | null;
     result: string | null;
+    rating?: RankedResult | null;
     inactivity?: {
       promptAt: string;
       expiresAt: string;
@@ -95,6 +99,15 @@ export interface RoomStateSnapshot {
     used: { red: number; black: number };
     moved: { red: boolean; black: boolean };
   } | null;
+}
+
+export interface SeatPlayer {
+  userId: string;
+  displayName: string;
+  guest: boolean;
+  username?: string | null;
+  avatarUrl?: string | null;
+  rating?: RankedRating | null;
 }
 
 /**
@@ -217,6 +230,7 @@ export type RealtimeErrorCode =
   | "MATCH_DRAW_EXPIRED"
   | "MATCH_DRAW_SENDER_REQUIRED"
   | "MATCH_DRAW_RECEIVER_REQUIRED"
+  | "MATCH_DRAW_MIN_MOVES"
   | "MATCH_UNDO_PENDING"
   | "MATCH_UNDO_LIMIT"
   | "MATCH_UNDO_COOLDOWN"

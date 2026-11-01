@@ -1,3 +1,5 @@
+export type AuthorizedFetch = (path: string, init?: RequestInit) => Promise<Response>;
+
 /**
  * HTTP API đi qua proxy cùng origin để cookie không phụ thuộc cookie bên thứ ba.
  */

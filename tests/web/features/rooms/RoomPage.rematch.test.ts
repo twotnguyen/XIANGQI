@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { RoomRequestError } from "@web/features/rooms/room-client.js";
@@ -10,6 +10,74 @@ import {
   useRoomPageHooks,
 } from "./RoomPage.test-helper.js";
 useRoomPageHooks();
+it.each(["CASUAL", "RANKED"] as const)("hides custom-room controls in %s rooms", async (kind) => {
+  const state = playing();
+  state.room = { ...state.room, kind };
+  const fixture = setup(state, { isMember: true });
+  await fixture.ready();
+  expect(screen.queryByText("70521348")).toBeNull();
+  expect(screen.queryByRole("button", { name: "Cài đặt phòng" })).toBeNull();
+  expect(screen.queryByText(/Kênh chung/)).toBeNull();
+});
+
+it.each(["CASUAL", "RANKED"] as const)("shows a finished %s match without waiting or readiness labels", async (kind) => {
+  const state = playing();
+  state.room = { ...state.room, kind };
+  const fixture = setup(state, { isMember: true });
+  await fixture.ready();
+  const finished = terminal(state);
+  finished.room = { ...finished.room, kind, status: "FINISHED" };
+  fixture.publish(finished);
+  expect(screen.getByText("Ván cờ đã kết thúc")).toBeTruthy();
+  expect(screen.queryByText("Phòng chờ thi đấu")).toBeNull();
+  expect(screen.queryByText("Chưa sẵn sàng")).toBeNull();
+  expect(screen.queryByText("Đã sẵn sàng")).toBeNull();
+});
+
+it("notifies once when a ranked match reaches its terminal snapshot", async () => {
+  const state = playing();
+  state.room = { ...state.room, kind: "RANKED" };
+  const onRankedFinished = vi.fn();
+  const fixture = setup(state, { isMember: true, onRankedFinished });
+  await fixture.ready();
+  expect(onRankedFinished).not.toHaveBeenCalled();
+  const finished = terminal(state);
+  finished.room = { ...finished.room, kind: "RANKED", status: "FINISHED" };
+  fixture.publish(finished);
+  fixture.publish(finished);
+  expect(onRankedFinished).toHaveBeenCalledOnce();
+});
+
+it("allows a member to rematch from a finished casual room", async () => {
+  const state = playing();
+  state.room = { ...state.room, kind: "CASUAL" };
+  const fixture = setup(state, { isMember: true });
+  await fixture.ready();
+  const finished = terminal(state);
+  finished.room = { ...finished.room, kind: "CASUAL", status: "FINISHED" };
+  fixture.publish(finished);
+  expect(within(screen.getByRole("dialog")).getByRole("button", { name: "Đề nghị tái đấu" })).toBeTruthy();
+});
+
+it("shows ranked opponent identity and actual rating", async () => {
+  const state = playing();
+  state.room = { ...state.room, kind: "RANKED", seatPlayers: { red: null, black: { userId: "b", displayName: "Kỳ thủ", guest: false, username: "kythu", avatarUrl: "/avatar.png", rating: { elo: 1420, tier: "Trung cấp", completed: 6, wins: 3, draws: 1, losses: 2, rank: 5, remaining: 0 } } } };
+  const fixture = setup(state, { isMember: true });
+  await fixture.ready();
+  expect(screen.getByText("Kỳ thủ")).toBeTruthy();
+  expect(screen.getByText("@kythu")).toBeTruthy();
+  expect(screen.getByText("Elo 1420 · Trung cấp")).toBeTruthy();
+  expect(screen.getByRole("img", { name: "Ảnh đại diện Kỳ thủ" })).toBeTruthy();
+});
+
+it("shows an initial avatar when the ranked opponent has no image", async () => {
+  const state = playing();
+  state.room = { ...state.room, kind: "RANKED", seatPlayers: { red: null, black: { userId: "b", displayName: "Kỳ thủ", guest: false, username: "kythu", avatarUrl: null, rating: null } } };
+  const fixture = setup(state, { isMember: true });
+  await fixture.ready();
+  expect(screen.getByRole("img", { name: "Ảnh đại diện Kỳ thủ" }).textContent).toBe("K");
+});
+
 
 it.each(["SWAP", "KEEP"] as const)(
   "offers %s from the result modal and keeps one panel while waiting for the opponent",

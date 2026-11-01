@@ -1645,3 +1645,13 @@
     display: none;
   }
 }
+.xq-seat-avatar {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-sunken);
+  font-weight: 700;
+}

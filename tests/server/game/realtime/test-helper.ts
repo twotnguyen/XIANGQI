@@ -39,7 +39,7 @@ export async function prepareFixture() {
     CREATE SCHEMA auth AUTHORIZATION supabase_auth_admin;
     CREATE TABLE auth.users(id uuid PRIMARY KEY);
     ALTER TABLE auth.users OWNER TO supabase_auth_admin;
-    CREATE TABLE public.rooms(id uuid PRIMARY KEY, version integer NOT NULL DEFAULT 0, red_ready boolean NOT NULL DEFAULT false, black_ready boolean NOT NULL DEFAULT false, members uuid[] NOT NULL);
+    CREATE TABLE public.rooms(id uuid PRIMARY KEY, kind text NOT NULL DEFAULT 'CUSTOM', version integer NOT NULL DEFAULT 0, red_ready boolean NOT NULL DEFAULT false, black_ready boolean NOT NULL DEFAULT false, members uuid[] NOT NULL);
     ALTER TABLE public.rooms ENABLE ROW LEVEL SECURITY;
     ALTER TABLE public.rooms FORCE ROW LEVEL SECURITY;
     CREATE POLICY app_server_room_fixture ON public.rooms TO app_server USING(true) WITH CHECK(true);

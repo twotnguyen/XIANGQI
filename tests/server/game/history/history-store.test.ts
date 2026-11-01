@@ -2,10 +2,11 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { initialPosition } from "@xiangqi/xiangqi-core";
 import { encodePosition } from "@server/game/match/position-codec.js";
-import { apply, databaseUrl, pool, reset } from "../match/match.test-helper.js";
+import { apply, databaseUrl, pool, resetBase as reset } from "../match/match.test-helper.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import type { RoomActor, RoomScope } from "@server/game/room/room.types.js";
 import { HistoryStore } from "@server/game/history/history-store.js";
+import { readLeaderboard, settleRanked } from "@server/game/ranking/ranked.store.js";
 const store = new HistoryStore(),
   coordinator = new RoomTransactions(pool);
 async function run<T>(
@@ -59,6 +60,7 @@ async function game(
     reason?: string;
     at?: string;
     level?: "EASY" | "MEDIUM" | "HARD";
+    kind?: "CUSTOM" | "CASUAL" | "RANKED";
   } = {},
 ) {
   const id = randomUUID(),
@@ -68,8 +70,8 @@ async function game(
   if (mode === "ONLINE") {
     roomId = randomUUID();
     await pool.query(
-      "INSERT INTO public.rooms(id,owner_id,name,time_control) VALUES($1,$2,'Synthetic history',300)",
-      [roomId, red!.userId],
+      "INSERT INTO public.rooms(id,owner_id,name,time_control,kind) VALUES($1,$2,'Synthetic history',300,$3)",
+      [roomId, red!.userId, options.kind ?? "CUSTOM"],
     );
   }
   const reason =
@@ -132,7 +134,7 @@ async function game(
 describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
   beforeEach(async () => {
     await pool.query(
-      "DROP SCHEMA IF EXISTS xiangqi_ai CASCADE; DROP SCHEMA IF EXISTS xiangqi_chat CASCADE",
+      "DROP SCHEMA IF EXISTS xiangqi_ai CASCADE; DROP SCHEMA IF EXISTS xiangqi_chat CASCADE; DROP SCHEMA IF EXISTS xiangqi_social CASCADE",
     );
     await reset();
     await apply("supabase/migrations/20261011000007_match_outcomes.sql");
@@ -142,6 +144,43 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
     await apply(
       "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
     );
+    await apply("supabase/migrations/20261011000014_friendships.sql");
+    await apply("supabase/migrations/20261103000011_yc9_ranked.sql");
+  });
+  it("settles ranked once and projects each participant's history delta", async () => {
+    const a = await member("A"), b = await member("B");
+    const id = await game(a, b, { kind: "RANKED" });
+    const result = await run(a, s => settleRanked(s.client, id, {reason:"RESIGN",winner:"red"}, new Date("2026-10-01T00:00:00Z")));
+    expect(result?.red.delta).toBe(16);
+    expect(await run(a, s => settleRanked(s.client, id, {reason:"RESIGN",winner:"red"}, new Date("2026-10-01T00:00:00Z")))).toEqual(result);
+    expect((await run(a, s => store.list(s, {filter:"RANKED"}))).items[0]).toMatchObject({type:"RANKED",eloDelta:16});
+    expect((await run(b, s => store.list(s, {filter:"RANKED"}))).items[0]).toMatchObject({type:"RANKED",eloDelta:-16});
+    expect(await run(a, s => store.rankedSummary(s))).toMatchObject({elo:1216,completed:1,wins:1});
+  });
+  it("ranks eligible members by tie breaks and exposes messaging only for friends", async () => {
+    const a = await member("A"), b = await member("B"), c = await member("C");
+    await pool.query("INSERT INTO xiangqi_room.ratings(user_id,elo,completed,wins,draws,losses,achieved_at) VALUES($1,1400,5,3,1,1,'2026-01-02'),($2,1400,5,3,1,1,'2026-01-01'),($3,1500,4,4,0,0,'2026-01-01')", [a.userId,b.userId,c.userId]);
+    await pool.query("INSERT INTO xiangqi_social.friendships(user_a,user_b,created_at) VALUES(LEAST($1::uuid,$2::uuid),GREATEST($1::uuid,$2::uuid),now())", [a.userId,b.userId]);
+    const view = await run(a, s => readLeaderboard(s.client,a.userId));
+    expect(view.players.map(p => p.userId)).toEqual([b.userId,a.userId]);
+    expect(view.players[0]?.canMessage).toBe(true);
+    expect(view.self.rating.rank).toBe(2);
+    const outside = await run(c, s => readLeaderboard(s.client,c.userId));
+    expect(outside.self.rating).toMatchObject({rank:null,remaining:1});
+  });
+  it("rolls back settlement with its transaction and excludes interrupted and casual matches", async () => {
+    const a = await member("A"), b = await member("B");
+    const ranked = await game(a,b,{kind:"RANKED"});
+    await expect(run(a, async s => {
+      await settleRanked(s.client,ranked,{reason:"RESIGN",winner:"red"},new Date("2026-10-01T00:00:00Z"));
+      throw new Error("rollback");
+    })).rejects.toThrow("rollback");
+    expect((await pool.query("SELECT count(*)::int n FROM xiangqi_room.ranked_results")).rows[0].n).toBe(0);
+    expect((await pool.query("SELECT count(*)::int n FROM xiangqi_room.ratings")).rows[0].n).toBe(0);
+    const casual = await game(a,b,{kind:"CASUAL"});
+    const interrupted = await game(a,b,{kind:"RANKED",status:"INTERRUPTED",reason:"SERVER_RESTART"});
+    expect(await run(a,s => settleRanked(s.client,casual,{reason:"RESIGN",winner:"red"},new Date()))).toBeNull();
+    expect(await run(a,s => settleRanked(s.client,interrupted,{reason:"SERVER_RESTART",winner:null},new Date()))).toBeNull();
   });
   afterAll(() => pool.end());
   it("returns only own terminal matches from both colors; outsiders and active games are absent", async () => {
@@ -229,16 +268,8 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
     expect(
       (await run(a, (s) => store.list(s, { filter: "CASUAL" }))).items,
     ).toHaveLength(2);
-    await expect(
-      run(a, (s) => store.list(s, { filter: "RANKED" })),
-    ).rejects.toMatchObject({
-      code: "HISTORY_RANKED_UNAVAILABLE",
-      status: 503,
-    });
-    await expect(run(a, (s) => store.rankedSummary(s))).rejects.toMatchObject({
-      code: "HISTORY_RANKED_UNAVAILABLE",
-      status: 503,
-    });
+    expect((await run(a, (s) => store.list(s, { filter: "RANKED" }))).items).toEqual([]);
+    expect(await run(a, (s) => store.rankedSummary(s))).toMatchObject({elo:1200, completed:0, wins:0, draws:0, losses:0});
   });
   it("anonymizes expired Guest opponents without preventing the official player from reading", async () => {
     const a = await member("A"),

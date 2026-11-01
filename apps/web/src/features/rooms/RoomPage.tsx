@@ -72,6 +72,7 @@ export interface RoomPageProps {
   mediaClient?: MediaClient;
   renderInviteFriends?: (roomId: string) => ReactNode;
   isMember?: boolean;
+  onRankedFinished?: () => void;
 }
 /**
  * Trang phòng cờ trực tuyến: điều phối kết nối realtime, bàn cờ, đồng hồ đấu, ghế ngồi, video/audio và chat phòng.
@@ -89,6 +90,7 @@ export function RoomPage({
   mediaClient,
   renderInviteFriends,
   isMember = false,
+  onRankedFinished,
 }: RoomPageProps) {
   const [dismissedResult, setDismissedResult] = useState<string | null>(null);
   const [leaveError, setLeaveError] = useState("");
@@ -188,10 +190,19 @@ export function RoomPage({
     if (!connected || snapshot?.control.mode !== "writable")
       setLeaveConfirm(null);
   }, [connected, snapshot?.control.mode]);
+  const rankedFinishedId = snapshot?.room.kind === "RANKED" && snapshot.match && snapshot.match.status !== "ACTIVE" ? snapshot.match.id : null;
+  const reportedRanked = useRef<string | null>(null);
+  useEffect(() => {
+    if (rankedFinishedId && rankedFinishedId !== reportedRanked.current) {
+      reportedRanked.current = rankedFinishedId;
+      onRankedFinished?.();
+    }
+  }, [rankedFinishedId, onRankedFinished]);
   const canRematch =
     view !== null &&
-    view.room.status === "WAITING" &&
-    (view.room.inviteCode !== null || view.room.visibility === "LOCKED") &&
+    ((view.room.kind === "CASUAL" && view.room.status === "FINISHED") ||
+      ((view.room.kind ?? "CUSTOM") === "CUSTOM" && view.room.status === "WAITING" &&
+        (view.room.inviteCode !== null || view.room.visibility === "LOCKED"))) &&
     (view.role === "red" || view.role === "black") &&
     Boolean(view.room.seats.red && view.room.seats.black) &&
     snapshot?.match != null &&
@@ -907,6 +918,8 @@ export function RoomPage({
       </main>
     );
   const { room } = view;
+  const kind = room.kind ?? "CUSTOM";
+  const matched = kind !== "CUSTOM";
   const serverCode = room.inviteCode;
   const code = serverCode === undefined ? inviteCode : serverCode;
   const player = view.role !== "spectator";
@@ -936,7 +949,7 @@ export function RoomPage({
     : (snapshot?.match?.lastMove ?? null);
   const isHost = room.hostId === userId;
   const opponentSide = view.role === "red" ? "black" : "red";
-  const readyControl = room.status === "WAITING" && player && (
+  const readyControl = !matched && room.status === "WAITING" && player && (
     <Button
       className="xq-room-ready"
       loading={busy}
@@ -972,7 +985,7 @@ export function RoomPage({
     (snapshot.role === "spectator" || dismissedResult !== snapshot.match.id),
   );
   const resultInModal = resultVisible && player;
-  const rematchPanel = (
+  const rematchPanel = kind !== "RANKED" && isMember ? (
     <RematchPanel
       offer={isMember ? (room.rematchOffer ?? null) : null}
       selfId={userId}
@@ -985,7 +998,7 @@ export function RoomPage({
         void httpAction(accept ? "rematch-accept" : "rematch-decline")
       }
     />
-  );
+  ) : null;
   return (
     <main
       className={`xq-ui xq-room-page${playingLayout ? " is-playing" : " is-waiting"}`}
@@ -998,11 +1011,13 @@ export function RoomPage({
           <p>
             {room.status === "CLOSED"
               ? "Phòng đã đóng"
-              : clockState?.match?.status === "ACTIVE"
-                ? "Ván cờ đang diễn ra"
-                : "Phòng chờ thi đấu"}
+              : matched && room.status === "FINISHED"
+                ? "Ván cờ đã kết thúc"
+                : clockState?.match?.status === "ACTIVE"
+                  ? "Ván cờ đang diễn ra"
+                  : "Phòng chờ thi đấu"}
           </p>
-          {!playingLayout && (
+          {!matched && !playingLayout && (
             <div className="xq-waiting-meta">
               <span>
                 {room.timeMinutes === 0
@@ -1023,7 +1038,7 @@ export function RoomPage({
             {chatOpen ? "Ẩn chat" : "Mở chat"}
             {unreadChat.PLAYERS_PRIVATE > 0 &&
               ` · Riêng ${Math.min(unreadChat.PLAYERS_PRIVATE, 99)}${unreadChat.PLAYERS_PRIVATE > 99 ? "+" : ""}`}
-            {unreadChat.ROOM_PUBLIC > 0 &&
+            {!matched && unreadChat.ROOM_PUBLIC > 0 &&
               ` · Chung ${Math.min(unreadChat.ROOM_PUBLIC, 99)}${unreadChat.ROOM_PUBLIC > 99 ? "+" : ""}`}
           </Button>
           <NetworkDemo
@@ -1032,7 +1047,7 @@ export function RoomPage({
             onDisconnect={() => void disconnectDemo()}
             onReconnect={reconnectDemo}
           />
-          {canManage && (
+          {!matched && canManage && (
             <Button
               variant="ghost"
               onClick={() => {
@@ -1122,7 +1137,7 @@ export function RoomPage({
           Chat
           {unreadChat.PLAYERS_PRIVATE > 0 &&
             ` · Riêng ${Math.min(unreadChat.PLAYERS_PRIVATE, 99)}${unreadChat.PLAYERS_PRIVATE > 99 ? "+" : ""}`}
-          {unreadChat.ROOM_PUBLIC > 0 &&
+          {!matched && unreadChat.ROOM_PUBLIC > 0 &&
             ` · Chung ${Math.min(unreadChat.ROOM_PUBLIC, 99)}${unreadChat.ROOM_PUBLIC > 99 ? "+" : ""}`}
         </label>
         <label>
@@ -1334,6 +1349,7 @@ export function RoomPage({
           {snapshot && (
             <MatchActions
               match={snapshot.match}
+              kind={kind}
               role={snapshot.role}
               draw={snapshot.draw}
               undo={snapshot.undo}
@@ -1368,7 +1384,7 @@ export function RoomPage({
             <p>Bạn đang xem. Chỉ người ngồi ghế mới có thể Sẵn sàng.</p>
           )}
         </section>
-        {view.role !== "spectator" && code && room.visibility !== "LOCKED" && (
+        {!matched && view.role !== "spectator" && code && room.visibility !== "LOCKED" && (
           <RoomInvite
             code={code}
             copying={copying}
@@ -1385,7 +1401,7 @@ export function RoomPage({
         )}
         <aside className="xq-room-info" aria-label="Thông tin phòng">
           <RoomDetails room={room} />
-          <SpectatorsPanel
+          {!matched && <SpectatorsPanel
             spectators={room.spectators ?? []}
             limit={room.viewerLimit}
             selfId={userId}
@@ -1442,12 +1458,13 @@ export function RoomPage({
               void viewerAction("invite-down", { targetId: target })
             }
             onKick={(target) => void viewerAction("kick", { targetId: target })}
-          />
+          />}
           <div className="xq-room-slots">
             <div className="xq-room-chat-slot">
               {chat ?? (
                 <RoomChat
                   viewerRole={view.role}
+                  privateOnly={matched}
                   userId={userId}
                   panelVisible={compact ? area === "chat" : chatOpen}
                   onUnreadChange={setUnreadChat}
@@ -1460,7 +1477,7 @@ export function RoomPage({
               )}
               {connected &&
                 snapshot &&
-                (["PLAYERS_PRIVATE", "ROOM_PUBLIC"] as const).map((channel) =>
+                (matched ? (["PLAYERS_PRIVATE"] as const) : (["PLAYERS_PRIVATE", "ROOM_PUBLIC"] as const)).map((channel) =>
                   roomChat.channels[channel]?.error ? (
                     <Button
                       key={channel}
@@ -1484,6 +1501,7 @@ export function RoomPage({
                 >
                   <LazyMediaPanel
                     roomId={roomId}
+                    kind={kind}
                     role={view.role}
                     client={mediaClient}
                     connected={connected && Boolean(snapshot)}
@@ -1537,7 +1555,7 @@ export function RoomPage({
           họ đồng ý. Ghế và phe giữ nguyên.
         </p>
       </Dialog>
-      <RoomSettings
+      {!matched && <RoomSettings
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
         room={room}
@@ -1546,9 +1564,9 @@ export function RoomPage({
         error={settingsError}
         status={settingsStatus}
         onChange={changeVisibility}
-      />
+      />}
       {!resultInModal && rematchPanel}
-      <SwapPrompt
+      {!matched && <SwapPrompt
         open={swapModalOpen}
         seconds={swapSeconds}
         writable={writable}
@@ -1556,10 +1574,11 @@ export function RoomPage({
         onAccept={() => void httpAction("swap-accept")}
         onDecline={() => void httpAction("swap-decline")}
         onCollapse={() => setSwapCollapsedId(swapOfferId)}
-      />
+      />}
       {resultVisible && snapshot?.match && (
         <MatchResult
           match={snapshot.match}
+          kind={kind}
           role={snapshot.role}
           leaving={busy}
           canLeave={ownsHttpControl()}

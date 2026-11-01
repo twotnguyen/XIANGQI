@@ -39,6 +39,7 @@ const messages = {
   MATCH_NOT_FOUND: "Không tìm thấy ván.",
   MATCH_DRAW_PENDING: "Bạn đã có đề nghị đang chờ.",
   MATCH_DRAW_COOLDOWN: "Chưa đủ số nước để xin hòa lại.",
+  MATCH_DRAW_MIN_MOVES: "Mỗi bên cần đi ít nhất 20 nước trước khi xin hòa.",
   MATCH_DRAW_EXPIRED: "Đề nghị không còn hiệu lực.",
   MATCH_DRAW_SENDER_REQUIRED: "Chỉ người gửi được rút đề nghị.",
   MATCH_DRAW_RECEIVER_REQUIRED: "Chỉ người nhận được phản hồi đề nghị.",
@@ -223,6 +224,8 @@ export class GameRooms implements RoomCollaborator {
       role: room.role,
       room: {
         status: current.status,
+        kind: current.kind,
+        finishedUntil: current.finishedUntil,
         hostId: current.hostId,
         name: current.name,
         visibility: current.visibility,
@@ -260,6 +263,7 @@ export class GameRooms implements RoomCollaborator {
             position: match.position,
             canAbort:
               match.status === "ACTIVE" &&
+              current.kind !== "RANKED" &&
               room.role !== "spectator" &&
               match.ply === 0 &&
               (undo?.used.red ?? 0) === 0 &&
@@ -276,6 +280,7 @@ export class GameRooms implements RoomCollaborator {
             winner: match.outcome?.winner ?? null,
             endedAt: match.endedAt,
             result: match.outcome?.reason ?? null,
+            rating: match.rating ?? null,
             inactivity: match.inactivity ?? null,
           }
         : null,

@@ -1,7 +1,9 @@
 import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
 import { useState, useRef, useEffect, useId, type ReactNode } from "react";
-import { Button, Dialog, Tooltip } from "../../shared/ui/primitives.js";
+import { Button, Dialog } from "../../shared/ui/primitives.js";
 import { AppIcon } from "../../shared/ui/AppIcon.js";
+import { SelfRating } from "../../features/rankings/SelfRating.js";
+import type { AuthorizedFetch } from "../../features/profile/profile-client.js";
 import "./AppShell.css";
 export interface ShellUser {
   displayName: string;
@@ -17,6 +19,8 @@ export function AppShell({
   active = "/lobby",
   onLogout,
   bell,
+  authorizedFetch,
+  ratingRevision = 0,
 }: {
   title: string;
   user?: ShellUser;
@@ -24,6 +28,8 @@ export function AppShell({
   active?: string;
   onLogout?: () => void;
   bell?: ReactNode;
+  authorizedFetch?: AuthorizedFetch;
+  ratingRevision?: number;
 }) {
   const [menu, setMenu] = useState(false);
   const [userDropdown, setUserDropdown] = useState(false);
@@ -119,12 +125,10 @@ export function AppShell({
           Lịch sử
         </NavigationLink>
       )}
-      <Tooltip text="Sắp ra mắt">
-        <Button variant="ghost" disabledReason="Sắp ra mắt">
-          <AppIcon name="trophy" />
-          Bảng xếp hạng
-        </Button>
-      </Tooltip>
+      <NavigationLink href="/leaderboard" aria-current={active === "/leaderboard" ? "page" : undefined} onClick={() => setMenu(false)}>
+        <AppIcon name="trophy" />
+        Bảng xếp hạng
+      </NavigationLink>
     </>
   );
   return (
@@ -169,6 +173,7 @@ export function AppShell({
                   ⌄
                 </span>
               </button>
+              {!user.guest && authorizedFetch && <SelfRating authorizedFetch={authorizedFetch} guest={false} revision={ratingRevision} />}
               {userDropdown && (
                 <div
                   className="xq-user-dropdown"

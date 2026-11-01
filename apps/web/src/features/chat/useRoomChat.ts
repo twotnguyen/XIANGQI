@@ -94,7 +94,9 @@ export function useRoomChat(
       current.connected &&
       current.snapshot &&
       current.snapshot.room.status !== "CLOSED" &&
-      (channel === "ROOM_PUBLIC" || current.snapshot.role !== "spectator")
+      (channel === "ROOM_PUBLIC"
+        ? (current.snapshot.room.kind ?? "CUSTOM") === "CUSTOM"
+        : current.snapshot.role !== "spectator")
     );
   }
   function current(channel: ChatChannel, w: Work, peer: RoomConnection | null) {

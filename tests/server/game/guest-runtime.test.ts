@@ -5,7 +5,7 @@ import type { Socket } from "socket.io-client";
 import {
   databaseUrl,
   loginPool,
-  reset,
+  resetBase as reset,
   pool,
   roomControl,
   waitFor,

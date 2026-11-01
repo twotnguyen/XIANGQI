@@ -15,7 +15,7 @@ import {
   member,
   pool,
   registration,
-  reset,
+  resetBase as reset,
 } from "../game.runtime.test-helper.js";
 import {
   createGuest,
@@ -41,6 +41,7 @@ export async function resetAiGuestDatabase(): Promise<void> {
     "20261011000011_ai_reservations",
     "20261011000012_ai_presence",
     "20261019060000_guest_privacy_receipt_redaction",
+    "20261103000011_yc9_ranked",
   ])
     await apply(`supabase/migrations/${migration}.sql`);
 }

@@ -1,5 +1,13 @@
 import { createHash, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
+import type { Server as HttpServer } from "node:http";
+import { MatchmakingStore } from "./matchmaking/matchmaking.store.js";
+import { MatchmakingQueue } from "./matchmaking/matchmaking-queue.js";
+import { MatchmakingService } from "./matchmaking/matchmaking.service.js";
+import { attachMatchmaking } from "./matchmaking/matchmaking-gateway.js";
+import { readMatchmakingConfig } from "./matchmaking/matchmaking-config.js";
+import { RankingHttpService } from "./ranking/ranking-http.service.js";
+import { RankingModule } from "./ranking/ranking.module.js";
 import {
   maskForbiddenChat,
   ROOM_REMOVAL_MESSAGES,
@@ -98,7 +106,7 @@ export async function createRoomRuntime(
   const sessions = registration.sessions;
   const lock = await acquireRuntimeLock(registration.pool);
   try {
-    return await bootRoomRuntime(registration, sessions, media, lock);
+    return await bootRoomRuntime(registration, sessions, media, lock, readMatchmakingConfig(env));
   } catch (error) {
     await lock.release().catch(() => undefined);
     throw error;
@@ -110,6 +118,7 @@ async function bootRoomRuntime(
   sessions: NonNullable<RoomRegistration["sessions"]>,
   media: RoomMedia,
   lock: RuntimeLock,
+  matchmakingConfig: ReturnType<typeof readMatchmakingConfig>,
 ) {
   const admission = new RoomAdmission();
   const pool = admittedPool(registration.pool, admission, lock);
@@ -206,7 +215,7 @@ async function bootRoomRuntime(
   const clock = new ClockService(),
     instance = randomUUID();
   const { coordinator, context, withScope, getScope, rooms, matches } =
-    createRoomWiring(pool, clock);
+    createRoomWiring(pool, clock, matchmakingConfig.minimumGames);
   const sessionSeats = new RoomSessionSeats(
     coordinator,
     rooms,
@@ -244,6 +253,12 @@ async function bootRoomRuntime(
     authorizer,
     new GuestRoomAuthorizer(guests, pool),
   );
+  const matchmakingStore = new MatchmakingStore(pool, coordinator, sessionAuthorizer, matches, withScope, matchmakingConfig.pairLimitEnabled);
+  await matchmakingStore.requireSchema();
+  await matchmakingStore.recoverQueueReservations();
+  const matchmakingQueue = new MatchmakingQueue(matchmakingStore);
+  const matchmakingService = new MatchmakingService(sessionAuthorizer);
+  let matchmakingGateway: ReturnType<typeof attachMatchmaking> | undefined;
   const guard = new RoomRealtimeTransactions(coordinator, sessionAuthorizer);
   const transactions: RealtimeTransactions = {
     run: (connection, work) =>
@@ -411,7 +426,7 @@ async function bootRoomRuntime(
     lock.ready();
     const batch = await read((client) =>
       client.query<{ id: string; owner_id: string; kind: RoomActor["kind"] }>(
-        "SELECT r.id,r.owner_id,p.kind FROM public.rooms r JOIN xiangqi_auth.principals p ON p.id=r.owner_id WHERE r.invite_code IS NOT NULL AND r.closed_at IS NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND ($1::uuid IS NULL OR r.id>$1) ORDER BY r.id LIMIT 50",
+        "SELECT r.id,r.owner_id,p.kind FROM public.rooms r JOIN xiangqi_auth.principals p ON p.id=r.owner_id WHERE (r.invite_code IS NOT NULL OR r.kind IN('CASUAL','RANKED')) AND r.closed_at IS NULL AND r.status IN('WAITING','FINISHED','PLAYING') AND ($1::uuid IS NULL OR r.id>$1) ORDER BY r.id LIMIT 50",
         [cursor],
       ),
     );
@@ -425,9 +440,10 @@ async function bootRoomRuntime(
             const current = (
               await scope.client.query<{
                 status: string;
+                kind: string;
                 current_match_id: string | null;
               }>(
-                "SELECT status,current_match_id FROM public.rooms WHERE id=$1",
+                "SELECT status,current_match_id,kind FROM public.rooms WHERE id=$1",
                 [row.id],
               )
             ).rows[0];
@@ -447,7 +463,7 @@ async function bootRoomRuntime(
                 at,
               });
             }
-            await rooms.recoverWaiting(scope, row.id, instance);
+            if (current.kind === "CUSTOM") await rooms.recoverWaiting(scope, row.id, instance);
           }),
       );
     cursor = batch.rows.length === 50 ? batch.rows[49]!.id : null;
@@ -564,6 +580,8 @@ async function bootRoomRuntime(
     (stopping ??= (async () => {
       closed = true;
       clearTimeout(timer);
+      await matchmakingGateway?.close();
+      if (!matchmakingGateway) await matchmakingQueue.close();
       const drained = admission.close();
       try {
         await inFlight;
@@ -592,6 +610,7 @@ async function bootRoomRuntime(
   const module = RoomModule.forRoot(
     new RoomHttpService(rooms, coordinator, sessionAuthorizer, withScope),
   );
+  module.imports = [...(module.imports ?? []), RankingModule.forRoot(new RankingHttpService(coordinator, authorizer, matchmakingConfig.minimumGames))];
   if (publicService)
     module.imports = [
       ...(module.imports ?? []),
@@ -605,6 +624,12 @@ async function bootRoomRuntime(
   return {
     module,
     guests,
+    matchmaking: {
+      attach(server: HttpServer, corsOrigins: readonly string[]) {
+        if (matchmakingGateway) throw new Error("Matchmaking gateway is already attached");
+        matchmakingGateway = attachMatchmaking(server, matchmakingQueue, matchmakingService, corsOrigins);
+      },
+    },
     authorizer: sessionAuthorizer,
     friendInvites: new RoomFriendInvites(
       new FriendStore(pool),

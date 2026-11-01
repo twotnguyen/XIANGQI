@@ -91,6 +91,20 @@ describe.skipIf(!databaseUrl)(
         "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
       );
     });
+    it.each(["CASUAL", "RANKED"])("%s permits only player private chat", async (kind) => {
+      await pool.query("ALTER TABLE public.rooms ADD COLUMN IF NOT EXISTS kind text NOT NULL DEFAULT 'CUSTOM'");
+      const f = await fixture();
+      await f.join(f.b, "play");
+      await f.join(f.c, "watch");
+      await pool.query("UPDATE public.rooms SET kind=$2 WHERE id=$1", [f.id, kind]);
+      await f.send(f.a, "PLAYERS_PRIVATE", "private");
+      expect((await f.read(f.b, "PLAYERS_PRIVATE")).messages).toMatchObject([{ content: "private" }]);
+      for (const who of [f.a, f.c]) {
+        await expect(f.read(who, "ROOM_PUBLIC")).rejects.toMatchObject({ code: "CHAT_FORBIDDEN" });
+        await expect(f.send(who, "ROOM_PUBLIC")).rejects.toMatchObject({ code: "CHAT_FORBIDDEN" });
+      }
+      await expect(f.read(f.c, "PLAYERS_PRIVATE")).rejects.toMatchObject({ code: "CHAT_FORBIDDEN" });
+    });
     it("validates sticker shortcodes without rejecting ordinary colon text", async () => {
       const f = await fixture();
       await f.send(f.a, "ROOM_PUBLIC", ":clap:");

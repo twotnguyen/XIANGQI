@@ -42,12 +42,15 @@ export interface RoomEntry {
   inviteCode?: string;
   notice?: string;
 }
+import type { RankedRating } from "@xiangqi/shared";
 export interface RoomView {
   serverNow: string;
   roomId: string;
   version: number;
   room: {
     status: "WAITING" | "PLAYING" | "FINISHED" | "CLOSED";
+    kind?: "CUSTOM" | "CASUAL" | "RANKED";
+    finishedUntil?: string | null;
     hostId: string | null;
     name: string;
     visibility: "PUBLIC" | "CODE_ONLY" | "LOCKED";
@@ -79,8 +82,8 @@ export interface RoomView {
     seatRequests?: { id: string; userId: string; expiresAt: string }[];
     seatRequestCooldownUntil?: string | null;
     seatPlayers?: {
-      red: { userId: string; displayName: string; guest: boolean } | null;
-      black: { userId: string; displayName: string; guest: boolean } | null;
+      red: { userId: string; displayName: string; guest: boolean; username?: string | null; avatarUrl?: string | null; rating?: RankedRating | null } | null;
+      black: { userId: string; displayName: string; guest: boolean; username?: string | null; avatarUrl?: string | null; rating?: RankedRating | null } | null;
     };
     /** Chính người đọc đang giữ vị trí chơi ở nơi khác (ghế phòng khác, ván AI/online). */
     occupiedElsewhere?: boolean;

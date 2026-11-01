@@ -379,7 +379,7 @@ export class FriendTx {
   async lockOpenRoom(roomId: string): Promise<boolean> {
     const row = (
       await this.client.query(
-        `SELECT 1 FROM public.rooms WHERE id=$1 AND closed_at IS NULL AND visibility<>'LOCKED' FOR SHARE`,
+        `SELECT 1 FROM public.rooms r WHERE id=$1 AND closed_at IS NULL AND visibility<>'LOCKED' AND COALESCE(to_jsonb(r)->>'kind','CUSTOM')='CUSTOM' FOR SHARE`,
         [roomId],
       )
     ).rows[0];

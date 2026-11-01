@@ -66,6 +66,13 @@ export class MediaStore {
  */
 export class MediaTx {
   constructor(private readonly client: PoolClient) {}
+  async isMatched(roomId: string): Promise<boolean> {
+    const result = await this.client.query<{ matched: boolean }>(
+      "SELECT COALESCE(to_jsonb(r)->>'kind','CUSTOM') IN ('CASUAL','RANKED') AS matched FROM public.rooms r WHERE id=$1",
+      [roomId],
+    );
+    return result.rows[0]?.matched ?? false;
+  }
   /**
    * Kiểm tra người dùng có đang giữ ghế kỳ thủ trong phòng đang mở không.
    */
@@ -145,7 +152,7 @@ export class MediaTx {
   ): Promise<ShareLevel | undefined> {
     const row = (
       await this.client.query(
-        "SELECT level FROM xiangqi_room.media_share WHERE room_id=$1 AND user_id=$2",
+        "SELECT CASE WHEN COALESCE(to_jsonb(r)->>'kind','CUSTOM') IN ('CASUAL','RANKED') AND s.level='ALL' THEN 'OPPONENT' ELSE s.level END AS level FROM xiangqi_room.media_share s JOIN public.rooms r ON r.id=s.room_id WHERE s.room_id=$1 AND s.user_id=$2",
         [roomId, userId],
       )
     ).rows[0];
@@ -176,7 +183,7 @@ export class MediaTx {
     const member = (
       await this.client.query(
         `SELECT m.role FROM public.room_members m JOIN public.rooms r ON r.id=m.room_id
-           WHERE m.room_id=$1 AND m.user_id=$2 AND r.closed_at IS NULL`,
+           WHERE m.room_id=$1 AND m.user_id=$2 AND r.closed_at IS NULL AND (COALESCE(to_jsonb(r)->>'kind','CUSTOM')='CUSTOM' OR m.role='PLAYER')`,
         [roomId, userId],
       )
     ).rows[0];

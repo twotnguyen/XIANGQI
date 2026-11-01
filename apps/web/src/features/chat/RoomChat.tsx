@@ -31,6 +31,7 @@ export interface RoomChatChannelState {
 }
 export interface RoomChatProps {
   viewerRole: "red" | "black" | "spectator";
+  privateOnly?: boolean;
   userId?: string;
   panelVisible?: boolean;
   onUnreadChange?: (counts: Record<RoomChatChannel, number>) => void;
@@ -309,9 +310,11 @@ export function RoomChat(props: RoomChatProps) {
   const [tab, setTab] = useState<RoomChatChannel>("PLAYERS_PRIVATE");
   const id = useId();
   const spectator = props.viewerRole === "spectator";
-  const available: RoomChatChannel[] = spectator
-    ? ["ROOM_PUBLIC"]
-    : ["PLAYERS_PRIVATE", "ROOM_PUBLIC"];
+  const available: RoomChatChannel[] = props.privateOnly
+    ? ["PLAYERS_PRIVATE"]
+    : spectator
+      ? ["ROOM_PUBLIC"]
+      : ["PLAYERS_PRIVATE", "ROOM_PUBLIC"];
   const [counts, setCounts] = useState<Record<RoomChatChannel, number>>({ PLAYERS_PRIVATE: 0, ROOM_PUBLIC: 0 });
   const seen = useRef<Partial<Record<RoomChatChannel, { scope: string; max: number; initialized: boolean; unread: Set<number> }>>>({});
   const [visibilityTick, setVisibilityTick] = useState(0);
@@ -328,7 +331,7 @@ export function RoomChat(props: RoomChatProps) {
     const next = { PLAYERS_PRIVATE: 0, ROOM_PUBLIC: 0 };
     for (const channel of ["PLAYERS_PRIVATE", "ROOM_PUBLIC"] as const) {
       const state = props.channels[channel];
-      if (!state?.scopeToken || (channel === "PLAYERS_PRIVATE" && spectator)) {
+      if (!available.includes(channel) || !state?.scopeToken || (channel === "PLAYERS_PRIVATE" && spectator)) {
         delete seen.current[channel];
         continue;
       }
@@ -357,7 +360,7 @@ export function RoomChat(props: RoomChatProps) {
       next[channel] = entry.unread.size;
     }
     setCounts((current) => current.PLAYERS_PRIVATE === next.PLAYERS_PRIVATE && current.ROOM_PUBLIC === next.ROOM_PUBLIC ? current : next);
-  }, [props.channels, props.userId, props.panelVisible, spectator, mobile, tab, open, id, visibilityTick]);
+  }, [props.channels, props.userId, props.panelVisible, props.privateOnly, spectator, mobile, tab, open, id, visibilityTick]);
   return (
     <aside className="room-chat" aria-label="Trò chuyện trong phòng">
       <h2>Trò chuyện</h2>

@@ -77,6 +77,7 @@ const HistoryRow = memo(function HistoryRow({
           <p className="xq-history-excluded">Không tính thắng/thua/hòa</p>
         )}
       </div>
+      <p>Biến động Elo: <strong>{item.type === "RANKED" && item.result.kind !== "INTERRUPTED" && item.eloDelta !== null ? `${item.eloDelta > 0 ? "+" : ""}${item.eloDelta}` : "—"}</strong></p>
       {/* Ván bị hủy chưa có nước đi nên không có Replay/FEN/PGN. */}
       {item.result.reason !== "ABORTED" && (
         <Button

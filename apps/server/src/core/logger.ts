@@ -12,6 +12,8 @@ const events = [
   "media_revocation_failed",
   "media_pool_failed",
   "room_runtime_lock_lost",
+  "matchmaking_tick_failed",
+  "matchmaking_pair_failed",
   "unknown_event",
 ];
 

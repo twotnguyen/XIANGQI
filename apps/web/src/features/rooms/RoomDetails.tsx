@@ -15,13 +15,15 @@ export function RoomDetails({ room }: { room: RoomView["room"] }) {
             ? "Không giới hạn"
             : `${room.timeMinutes} phút`}
         </dd>
-        <dt>Người xem tối đa</dt>
-        <dd>{room.viewerLimit}</dd>
-        <dt>Chế độ</dt>
-        <dd>{visibilityLabel(room.visibility)}</dd>
+        {(room.kind ?? "CUSTOM") === "CUSTOM" && <>
+          <dt>Người xem tối đa</dt>
+          <dd>{room.viewerLimit}</dd>
+          <dt>Chế độ</dt>
+          <dd>{visibilityLabel(room.visibility)}</dd>
+        </>}
       </dl>
-      <p>Thời gian và trần người xem đã cố định.</p>
-      {room.visibility === "LOCKED" && (
+      {(room.kind ?? "CUSTOM") === "CUSTOM" && <p>Thời gian và trần người xem đã cố định.</p>}
+      {(room.kind ?? "CUSTOM") === "CUSTOM" && room.visibility === "LOCKED" && (
         <p>Mã mời đã bị khoá, người mới không vào được.</p>
       )}
     </div>

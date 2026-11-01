@@ -10,13 +10,13 @@ import {
   guest,
 } from "./AppRouter.test-helper.js";
 import { createElement } from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, it, vi } from "vitest";
 import { AppRouter } from "@web/app/AppRouter.js";
 import { initialPosition, serializePosition } from "@xiangqi/xiangqi-core";
 
 useAppRouterHooks();
-it("sends an anonymous leaderboard visit to login and returns to that P2 route after sign-in", async () => {
+it("sends an anonymous leaderboard visit to login and returns after sign-in", async () => {
   window.history.replaceState(null, "", "/leaderboard");
   mock.accept.mockImplementation(() => {
     mock.state = member;
@@ -29,9 +29,6 @@ it("sends an anonymous leaderboard visit to login and returns to that P2 route a
     await screen.findByRole("heading", { name: "Bảng xếp hạng" }),
   ).toBeTruthy();
   expect(window.location.pathname).toBe("/leaderboard");
-  expect(
-    screen.getByRole("link", { name: "Quay về Sảnh" }).getAttribute("href"),
-  ).toBe("/lobby");
 });
 it.each([
   { path: "/forgot-password", title: "Quên mật khẩu" },
@@ -52,34 +49,20 @@ it.each([
     ).toBeTruthy();
   },
 );
-it("denies a Guest the P2 leaderboard without redirecting or showing scope actions", () => {
+it("explains that a Guest cannot view the leaderboard", async () => {
   mock.state = guest;
   window.history.replaceState(null, "", "/leaderboard");
-  const { container } = render(createElement(AppRouter));
-  expect(container.querySelector("#p2-scope-title")).toBeNull();
-  expect(screen.getByRole("heading", { level: 1 })).toBeTruthy();
+  render(createElement(AppRouter));
+  expect(await screen.findByText("Khách không thể xem bảng xếp hạng. Hãy đăng nhập để xem.")).toBeTruthy();
   expect(window.location.pathname).toBe("/leaderboard");
-  const denied = screen
-    .getByText("Phiên Khách không có quyền xem nội dung này.")
-    .closest("section")!;
-  expect(
-    within(denied)
-      .getAllByRole("link")
-      .map((link) => link.getAttribute("href")),
-  ).toEqual(["/login"]);
   expect(mock.authorizedFetch).not.toHaveBeenCalled();
 });
-it("keeps a signed-in member on the P2 scope page and returns to the lobby from it", async () => {
+it("keeps a signed-in member on the leaderboard", async () => {
   mock.state = member;
   window.history.replaceState(null, "", "/leaderboard");
   render(createElement(AppRouter));
-  expect(
-    await screen.findByRole("heading", { name: "Bảng xếp hạng" }),
-  ).toBeTruthy();
+  expect(await screen.findByRole("heading", { name: "Bảng xếp hạng" })).toBeTruthy();
   expect(window.location.pathname).toBe("/leaderboard");
-  fireEvent.click(screen.getByRole("link", { name: "Quay về Sảnh" }));
-  await vi.waitFor(() => expect(window.location.pathname).toBe("/lobby"));
-  expect(screen.queryByRole("heading", { name: "Bảng xếp hạng" })).toBeNull();
 });
 const aiId = "22222222-2222-4222-8222-222222222222";
 const aiFen = serializePosition(initialPosition());

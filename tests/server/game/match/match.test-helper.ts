@@ -19,7 +19,7 @@ export const pool = new Pool({ connectionString: databaseUrl });
 export async function apply(file: string) {
   await applySql(pool, file);
 }
-export async function reset() {
+export async function resetBase() {
   if (!databaseUrl) throw new Error("Dedicated test URL required");
   await pool.query(
     "DROP SCHEMA IF EXISTS xiangqi_room CASCADE; DROP SCHEMA IF EXISTS xiangqi_realtime CASCADE; DROP SCHEMA IF EXISTS xiangqi_auth CASCADE; DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public",
@@ -40,6 +40,10 @@ export async function reset() {
     "20261031000001_session_devices",
   ])
     await apply(`supabase/migrations/${file}.sql`);
+}
+export async function reset() {
+  await resetBase();
+  await pool.query("ALTER TABLE public.rooms ADD COLUMN kind text NOT NULL DEFAULT 'CUSTOM'");
 }
 export async function actor() {
   const id = randomUUID();

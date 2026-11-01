@@ -21,6 +21,40 @@ describe.skipIf(!databaseUrl)(
   "Hủy ván khi chưa có nước đi (YC5 mục 17.2)",
   () => {
     useMatchHooks();
+    it("forbids ranked abort but permits casual abort before the first move", async () => {
+      for (const kind of ["RANKED", "CASUAL"] as const) {
+        const s = await start();
+        await pool.query("UPDATE public.rooms SET kind=$2 WHERE id=$1", [s.room, kind]);
+        const result = await abort(s.room, red, s.matchId);
+        if (kind === "RANKED") {
+          expect(result).toMatchObject({ applied: false, error: { code: "MATCH_ABORT_NOT_ALLOWED" }, match: { status: "ACTIVE" } });
+        } else {
+          expect(result).toMatchObject({ applied: true, match: { outcome: { reason: "ABORTED" } } });
+        }
+      }
+    });
+    it("projects a stored ranked settlement in snapshot and current match", async () => {
+      const s = await start();
+      await run(s.room, red, (scope) => store().resign(scope, { matchId: s.matchId, matchVersion: 0 }));
+      await pool.query("UPDATE public.rooms SET kind='RANKED',status='FINISHED',finished_at=clock_timestamp(),current_match_id=$2 WHERE id=$1", [s.room, s.matchId]);
+      await pool.query(`CREATE TABLE IF NOT EXISTS xiangqi_room.ranked_results (
+        match_id uuid PRIMARY KEY, red_before integer, red_after integer,
+        black_before integer, black_after integer, red_tier text, black_tier text
+      )`);
+      await pool.query("GRANT SELECT ON xiangqi_room.ranked_results TO app_server");
+      await pool.query(
+        "INSERT INTO xiangqi_room.ranked_results VALUES($1,1200,1216,1200,1184,'Sơ cấp','Người mới')",
+        [s.matchId],
+      );
+      const expected = {
+        red: { before: 1200, after: 1216, delta: 16, tier: "Sơ cấp" },
+        black: { before: 1200, after: 1184, delta: -16, tier: "Người mới" },
+      };
+      await run(s.room, red, async (scope) => {
+        expect((await store().snapshot(scope.client, s.room, s.matchId)).rating).toEqual(expected);
+        expect((await store().current(scope.client, s.room, red)).match?.rating).toEqual(expected);
+      });
+    });
 
     it("mỗi người chơi tự hủy được: ván INTERRUPTED/ABORTED trung tính, không thắng thua (AC-YC5-RV-03)", async () => {
       // start() tạo hai người chơi mới mỗi lần nên chọn người sau khi start.

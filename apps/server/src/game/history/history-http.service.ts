@@ -109,9 +109,9 @@ export class HistoryHttpService {
     return this.run(proof, (scope) => this.store.list(scope, input));
   }
   /**
-   * Tóm tắt thống kê đấu hạng của thành viên (chưa hỗ trợ, trả về 503).
+   * Tóm tắt thống kê đấu hạng của thành viên.
    */
-  rankedSummary(proof: MemberRoomRequestProof): Promise<never> {
+  rankedSummary(proof: MemberRoomRequestProof) {
     return this.run(proof, (scope) => this.store.rankedSummary(scope));
   }
 }
