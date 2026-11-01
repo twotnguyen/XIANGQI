@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   deferred,
   flush,
@@ -18,6 +18,109 @@ const cases = (["OPPONENT", "ALL"] as const).flatMap((level) =>
 );
 
 describe("independent media device updates", () => {
+  it("keeps a stop control outside the hidden camera panel without interrupting capture", async () => {
+    const { client } = harness();
+    const host = document.createElement("div");
+    document.body.append(host);
+    const view = render(panel(client));
+    const user = userEvent.setup();
+    await settle();
+    await user.click(screen.getByRole("button", { name: "Bật camera" }));
+    await settle();
+    const tracks = live.state.rooms.flatMap((room) => room.tracks);
+    view.rerender(panel(client, { controlsHost: host }));
+    view.container.hidden = true;
+    try {
+      expect(host.textContent).toContain("Đang phát camera");
+      expect(tracks.some((track) => !track.stopped)).toBe(true);
+      await user.click(
+        screen.getByRole("button", { name: "Tắt camera và mic" }),
+      );
+      expect(tracks.every((track) => track.stopped)).toBe(true);
+      expect(host.textContent).toBe("");
+    } finally {
+      view.unmount();
+      host.remove();
+    }
+  });
+
+  it("does not silently restart the microphone after retrying source discovery", async () => {
+    const { client, raw } = harness();
+    render(panel(client));
+    const user = userEvent.setup();
+    await settle();
+    await user.click(screen.getByRole("button", { name: "Bật mic" }));
+    await settle();
+    raw.sources.mockRejectedValue(new Error("discovery offline"));
+    await screen.findByRole(
+      "button",
+      { name: "Thử lại camera/mic" },
+      { timeout: 2500 },
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Thử lại camera/mic" }),
+    );
+    await settle();
+    expect(screen.getByRole("button", { name: "Bật mic" })).toBeTruthy();
+    await user.click(screen.getByRole("button", { name: "Bật camera" }));
+    await settle();
+    expect(
+      live.state.rooms
+        .filter((room) => room.connected)
+        .every((room) => !room.mic),
+    ).toBe(true);
+  });
+
+  it("stops both devices when sharing becomes NONE", async () => {
+    const { client } = harness();
+    render(panel(client));
+    const user = userEvent.setup();
+    await settle();
+    await user.click(screen.getByRole("button", { name: "Bật camera" }));
+    await settle();
+    await user.click(screen.getByRole("button", { name: "Bật mic" }));
+    await settle();
+    const rooms = [...live.state.rooms];
+    await user.selectOptions(screen.getByLabelText("Mức chia sẻ"), "NONE");
+    await settle();
+    expect(
+      rooms.every((room) => room.tracks.every((track) => track.stopped)),
+    ).toBe(true);
+    expect(screen.getByRole("button", { name: "Bật camera" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Bật mic" })).toBeTruthy();
+  });
+
+  it("stops capture when the document becomes hidden", async () => {
+    const { client } = harness();
+    render(panel(client));
+    const user = userEvent.setup();
+    await settle();
+    await user.click(screen.getByRole("button", { name: "Bật camera" }));
+    await settle();
+    const rooms = [...live.state.rooms];
+    vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+    await act(async () =>
+      document.dispatchEvent(new Event("visibilitychange")),
+    );
+    expect(
+      rooms.every((room) => room.tracks.every((track) => track.stopped)),
+    ).toBe(true);
+    expect(screen.getByRole("button", { name: "Bật camera" })).toBeTruthy();
+  });
+
+  it("keeps capture on a side swap but stops it when the opponent changes", async () => {
+    const { client } = harness();
+    const view = render(panel(client));
+    const user = userEvent.setup();
+    await settle();
+    await user.click(screen.getByRole("button", { name: "Bật camera" }));
+    await settle();
+    const tracks = live.state.rooms.flatMap((room) => room.tracks);
+    view.rerender(panel(client, { seats: { red: "b", black: "a" } }));
+    expect(tracks.some((track) => !track.stopped)).toBe(true);
+    view.rerender(panel(client, { seats: { red: "c", black: "a" } }));
+    expect(tracks.every((track) => track.stopped)).toBe(true);
+  });
   it.each(cases)(
     "$level: keeps $first and the opponent stream running while toggling the other device",
     async ({ level, first }) => {

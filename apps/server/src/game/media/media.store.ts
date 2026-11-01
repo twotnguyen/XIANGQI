@@ -1,7 +1,9 @@
 import type { RoomControlProof } from "@xiangqi/shared";
+import { randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
-import { actorLock, transaction } from "../../core/postgres.js";
-import type { ShareLevel } from "./media.types.js";
+import { transaction } from "../../core/postgres.js";
+import { RoomTransactions } from "../room/room-transactions.js";
+import { MediaError, type ShareLevel } from "./media.types.js";
 
 /**
  * Lớp Repository quản lý lưu trữ cấu hình chia sẻ media trong cơ sở dữ liệu.
@@ -9,26 +11,44 @@ import type { ShareLevel } from "./media.types.js";
 export class MediaStore {
   constructor(private readonly pool: Pool) {}
   /**
-   * Mở giao dịch ghi có giữ khóa actor lock của người dùng.
+   * Ghi mức chia sẻ và outbox dưới cùng thứ tự khóa actor/phòng của ván.
    */
-  withUser<T>(userId: string, work: (tx: MediaTx) => Promise<T>): Promise<T> {
-    return transaction(this.pool, async (client) => {
-      await actorLock(client, userId);
-      return work(new MediaTx(client));
+  async withRoom<T>(
+    userId: string,
+    roomId: string,
+    work: (tx: MediaTx) => Promise<T>,
+  ): Promise<T> {
+    const actor = await transaction(this.pool, async (client) => {
+      const row = (
+        await client.query<{ kind: "member" | "guest" }>(
+          "SELECT kind FROM xiangqi_auth.principals WHERE id=$1",
+          [userId],
+        )
+      ).rows[0];
+      if (!row)
+        throw new MediaError("MEDIA_FORBIDDEN", "Bạn không ở trong phòng", 403);
+      return { userId, kind: row.kind };
     });
+    const result = await new RoomTransactions(this.pool).withRoom(
+      { actor, roomIds: [roomId] },
+      async () => ({ status: "active", actor }),
+      (scope) => work(new MediaTx(scope.client)),
+    );
+    if (result.status === "ended")
+      throw new MediaError("MEDIA_FORBIDDEN", "Bạn không ở trong phòng", 403);
+    return result.value;
   }
   /**
-   * Mở giao dịch giữ khóa riêng cho cặp phòng–người dùng. Chỉ cấp token và thu hồi media dùng khóa này, không dùng khóa actor/phòng của ván/đồng hồ.
+   * Khóa media theo phòng, độc lập với khóa actor/phòng của ván.
    */
-  withParticipant<T>(
+  withMediaRoom<T>(
     roomId: string,
-    userId: string,
     work: (tx: MediaTx) => Promise<T>,
   ): Promise<T> {
     return transaction(this.pool, async (client) => {
       await client.query(
         "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
-        [`media:${roomId}:${userId}`],
+        [`media:${roomId}`],
       );
       return work(new MediaTx(client));
     });
@@ -106,6 +126,16 @@ export class MediaTx {
       [roomId, userId, level],
     );
   }
+  async queueShareRevoke(roomId: string, userId: string): Promise<void> {
+    const room = await this.client.query<{ room_version: string }>(
+      "UPDATE public.rooms SET room_version=room_version+1,updated_at=now() WHERE id=$1 RETURNING room_version",
+      [roomId],
+    );
+    await this.client.query(
+      "INSERT INTO xiangqi_room.outbox(id,room_id,room_version,type,payload) VALUES($1,$2,$3,'media.revoke-user',$4)",
+      [randomUUID(), roomId, room.rows[0]!.room_version, { userId }],
+    );
+  }
   /**
    * Lấy mức chia sẻ media đã lưu của người dùng.
    */
@@ -120,6 +150,21 @@ export class MediaTx {
       )
     ).rows[0];
     return row?.level;
+  }
+  async permittedSources(
+    roomId: string,
+    userId: string,
+    role: string,
+  ): Promise<string[]> {
+    const result = await this.client.query<{ user_id: string }>(
+      `SELECT m.user_id FROM public.room_members m
+       LEFT JOIN xiangqi_room.media_share s ON s.room_id=m.room_id AND s.user_id=m.user_id
+       WHERE m.room_id=$1 AND m.role='PLAYER' AND m.user_id<>$2
+       AND CASE WHEN $3='PLAYER' THEN COALESCE(s.level,'OPPONENT') IN ('OPPONENT','ALL')
+                ELSE s.level='ALL' END`,
+      [roomId, userId, role],
+    );
+    return result.rows.map((row) => row.user_id);
   }
   /**
    * Lấy vai trò thành viên của người dùng trong phòng.
@@ -137,30 +182,31 @@ export class MediaTx {
     ).rows[0];
     return member?.role;
   }
-  /**
-   * Lấy id các sự kiện media.revoke-user chưa ack của cặp phòng–người dùng.
-   */
-  async pendingUserRevocations(
+  async generation(roomId: string, lock = false): Promise<string> {
+    const result = await this.client.query<{ media_generation: string }>(
+      `SELECT media_generation FROM public.rooms WHERE id=$1${lock ? " FOR SHARE" : ""}`,
+      [roomId],
+    );
+    if (!result.rows[0])
+      throw new MediaError("MEDIA_FORBIDDEN", "Bạn không ở trong phòng", 403);
+    return result.rows[0].media_generation;
+  }
+  async pendingRevocations(
     roomId: string,
-    userId: string,
-  ): Promise<string[]> {
-    const rows = (
-      await this.client.query<{ id: string }>(
-        `SELECT id FROM xiangqi_room.outbox
-           WHERE room_id=$1 AND type='media.revoke-user' AND delivered_at IS NULL AND lower(payload->>'userId')=$2
-           ORDER BY created_at,id`,
-        [roomId, userId],
+  ): Promise<{ id: string; generation: string | null }[]> {
+    return (
+      await this.client.query<{ id: string; generation: string | null }>(
+        `SELECT id,media_generation AS generation FROM xiangqi_room.outbox
+       WHERE room_id=$1 AND type IN ('media.revoke-user','media.revoke-room') AND delivered_at IS NULL
+       ORDER BY created_at,id`,
+        [roomId],
       )
     ).rows;
-    return rows.map((row) => row.id);
   }
-  /**
-   * Đánh dấu đã thu hồi xong cho đúng các event đã snapshot.
-   */
-  async markUserRevocationsDelivered(ids: string[]): Promise<void> {
+  async markRevocationsDelivered(ids: string[]): Promise<void> {
     if (!ids.length) return;
     await this.client.query(
-      "UPDATE xiangqi_room.outbox SET delivered_at=clock_timestamp() WHERE id=ANY($1::uuid[]) AND type='media.revoke-user' AND delivered_at IS NULL",
+      "UPDATE xiangqi_room.outbox SET delivered_at=clock_timestamp() WHERE id=ANY($1::uuid[]) AND type IN ('media.revoke-user','media.revoke-room') AND delivered_at IS NULL",
       [ids],
     );
   }

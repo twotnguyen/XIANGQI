@@ -61,47 +61,32 @@ it("follows the participant when seats swap and removes their video when they le
   expect(screen.getByText("Đang chờ người chơi")).toBeTruthy();
 });
 
-it("hides only the opponent video and keeps incoming audio muted until enabled again", () => {
+it("mutes both tracks per source across remounts without affecting another source", () => {
+  sessionStorage.clear();
   vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue();
-  const ownVideo = document.createElement("video");
   const video = document.createElement("video");
   const audio = document.createElement("audio");
-  const feeds = [
-    { key: "self", identity: "a", element: ownVideo },
-    { key: "opponent-video", identity: "b", element: video },
-    { key: "opponent-audio", identity: "b", element: audio },
-  ];
-  const props = { seats: { red: "a", black: "b" }, selfId: "a", feeds };
-  const view = render(
-    createElement(MediaSeats, {
-      ...props,
-      seats: { red: "a", black: null },
-    }),
-  );
-  fireEvent.click(screen.getByRole("button", { name: "Ẩn camera đối thủ" }));
-  fireEvent.click(screen.getByRole("button", { name: "Tắt tiếng đối thủ" }));
-  expect(screen.getByText("Đang chờ người chơi")).toBeTruthy();
-  view.rerender(createElement(MediaSeats, props));
+  const other = document.createElement("audio");
+  const props = {
+    roomId: "room",
+    seats: { red: "a", black: "b" },
+    selfId: "viewer",
+    feeds: [
+      { key: "video-a", identity: "a", element: video },
+      { key: "audio-a", identity: "a", element: audio },
+      { key: "audio-b", identity: "b", element: other },
+    ],
+  };
+  const view = render(createElement(MediaSeats, props));
+  fireEvent.click(within(screen.getByRole("figure", { name: "Camera Phe Đỏ" })).getByRole("button", { name: "Tắt nhận hình/tiếng" }));
   expect(video.isConnected).toBe(false);
-  expect(ownVideo.isConnected).toBe(true);
   expect(audio.muted).toBe(true);
-
-  const replacement = document.createElement("audio");
-  view.rerender(
-    createElement(MediaSeats, {
-      ...props,
-      seats: { red: "b", black: "a" },
-      feeds: [
-        ...feeds.filter((feed) => feed.key !== "opponent-audio"),
-        { key: "new-audio", identity: "b", element: replacement },
-      ],
-    }),
-  );
-  expect(replacement.muted).toBe(true);
+  expect(other.muted).toBe(false);
+  view.unmount();
+  render(createElement(MediaSeats, props));
   expect(video.isConnected).toBe(false);
-  expect(ownVideo.isConnected).toBe(true);
-  fireEvent.click(screen.getByRole("button", { name: "Hiện camera đối thủ" }));
-  fireEvent.click(screen.getByRole("button", { name: "Bật tiếng đối thủ" }));
+  expect(audio.muted).toBe(true);
+  fireEvent.click(within(screen.getByRole("figure", { name: "Camera Phe Đỏ" })).getByRole("button", { name: "Hiện hình/tiếng" }));
   expect(video.isConnected).toBe(true);
-  expect(replacement.muted).toBe(false);
+  expect(audio.muted).toBe(false);
 });

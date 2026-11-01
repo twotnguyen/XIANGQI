@@ -18,6 +18,7 @@ export async function resetMediaSchema() {
   await apply("supabase/migrations/20261011000006_rooms.sql");
   await apply("supabase/migrations/20261017000018_room_code_digits.sql");
   await apply("supabase/migrations/20261011000015_media_share.sql");
+  await apply("supabase/migrations/20261103000010_media_generation.sql");
 }
 /** Makes `tabId` the realtime controller of the user in the room, as the gateway's takeover does. */
 export async function takeControl(

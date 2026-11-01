@@ -28,6 +28,7 @@ const live = vi.hoisted(() => {
     camera: boolean;
     mic: boolean;
     tracks: LocalTrack[];
+    subscriptions: boolean[];
   }
   const state = {
     rooms: [] as RoomRecord[],
@@ -53,13 +54,17 @@ const live = vi.hoisted(() => {
       camera: false,
       mic: false,
       tracks: [],
+      subscriptions: [],
     };
     private readonly handlers = new Map<string, unknown>();
     readonly remoteParticipants = new Map<
       string,
       {
         identity: string;
-        getTrackPublications(): { track: LocalTrack }[];
+        getTrackPublications(): {
+          track: LocalTrack;
+          setSubscribed(enabled: boolean): void;
+        }[];
       }
     >();
     readonly localParticipant: {
@@ -112,6 +117,7 @@ const live = vi.hoisted(() => {
       this.handlers.set(event, handler);
     }
     subscribe(kind: "video" | "audio", notify = true) {
+      const record = this.record;
       const element = document.createElement(kind);
       const track = {
         kind,
@@ -123,16 +129,29 @@ const live = vi.hoisted(() => {
       };
       const previous =
         this.remoteParticipants.get("b")?.getTrackPublications() ?? [];
+      const handlers = this.handlers;
+      const publication = {
+        track,
+        setSubscribed(enabled: boolean) {
+          record.subscriptions.push(enabled);
+          const handler = handlers.get(
+            enabled ? "TrackSubscribed" : "TrackUnsubscribed",
+          ) as
+            | ((track: unknown, pub: unknown, participant: unknown) => void)
+            | undefined;
+          handler?.(track, publication, participant);
+        },
+      };
       const participant = {
         identity: "b",
-        getTrackPublications: () => [...previous, { track }],
+        getTrackPublications: () => [...previous, publication],
       };
       this.remoteParticipants.set("b", participant);
       const emit = () => {
         const handler = this.handlers.get("TrackSubscribed") as
           | ((track: unknown, pub: unknown, participant: unknown) => void)
           | undefined;
-        handler?.(track, {}, participant);
+        handler?.(track, publication, participant);
       };
       if (notify) emit();
       return { element, emit };
@@ -166,6 +185,9 @@ vi.mock("livekit-client", () => ({
     TrackSubscribed: "TrackSubscribed",
     TrackUnsubscribed: "TrackUnsubscribed",
     Disconnected: "Disconnected",
+    TrackPublished: "TrackPublished",
+    ParticipantConnected: "ParticipantConnected",
+    Reconnected: "Reconnected",
   },
   Track: { Kind: { Video: "video", Audio: "audio" } },
 }));
@@ -177,6 +199,7 @@ type Boundary = "unmount" | "disconnect";
 
 const URL = "wss://media.example.invalid";
 const EXPIRES = "2026-10-11T00:10:00Z";
+const GENERATION = "11111111-1111-4111-8111-111111111111";
 
 beforeEach(() => {
   // jsdom chưa hiện thực play/pause của HTMLMediaElement.
@@ -201,6 +224,7 @@ function serverTicket(role: Role, level: ShareLevel, devices: boolean): Ticket {
       token: "viewer-token",
       roomName: "room-stage",
       expiresAt: EXPIRES,
+      generation: GENERATION,
       stage: null,
     };
   return {
@@ -208,6 +232,7 @@ function serverTicket(role: Role, level: ShareLevel, devices: boolean): Ticket {
     token: "private-token",
     roomName: "room-private",
     expiresAt: EXPIRES,
+    generation: GENERATION,
     stage:
       level === "ALL" && devices
         ? { token: "stage-token", roomName: "room-stage" }
@@ -227,11 +252,16 @@ function harness({
     next: ShareLevel,
   ) => Promise<{ level: ShareLevel }>;
 } = {}) {
-  const server = { level };
+  const server = { level, generation: GENERATION };
   const client = {
-    token: vi.fn(async (_roomId: string, camera: boolean, mic: boolean) =>
-      serverTicket(role, server.level, camera || mic),
-    ),
+    sources: vi.fn(async () => ({
+      available: true,
+      generation: server.generation,
+    })),
+    token: vi.fn(async (_roomId: string, camera: boolean, mic: boolean) => ({
+      ...serverTicket(role, server.level, camera || mic),
+      generation: server.generation,
+    })),
     setShare: vi.fn(
       setShare ??
         (async (_roomId: string, next: ShareLevel) => {
@@ -291,6 +321,7 @@ function deferred<T>() {
 }
 
 export {
+  GENERATION,
   cameraButton,
   deferred,
   flush,

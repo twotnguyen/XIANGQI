@@ -102,6 +102,7 @@ export function setup(
       canSend: true,
       messages: [],
       nextCursor: 0,
+      latestSequence: 0,
       hasMore: false,
     }));
   const sendChat = vi.fn().mockResolvedValue({
@@ -247,11 +248,20 @@ export function actionable(): RoomSnapshot {
 }
 export function useRoomPageHooks() {
   beforeEach(nativeDialogStub);
+  beforeEach(() => {
+    vi.stubGlobal("matchMedia", (media: string) => ({
+      matches: false,
+      media,
+      addEventListener() {},
+      removeEventListener() {},
+    }));
+  });
 
   afterEach(() => {
     cleanup();
     vi.useRealTimers();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
     for (const [name, descriptor] of [
       ["showModal", originalDialogShow],
       ["close", originalDialogClose],

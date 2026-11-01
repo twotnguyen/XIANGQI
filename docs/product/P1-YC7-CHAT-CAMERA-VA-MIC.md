@@ -2,9 +2,9 @@
 
 > **BA 0.27 — PO chốt 31/10/2026:** toàn bộ nội dung từng thuộc P2 (Ranked/Elo/bảng xếp hạng, ghép ngẫu nhiên Casual, Xin đi lại/Tái đấu Casual, phần Ranked của lịch sử/thống kê) nay thuộc **P1**. Mọi câu "vẫn P2 / giữ P2 / làm sau / Sắp ra mắt" còn lại trong tài liệu này là lịch sử và bị thay bởi [BA mục 0.27](BA-SCOPE-DECISIONS.md#027-đưa-toàn-bộ-phần-còn-lại-của-p2-lên-p1--po-chốt-31102026); QR vẫn bị loại. Chưa tái ước lượng giờ/Jira; chưa phải bằng chứng triển khai.
 
-**Rà soát 31/10/2026:** PO chốt bốn điểm tại mục 17 (link chỉ là văn bản, kết nối LiveKit theo nhu cầu, video tự điều chỉnh không đặt trần, dấu báo tin chưa xem); **chưa triển khai**.
+**Rà soát 31/10/2026:** PO chốt bốn điểm tại mục 17 (link chỉ là văn bản, kết nối LiveKit theo nhu cầu, video tự điều chỉnh không đặt trần, dấu báo tin chưa xem). Trạng thái triển khai và giới hạn nghiệm thu cập nhật tại mục 18.
 
-**Ngày lập/chốt:** 31/10/2026. **Phạm vi:** EP-07, US-07.1–07.2 và giao điểm các Story đã chuyển P1. **Trạng thái:** tám quyết định PO đã chốt tại mục15/BA0.25; đã đối chiếu nguồn/code, chưa triển khai hoặc nghiệm thu lại phần mềm.
+**Ngày lập/chốt:** 31/10/2026. **Phạm vi:** EP-07, US-07.1–07.2 và giao điểm các Story đã chuyển P1. **Trạng thái:** tám quyết định PO đã chốt tại mục15/BA0.25; đã triển khai các thay đổi tại local, chưa nghiệm thu đầy đủ media thật (mục 18).
 
 ## 1. Mục tiêu và nguồn ưu tiên
 
@@ -355,11 +355,11 @@ Giữ cách đếm Unicode code point hiện có; không cần PO chọn token/S
 4. Revoke/token cũ, thiết bị/tab, LAN/Cloud và actual audio/video phải có evidence thật; không dùng số lượng test hoặc screenshot nút làm bằng chứng.
 5. Commit/push/Jira/deploy là thao tác riêng, chỉ khi được yêu cầu.
 
-**Lượt tài liệu:** không sửa code/migration hoặc bật dịch vụ. **Test local: không chạy (không được yêu cầu).** Chưa xem giao diện hoặc kiểm thiết bị/media thật.
+**Lượt tài liệu ban đầu:** không sửa code/migration hoặc bật dịch vụ; không chạy test. Bằng chứng triển khai sau lượt đó được tách riêng ở mục 18.
 
 ## 17. Quyết định PO khi rà soát YC7 — 31/10/2026
 
-**Chưa triển khai**; code và test hiện còn theo trạng thái cũ. Bổ sung cho mục 6, 9, 10, 11, 12.
+Các quyết định dưới đây là yêu cầu hiện hành. Trạng thái triển khai và kiểm chứng sau khi chốt nằm ở mục 18; không dùng bảng quyết định làm bằng chứng nghiệm thu.
 
 | # | Quyết định | AC bổ sung |
 |---|---|---|
@@ -387,9 +387,75 @@ Giữ cách đếm Unicode code point hiện có; không cần PO chọn token/S
 
 **PO xác nhận 31/10/2026:** (a) thời gian kết nối ban đầu không tính vào “≤ 2 giây” của AC-07.2, ghi riêng vào GATE-MEDIA; (b) trạng thái Tắt nhận hình/tiếng của người nhận lưu theo phiên trình duyệt, không đồng bộ giữa thiết bị; (c) người phát thấy hình xem trước của chính mình khi đang phát (lật gương) và không có xem trước khi chọn “Không chia sẻ”.
 
-### 17.3 Tác động triển khai (chưa làm)
+### 17.3 Tác động triển khai
 
 - Chat: bỏ tự biến link thành liên kết nếu `RoomChat`/`DirectChatDialog` đang có; kiểm test hiển thị văn bản thuần.
 - Media: `MediaPanel`/`media.service.ts` kết nối theo nhu cầu (hiện kết nối khi vào phòng nếu có); thêm ngắt khi không còn cần; bật adaptive stream/dynacast.
 - Chat phòng: đếm tin chưa xem phía client theo kênh và hiển thị chấm trên nút/tab Chat.
 - Cần số đo thật cho GATE-MEDIA (băng thông, phút, thời gian kết nối); bằng chứng ở mục 13–14 là trước các thay đổi này.
+
+## 18. Trạng thái triển khai — 01/11/2026
+
+**Đã làm trong mã** (kiểm tại local, Node 22, PostgreSQL 17 cô lập, LiveKit 1.13.6 chạy local; chưa chạy trên Supabase/Cloud): quota gộp phòng+DM (§6, Q1), floor Kênh Chung cho cả người chơi (§4.2, Q6), sticker 12 `:code:` ở phòng và DM (§7), link là văn bản (RV-01), tin chưa xem theo kênh (RV-05), kết nối LiveKit theo nhu cầu (RV-02/03), Tắt nhận hình/tiếng theo nguồn ở tầng subscription (RX.1–3), dừng capture khi ẩn trang/mất socket/đổi cặp/`NONE` (Q3, Q4, Q7, Q8), tab Ván/Chat/Camera trên mobile. Chi tiết hợp đồng: [architecture.md](../engineering/server/architecture.md) mục YC7.
+
+**Kết quả kiểm chứng local, Node 22:**
+
+| Lệnh / kịch bản | Kết quả quan sát |
+|---|---|
+| `pnpm typecheck` | PASS toàn workspace |
+| `pnpm lint` | PASS toàn repo (`apps packages tests`) |
+| `pnpm exec vitest run tests/web tests/packages` | PASS sau sửa ba finding review (§18.2): 119 file, 1357 test |
+| `tests/server/db.sh test tests/server tests/packages` | Lượt trước sửa review: PASS 193 file, 2114 test; không chạy lại toàn bộ server ở §18.2 |
+| `tests/server/db.sh test tests/server/game/media tests/server/game/game.runtime.media.test.ts` | PASS sau sửa quyền stage (§18.2): 6 file, 58 test |
+| Smoke service ngoài Vitest, DB cô lập | `MediaAccess.setShare(ALL)` lưu policy thật; đọc lại đúng; token thật có quyền phát private và ticket stage. Không gọi provider ở ca tăng quyền này; không dùng làm bằng chứng phát/nhận track |
+| `pnpm build` | PASS web/server/packages; Vite cảnh báo chunk LiveKit 563,43 kB (gzip 148,29 kB), chưa phải số đo băng thông media |
+
+Lượt toàn bộ server đầu tiên dừng do giới hạn 300 giây; lượt cuối hoàn tất trong khoảng 386 giây, không qua pipeline che exit code. Trong bộ server có log `realtime_disconnect_failed`, `realtime_maintenance_failed`, `registration_maintenance_failed` và `MaxListenersExceededWarning` dù không test nào thất bại; chưa truy nguồn riêng cảnh báo listener, không tăng giới hạn để che cảnh báo hoặc dùng test xanh kết luận runtime Cloud khỏe.
+
+Trình duyệt thật (Vite + Nest + Socket.IO) ở 1366×768 và 390×844: chat Riêng/Chung, sticker SVG, URL dạng văn bản, retry một tin, badge `Chung 4`, ẩn/mở chat, không tràn ngang. Quota thật: 3 tin + retry cùng `commandId` + 2 tin Chung được nhận, tin thứ 6 trả `CHAT_RATE_LIMITED`, sticker lạ bị từ chối; người xem bị `CHAT_FORBIDDEN` ở Kênh Riêng.
+
+**Chưa đạt / BLOCKED:**
+
+- **JWT cũ:** probe ban đầu với `RemoveParticipant` cho thấy tái vào được trong TTL 600 s. Đã sửa bằng generation namespace + `DeleteRoom` cũ qua outbox; probe WebRTC thật sau sửa xác nhận token cũ chỉ nối được namespace trống, viewer không được cấp token mới. Không tuyên bố JWT bị vô hiệu bằng mật mã hoặc mọi biến thể thu hồi đã được đo trên Cloud.
+- **Chưa kiểm thiết bị thật:** camera/mic vật lý, autoplay đa browser, Safari/Firefox, LAN HTTPS, LiveKit Cloud, GATE-MEDIA (băng thông, CPU, phút, thời gian kết nối ban đầu); adaptive stream/dynacast bật nhưng chưa quan sát hạ chất lượng theo mạng (RV-04). Số đo local nguồn tổng hợp bên dưới không đủ thay kiểm thiết bị/LAN.
+- **Poll nguồn media mỗi 1 giây/người:** chưa đo tải của endpoint và `ListParticipants`; chưa kết luận chi phí phù hợp production.
+- Chưa nghiệm thu toàn trang phòng ở 360×800, bàn phím ảo và các chủ đề còn lại. Đã tái hiện rồi sửa hai nút hành động ghế chồng cùng ô grid; smoke component thật ở 360×800 cho thấy hai nút tách nhau, không tràn ngang.
+
+**Hồi quy bổ sung sau rà soát:** mốc unread dùng `latestSequence` từ server, giữ qua reconnect cùng scope và đọc bù mọi trang. Smoke trình duyệt chạy hook + `RoomChat` thật với transport synthetic: 151 tin lịch sử không tạo badge; tin 152 tạo badge 1; tin 153 đến lúc offline tạo badge 2 sau reconnect. Không dùng smoke này thay bằng chứng Socket.IO/DB. Tab mất controller giữa lúc xin token đã hủy tác vụ và hết trạng thái chờ; trình duyệt thật mở lại được dialog Chuyển thiết bị (token synthetic, chưa nối provider). Retry dò nguồn đưa cả hai nút thiết bị về Tắt; có regression test chống bật lại mic ngoài thao tác yêu cầu.
+
+**Phạm vi nghiệm thu còn mở:**
+
+| Tiêu chí | Bằng chứng / trạng thái còn lại |
+|---|---|
+| AC-07.1.1–2, RV-05 | Đã kiểm desktop/mobile và smoke badge ở trên; chưa kiểm bàn phím ảo trên điện thoại thật |
+| AC-07.1.3–14, AC-P2-17.1–3, AC-P2-18.1–3, RV-01 | Có coverage chat/friend/filter/sticker trong bộ server/web; thao tác browser thật chỉ bao phủ các ca nêu trên, không khẳng định mọi biến thể E2E đã PASS |
+| AC-07.2.1–4, 7–10, 12–13, AC-P2-24.1–3, RX.1–3, RV-02–03 | Có kiểm thử cấu phần/SQL và probe actual WebRTC với nguồn tổng hợp; chưa đủ bằng chứng thiết bị thật và mọi biến thể để nghiệm thu trọn tiêu chí |
+| AC-07.2.5 | Chưa kiểm cấu hình egress/recording của môi trường Cloud đang dùng |
+| AC-07.2.6, 11 | Probe viewer revoke/generation tại local đã cách ly token cũ khỏi nguồn mới và phục hồi hai publisher; còn thiếu ma trận role/controller/kick/Cloud và số đo đầy đủ ≤2 giây |
+| RV-04, GATE-MEDIA | BLOCKED: thiếu lượt chạy LAN/Cloud với 2 người chơi + 5 người xem trên thiết bị khác nhau và số đo băng thông/phút/CPU/RAM |
+
+Không đánh dấu YC7 hoặc Jira Done dựa trên số lượng test. Không áp migration vào Supabase hoặc deploy trong lượt này.
+
+### 18.1 Thu hồi generation — lựa chọn PO và probe provider thật
+
+PO chọn **giữ các luồng còn hợp lệ**, không tắt toàn bộ thiết bị rồi yêu cầu mọi người bật lại. `20261103000010_media_generation.sql` xoay UUID cùng transaction outbox; cleanup provider nhắm generation cũ. Client nối lại với ý định thiết bị còn hợp lệ, không tự bật sau hidden/mất socket/controller/đổi cặp/`NONE`. Nối lại không đồng nghĩa zero-gap.
+
+Môi trường probe: PostgreSQL 17 cô lập, LiveKit 1.13.6 trên loopback, Vite + `MediaPanel`/`livekit-client` thật; HTTP harness dùng auth synthetic và gọi `MediaAccess`/`RoomTransactions` thật. Camera nguồn canvas 160×120/10 fps, mic nguồn oscillator; **không phải thiết bị vật lý**.
+
+- A phát video, B phát audio, viewer nhận cả hai. B nhận video có `videoWidth=160`, bộ đếm frame tăng; A nhận remote audio track `live`, phần tử audio không pause.
+- Gỡ membership viewer và chèn revoke trong transaction: provider xóa phòng cũ, A giữ nút Tắt camera, B giữ Tắt mic và hai bên nhận lại. Một lần đo local: revoke provider trả sau 59 ms; quan sát A nhận audio lại tại 1119 ms từ lúc gửi revoke. Không dùng một mẫu làm SLA toàn hệ thống.
+- JWT viewer cũ vẫn nối được **namespace cũ**, chỉ có chính viewer, `remoteParticipants=0`; API không cấp token viewer mới. Namespace hiện tại khác UUID, có hai participant và track `AUDIO`/`VIDEO`.
+- B Tắt nhận nguồn A rồi A giảm ALL→OPPONENT: sau xoay generation B vẫn tắt nhận, không còn video, mic B vẫn bật. B Hiện lại nhận được video; A chọn NONE thì mọi capture video A kết thúc và preview biến mất, B vẫn phát mic.
+- Đã ngắt participant, xóa các provider room của probe, dừng harness/provider/Vite và xóa script tạm. Không chạm Supabase/Cloud.
+
+Hồi quy review cuối đã tái hiện và sửa: quay lại trang visible tự nhận lại nguồn hợp lệ nhưng không tự bật capture; poll thấy generation mới không còn nguồn phải xóa `busy` của kết nối đã hủy. Nhóm test generation tách riêng `MediaPanel.generation.test.ts` để không làm file lifecycle vượt 600 dòng.
+
+### 18.2 Sửa tuần tự ba finding ponytail-review — 01/11/2026
+
+1. **Chỉ báo và nút tắt ngoài panel:** thêm host ở `RoomPage` và portal từ `MediaPanel`; không nâng state/command thiết bị sang container. Khi ở Ván/Chat trên mobile, vẫn thấy đang kết nối/phát và nút Tắt camera và mic, kể cả panel media đã `display:none`. Regression thất bại trước sửa, qua sau sửa.
+2. **Badge Chung qua đổi vai/cặp:** giữ `scopeToken`, `historyThrough` và bộ đếm trong lúc xác thực lại; lịch sử Riêng vẫn reset theo quyền. Ba ca lên ghế/xuống xem/thay đối thủ đều thất bại trước sửa và qua sau sửa với cùng public scope.
+3. **Audio trùng khi hai bên ALL:** stage token của người phát không subscribe; client chỉ nhận ở room chính, kể cả sau Tắt nhận/Hiện lại. Regression trước sửa ghi nhận hai audio thay vì một và stage grant subscribe=true; sau sửa còn một audio, stage subscribe=false. Người xem vẫn được subscribe stage.
+
+**Smoke browser/provider thật:** PostgreSQL 17 cô lập + LiveKit 1.13.6 + SDK và `RoomPage` thật; auth/transport snapshot/chat synthetic, mic oscillator không phải phần cứng. Đã kiểm 390×844: bật mic ở Camera rồi sang Ván/Chat, panel media ẩn nhưng chỉ báo/nút Tắt hiện; bấm nút ngoài panel làm mọi local track kết thúc và xóa strip. Hai người cùng ALL+bật mic: mỗi phía đúng một audio playback, remote track live và không pause; Tắt nhận/Hiện lại vẫn chỉ một; JWT stage của người phát có canSubscribe=false. Người bên kia vẫn bật mic sau khi A tắt. Chat synthetic có Chung 1 trước và sau thay đối thủ; 360×800 và 1366×768 không tràn ngang, desktop vẫn hiện panel media.
+
+`pnpm typecheck` và `pnpm lint` toàn workspace/repo qua sau ba sửa đổi. Không chạy lại build hoặc toàn bộ server trong lượt sửa review; bằng chứng build ở bảng trên thuộc lượt trước. Đã dọn script/harness/provider room của smoke, không chạm Supabase/Cloud và không commit/push/deploy.

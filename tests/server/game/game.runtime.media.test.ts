@@ -33,6 +33,7 @@ describe.skipIf(!databaseUrl)("Room runtime media revocation", () => {
   beforeEach(async () => {
     await reset();
     await apply("supabase/migrations/20261011000015_media_share.sql");
+    await apply("supabase/migrations/20261103000010_media_generation.sql");
   });
   it("keeps media revocation unacknowledged when no real media port is integrated", async () => {
     const r = registration(),
@@ -157,7 +158,7 @@ describe.skipIf(!databaseUrl)("Room runtime media revocation", () => {
       randomUUID(),
     );
     expect(decodeJwt(token.token).video).toMatchObject({
-      room: stageRoomName(g.roomId),
+      room: stageRoomName(g.roomId, token.generation),
       canPublish: false,
     });
     expect(provider).toHaveBeenCalledTimes(2);
@@ -187,11 +188,13 @@ describe.skipIf(!databaseUrl)("Room runtime media revocation", () => {
           ).rows[0],
         (value) => value?.delivered_at != null,
       );
-      expect(
-        provider.mock.calls.map(
-          ([, init]) => JSON.parse(String((init as RequestInit).body)).identity,
-        ),
-      ).toEqual([former.id, former.id, other.id, other.id]);
+      const rooms = provider.mock.calls.map(
+        ([, init]) =>
+          JSON.parse(String((init as RequestInit).body)).room as string,
+      );
+      expect(rooms).toHaveLength(4);
+      expect(rooms.slice(0, 2)).not.toContain(token.roomName);
+      expect(rooms.slice(2)).toContain(token.roomName);
     } finally {
       await runtime.close();
     }

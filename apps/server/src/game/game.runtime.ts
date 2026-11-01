@@ -71,7 +71,7 @@ type RoomRegistration = NonNullable<
 >;
 type RoomMedia = {
   revoke(roomId: string, userId: string, eventId: string): Promise<void>;
-  revokeRoom(roomId: string): Promise<void>;
+  revokeRoom(roomId: string, eventId: string): Promise<void>;
 } | null;
 /**
  * Khởi tạo toàn bộ môi trường chạy phòng cờ (Room Runtime):
@@ -132,6 +132,13 @@ async function bootRoomRuntime(
       AND EXISTS(SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid='public.matches'::regclass AND conname='matches_status_and_outcome_invariants' AND convalidated
         AND strpos(pg_catalog.pg_get_constraintdef(oid),'SERVER_RESTART')>0 AND strpos(pg_catalog.pg_get_constraintdef(oid),'DRAW_AGREEMENT')>0) AS ready`);
     if (!schema.rows[0]?.ready) throw new Error();
+    if (media) {
+      const fencing = await pool.query<{ ready: boolean }>(`SELECT
+        EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='public.rooms'::regclass AND attname='media_generation' AND NOT attisdropped AND attnotnull) AND
+        EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid='xiangqi_room.outbox'::regclass AND attname='media_generation' AND NOT attisdropped) AND
+        EXISTS(SELECT 1 FROM pg_trigger WHERE tgrelid='xiangqi_room.outbox'::regclass AND tgname='rotate_media_generation' AND tgenabled <> 'D') AS ready`);
+      if (!fencing.rows[0]?.ready) throw new Error();
+    }
     const draw = await pool.query<{ present: boolean; ready: boolean }>(`SELECT
       to_regclass('xiangqi_room.match_draw_offers') IS NOT NULL AS present,
       CASE WHEN to_regclass('xiangqi_room.match_draw_offers') IS NULL THEN false ELSE
@@ -473,7 +480,7 @@ async function bootRoomRuntime(
     try {
       if (!media) throw new Error("Media revocation is unavailable");
       if (event.type === "media.revoke-room") {
-        await media.revokeRoom(event.roomId);
+        await media.revokeRoom(event.roomId, event.id);
       } else {
         const userId = event.payload.userId;
         if (
