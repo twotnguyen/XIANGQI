@@ -1,11 +1,13 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { maskForbiddenChat } from "@xiangqi/shared";
 import { breakpoints } from "../../shared/styles/breakpoints.js";
+import { ChatContent, StickerPicker } from "../../shared/ui/ChatSticker.js";
 import "./room-chat.css";
 
 export type RoomChatChannel = "PLAYERS_PRIVATE" | "ROOM_PUBLIC";
 export interface RoomChatMessage {
   messageId: string;
+  senderId?: string;
   roomId: string;
   sequence: number;
   channel: RoomChatChannel;
@@ -21,12 +23,17 @@ export interface RoomChatChannelState {
   scopeToken: string | null;
   canSend: boolean;
   messages: readonly RoomChatMessage[];
+  historyThrough?: number;
+  historyReady?: boolean;
   hasMore: boolean;
   loading: boolean;
   error: string | null;
 }
 export interface RoomChatProps {
   viewerRole: "red" | "black" | "spectator";
+  userId?: string;
+  panelVisible?: boolean;
+  onUnreadChange?: (counts: Record<RoomChatChannel, number>) => void;
   connected: boolean;
   channels: {
     PLAYERS_PRIVATE?: RoomChatChannelState;
@@ -77,6 +84,7 @@ function ChatPane({
   const [draft, setDraft] = useState("");
   const [status, setStatus] = useState<"sending" | "sent" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [failedContent, setFailedContent] = useState<string | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [unread, setUnread] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
@@ -99,22 +107,24 @@ function ChatPane({
       active.current = false;
     };
   }, []);
-  const content = draft.trim(),
+  const content = draft,
     count = Array.from(content).length;
   const masked = maskForbiddenChat(content);
   const busy = status === "sending" || pending;
   const locked = !connected || !state.canSend || !state.scopeToken || busy;
-  async function send() {
-    if (locked || !content || count > 200) return;
+  async function send(value = content) {
+    if (locked || !value.trim() || Array.from(value).length > 200) return;
     setStatus("sending");
+    setFailedContent(null);
     setError(null);
     try {
-      await onSend(channel, content);
+      await onSend(channel, value);
       if (!active.current) return;
-      setDraft("");
+      if (value === content) setDraft("");
       setStatus("sent");
     } catch (failure) {
       if (!active.current) return;
+      setFailedContent(value);
       setError(safeError(failure));
       setStatus(null);
     }
@@ -176,7 +186,7 @@ function ChatPane({
       >
         {state.loading && <p role="status">Đang tải tin nhắn…</p>}
         {!state.loading &&
-          (!state.scopeToken || state.messages.length === 0) && (
+          !state.error && state.scopeToken && state.messages.length === 0 && (
             <p className="room-chat__note">Chưa có tin nhắn.</p>
           )}
         <ol>
@@ -193,7 +203,7 @@ function ChatPane({
                     : `Người chơi · ${message.sender.role === "red" ? "Đỏ" : "Đen"}`}
                 </span>
               </div>
-              <p>{message.content}</p>
+              <p><ChatContent content={message.content} /></p>
               <time dateTime={message.createdAt}>
                 {new Date(message.createdAt).toLocaleTimeString("vi-VN", {
                   hour: "2-digit",
@@ -236,12 +246,13 @@ function ChatPane({
             setStatus(null);
           }}
         />
+        <StickerPicker disabled={locked} label={label(channel)} onSelect={(value) => void send(value)} />
         <div className="room-chat__compose-meta">
           <span>{count}/200 ký tự</span>
           <button
             type="submit"
             aria-label={`Gửi ${label(channel)}`}
-            disabled={locked || !content || count > 200}
+            disabled={locked || !content.trim() || count > 200}
           >
             Gửi
           </button>
@@ -265,8 +276,8 @@ function ChatPane({
             <button
               type="button"
               aria-label={`Thử lại ${label(channel)}`}
-              disabled={locked || !content || count > 200}
-              onClick={() => void send()}
+              disabled={locked || !failedContent}
+              onClick={() => failedContent && void send(failedContent)}
             >
               Thử lại
             </button>
@@ -301,6 +312,52 @@ export function RoomChat(props: RoomChatProps) {
   const available: RoomChatChannel[] = spectator
     ? ["ROOM_PUBLIC"]
     : ["PLAYERS_PRIVATE", "ROOM_PUBLIC"];
+  const [counts, setCounts] = useState<Record<RoomChatChannel, number>>({ PLAYERS_PRIVATE: 0, ROOM_PUBLIC: 0 });
+  const seen = useRef<Partial<Record<RoomChatChannel, { scope: string; max: number; initialized: boolean; unread: Set<number> }>>>({});
+  const [visibilityTick, setVisibilityTick] = useState(0);
+  const unreadCallback = useRef(props.onUnreadChange);
+  unreadCallback.current = props.onUnreadChange;
+  useEffect(() => {
+    const update = () => setVisibilityTick((value) => value + 1);
+    document.addEventListener("visibilitychange", update);
+    window.addEventListener("scroll", update, true);
+    return () => { document.removeEventListener("visibilitychange", update); window.removeEventListener("scroll", update, true); };
+  }, []);
+  useEffect(() => { unreadCallback.current?.(counts); }, [counts]);
+  useEffect(() => {
+    const next = { PLAYERS_PRIVATE: 0, ROOM_PUBLIC: 0 };
+    for (const channel of ["PLAYERS_PRIVATE", "ROOM_PUBLIC"] as const) {
+      const state = props.channels[channel];
+      if (!state?.scopeToken || (channel === "PLAYERS_PRIVATE" && spectator)) {
+        delete seen.current[channel];
+        continue;
+      }
+      let entry = seen.current[channel];
+      const max = Math.max(0, ...state.messages.map((message) => message.sequence));
+      if (!entry || entry.scope !== state.scopeToken) {
+        entry = { scope: state.scopeToken, max, initialized: state.historyReady !== false && !state.loading, unread: new Set() };
+        seen.current[channel] = entry;
+      } else if (!entry.initialized) {
+        entry.max = Math.max(entry.max, max);
+        entry.initialized = state.historyReady !== false && !state.loading;
+      } else {
+        for (const message of state.messages) {
+          if (message.sequence > entry.max && message.sequence > (state.historyThrough ?? 0) && message.senderId && message.senderId !== props.userId) entry.unread.add(message.sequence);
+        }
+        entry.max = Math.max(entry.max, max);
+      }
+      const pane = document.getElementById(`${id}-${channel}`);
+      const log = pane?.querySelector(".room-chat__messages");
+      const last = log?.querySelector("li:last-child");
+      const rect = last?.getBoundingClientRect();
+      const logRect = log?.getBoundingClientRect();
+      const atBottom = !!log && log.scrollHeight - log.scrollTop - log.clientHeight <= 32;
+      const shown = props.panelVisible !== false && document.visibilityState === "visible" && !!rect && !!logRect && rect.bottom > 0 && rect.top < window.innerHeight && rect.bottom > logRect.top && rect.top < logRect.bottom && atBottom && (spectator || (mobile ? tab === channel : open[channel]));
+      if (shown) entry.unread.clear();
+      next[channel] = entry.unread.size;
+    }
+    setCounts((current) => current.PLAYERS_PRIVATE === next.PLAYERS_PRIVATE && current.ROOM_PUBLIC === next.ROOM_PUBLIC ? current : next);
+  }, [props.channels, props.userId, props.panelVisible, spectator, mobile, tab, open, id, visibilityTick]);
   return (
     <aside className="room-chat" aria-label="Trò chuyện trong phòng">
       <h2>Trò chuyện</h2>
@@ -346,6 +403,7 @@ export function RoomChat(props: RoomChatProps) {
               }}
             >
               {label(channel)}
+              {counts[channel] > 0 && <span className="room-chat__badge" aria-label={`${counts[channel]} tin chưa xem`}>{counts[channel] > 99 ? "99+" : counts[channel]}</span>}
             </button>
           ))}
         </div>
@@ -365,6 +423,7 @@ export function RoomChat(props: RoomChatProps) {
                 }
               >
                 {open[channel] ? "Ẩn" : "Hiện"} {label(channel)}
+                {counts[channel] > 0 && <span className="room-chat__badge" aria-label={`${counts[channel]} tin chưa xem`}>{counts[channel] > 99 ? "99+" : counts[channel]}</span>}
               </button>
             ))}
           </div>
@@ -379,7 +438,7 @@ export function RoomChat(props: RoomChatProps) {
               key={channel + ":" + state.scopeToken}
               channel={channel}
               state={state}
-              visible={spectator || (mobile ? tab === channel : open[channel])}
+              visible={props.panelVisible !== false && (spectator || (mobile ? tab === channel : open[channel]))}
               connected={props.connected}
               pending={!!props.pendingSend}
               onSend={props.onSend}

@@ -10,6 +10,7 @@ export type ChatChannel = "PLAYERS_PRIVATE" | "ROOM_PUBLIC";
  */
 export interface ChatMessage {
   messageId: string;
+  senderId: string;
   roomId: string;
   sequence: number;
   channel: ChatChannel;
@@ -38,6 +39,7 @@ export interface ChatPage {
   canSend: boolean;
   messages: ChatMessage[];
   nextCursor: number;
+  latestSequence: number;
   hasMore: boolean;
 }
 export interface ChatSent {

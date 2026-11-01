@@ -134,6 +134,18 @@ it("shows the history with incoming and own messages and labels the log", async 
   expect(screen.getByRole("log", { name: "Lịch sử với Bạn A" })).toBeTruthy();
   expect(screen.getByLabelText("Nội dung tin nhắn")).toBeTruthy();
 });
+it("hiển thị URL dạng văn bản và gửi sticker bằng shortcode", async () => {
+  const client = fakeClient({
+    messages: vi.fn(async () => ({ messages: [msg(1, FRIEND, "https://example.com"), msg(2, FRIEND, ":heart:")], readSeq: 0 })),
+  });
+  const { container } = renderChat(client);
+  expect(await screen.findByText("https://example.com")).toBeTruthy();
+  expect(container.querySelector("a")).toBeNull();
+  expect(screen.getByRole("img", { name: "Thả tim" })).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Sticker tin nhắn" }));
+  fireEvent.click(screen.getByRole("button", { name: "Nước cờ hay" }));
+  await waitFor(() => expect(client.sendMessage).toHaveBeenCalledWith(FRIEND, ":clap:", expect.any(String)));
+});
 
 it("rejects an empty draft and preserves the draft after delivery fails", async () => {
   const client = fakeClient({

@@ -91,6 +91,13 @@ describe.skipIf(!databaseUrl)(
         "supabase/migrations/20261103000007_match_simultaneous_disconnect.sql",
       );
     });
+    it("validates sticker shortcodes without rejecting ordinary colon text", async () => {
+      const f = await fixture();
+      await f.send(f.a, "ROOM_PUBLIC", ":clap:");
+      await f.send(f.a, "ROOM_PUBLIC", "giờ: 10");
+      await expect(f.send(f.a, "ROOM_PUBLIC", ":unknown:")).rejects.toMatchObject({ code: "CHAT_INPUT_INVALID" });
+      expect((await f.read(f.a, "ROOM_PUBLIC")).messages.map((m) => m.content)).toEqual([":clap:", "giờ: 10"]);
+    });
     it("supports WAITING self private chat and never writes legacy messages or raw receipt/outbox bodies", async () => {
       const f = await fixture();
       const sent = (await f.send(
@@ -263,6 +270,20 @@ describe.skipIf(!databaseUrl)(
         ((await f.read(f.c, "ROOM_PUBLIC")) as { messages: unknown[] })
           .messages,
       ).toEqual([]);
+    });
+    it("preserves the public entry floor through player and spectator transitions", async () => {
+      await apply("supabase/migrations/20261011000016_room_viewers.sql");
+      const f = await fixture();
+      await f.send(f.a, "ROOM_PUBLIC", "trước khi vào");
+      await f.join(f.c, "watch");
+      await f.send(f.a, "ROOM_PUBLIC", "sau khi vào");
+      const viewers = new RoomStore();
+      await run(f.a, f.id, (s) => viewers.inviteDown(s, f.id, f.c.userId));
+      const offerId = (await pool.query("SELECT id FROM xiangqi_room.seat_invites WHERE room_id=$1 AND status='PENDING'", [f.id])).rows[0].id;
+      await run(f.c, f.id, (s) => viewers.respondDown(s, f.id, offerId, true));
+      expect((await f.read(f.c, "ROOM_PUBLIC")).messages.map((m) => m.content)).toEqual(["sau khi vào"]);
+      await run(f.c, f.id, (s) => viewers.toSpectator(s, f.id));
+      expect((await f.read(f.c, "ROOM_PUBLIC")).messages.map((m) => m.content)).toEqual(["sau khi vào"]);
     });
     it("deduplicates concurrent sends before rate and rejects command reuse and stale private replay", async () => {
       const f = await fixture();

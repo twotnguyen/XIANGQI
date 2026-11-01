@@ -190,7 +190,6 @@ describe.skipIf(!databaseUrl)(
         roomVersion: 1,
       });
       expect(JSON.stringify(one)).not.toContain("content");
-      expect(JSON.stringify(page)).not.toContain(f.a.id);
       expect(JSON.stringify(page)).not.toContain(f.a.proof.appSession);
       expect(
         (await pool.query("SELECT count(*)::int n FROM xiangqi_chat.receipts"))

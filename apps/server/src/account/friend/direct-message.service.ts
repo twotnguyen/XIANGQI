@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { maskForbiddenChat } from "@xiangqi/shared";
+import { chatSticker, maskForbiddenChat } from "@xiangqi/shared";
 import { FriendError } from "./friend.types.js";
 import {
   DirectMessageStore,
@@ -24,7 +24,8 @@ export class DirectMessageService {
     if (
       typeof content !== "string" ||
       !content.trim() ||
-      Array.from(content).length > MAX_CHARS
+      Array.from(content).length > MAX_CHARS ||
+      (/^:[a-z0-9_+-]+:$/i.test(content) && !chatSticker(content))
     )
       throw new FriendError("DM_INPUT_INVALID", "Tin nhắn không hợp lệ", 400);
     const fingerprint = createHash("sha256")

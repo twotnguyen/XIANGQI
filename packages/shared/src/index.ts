@@ -22,6 +22,7 @@ export {
 export type * from "./realtime.js";
 export { ROOM_REMOVAL, ROOM_REMOVAL_MESSAGES } from "./realtime.js";
 export { maskForbiddenChat } from "./chat-filter.js";
+export { CHAT_STICKERS, chatSticker } from "./stickers.js";
 export type * from "./chat.js";
 export type * from "./public-rooms.js";
 

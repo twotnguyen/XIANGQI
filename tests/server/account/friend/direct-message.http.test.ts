@@ -118,6 +118,7 @@ describe.skipIf(!url)("direct message HTTP routes", () => {
     );
     await reset();
     await apply("supabase/migrations/20261011000006_rooms.sql");
+    await apply("supabase/migrations/20261011000010_room_chat.sql");
     await apply("supabase/migrations/20261017000018_room_code_digits.sql");
     await apply("supabase/migrations/20261011000014_friendships.sql");
     await apply(

@@ -1,5 +1,6 @@
 import type { Pool, PoolClient } from "pg";
 import { actorLock, transaction } from "../../core/postgres.js";
+import { consumeChatRate } from "../../core/chat-rate.store.js";
 import { FriendError } from "./friend.types.js";
 
 export interface DirectMessageRow {
@@ -50,13 +51,13 @@ export class DirectMessageStore {
       await requireFriends(client, input.viewer, input.peer);
       const prior = (
         await client.query(
-          `SELECT id,seq,sender_id,content,fingerprint,created_at FROM xiangqi_social.direct_messages
+          `SELECT id,seq,sender_id,user_low,user_high,content,fingerprint,created_at FROM xiangqi_social.direct_messages
             WHERE sender_id=$1 AND command_id=$2`,
           [input.viewer, input.commandId],
         )
       ).rows[0];
       if (prior) {
-        if (prior.fingerprint !== input.fingerprint)
+        if (prior.fingerprint !== input.fingerprint || ![prior.user_low, prior.user_high].includes(input.peer))
           throw new FriendError(
             "DM_COMMAND_ID_REUSED",
             "Mã lệnh đã dùng cho tin khác",
@@ -64,27 +65,9 @@ export class DirectMessageStore {
           );
         return { message: toRow(prior), replayed: true };
       }
-      const now = (
-        await client.query(
-          `SELECT clock_timestamp() AS now,
-                  COALESCE((SELECT sent_at FROM xiangqi_social.direct_message_rate WHERE sender_id=$1),'{}') AS sent`,
-          [input.viewer],
-        )
-      ).rows[0];
-      const recent = (now.sent as Date[]).filter(
-        (at) => at.getTime() > now.now.getTime() - 10_000,
-      );
-      if (recent.length >= 5)
-        throw new FriendError(
-          "DM_RATE_LIMITED",
-          "Bạn nhắn quá nhanh, thử lại sau ít giây",
-          429,
-        );
-      await client.query(
-        `INSERT INTO xiangqi_social.direct_message_rate(sender_id,sent_at) VALUES($1,$2)
-         ON CONFLICT(sender_id) DO UPDATE SET sent_at=EXCLUDED.sent_at`,
-        [input.viewer, [...recent, now.now].slice(-5)],
-      );
+      const now = await consumeChatRate(client, input.viewer);
+      if (!now)
+        throw new FriendError("DM_RATE_LIMITED", "Bạn gửi quá nhanh", 429);
       const row = (
         await client.query(
           `INSERT INTO xiangqi_social.direct_messages(id,user_low,user_high,sender_id,command_id,fingerprint,content,created_at)
@@ -96,7 +79,7 @@ export class DirectMessageStore {
             input.commandId,
             input.fingerprint,
             input.content,
-            now.now,
+            now,
           ],
         )
       ).rows[0];
@@ -112,6 +95,7 @@ export class DirectMessageStore {
     limit: number,
   ): Promise<DirectMessageList> {
     return transaction(this.pool, async (client) => {
+      await lockPair(client, viewer, peer);
       await requireFriends(client, viewer, peer);
       const rows = (
         await client.query(
@@ -156,6 +140,7 @@ export class DirectMessageStore {
   /** Số tin chưa đọc từ từng bạn hiện tại; bạn đã hủy hoặc tin của chính mình không được tính. */
   unreadByFriend(viewer: string): Promise<DirectMessageUnread[]> {
     return transaction(this.pool, async (client) => {
+      await actorLock(client, viewer);
       const rows = (
         await client.query(
           `SELECT CASE WHEN f.user_a=$1 THEN f.user_b ELSE f.user_a END AS peer_id,

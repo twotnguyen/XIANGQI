@@ -8,6 +8,7 @@ const empty = (scopeToken: string | null = null): RoomChatChannelState => ({
   scopeToken,
   canSend: false,
   messages: [],
+  historyReady: false,
   hasMore: false,
   loading: false,
   error: null,
@@ -206,6 +207,12 @@ export function useRoomChat(
             scopeToken: page.scopeToken,
             canSend: page.canSend,
             messages,
+            historyThrough:
+              state.current[channel]?.scopeToken === page.scopeToken
+                ? (state.current[channel]?.historyThrough ??
+                  page.latestSequence)
+                : page.latestSequence,
+            historyReady: true,
             hasMore: page.hasMore,
             loading: w.catchUp && page.hasMore,
             error: null,
@@ -265,10 +272,16 @@ export function useRoomChat(
       pending.current = null;
       setPendingSend(null);
       const next: RoomChatProps["channels"] = {
-        ROOM_PUBLIC: empty(state.current.ROOM_PUBLIC.scopeToken),
+        ROOM_PUBLIC: {
+          ...empty(state.current.ROOM_PUBLIC.scopeToken),
+          historyThrough: state.current.ROOM_PUBLIC.historyThrough,
+        },
       };
       if (state.current.PLAYERS_PRIVATE)
-        next.PLAYERS_PRIVATE = empty(state.current.PLAYERS_PRIVATE.scopeToken);
+        next.PLAYERS_PRIVATE = {
+          ...empty(state.current.PLAYERS_PRIVATE.scopeToken),
+          historyThrough: state.current.PLAYERS_PRIVATE.historyThrough,
+        };
       state.current = next;
       setChannels(next);
       return;
@@ -304,16 +317,12 @@ export function useRoomChat(
       }
       const scopeUnknown = snapshot.version > (prior.snapshot?.version ?? -1);
       const next: RoomChatProps["channels"] = {
-        ROOM_PUBLIC: keep
-          ? {
-              ...state.current.ROOM_PUBLIC,
-              ...(scopeUnknown && snapshot.role === "spectator"
-                ? { messages: [], loading: true }
-                : {}),
-              canSend: false,
-              error: null,
-            }
-          : empty(),
+        ROOM_PUBLIC: {
+          ...state.current.ROOM_PUBLIC,
+          ...(scopeUnknown ? { messages: [], loading: true } : {}),
+          canSend: false,
+          error: null,
+        },
       };
       if (snapshot.role !== "spectator")
         next.PLAYERS_PRIVATE = keep
@@ -326,8 +335,12 @@ export function useRoomChat(
           : empty();
       state.current = next;
       setChannels(next);
-      refresh("ROOM_PUBLIC");
-      if (snapshot.role !== "spectator") refresh("PLAYERS_PRIVATE");
+      refresh("ROOM_PUBLIC", next.ROOM_PUBLIC.historyThrough !== undefined);
+      if (snapshot.role !== "spectator")
+        refresh(
+          "PLAYERS_PRIVATE",
+          next.PLAYERS_PRIVATE?.historyThrough !== undefined,
+        );
     } else if (
       !moveOnly &&
       snapshot.version > (prior.snapshot?.version ?? -1)

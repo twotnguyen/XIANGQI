@@ -103,6 +103,7 @@ function chatPage(): ChatPage {
     canSend: true,
     messages: [],
     nextCursor: 0,
+    latestSequence: 0,
     hasMore: false,
   };
 }
