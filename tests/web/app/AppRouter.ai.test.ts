@@ -12,8 +12,10 @@ import { AppRouter } from "@web/app/AppRouter.js";
 import { initialPosition, serializePosition } from "@xiangqi/xiangqi-core";
 import { LogoutConfirmRequired } from "@web/features/auth/SessionProvider.js";
 
+import { navigate } from "@web/shared/navigation/navigation.js";
 const mock = vi.hoisted(() => ({
   state: { status: "anonymous" } as Record<string, unknown>,
+  controlMode: "controller" as "controller" | "readonly",
   emailStatus: {
     status: "ready",
     email: "kythu@example.invalid",
@@ -47,14 +49,27 @@ vi.mock("@web/features/auth/SessionProvider.js", () => ({
 }));
 // Socket boundary: control is granted; no snapshots are pushed.
 vi.mock("@web/features/ai/ai-socket-client.js", () => ({
-  connectAi: () => ({
+  connectAi: (handlers: {
+    onControl: (control: unknown) => void;
+    onConnection: (ready: boolean) => void;
+  }) => ({
     getControl: async () => ({
       tabId: "33333333-3333-4333-8333-333333333333",
       connectionId: "fixture-socket",
       generation: 1,
     }),
     refresh: async () => undefined,
-    watch: async () => undefined,
+    watch: async (gameId: string) => {
+      handlers.onConnection(true);
+      handlers.onControl({
+        tabId: "33333333-3333-4333-8333-333333333333",
+        connectionId: "fixture-socket",
+        generation: 1,
+        mode: mock.controlMode,
+        gameId,
+        graceUntil: null,
+      });
+    },
     takeover: async () => undefined,
     disconnect: () => undefined,
   }),
@@ -153,6 +168,7 @@ async function openLogout() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mock.controlMode = "controller";
   mock.state = member;
   mock.where = { kind: "none", roomId: null, matchId: null };
   mock.getRealtimeProof.mockResolvedValue({
@@ -171,6 +187,122 @@ beforeEach(() => {
   window.history.replaceState(null, "", `/ai/${aiId}`);
 });
 afterEach(() => cleanup());
+it("guards an internal logo navigation from an active AI game", async () => {
+  aiServer(() => reply(resignedEnvelope));
+  render(createElement(AppRouter));
+  await screen.findByRole("heading", { name: "Đấu với máy" });
+  await vi.waitFor(() =>
+    expect(
+      screen
+        .getByRole("button", { name: "Đầu hàng" })
+        .getAttribute("aria-disabled"),
+    ).toBe("false"),
+  );
+  fireEvent.click(screen.getByRole("link", { name: /Kỳ Đài/i }));
+  expect(
+    await screen.findByRole("dialog", { name: "Rời ván đấu?" }),
+  ).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Ở lại" }));
+  expect(window.location.pathname).toBe(`/ai/${aiId}`);
+  expect(resignRequests()).toHaveLength(0);
+});
+
+it("keeps the mounted AI route when Back is cancelled", async () => {
+  aiServer(() => reply(resignedEnvelope));
+  window.history.replaceState(null, "", "/lobby");
+  navigate(`/ai/${aiId}`);
+  render(createElement(AppRouter));
+  await screen.findByRole("heading", { name: "Đấu với máy" });
+  window.history.back();
+  const dialog = await screen.findByRole("dialog", { name: "Rời ván đấu?" });
+  fireEvent.click(within(dialog).getByRole("button", { name: "Ở lại" }));
+  await vi.waitFor(() => expect(window.location.pathname).toBe(`/ai/${aiId}`));
+  expect(screen.getByRole("heading", { name: "Đấu với máy" })).toBeTruthy();
+  expect(resignRequests()).toHaveLength(0);
+});
+
+it("lets a readonly AI tab navigate without resigning the controller game", async () => {
+  mock.controlMode = "readonly";
+  aiServer(() => reply(resignedEnvelope), {
+    ...activeEnvelope,
+    control: { mode: "readonly", reason: "other_tab", generation: 1 },
+  });
+  render(createElement(AppRouter));
+  await screen.findByRole("heading", { name: "Đấu với máy" });
+  fireEvent.click(screen.getByRole("link", { name: /Kỳ Đài/i }));
+  expect(
+    await screen.findByRole("heading", { name: "Sảnh kỳ hữu" }),
+  ).toBeTruthy();
+  expect(screen.queryByRole("dialog", { name: "Rời ván đấu?" })).toBeNull();
+  expect(resignRequests()).toHaveLength(0);
+});
+
+it("offers a default-keep confirmation before abandoning an AI game from the lobby", async () => {
+  window.history.replaceState(null, "", "/lobby");
+  mock.where = { kind: "playing-ai", roomId: null, matchId: aiId };
+  aiServer(() => reply(resignedEnvelope));
+  render(createElement(AppRouter));
+  fireEvent.click(await screen.findByRole("button", { name: "Bỏ ván" }));
+  const dialog = await screen.findByRole("dialog");
+  expect(within(dialog).getByRole("button", { name: "Giữ ván" })).toBe(
+    document.activeElement,
+  );
+  fireEvent.click(within(dialog).getByRole("button", { name: "Giữ ván" }));
+  expect(resignRequests()).toHaveLength(0);
+});
+it("finds an unfinished guest AI game in the lobby without a member profile", async () => {
+  window.history.replaceState(null, "", "/lobby");
+  mock.state = { status: "guest", userId: "guest-id", displayName: "Khách" };
+  mock.guestFetch.mockImplementation(async (path: string) =>
+    reply(path === "/ai/current" ? { gameId: aiId } : []),
+  );
+  render(createElement(AppRouter));
+  expect(
+    (await screen.findByRole("link", { name: "Quay lại" })).getAttribute(
+      "href",
+    ),
+  ).toBe(`/ai/${aiId}`);
+  expect(screen.getByRole("button", { name: "Bỏ ván" })).toBeTruthy();
+});
+it("does not resign from the lobby when another tab controls the AI game", async () => {
+  window.history.replaceState(null, "", "/lobby");
+  mock.where = { kind: "playing-ai", roomId: null, matchId: aiId };
+  aiServer(() => reply(resignedEnvelope), {
+    ...activeEnvelope,
+    control: { mode: "readonly", reason: "other_tab", generation: 1 },
+  });
+  render(createElement(AppRouter));
+  fireEvent.click(await screen.findByRole("button", { name: "Bỏ ván" }));
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(within(dialog).getByRole("button", { name: "Bỏ ván" }));
+  expect(await screen.findByText(/Chưa thể đầu hàng/)).toBeTruthy();
+  expect(resignRequests()).toHaveLength(0);
+});
+
+it.each(["already pending", "resign pending"])(
+  "keeps the lobby return path while terminal persistence is %s",
+  async (phase) => {
+    window.history.replaceState(null, "", "/lobby");
+    mock.where = { kind: "playing-ai", roomId: null, matchId: aiId };
+    const pending = {
+      ...resignedEnvelope,
+      snapshot: { ...resignedEnvelope.snapshot, status: "FINALIZING" },
+    };
+    aiServer(
+      () => reply(pending),
+      phase === "already pending" ? pending : activeEnvelope,
+    );
+    render(createElement(AppRouter));
+    fireEvent.click(await screen.findByRole("button", { name: "Bỏ ván" }));
+    const dialog = await screen.findByRole("dialog");
+    fireEvent.click(within(dialog).getByRole("button", { name: "Bỏ ván" }));
+    expect(await screen.findByText(/Chưa thể đầu hàng/)).toBeTruthy();
+    expect(
+      screen.getByRole("link", { name: "Quay lại" }).getAttribute("href"),
+    ).toBe(`/ai/${aiId}`);
+    expect(screen.getByRole("button", { name: "Bỏ ván" })).toBeTruthy();
+  },
+);
 
 it("keeps the member signed in and sends no resign when the logout gate is cancelled", async () => {
   aiServer(() => reply(resignedEnvelope));

@@ -186,6 +186,15 @@ describe.skipIf(!databaseUrl)("own-member terminal history actual SQL", () => {
       },
     });
   });
+  it("keeps a months-old AI terminal result visible without an age cutoff", async () => {
+    const owner = await member("Owner");
+    const id = await game(owner, null, { mode: "AI", at: "2026-02-01T00:00:00.000Z" });
+    const page = await run(owner, (scope) => store.list(scope, { filter: "AI" }));
+    expect(page.items).toEqual([expect.objectContaining({
+      id, side: "red", replayPath: `/history/${id}`,
+      result: expect.objectContaining({ kind: "WIN", reason: "RESIGN" }),
+    })]);
+  });
   it("filters canonical Casual and AI, projects difficulty, and keeps neutral results outside WDL", async () => {
     const a = await member("A"),
       b = await member("B");

@@ -749,7 +749,7 @@ describe.skipIf(!databaseUrl)(
       await coordinator.withRoom(
         { actor: f.actor, roomIds: [] },
         async () => ({ status: "active", actor: f.actor }),
-        (s) => f.presence.attach(s, next),
+        (s) => f.presence.attach(s, { ...next, takeover: true }),
       );
       const work = vi.fn();
       await expect(
@@ -846,6 +846,7 @@ describe.skipIf(!databaseUrl)(
             f.presence.attach(s, {
               tabId: randomUUID(),
               connectionId: randomUUID(),
+              takeover: true,
             }),
         );
         const value = await f.runner.read(

@@ -34,6 +34,16 @@ function serviceFor(kind: "member" | "guest") {
     undoUsed: 1,
     outcome: null,
   };
+  Object.assign(snapshot, {
+    telemetry: {
+      taskVersion: 2,
+      completedDepth: 2,
+      targetDepth: 2,
+      elapsedMs: 12,
+      nodes: 88,
+      appliedMove: { from: 27, to: 36 },
+    },
+  });
   // Chỉ giả biên giao dịch đã xác thực; quyền Undo chạy trong AiHttpService thật.
   const scope = { actor: { userId: owner, kind } } as RoomScope;
   const games = {
@@ -89,4 +99,32 @@ it("keeps undo available for a validated member and returns the canonical snapsh
   );
   expect(result.snapshot.undoUsed).toBe(1);
   expect(result.snapshot.version).toBe(3);
+});
+
+it.each(["member", "guest"] as const)(
+  "projects telemetry for %s using authenticated identity",
+  async (kind) => {
+    const { service } = serviceFor(kind);
+    const result = await service.read(origin, gameId);
+    if (kind === "member") {
+      expect(result.snapshot.telemetry).toEqual({
+        taskVersion: 2,
+        completedDepth: 2,
+        targetDepth: 2,
+        elapsedMs: 12,
+        nodes: 88,
+        appliedMove: { from: 27, to: 36 },
+      });
+    } else {
+      expect(result.snapshot).not.toHaveProperty("telemetry");
+    }
+  },
+);
+
+it("does not return telemetry in a guest terminal response after session release", async () => {
+  const { service, games } = serviceFor("guest");
+  const terminal = { ...games.read(), status: "FINISHED" as const };
+  games.resign.mockResolvedValueOnce(terminal as never);
+  const result = await service.resign(origin, gameId, 3);
+  expect(result.snapshot).not.toHaveProperty("telemetry");
 });

@@ -77,7 +77,18 @@ for position in midgames:
  assert moves and not sf.is_immediate_game_end(VARIANT,fen,[])[0], position["id"]
  validation.append({"id":position["id"], "fenValidation":sf.FEN_OK, "legalMoveCount":len(moves), "sideToMoveInCheck":sf.gives_check(VARIANT,fen,[]), "immediateEnd":False})
 result["midgames"] = validation
-result["limitations"] = ["No timing or strength acceptance", "Two related mate cases, not a diverse complete mate gate", "Source repetition history not supplied"]
+yc8 = json.loads((BASE / "yc8-mates.json").read_text())["cases"]
+result["yc8Mates"] = []
+for case in yc8:
+ proof = prove(case["fen"],case["mateInPlies"])
+ actual = [key for key in proof["winningKeys"] if key["plies"] == case["mateInPlies"]]
+ assert {key["move"] for key in actual} == {key["oracleMove"] for key in case["winningKeys"]}, case["id"]
+ for key in case["winningKeys"]:
+  assert normalized(key["oracleMove"]) == key["move"], case["id"]
+  branch = next(k for k in actual if k["move"] == key["oracleMove"])
+  assert [{"reply":b["reply"],"matingMoves":b["matingMoves"]} for b in branch["replies"]] == key["defenderReplies"], case["id"]
+ result["yc8Mates"].append({"id":case["id"],"proof":proof})
+result["limitations"] = ["No timing or strength acceptance", "Eight bounded mate cases across six composed material families and one published source, not exhaustive tactical coverage", "Source repetition history not supplied"]
 parser = argparse.ArgumentParser(description="Independent pinned pyffish verification; never calls project core/engine")
 parser.add_argument("--output", type=Path, help="Optional explicit path for full machine-readable proof")
 args = parser.parse_args()

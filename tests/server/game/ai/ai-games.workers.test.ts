@@ -3,6 +3,84 @@ import { EngineError, type EngineResult } from "@xiangqi/engine";
 import { legalMoves, parsePosition } from "@xiangqi/xiangqi-core";
 import { AiGames } from "@server/game/ai/ai-games.js";
 import { owner, fixture } from "./ai-games.test-helper.js";
+
+it("publishes worker progress and only exposes the applied move after commit", async () => {
+  const f = fixture();
+  await f.games.ready();
+  let progress!: (sample: {
+    completedDepth: number;
+    targetDepth: number;
+    nodes: number;
+    elapsedMs: number;
+  }) => void;
+  let finish!: (result: EngineResult) => void;
+  f.engine.search.mockImplementationOnce((_request, options) => {
+    progress = options!.onProgress!;
+    return new Promise((resolve) => {
+      finish = resolve;
+    });
+  });
+  const game = await f.games.create(owner, {
+    requestedSide: "black",
+    level: "easy",
+  });
+  await vi.waitFor(() => expect(progress).toBeDefined());
+  progress({ completedDepth: 1, targetDepth: 2, nodes: 42, elapsedMs: 7 });
+  expect(f.games.read(owner, game.id).telemetry).toEqual({
+    taskVersion: game.version,
+    completedDepth: 1,
+    targetDepth: 2,
+    nodes: 42,
+    elapsedMs: 7,
+    appliedMove: null,
+  });
+  const move = legalMoves(parsePosition(game.position))[0]!;
+  finish({
+    move,
+    terminal: null,
+    completedDepth: 2,
+    targetDepth: 2,
+    nodes: 88,
+    elapsedMs: 12,
+    timedOut: false,
+  });
+  await f.games.waitForEngine(owner, game.id);
+  expect(f.games.read(owner, game.id).telemetry).toEqual({
+    taskVersion: game.version,
+    completedDepth: 2,
+    targetDepth: 2,
+    nodes: 88,
+    elapsedMs: 12,
+    appliedMove: move,
+  });
+  expect(f.engine.search.mock.calls[0]![0].randomSeed).toEqual(
+    expect.any(Number),
+  );
+});
+
+it("discards late progress after resignation", async () => {
+  const f = fixture();
+  await f.games.ready();
+  let progress!: (sample: {
+    completedDepth: number;
+    targetDepth: number;
+    nodes: number;
+    elapsedMs: number;
+  }) => void;
+  f.engine.search.mockImplementationOnce((_request, options) => {
+    progress = options!.onProgress!;
+    return new Promise(() => {});
+  });
+  const game = await f.games.create(owner, {
+    requestedSide: "black",
+    level: "easy",
+  });
+  await vi.waitFor(() => expect(progress).toBeDefined());
+  progress({ completedDepth: 1, targetDepth: 2, nodes: 5, elapsedMs: 2 });
+  await f.games.resign(owner, game.id, { version: game.version });
+  progress({ completedDepth: 2, targetDepth: 2, nodes: 10, elapsedMs: 4 });
+  expect(f.games.read(owner, game.id).telemetry).toBeNull();
+});
 it("serializes concurrent creates and same-version resignation without double persistence", async () => {
   const f = fixture();
   await f.games.ready();

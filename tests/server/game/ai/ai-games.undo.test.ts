@@ -128,8 +128,12 @@ it("cancels a pending engine search on undo and ignores its late completion", as
   });
   let release!: (result: EngineResult) => void;
   let signal: AbortSignal | undefined;
+  let progress!: NonNullable<
+    Parameters<typeof f.engine.search>[1]
+  >["onProgress"];
   f.engine.search.mockImplementationOnce((_request, options) => {
     signal = options?.signal;
+    progress = options?.onProgress;
     return new Promise<EngineResult>((r) => (release = r));
   });
   const moved = await f.games.move(owner, created.id, {
@@ -138,10 +142,13 @@ it("cancels a pending engine search on undo and ignores its late completion", as
   });
   expect(moved.engineState).toBe("THINKING");
   await vi.waitFor(() => expect(signal).toBeDefined());
+  progress!({ completedDepth: 1, targetDepth: 2, nodes: 5, elapsedMs: 2 });
   const commits = f.commit.mock.calls.length;
   const undone = await f.games.undo(owner, created.id, {
     version: moved.version,
   });
+  progress!({ completedDepth: 2, targetDepth: 2, nodes: 10, elapsedMs: 4 });
+  expect(f.games.read(owner, created.id).telemetry).toBeNull();
   expect(signal?.aborted).toBe(true);
   expect(undone).toMatchObject({
     engineState: "IDLE",

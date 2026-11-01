@@ -1,6 +1,7 @@
 import {
   parsePosition,
   playMove,
+  serializePosition,
   type MatchEnding,
   type Move,
   type Position,
@@ -9,6 +10,7 @@ import {
 import { XiangqiBoard } from "../../shared/board/XiangqiBoard.js";
 import { useEffect, useRef, useState } from "react";
 import { Button, Dialog } from "../../shared/ui/primitives.js";
+import { formatPositionMove } from "../../shared/board/move-notation.js";
 import "./ai-game.css";
 export interface AiGameSnapshot {
   id: string;
@@ -23,6 +25,14 @@ export interface AiGameSnapshot {
   status: "ACTIVE" | "FINALIZING" | "FINISHED" | "ABANDONED";
   engineState: "IDLE" | "THINKING" | "RETRY";
   engineError: "ENGINE_TIMEOUT" | "ENGINE_BUSY" | null;
+  telemetry?: {
+    taskVersion: number;
+    completedDepth: number;
+    targetDepth: number;
+    elapsedMs: number;
+    nodes: number;
+    appliedMove: Move | null;
+  } | null;
   outcome:
     | MatchEnding
     | { reason: "RESIGN"; winner: Side }
@@ -45,6 +55,7 @@ export interface AiGameProps {
     requestedSide: AiGameSnapshot["requestedSide"];
   }) => void;
   onLobby: () => void;
+  onReplay?: () => void;
 }
 /**
  * Component trình bày bàn cờ và bảng điều khiển ván đấu với Máy AI (nước đi, xin đi lại/undo, đầu hàng, thử lại khi máy bận và kết quả ván cờ).
@@ -62,6 +73,7 @@ function AiGameView(props: AiGameProps) {
   const [working, setWorking] = useState(false),
     [error, setError] = useState(""),
     [confirm, setConfirm] = useState(false),
+    [metricsOpen, setMetricsOpen] = useState(false),
     [resultDismissed, setResultDismissed] = useState(false),
     // Nước người vừa đi hiện ngay ở đích trong lúc chờ máy chủ; máy chủ từ chối thì hoàn về (YC4 mục 16.1).
     [optimistic, setOptimistic] = useState<Position | null>(null);
@@ -104,6 +116,28 @@ function AiGameView(props: AiGameProps) {
       RESIGN: "Đầu hàng",
       ENGINE_FAILURE: "Máy cờ gặp sự cố",
     }[snapshot.outcome.reason];
+  let appliedLabel = "Chưa có số liệu";
+  if (snapshot.telemetry?.appliedMove && snapshot.history.length > 1) {
+    try {
+      const before = parsePosition(
+        snapshot.history[snapshot.history.length - 2]!,
+      );
+      const move = snapshot.telemetry.appliedMove;
+      if (
+        before.board[move.from] &&
+        serializePosition(playMove(before, move)) === snapshot.position
+      )
+        appliedLabel = formatPositionMove(before, move);
+    } catch {
+      // Ignore a move that does not match the committed history.
+    }
+  }
+  const replayAction = props.onReplay &&
+    (snapshot.status === "FINISHED" || snapshot.status === "ABANDONED") && (
+      <Button variant="secondary" onClick={props.onReplay}>
+        Xem lại
+      </Button>
+    );
   const resultActions = (
     <div className="xq-ai-actions">
       <Button
@@ -120,6 +154,7 @@ function AiGameView(props: AiGameProps) {
       <Button variant="secondary" onClick={props.onLobby}>
         Về Sảnh
       </Button>
+      {replayAction}
     </div>
   );
   async function request(action: () => Promise<void>) {
@@ -252,6 +287,7 @@ function AiGameView(props: AiGameProps) {
               <Button variant="secondary" onClick={props.onLobby}>
                 Về Sảnh
               </Button>
+              {replayAction}
             </div>
           )}
           {props.undoRemaining !== undefined && props.onUndo && (
@@ -264,6 +300,7 @@ function AiGameView(props: AiGameProps) {
               >
                 Đi lại
               </Button>
+              <p className="xq-help">Đã dùng {3 - props.undoRemaining}/3 lần</p>
             </div>
           )}
           {active && (
@@ -278,6 +315,40 @@ function AiGameView(props: AiGameProps) {
               >
                 Đầu hàng
               </Button>
+            </div>
+          )}
+          {props.undoRemaining !== undefined && (
+            <div className="xq-ai-metrics">
+              <Button
+                variant="secondary"
+                aria-expanded={metricsOpen}
+                onClick={() => setMetricsOpen((open) => !open)}
+              >
+                Thông số máy
+              </Button>
+              {metricsOpen && (
+                <div>
+                  {snapshot.telemetry ? (
+                    <>
+                      <p>
+                        Độ sâu: {snapshot.telemetry.completedDepth}/
+                        {snapshot.telemetry.targetDepth}
+                      </p>
+                      <p>Nodes: {snapshot.telemetry.nodes}</p>
+                      <p>
+                        Thời gian tính:{" "}
+                        {snapshot.telemetry.elapsedMs.toLocaleString("vi-VN", {
+                          maximumFractionDigits: 1,
+                        })}{" "}
+                        ms
+                      </p>
+                      <p>Nước máy vừa đi: {appliedLabel}</p>
+                    </>
+                  ) : (
+                    <p>Chưa có số liệu</p>
+                  )}
+                </div>
+              )}
             </div>
           )}
           {result && resultDismissed && (

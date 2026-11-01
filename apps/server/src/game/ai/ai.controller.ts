@@ -22,6 +22,7 @@ import { readRoomProof } from "../room/room.controller.js";
 import type { RoomRequestProof } from "../room/room-session.js";
 import { AiError, type AiSnapshot } from "./ai-games.js";
 import type { AiOrigin } from "./ai-transactions.js";
+import { parseAiTelemetry } from "./ai-telemetry.js";
 type Human = Extract<AiOrigin, { kind: "human" }>;
 export interface AiHttpResult {
   snapshot: AiSnapshot;
@@ -143,6 +144,9 @@ function publish(result: AiHttpResult) {
         s.outcome === null
           ? null
           : { reason: s.outcome.reason, winner: s.outcome.winner },
+      ...(Object.hasOwn(s, "telemetry") && s.telemetry !== undefined
+        ? { telemetry: parseAiTelemetry(s.telemetry) }
+        : {}),
     },
     serverNow: result.serverNow,
     control: {

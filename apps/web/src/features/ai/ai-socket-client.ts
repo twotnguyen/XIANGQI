@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
 import type { PublicRoomAuthProof } from "@xiangqi/shared";
 import { handshakeAuth, proofCapability } from "../../shared/realtime-proof.js";
+import { getTabSessionId } from "../../shared/tab-session.js";
 import {
   parseAiResponse,
   type AiControlProof,
@@ -84,7 +85,7 @@ function proof(value: unknown): PublicRoomAuthProof {
  * Thiết lập kết nối Socket.IO thời gian thực cho ván cờ với máy AI (quản lý quyền tab điều khiển, đồng bộ snapshot và takeover).
  */
 export function connectAi(options: AiConnectionOptions): AiConnection {
-  const tabId = crypto.randomUUID();
+  let tabId = "";
   let disposed = false,
     epoch = 0,
     watchEpoch = 0;
@@ -299,9 +300,11 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
       revoke();
       const currentEpoch = epoch;
       void options.getProof().then(
-        (value) => {
+        async (value) => {
           if (disposed || currentEpoch !== epoch) return;
           try {
+            tabId = await getTabSessionId();
+            if (disposed || currentEpoch !== epoch) return;
             const fresh = proof(value);
             if (capability !== null && proofCapability(fresh) !== capability) {
               close(expired);
@@ -359,7 +362,7 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
       if (
         response.control.generation !== control.generation ||
         response.control.mode !== control.mode ||
-        response.snapshot.version <= latestVersion
+        response.snapshot.version < latestVersion
       )
         return;
       latestVersion = response.snapshot.version;

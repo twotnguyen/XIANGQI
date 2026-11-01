@@ -52,13 +52,18 @@ function pieceMoves(
   piece: Piece,
   from: number,
   moves: Move[],
+  target?: number,
 ): void {
   const x = from % 9;
   const y = Math.floor(from / 9);
   const add = (tx: number, ty: number): void => {
     if (!onBoard(tx, ty)) return;
     const to = ty * 9 + tx;
-    if (position.board[to]?.side !== piece.side) moves.push({ from, to });
+    if (
+      (target === undefined || to === target) &&
+      position.board[to]?.side !== piece.side
+    )
+      moves.push({ from, to });
   };
   switch (piece.type) {
     case "king":
@@ -150,9 +155,26 @@ export function isInCheck(position: Position, side: Side): boolean {
     }
     if (facing) return true;
   }
-  return pseudoLegalMoves({ ...position, turn: opponent }).some(
-    (move) => move.to === king,
-  );
+  const moves: Move[] = [];
+  const kingX = king % 9,
+    kingY = Math.floor(king / 9);
+  for (let from = 0; from < 90; from++) {
+    const piece = position.board[from];
+    if (!piece || piece.side !== opponent) continue;
+    const dx = Math.abs((from % 9) - kingX);
+    const dy = Math.abs(Math.floor(from / 9) - kingY);
+    // Only prefilter reach; pieceMoves still decides all blocking/palace/river rules.
+    if (piece.type === "rook" || piece.type === "cannon") {
+      if (dx !== 0 && dy !== 0) continue;
+    } else if (piece.type === "horse") {
+      if (!((dx === 2 && dy === 1) || (dx === 1 && dy === 2))) continue;
+    } else if (piece.type === "elephant") {
+      if (dx !== 2 || dy !== 2) continue;
+    } else if (dx > 1 || dy > 1) continue;
+    pieceMoves(position, piece, from, moves, king);
+    if (moves.length) return true;
+  }
+  return false;
 }
 
 function applyUnchecked(position: Position, move: Move): Position {

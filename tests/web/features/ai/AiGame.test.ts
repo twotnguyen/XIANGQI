@@ -72,6 +72,60 @@ function props(game = snapshot()): AiGameProps {
     onLobby: vi.fn(),
   };
 }
+it("shows real AI metrics only to members in a collapsed panel", () => {
+  const p = props();
+  p.undoRemaining = 3;
+  p.onUndo = vi.fn(async () => {});
+  Object.assign(p.snapshot, {
+    telemetry: {
+      taskVersion: 1,
+      completedDepth: 2,
+      targetDepth: 4,
+      elapsedMs: 128,
+      nodes: 900,
+      appliedMove: null,
+    },
+  });
+  const view = render(createElement(AiGame, p));
+  const toggle = screen.getByRole("button", { name: /Thông số máy/ });
+  expect(toggle.getAttribute("aria-expanded")).toBe("false");
+  fireEvent.click(toggle);
+  expect(screen.getByText(/900/)).toBeTruthy();
+  expect(screen.getByText(/128/)).toBeTruthy();
+  expect(screen.getByText(/Chưa có số liệu/)).toBeTruthy();
+  view.rerender(
+    createElement(AiGame, {
+      ...p,
+      undoRemaining: undefined,
+      onUndo: undefined,
+    }),
+  );
+  expect(screen.queryByRole("button", { name: /Thông số máy/ })).toBeNull();
+});
+it("shows only a committed machine move in Vietnamese notation", () => {
+  const p = props();
+  const start = initialPosition();
+  const move = { from: 54, to: 45 };
+  const before = serializePosition(start);
+  p.snapshot.actualSide = "black";
+  p.snapshot.position = serializePosition(playMove(start, move));
+  p.snapshot.history = [before, p.snapshot.position];
+  p.undoRemaining = 3;
+  p.onUndo = vi.fn(async () => {});
+  Object.assign(p.snapshot, {
+    telemetry: {
+      taskVersion: 1,
+      completedDepth: 2,
+      targetDepth: 2,
+      elapsedMs: 50,
+      nodes: 100,
+      appliedMove: move,
+    },
+  });
+  render(createElement(AiGame, p));
+  fireEvent.click(screen.getByRole("button", { name: /Thông số máy/ }));
+  expect(screen.getByText(/Tốt 9 tiến 1/)).toBeTruthy();
+});
 it("renders the canonical board, level and no time limit without offering hint, draw or unavailable undo", () => {
   render(createElement(AiGame, props()));
   expect(screen.getByRole("heading", { name: "Đấu với máy" })).toBeTruthy();

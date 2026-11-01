@@ -13,6 +13,11 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { URL } from "node:url";
+import { cpus, release } from "node:os";
+import { execFileSync } from "node:child_process";
+import assert from "node:assert/strict";
+import { performance } from "node:perf_hooks";
+import { parsePosition, legalMoves } from "@xiangqi/xiangqi-core";
 
 const here = path.dirname(new URL(import.meta.url).pathname);
 const packageRoot = path.resolve(here, "..");
@@ -34,18 +39,13 @@ const midgames = JSON.parse(
     "utf8",
   ),
 ).positions;
-const summary = JSON.parse(
-  await readFile(
-    path.join(packageRoot, "fixtures", "validation-summary.json"),
-    "utf8",
-  ),
-);
-const mateCases = summary.mates.cases;
-const mateFens = new Map(
-  JSON.parse(
-    await readFile(path.join(packageRoot, "fixtures", "mates.json"), "utf8"),
-  ).cases.map((entry) => [entry.id, entry]),
-);
+const mateCases = [];
+for (const name of ["mates.json", "yc8-mates.json"]) {
+  const suite = JSON.parse(
+    await readFile(path.join(packageRoot, "fixtures", name), "utf8"),
+  );
+  mateCases.push(...suite.cases);
+}
 
 /** Suy ra bên đi từ FEN xiangqi: 'w' = đỏ, 'b' = đen. */
 function sideFromFen(fen) {
@@ -84,14 +84,26 @@ for (const level of levels) {
   const limitMs = ENGINE_LIMITS[level].milliseconds;
   const runs = [];
   for (const position of midgames) {
+    const started = performance.now();
     const result = await worker.search({
       position: position.fen,
       side: sideFromFen(position.fen),
       level,
     });
+    const wallMs = performance.now() - started;
+    assert(
+      result.move &&
+        legalMoves(parsePosition(position.fen)).some(
+          (move) =>
+            move.from === result.move.from && move.to === result.move.to,
+        ),
+      `Illegal result: ${level}/${position.id}`,
+    );
     runs.push({
       id: position.id,
       elapsedMs: result.elapsedMs,
+      wallMs,
+      move: result.move,
       completedDepth: result.completedDepth,
       targetDepth: result.targetDepth,
       nodes: result.nodes,
@@ -103,6 +115,10 @@ for (const level of levels) {
   const depths = runs.map((run) => run.completedDepth);
   levelsOut[level] = {
     limitMs,
+    wallP95Ms: percentile(
+      runs.map((run) => run.wallMs),
+      95,
+    ),
     positions: runs.length,
     elapsedMs: {
       p50: percentile(elapsed, 50),
@@ -127,7 +143,7 @@ for (const level of levels) {
 const matesOut = [];
 if (levels.includes("hard")) {
   for (const expected of mateCases) {
-    const fixture = mateFens.get(expected.id);
+    const fixture = expected;
     const result = await worker.search({
       position: fixture.fen,
       side: fixture.attacker,
@@ -136,16 +152,15 @@ if (levels.includes("hard")) {
     const chosen = result.move
       ? `${result.move.from}->${result.move.to}`
       : null;
-    const winning = (expected.winningMoves ?? []).map(
-      (move) => `${move.from}->${move.to}`,
+    const winning = expected.winningKeys.map(
+      (key) => `${key.move.from}->${key.move.to}`,
     );
     matesOut.push({
       id: expected.id,
       mateInPlies: expected.mateInPlies,
       chosen,
       winningMoves: winning,
-      solved:
-        chosen !== null && (winning.length ? winning.includes(chosen) : true),
+      solved: chosen !== null && winning.includes(chosen),
       completedDepth: result.completedDepth,
       elapsedMs: result.elapsedMs,
       terminal: result.terminal ? result.terminal.reason : null,
@@ -156,17 +171,24 @@ await worker.close();
 
 const report = {
   generatedAt: new Date().toISOString(),
+  revision: execFileSync("git", ["rev-parse", "HEAD"], {
+    encoding: "utf8",
+  }).trim(),
+  method:
+    "Prepared worker, deterministic search, 50 published midgames/level in source order; compute=worker search, wall=full await engine.search including host validation+IPC. Nearest-rank p95 ceil(.95*N); no discarded samples. Other process load is not controlled.",
   environment: {
     platform: process.platform,
     arch: process.arch,
     node: process.version,
-    cpu: process.env.GATE_CPU ?? "Apple M3 Pro",
+    cpu: cpus()[0]?.model ?? "unknown",
+    os: release(),
     runtime: "packages/engine/dist (compiled)",
   },
   inputs: {
     midgames: midgames.length,
     mateCases: mateCases.length,
-    mateSuiteStatus: summary.acceptance?.diverseMandatoryMateSuite ?? "unknown",
+    mateSuiteStatus:
+      "Eight independently verified cases: six composed material families plus published mate2 and its mate1 derivative",
   },
   levels: levelsOut,
   mates: matesOut,
@@ -175,6 +197,16 @@ const report = {
     hardMateSolveRate: 1,
   },
 };
+report.status =
+  levels.some(
+    (level) =>
+      levelsOut[level].elapsedMs.p95 > ENGINE_LIMITS[level].milliseconds ||
+      levelsOut[level].wallP95Ms > ENGINE_LIMITS[level].milliseconds ||
+      (level === "hard" &&
+        levelsOut[level].runs.some((run) => run.completedDepth < 6)),
+  ) || matesOut.some((run) => !run.solved)
+    ? "BLOCKED"
+    : "PASS";
 
 const pretty = JSON.stringify(report, null, 2);
 if (outPath) await writeFile(outPath, `${pretty}\n`);

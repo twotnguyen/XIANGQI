@@ -2,7 +2,7 @@
   box-sizing: border-box;
   min-inline-size: 0;
   margin: 0;
-  padding: clamp(16px, 2.5vw, 32px);
+  padding: clamp(12px, 1.5vw, 16px);
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -21,7 +21,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-3);
-  margin-block-end: clamp(20px, 2.5vw, 32px);
+  margin-block-end: 16px;
   padding-block-end: 16px;
   border-block-end: 1px solid var(--color-divider);
 }
@@ -66,7 +66,7 @@
 
 .xq-ai-board {
   min-inline-size: 0;
-  inline-size: min(100%, 640px, max(320px, calc((100dvh - 230px) * 0.9)));
+  inline-size: min(100%, 640px, max(280px, calc((100dvh - 330px) * 0.9)));
   justify-self: center;
   padding: 10px;
   border: 1px solid
@@ -83,17 +83,26 @@
 
 .xq-ai-info {
   display: grid;
-  gap: var(--space-4);
-  min-inline-size: 0;
-  padding: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  padding: 12px;
   border: 1px solid var(--color-divider);
   border-radius: 16px;
   background: var(--color-surface);
   overflow-wrap: anywhere;
 }
 
+.xq-ai-info > :not(.xq-ai-player) {
+  grid-column: 1 / -1;
+}
+
+.xq-ai-metrics p {
+  margin-block: var(--space-1);
+  font-size: var(--text-sm);
+}
+
 .xq-ai-player {
-  padding: 14px 16px;
+  padding: 10px;
   border: 1px solid var(--color-divider);
   border-inline-start: 3px solid var(--color-gold);
   border-radius: 10px;
@@ -136,7 +145,7 @@
 
 .xq-ai-actions {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: var(--space-3);
   padding-block-start: 12px;
   border-block-start: 1px solid var(--color-divider);

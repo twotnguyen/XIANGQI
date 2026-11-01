@@ -2,9 +2,9 @@
 
 > **BA 0.27 — PO chốt 31/10/2026:** toàn bộ nội dung từng thuộc P2 (Ranked/Elo/bảng xếp hạng, ghép ngẫu nhiên Casual, Xin đi lại/Tái đấu Casual, phần Ranked của lịch sử/thống kê) nay thuộc **P1**. Mọi câu "vẫn P2 / giữ P2 / làm sau / Sắp ra mắt" còn lại trong tài liệu này là lịch sử và bị thay bởi [BA mục 0.27](BA-SCOPE-DECISIONS.md#027-đưa-toàn-bộ-phần-còn-lại-của-p2-lên-p1--po-chốt-31102026); QR vẫn bị loại. Chưa tái ước lượng giờ/Jira; chưa phải bằng chứng triển khai.
 
-**Rà soát 31/10/2026:** PO chốt bốn điểm tại mục 17 (Khó không đạt thì BLOCKED, máy ngẫu nhiên nhẹ, lịch sử giữ vĩnh viễn, nút Bỏ ván ở banner Sảnh); **chưa triển khai**.
+**Cập nhật triển khai local 01/11/2026:** đã hoàn thiện các luồng YC8 và bổ sung kiểm thử; xem bằng chứng mục18. **Gate tổng vẫn BLOCKED**: cấp Khó chỉ đạt depth6 trên5/50 thế đo, không thay ngân sách hoặc tiêu chí PO.
 
-**Ngày lập/chốt:** 31/10/2026. **Phạm vi:** EP-08, US-08.1–08.3 và các giao điểm P1 theo BA0.22/0.26. **Trạng thái:** bốn lựa chọn PO đã chốt tại mục15; đã đối chiếu nguồn/code, chưa triển khai hoặc nghiệm thu lại phần mềm.
+**Ngày lập/chốt:** 31/10/2026. **Phạm vi:** EP-08, US-08.1–08.3 và các giao điểm P1 theo BA0.22/0.26/0.35. **Trạng thái:** triển khai local, chưa nghiệm thu gate tổng; không commit/push/deploy hoặc cập nhật Jira trong tác vụ YC8.
 
 ## 1. Mục tiêu và nguồn ưu tiên
 
@@ -355,7 +355,72 @@ Không còn câu hỏi chờ trong bốn mục này. Giữ No Hint, Undo chỉ t
 
 ### 17.3 Tác động triển khai (chưa làm)
 
+> Danh sách dưới đây là khảo sát trước triển khai; trạng thái hiện hành và bằng chứng ở mục18.
+
 - `packages/engine`: chọn ngẫu nhiên giữa nước điểm gần bằng nhau có thể cấu hình gieo hạt; giữ đường xác định cho bộ kiểm và GATE-ENGINE.
 - Banner Sảnh (`LobbyShell`/banner ván dở): thêm Bỏ ván gọi cùng lệnh Đầu hàng AI; kiểm quyền chủ ván.
 - Không thêm job dọn lịch sử; thêm theo dõi dung lượng nếu cần.
 - Bằng chứng ở mục 12 và số đo `GATE-ENGINE-LOCAL` là trước các thay đổi này; không kế thừa PASS.
+
+## 18. Triển khai và bằng chứng local — 01/11/2026
+
+### 18.1 Phạm vi mã hiện tại
+
+- Giữ `AiGames` trong RAM, `SqlAiTransactions`/`RoomTransactions.withRoom` và worker hiện có. Không checkpoint ACTIVE, engine ngoài, hint hoặc PV tương lai.
+- `EngineRequest.randomSeed` uint32 do server sinh cho mỗi lượt, cả ba cấp. Chọn trong các nước có điểm chính xác cách tối ưu tối đa20 điểm (1/5 Tốt); chỉ chọn điểm tối ưu khi có điểm mate/terminal. Không seed là đường xác định cho gate; seed cố định tái lập trong test.
+- `onProgress` phát số đo thực sau iteration. `elapsedMs` là compute bên worker; script gate đo thêm wall time toàn bộ `await search()`, không gộp queue/khởi tạo/mạng vào số compute.
+- Snapshot telemetry gồm `taskVersion` (epoch), depth/nodes/compute và `appliedMove`; chỉ chủ thành viên nhận HTTP/socket. Không có số thì widget thu gọn mặc định hiện “Chưa có số liệu”; nước Việt chỉ hiện sau commit. Undo/Resign/Retry/fence loại dữ liệu tác vụ cũ.
+- Banner Sảnh có Bỏ ván cho thành viên và Khách, xác nhận mặc định focus Giữ ván. Tab khác không tự chiếm controller. Tab AI dùng cùng định danh tab của phiên (Web Locks phân biệt tab nhân đôi); refresh giữ quyền hiện hành, tab đã bị tiếp quản không tự giành lại. Sau terminal không còn vị trí, tab mới được tạo ván.
+- Logo/menu/navigate/Back của tab đang điều khiển ACTIVE phải xác nhận đầu hàng; Hủy giữ route/ván. Guard Back xử lý trước khi router nhận location. Tab chỉ đọc rời trang không mutate ván; logout tab điều khiển dùng connection của trang, không mở kết nối chiếm quyền ngầm.
+- Guest Undo và expiry lưu Bỏ dở **đã có trong mã trước YC8**; lượt này kiểm lại thay vì viết store/luồng song song. History/Replay không có job cắt tuổi/số ván hoặc chức năng xóa.
+
+### 18.2 Truy vết kiểm chứng
+
+| Tiêu chí | Bằng chứng đã thực hiện |
+|---|---|
+| AC-08.1.1–3,5–7 | Browser thật tạo Dễ/Đen: máy tự khai cuộc, bàn lật, chưa có nước người không Undo. Đi quân/Undo về đúng nhánh/quota; xác nhận rời/giữ; banner resign lưu History và release. Tests setup/new game/requestedSide/terminal trong `tests/web/features/ai`, `tests/server/game/ai`. |
+| AC-08.1.4 | 100 lần tạo Ngẫu nhiên qua HTTP/runtime thật, đọc lại cùng ID không đổi phe: Đỏ51/Đen49. Mẫu sanity, không chứng minh xác suất bằng đúng50% cho mọi mẫu. |
+| AC-08.2.1–2,08.3.3–4 | Engine/core tests và worker thật; tests fault/cancel/stale/commit retry/version/Undo/finalizing. Nước trả từ worker vẫn qua core trước commit; không hạ depth hoặc giả số khi hết budget. |
+| AC-08.2.3 | Cùng Nest/Socket.IO/Postgres/compiled worker Khó: hai nước online thực commit khi AI còn THINKING, wall16,29ms và13,05ms; sau đó AI commit đúng một nước. Mẫu contention local, không phải SLA nhiều người dùng/Cloud. |
+| AC-08.3.1–2 | Browser offline/nối lại cùng ID/thế/quota; SQL giữ đúng một vị trí và deadline từ controller disconnect. Fixture DB riêng dịch `disconnected_at` tới biên30phút: thành viên có đúng một bản INTERRUPTED/AI, `abandonedBy=DISCONNECT`, ply0/nhánh rỗng, không W/D/L; Khách không có bản lưu; cả hai release. Tests SQL phủ exactdeadline và race worker/terminal/expiry/rollback. |
+| AC-08.3.5–6 | Restart/mất RAM hiện thông báo không còn trạng thái, không dựng bàn mới giả. Logo và Back Hủy giữ nguyên ván; tab readonly rời không resign; banner tab khác bị từ chối. Browser logout Hủy giữ ván, xác nhận resign rồi tới `/login`; tests dùng connection hiện hữu và transaction terminal. Boot cũ có lease60giây: trước khi thu hồi có thể báo chưa sẵn sàng, không giả khôi phục. |
+| AC-08.3.7–9, RV-01 | Số đo và gate ở18.3; gate tổng BLOCKED vì depth Khó, không kế thừa PASS từ báo cáo Node26 cũ. |
+| AC-P2-11/12/13/15.1–3, RV-03 | Browser History → `/history/:id`, Replay nhánh sau Undo chỉ còn một nước khai cuộc; autoplay1,5s dừng cuối, FEN clipboard thật đúng mốc0/1, PGN tải thật chỉ chứa nhánh đó. Replay ván0nước xem được thế khai cuộc. Tài khoản khác gọi Replay/export trả404. Tests DB seed bản AI kết thúc tháng02/2026 vẫn đọc History/Replay đúng nhánh; ownership/RLS/dedup/export và SQL terminal thực. Không có giới hạn tuổi/số ván trong truy vấn hoặc job xóa. |
+| AC-P2-14.1–3 | Browser Undo sau cặp nước trả đúng thế/quota2/3 còn lại, xóa metrics; direct API Khách trả403 `AI_FORBIDDEN`. Tests Undo1/2ply/quota/fence và nhánh hiệu lực. |
+| AC-P2-22.1–3 | Worker thật cấp số UI, nhãn nước Việt sau commit; Undo xóa dữ liệu. Guest UI không Undo/widget và direct HTTP snapshot không có thuộc tính telemetry; tests guest/member HTTP/socket, projection future-field, same-version/task cũ. |
+| RV-02 | Test cả ba cấp có ít nhất hai lựa chọn khai cuộc, seed tái lập; mọi lựa chọn hợp lệ và các key mate độc lập không bị random bỏ qua. |
+| RV-04–05 | Browser member/guest banner Giữ ván focus mặc định; Hủy không resign; đồng ý release, member History/guest không lưu. Tab chỉ đọc Bỏ ván bị từ chối, tab điều khiển không đổi. |
+
+Đã xem AI ở1366×768 và360×800: không tràn ngang; panel người/máy gọn, nút chính trước widget mở. Cho phép cuộn dọc ở mobile/màn thấp. Không coi screenshot preview là bằng chứng quyền API.
+
+### 18.3 Gate engine và giới hạn nghiệm thu
+
+Môi trường: Apple M3 Pro, macOS/Darwin24.6.0 arm64, Node22.22.3, compiled worker. Base revision `fbc6b04993a05c3bf9a37faae7811a9cce192ecb` cộng thay đổi YC8 chưa commit. Worker prepared; 50thế/cấp theo thứ tự nguồn, nearest-rank p95=`ceil(0,95*N)`, không loại mẫu chậm. Các tiến trình nền không được kiểm soát; đây là workstation local, không xác nhận máy demo/Cloud khác.
+
+| Cấp | Compute p95 (ms) | Wall p95 (ms) | Depth thực min/trung vị/max | Đủ target |
+|---|---:|---:|---|---|
+| Dễ | 5,90 | 6,40 | 2/2/2 | 50/50 |
+| Trung bình | 265,20 | 265,40 | 4/4/4 | 50/50 depth4 |
+| Khó | 2994,90 | 2995,50 | 5/5/6 | 18/50 depth6 |
+
+Bộ mate8/8 key đúng dưới budget Khó: hai thế có nguồn công bố (cùng một nguồn) cộng sáu họ quân tự dựng khác nhau, xác minh vét cạn mọi root/đáp trả bằng **pyffish0.0.90 độc lập**, không dùng engine/core dự án làm đáp án. `packages/engine/fixtures/yc8-mates.json` và `verify-oracle.py` giữ FEN/key/phương pháp. Đây là bộ ngắn hữu hạn, không tuyên bố bao phủ mọi chiến thuật.
+
+| Cặp cấp, 20ván cân phe | Cấp thấp thắng | Cấp cao thắng | Hòa | Chưa terminal |
+|---|---:|---:|---:|---:|
+| Dễ – Trung bình | 0 | 18 | 2 | 0 |
+| Dễ – Khó | 0 | 16 | 4 | 0 |
+| Trung bình – Khó | 0 | 12 | 8 | 0 |
+
+Đấu máy dùng cùng10thế giữa ván có nguồn, đảo phe mỗi thế, đường xác định và luật kết thúc core thật; không Elo giả. Ba ván Trung bình–Khó chạm mốc thực thi240ply ban đầu đã được tiếp tục **đúng nhánh cũ**, kết thúc tự nhiên ở341/329/422ply; không đếm ván bị chặn là hòa. Cả60ván đã terminal. Script tái lập hiện có hàng rào4000ply, chạm trần vẫn INCOMPLETE/BLOCKED, không giả hòa. Không dùng số đo thời gian tournament dưới tải đồng thời để thay p95 riêng.
+
+Raw local: `.local/yc8-engine-gate-final.json` (lượt cuối), `.local/yc8-engine-gate.json` (lượt đầu), `.local/yc8-oracle-proof.json`, `.local/yc8-tournament-{easy-medium,easy-hard,medium-hard}.json`, `.local/yc8-contention-result.json`, `.local/yc8-random-sides-result.json`. `.local` không commit. Lệnh tái lập: `fnm exec --using 22 node --import tsx packages/engine/scripts/gate-engine.mjs --out <file>`; tương tự `scripts/tournament.mjs --pair easy,medium --out <file>` cho ba cặp. Build engine trước; fixture reset schema chỉ chạy PostgreSQL cô lập, không Supabase.
+
+**Kết luận gate:** BLOCKED theo AC-YC8-RV-01 vì depth6 chỉ18/50 (lượt đo sau sửa hiệu năng 01/11/2026, `.local/yc8-fix-engine-gate-final.json`; mate 8/8). Các tối ưu giữ nguyên luật, cây tìm kiếm và đánh giá: `isInCheck` chỉ sinh nước tới ô Tướng, `hasLegalMove` dùng chung của core, khóa bảng nhớ theo chuỗi nước, tính priority sắp xếp một lần. Giữ depth2/4/6, budget300/1000/3000ms và watchdog10giây; chưa đủ depth6 nếu không đổi cây tìm kiếm (cắt tỉa/giảm độ sâu) hoặc ngân sách, cần PO quyết định hướng khắc phục. Chưa nghiệm thu toàn bộ YC8 là PASS. Không chạy lại 60 ván đấu máy sau thay đổi này theo yêu cầu; kết quả ván ở trên là của lượt trước và không tái xác nhận trên bản tối ưu (cây tìm kiếm không đổi, nhưng chưa đo).
+
+### 18.4 Kiểm tra tự động và vận hành
+
+- Full server/packages trên DB cô lập, Node22: **194file/2133test PASS** ở lượt cuối; gồm hai regression History/Replay bản tháng02/2026 và admission sau terminal. Lệnh: `fnm exec --using 22 tests/server/db.sh test tests/server tests/packages`.
+- Web/packages120file/1380test PASS, typecheck/lint toàn workspace và build PASS ở lượt cuối01/11/2026 (Node22). Build vẫn cảnh báo chunk LiveKit563,43kB (gzip148,29kB), không thuộc bundle engine AI. Vitest web có dòng jsdom `Not implemented: navigation to another Document`, không có test thất bại.
+- Full server suite vẫn phát các log `realtime_disconnect_failed`, `realtime_maintenance_failed`, `registration_maintenance_failed` trong các kịch bản lỗi/teardown dù test đạt; không dùng kết quả này kết luận runtime Cloud khỏe.
+- Không migration mới cho YC8, không áp Supabase/Cloud, không deploy, commit, push hoặc cập nhật Jira. ACTIVE/pending terminal còn RAM vẫn có giới hạn crash đúng mục10.3; history đã commit không bị cutover này xóa.
+- Đã dừng các dịch vụ và tab browser smoke YC8, xóa harness/cluster tạm do lượt này tạo; giữ raw JSON và manifest checksum trong `.local/yc8-evidence-manifest.json`. Không dừng/xóa dịch vụ hoặc dữ liệu khác của người dùng.

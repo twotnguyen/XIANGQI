@@ -121,6 +121,49 @@ async function fixture(custom?: AiSocketDependencies["open"]) {
   }
   return { gateway, base, http, realtime, client, open, ports };
 }
+it("publishes only the allowed telemetry fields to a member socket", async () => {
+  const f = await fixture(async (socket, p) => {
+    const state: AiSocketControl = {
+      tabId: p.tabId,
+      connectionId: socket.id,
+      generation: 1,
+      mode: "controller",
+      gameId: randomUUID(),
+      graceUntil: null,
+    };
+    const value = snapshot(state);
+    Object.assign(value.snapshot, {
+      telemetry: {
+        taskVersion: 1,
+        completedDepth: 1,
+        targetDepth: 2,
+        nodes: 42,
+        elapsedMs: 7,
+        appliedMove: null,
+        futureMove: { from: 1, to: 2 },
+      },
+    });
+    return {
+      connect: async () => state,
+      refresh: async () => state,
+      takeover: async () => state,
+      watch: async () => value,
+      read: async () => value,
+      close: async () => {},
+    };
+  });
+  const client = f.client();
+  const board = once(client, "ai.snapshot");
+  client.connect();
+  expect(((await board) as AiSocketSnapshot).snapshot.telemetry).toEqual({
+    taskVersion: 1,
+    completedDepth: 1,
+    targetDepth: 2,
+    nodes: 42,
+    elapsedMs: 7,
+    appliedMove: null,
+  });
+});
 it("uses a native private namespace and keeps shared HTTP and realtime alive after close", async () => {
   const f = await fixture(),
     client = f.client(),

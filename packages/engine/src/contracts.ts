@@ -10,6 +10,15 @@ export interface EngineRequest {
   level: EngineLevel;
   /** Server-owned effective branch, ending at position; never accept client history. */
   history?: readonly string[];
+  /** Server-generated seed for light variation; absent for deterministic acceptance runs. */
+  randomSeed?: number;
+}
+
+export interface EngineProgress {
+  completedDepth: number;
+  targetDepth: number;
+  elapsedMs: number;
+  nodes: number;
 }
 
 /**

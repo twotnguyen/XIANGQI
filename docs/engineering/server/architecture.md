@@ -65,6 +65,16 @@ Feed Sảnh (`game/room/public/public-room-feed.ts`) giữ `PUBLIC_FEED_POLL_MS 
 - **Giới hạn JWT:** LiveKit self-host vẫn chấp nhận JWT cũ TTL 600 s vào namespace cũ, nhưng namespace đó không còn nguồn hợp lệ và không nhận token/publication mới. Smoke 01/11/2026 xác nhận viewer bị gỡ, A video/B audio phục hồi ở namespace mới, JWT viewer cũ chỉ vào phòng trống. Không gọi đây là vô hiệu JWT bằng mật mã. Rollback generation từ chối khi còn phòng mở hoặc revoke chưa giao; đóng phòng và xả outbox trước rollback.
 
 
+## YC8: AI, quyền tab và số liệu engine
+
+- `AiGames` giữ ACTIVE trong RAM; `SqlAiTransactions` giữ owner gate cùng actor-first `RoomTransactions.withRoom`. Board/terminal/reservation chỉ cài sau commit. Expiry30phút lưu nhánh Bỏ dở của thành viên trước release; Khách không lưu. Không checkpoint ACTIVE hoặc hứa phục hồi qua crash.
+- `AiPresence.attach` không tự chiếm một ván đang giữ vị trí chỉ vì `tabId` mới: chỉ controller cùng tab hoặc `takeover:true`. Không còn vị trí AI thì tab mới được nhận quyền tạo ván. Web AI dùng `getTabSessionId()` chung với phiên; Web Locks phân biệt tab nhân đôi và giữ identity qua refresh. Readonly disconnect/read/telemetry không gia hạn grace.
+- Worker nhận seed uint32 từ server mỗi lượt; root chọn trong20điểm gần tối ưu, không random bỏ điểm mate/terminal tối ưu. Đường không seed xác định dành cho gate. Không thay budget300/1000/3000ms, depth2/4/6 hoặc watchdog10giây.
+- `EngineWorker.search(...,{onProgress})` trả mẫu thực `completedDepth/targetDepth/nodes/elapsedMs` sau iteration. `elapsedMs` là compute worker; host đo riêng thời gian toàn lượt, không lấy thời gian mạng làm compute. Đã thay callback depth-only cũ, cập nhật mọi caller.
+- Snapshot telemetry gắn epoch ở `taskVersion`; chưa có dữ liệu là null, không bịa0. `appliedMove` chỉ cài cùng nước sau commit; Undo/thinking/Resign/lỗi xóa dữ liệu, callback/completion cũ bị fence. HTTP service và socket runtime chỉ đưa thuộc tính telemetry cho member; controller/gateway project allowlist, không phát futuremove/PV.
+- Sảnh Bỏ ván dùng cùng resign và xác nhận mặc định Giữ ván, không takeover ngầm. Điều hướng nội bộ/Back của controller ACTIVE xác nhận trước khi router đổi location; readonly được rời không resign. Logout trên trang AI dùng connection hiện hữu.
+- Số đo local và gate nằm tại [YC8 mục18](../../product/P1-YC8-DAU-VOI-MAY.md#18-triển-khai-và-bằng-chứng-local--01112026): triển khai không đồng nghĩa gate Khó PASS. Không migration/schema mới cho YC8.
+
 ## Xác thực hai lớp
 
 Bearer Supabase được xác minh chữ ký ES256, issuer/audience/role và hạn bằng `jose` + JWKS công khai ngoài transaction; không gọi Auth userinfo từng lệnh. Chỉ cache khóa công khai, không cache token/phiên/quyền. Sau xác minh, tra capability base64url 43 ký tự (băm trong `xiangqi_auth.app_sessions`) và tài khoản hiện hành; transaction game kiểm lại phiên dưới khóa trước khi đọc/ghi. Refresh vẫn qua Auth và kiểm DB trước/sau. JWT còn hạn + khóa đã cache có thể dùng khi Auth API lỗi; thu hồi trực tiếp bearer/key phụ thuộc hạn/cache (xem [login.md](login.md)), còn thu hồi appSession vẫn qua DB. Khách là loại actor riêng. `DIRECT_URL` phải là direct/session pooler, không phải cổng 6543.

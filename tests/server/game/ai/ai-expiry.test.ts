@@ -157,7 +157,7 @@ describe.skipIf(!databaseUrl)(
           generation: 1,
         };
         const attached = await run(f.actor, (scope) =>
-          f.presence.attach(scope, tab),
+          f.presence.attach(scope, { ...tab, takeover: true }),
         );
         expect(attached.status).toBe("active");
         f.origin.tab = { ...tab, generation: attached.control.generation };

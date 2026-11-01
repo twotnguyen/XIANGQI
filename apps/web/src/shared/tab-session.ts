@@ -62,6 +62,11 @@ async function tabSession(): Promise<TabSession> {
   return context;
 }
 
+/** Public tab identity, shared with realtime; Web Locks distinguish duplicated tabs. */
+export async function getTabSessionId(): Promise<string> {
+  return (ready ?? (await tabSession())).id;
+}
+
 /** Storage holds a public routing key only; session/refresh secrets stay in HttpOnly cookies. */
 export async function tabSessionFetch(
   url: string,

@@ -218,6 +218,24 @@ describe.skipIf(!databaseUrl)(
       await loginPool.end();
     });
 
+    it("returns the member telemetry field on HTTP and socket snapshots", async () => {
+      const a = await member(),
+        c = await live(a);
+      const created = await createGame(c);
+      const response = await request(c.origin, `/ai/${created.snapshot.id}`);
+      expect((await response.json()).snapshot).toHaveProperty(
+        "telemetry",
+        null,
+      );
+      const board = new Promise<{ snapshot: unknown }>((resolve) =>
+        c.client.once("ai.snapshot", resolve),
+      );
+      expect(await watch(c.client, created.snapshot.id)).toMatchObject({
+        ok: true,
+      });
+      expect((await board).snapshot).toHaveProperty("telemetry", null);
+    });
+
     it("parks connected presence in grace when the socket closes before any watch", async () => {
       const a = await member(),
         c = await live(a),

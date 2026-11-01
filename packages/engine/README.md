@@ -32,9 +32,11 @@ tất vòng nào. `timedOut` không có nghĩa ván kết thúc. `move:null` đi
 `terminal` từ lõi khi thế/lịch sử đã kết thúc. Máy chủ vẫn phải xác nhận đúng
 ván, thế, quyền và nước hợp lệ trước khi áp dụng kết quả.
 
-Bảng chuyển vị có tối đa 50.000 mục, chứa toàn bộ nhánh/counter trong khóa để
-không dùng cùng cận điểm cho hai lịch sử lặp/chiếu khác nhau. Điểm chiếu hết ưu
-tiên hơn các thắng lợi terminal khác; điểm khoảng cách khuyến khích kết thúc
+Bảng nhớ có tối đa 50.000 mục. Trong một request, lịch sử gốc cố định; khóa là
+chuỗi nước đi chính xác (mỗi from/to mã hóa thành một ký tự), xác định cùng
+nhánh/counter/chiếu mà không ghép lại toàn bộ FEN ở mỗi node. Không gộp hai
+lịch sử chỉ vì cùng bàn cờ để dùng chung cận điểm.
+Điểm chiếu hết ưu tiên hơn các thắng lợi terminal khác; điểm khoảng cách khuyến khích kết thúc
 sớm. Không dùng bộ luật đuổi quân riêng.
 
 `EngineWorker` chạy tính toán trong Worker Thread riêng, giữ một tác vụ đang
@@ -42,7 +44,8 @@ chạy trên mỗi instance; yêu cầu đồng thời trả `ENGINE_BUSY`. Work
 sử dụng khi thành công; hủy, timeout, crash hoặc kết quả không hợp lệ sẽ chấm
 dứt và thu hồi worker trước khi cho tìm mới. `close()` chặn tác vụ mới và chờ
 thu hồi tác vụ hiện tại. Idle worker tự thoát/lỗi được loại khỏi cache.
-`onIteration(depth)` là tùy chọn đo vòng tìm kiếm thực, không sửa trạng thái ván.
+`onProgress({completedDepth,targetDepth,nodes,elapsedMs})` chỉ phát số đo thật
+sau một iteration hoàn tất; không chứa nước dự kiến/PV hoặc chạy phân tích bên người.
 
 Máy chủ phải `await ready()` trong vòng đời khởi tạo **trước khi phục vụ AI**.
 Handshake chỉ hoàn tất sau khi thread, loader và module tìm kiếm đã sẵn sàng;
@@ -73,15 +76,27 @@ thật với HTTP health đang phục vụ sau vòng tìm kiếm đầu, hủy/c
 output sai, treo và idle exit. HTTP này là harness độc lập; runtime AI và health
 của ứng dụng vẫn cần Root tích hợp.
 
-**Chưa xác nhận GATE-ENGINE:** repo chưa có 50 thế giữa ván/cấp và bộ đáp án
-chiếu hết bắt buộc 1–2 nước đã kiểm chứng. Thế unit nhỏ không thay cho bộ này.
-Chưa có p95 hoặc 20 ván cho mỗi cặp cấp. Mục tiêu độ sâu không đồng nghĩa
-đã đạt ở mọi thế; phải báo độ sâu/thời gian thực tế, không tự giảm ngưỡng.
+Bộ timing có 50 thế giữa ván đã xác minh độc lập. Bộ mate gồm hai thế có nguồn
+công bố và sáu họ quân tự dựng, đáp án vét cạn bằng pyffish độc lập trong
+`fixtures/verify-oracle.py`; đây không phải bao phủ mọi chiến thuật.
+Chạy `scripts/gate-engine.mjs` và `scripts/tournament.mjs` dưới Node22 để ghi số
+thật. Không coi sự tồn tại fixture/test là nghiệm thu p95/sức mạnh.
 Worker dùng hạn chót monotonic chung tính từ yêu cầu, trừ 5 ms dự phòng IPC/kiểm tra
-kết quả; khởi động worker không được cấp lại toàn bộ ngân sách. `elapsedMs` của
-EngineWorker gồm xác minh đầu vào, khởi động/IPC đến lúc nhận kết quả. Chỉ các
-trường thế, phe, cấp và lịch sử đã xác minh được gửi sang Worker; thuộc tính phụ
-không được sao chép. Test lịch sử lặp/chiếu dai tạo từng thế bằng nước đi hợp lệ,
+kết quả; khởi động worker không được cấp lại toàn bộ ngân sách. `elapsedMs` là
+thời gian compute thực đo bên worker; đo riêng toàn bộ `await engine.search()`
+để tính xác minh đầu vào/khởi động/IPC/kiểm kết quả. Chỉ các trường thế, phe, cấp,
+seed và lịch sử đã xác minh được gửi sang Worker; thuộc tính phụ không sao chép.
+Test lịch sử lặp/chiếu dai tạo từng thế bằng nước đi hợp lệ,
 kiểm tra cả bên Đỏ và Đen qua Worker thật. Benchmark vẫn phải đo toàn bộ
 `await engine.search()` ở máy demo và phân biệt lượt lạnh/lượt nóng; scheduling
 của hệ điều hành và một thao tác lõi đang chạy có thể gây sai số, cần số đo p95.
+
+## YC8: ngẫu nhiên nhẹ
+
+Runtime cấp `randomSeed` uint32 phía server cho cả ba cấp. Seed cố định tái lập
+lựa chọn trong test; bỏ seed giữ đường xác định cho gate. Sau mỗi iteration đủ,
+chọn giữa các nước có điểm cách tốt nhất tối đa **20 điểm** (1/5 giá trị Tốt).
+Root cần điểm chính xác cho từng ứng viên, không dùng cận alpha-beta làm điểm
+gần bằng nhau. Khi có điểm terminal/mate (|score| ≥ 99000), chỉ chọn nước bằng
+điểm tối ưu: không làm mất mate hoặc nước tránh mate đã được tìm thấy.
+Không thay depth/budget; số depth thực có thể thấp hơn khi tìm kiếm chưa đủ giờ.

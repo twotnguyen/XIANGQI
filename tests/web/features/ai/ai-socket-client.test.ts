@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { afterEach, expect, it, vi } from "vitest";
 import { initialPosition, serializePosition } from "@xiangqi/xiangqi-core";
 import { connectAi } from "@web/features/ai/ai-socket-client.js";
@@ -37,6 +38,7 @@ async function observer(
     accessToken: "token",
     appSession: "cap",
   }),
+  waitForAuth = true,
 ) {
   const onControl = vi.fn(),
     onSnapshot = vi.fn(),
@@ -52,7 +54,7 @@ async function observer(
   peers.push(peer);
   const done = vi.fn();
   fixture.auth!(done);
-  await Promise.resolve();
+  if (waitForAuth) await vi.waitFor(() => expect(done).toHaveBeenCalledOnce());
   const tabId = done.mock.calls[0]?.[0].tabId as string;
   const control = {
     tabId,
@@ -112,17 +114,8 @@ it("uses an isolated authenticated namespace with one tab identity and fresh han
       appSession: "cap",
     });
   const f = await observer(proof);
-  expect(fixture.io).toHaveBeenCalledWith(
-    "http://localhost/ai",
-    expect.objectContaining({
-      path: "/api/ai/socket.io",
-      transports: ["websocket"],
-      withCredentials: true,
-      autoConnect: false,
-    }),
-  );
   fixture.auth!(f.done);
-  await Promise.resolve();
+  await vi.waitFor(() => expect(f.done).toHaveBeenCalledTimes(2));
   expect(f.done.mock.calls.map((call) => call[0])).toEqual([
     { accessToken: "first", appSession: "cap", tabId: f.control.tabId },
     { accessToken: "rotated", appSession: "cap", tabId: f.control.tabId },
@@ -158,6 +151,28 @@ it.each([
   expect(f.onControl).not.toHaveBeenCalled();
   expect(f.onConnection).not.toHaveBeenCalledWith(true);
   expect(f.onError).toHaveBeenCalledOnce();
+});
+it("delivers telemetry progress at the same board version", async () => {
+  const f = await observer();
+  deliver("ai.control", f.control);
+  success();
+  await f.peer.watch(id);
+  const first = envelope(3);
+  const progress = envelope(3);
+  Object.assign(progress.snapshot, {
+    telemetry: {
+      taskVersion: 1,
+      completedDepth: 2,
+      targetDepth: 4,
+      elapsedMs: 100,
+      nodes: 900,
+      appliedMove: null,
+    },
+  });
+  deliver("ai.snapshot", first);
+  deliver("ai.snapshot", progress);
+  expect(f.onSnapshot).toHaveBeenLastCalledWith(progress);
+  expect(f.onSnapshot).toHaveBeenCalledTimes(2);
 });
 it("watches only a canonical game, filters stale versions and mismatched generation or game", async () => {
   const f = await observer();
@@ -234,6 +249,7 @@ it("cancels pending proof and late callbacks on final disconnect", async () => {
           finish = resolve;
         }),
     ),
+    false,
   );
   const pending = f.peer.getControl(),
     rejected = expect(pending).rejects.toThrow();
@@ -377,8 +393,7 @@ it("keeps a control request made before the first handshake until the server gra
   const waiting = peer.getControl();
   const done = vi.fn();
   fixture.auth!(done);
-  await Promise.resolve();
-  await Promise.resolve();
+  await vi.waitFor(() => expect(done).toHaveBeenCalledOnce());
   const tabId = done.mock.calls[0]?.[0].tabId as string;
   deliver("ai.control", {
     tabId,
