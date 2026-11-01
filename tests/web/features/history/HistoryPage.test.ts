@@ -122,14 +122,12 @@ it("loads actual account rows, own side/reason and replay callback without Elo/a
   expect(screen.getByText("—")).toBeTruthy();
   expect(screen.queryByRole("img")).toBeNull();
 });
-it("keyboard filter loads Ranked unavailable instead of fake stats", async () => {
+it("keyboard Ranked filter shows a generic load error instead of fake stats", async () => {
   const client = {
     list: vi
       .fn()
       .mockResolvedValueOnce(page())
-      .mockRejectedValueOnce(
-        new HistoryRequestError(503, "HISTORY_RANKED_UNAVAILABLE"),
-      ),
+      .mockRejectedValueOnce(new HistoryRequestError(503, "REALTIME_UNAVAILABLE")),
   };
   render(createElement(HistoryPage, { client, onReplay: vi.fn() }));
   await screen.findByText("Khách");
@@ -137,7 +135,7 @@ it("keyboard filter loads Ranked unavailable instead of fake stats", async () =>
   await userEvent.keyboard("{Enter}");
   expect(screen.queryByText("Khách")).toBeNull();
   expect((await screen.findByRole("alert")).textContent).toBe(
-    "Lịch sử Đánh Hạng chưa sẵn sàng.",
+    "Chưa thể tải lịch sử. Vui lòng thử lại.",
   );
   expect(client.list).toHaveBeenLastCalledWith({ filter: "RANKED", limit: 20 });
 });

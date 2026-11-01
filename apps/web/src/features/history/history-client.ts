@@ -188,7 +188,6 @@ const codes = [
   "HISTORY_FORBIDDEN",
   "HISTORY_INPUT_INVALID",
   "HISTORY_CORRUPT",
-  "HISTORY_RANKED_UNAVAILABLE",
   "AUTH_REQUIRED",
 ];
 export class HistoryRequestError extends Error {
@@ -199,9 +198,7 @@ export class HistoryRequestError extends Error {
     super(
       status === 401
         ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."
-        : code === "HISTORY_RANKED_UNAVAILABLE"
-          ? "Lịch sử Đánh Hạng chưa sẵn sàng."
-          : "Chưa thể tải lịch sử. Vui lòng thử lại.",
+        : "Chưa thể tải lịch sử. Vui lòng thử lại.",
     );
   }
 }

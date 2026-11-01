@@ -213,7 +213,7 @@ export function MatchActions({
     : !draw
       ? "Xin hòa chưa sẵn sàng trong phòng này."
       : !rankedDrawReady
-        ? "Mỗi bên phải đi ít nhất 20 nước để xin hòa."
+        ? "Chỉ xin hòa được sau 20 nước mỗi bên."
         : ownPending
           ? "Đang chờ trả lời đề nghị trước."
         : cooldown > 0

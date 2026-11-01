@@ -1,7 +1,7 @@
 .xq-rankings { max-width: 72rem; margin: 0 auto; padding: 1.5rem; }
 .xq-rankings-list { list-style: none; padding: 0; display: grid; gap: .5rem; }
 .xq-ranking-row { display: grid; grid-template-columns: minmax(4rem, auto) minmax(8rem, 1fr) minmax(8rem, auto) minmax(12rem, auto); gap: .75rem; align-items: center; padding: .8rem; border: 1px solid currentColor; border-radius: .5rem; }
-.xq-ranking-row button { text-align: left; font: inherit; font-weight: bold; color: inherit; background: transparent; border: 0; text-decoration: underline; cursor: pointer; }
+.xq-ranking-row button { min-height: var(--touch-min); text-align: left; font: inherit; font-weight: bold; color: inherit; background: transparent; border: 0; text-decoration: underline; cursor: pointer; }
 .xq-ranking-summary { display: grid; gap: .5rem; }
 .xq-ranking-avatar { display: grid; place-items: center; width: 4rem; height: 4rem; border: 1px solid currentColor; border-radius: 50%; font-size: 1.5rem; }
 .xq-ranking-summary img { width: 4rem; height: 4rem; object-fit: cover; border-radius: 50%; }

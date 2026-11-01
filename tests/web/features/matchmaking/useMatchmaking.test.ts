@@ -84,6 +84,16 @@ test("route sync requested during a command runs after its acknowledgement", asy
   hook.unmount();
 });
 
+test("a join clicked while the connect sync is in flight opens feedback and joins after the sync", () => {
+  const hook = setup(); connect();
+  act(() => hook.result.current.join("CASUAL"));
+  expect(hook.result.current.open).toBe(true);
+  expect(wire.commands.map((command) => command.payload.type)).toEqual(["sync"]);
+  ack(state);
+  expect(wire.commands.map((command) => command.payload.type)).toEqual(["sync", "join"]);
+  hook.unmount();
+});
+
 test("an explicit retry while disconnected syncs before joining exactly once", () => {
   const hook = setup();
   act(() => hook.result.current.join("CASUAL"));

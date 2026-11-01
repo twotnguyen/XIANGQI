@@ -22,7 +22,7 @@ describe.skipIf(!databaseUrl)(
         );
         if (kind === "RANKED") {
           expect(offer.applied).toBe(false);
-          expect(offer.error?.code).toBe("MATCH_UNDO_FORBIDDEN");
+          expect(offer.error?.code).toBe("MATCH_UNDO_RANKED");
           expect(offer.undo.offers).toEqual([]);
         } else {
           expect(offer.applied).toBe(true);

@@ -73,6 +73,7 @@ export function useMatchmaking({ userId, getProof, onMatched }: Input): Matchmak
   const intent = useRef<Intent | null>(null);
   const interested = useRef(false);
   const busy = useRef(false);
+  const busyType = useRef<MatchmakingCommand["type"] | null>(null);
   const ready = useRef(false);
   const revision = useRef(0);
   const generation = useRef(0);
@@ -146,7 +147,7 @@ export function useMatchmaking({ userId, getProof, onMatched }: Input): Matchmak
       if (type === "sync" && saved) Object.assign(command, saved);
       if (type !== "join" && type !== "sync" && current?.queueId) { command.queueId = current.queueId; command.bootId = current.bootId; }
       if ((type === "confirm" || type === "decline") && current?.offerId) command.offerId = current.offerId;
-      busy.current = true; setPending(true);
+      busy.current = true; busyType.current = type; setPending(true);
       const atRevision = revision.current;
       const requestId = ++request;
       const finish = () => { busy.current = false; setPending(false); clearTimeout(timer); if (deferredSync) { deferredSync = false; queueMicrotask(() => send("sync")); } };
@@ -188,7 +189,8 @@ export function useMatchmaking({ userId, getProof, onMatched }: Input): Matchmak
     update(); const timer = setInterval(update, 250); return () => clearInterval(timer);
   }, [state]);
   const join = useCallback((selected: MatchmakingMode) => {
-    if (busy.current || (stateRef.current && active.includes(stateRef.current.status))) return;
+    if (stateRef.current && active.includes(stateRef.current.status)) return;
+    if (busy.current) { if (busyType.current === "sync") { interested.current = true; mode.current = selected; retryMode.current = selected; setOpen(true); setError(null); } return; }
     interested.current = true; mode.current = selected; setOpen(true); setError(null);
     if (!ready.current) { setError(unavailable); return; }
     try { audio.current ??= new AudioContext(); void audio.current.resume().catch(() => {}); } catch { /* Browser may not support audio. */ }

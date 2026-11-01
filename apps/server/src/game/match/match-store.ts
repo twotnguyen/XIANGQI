@@ -432,7 +432,7 @@ export class MatchStore extends MatchUndoStore {
           [row.room_id],
         );
         if (ranked.rowCount)
-          return { code: "MATCH_ABORT_NOT_ALLOWED", message: "Không thể hủy ván xếp hạng." };
+          return { code: "MATCH_ABORT_RANKED", message: "Không thể hủy ván xếp hạng." };
         const played = await scope.client.query(
           "SELECT 1 FROM public.match_events WHERE match_id=$1 AND type='MOVE' LIMIT 1",
           [row.id],

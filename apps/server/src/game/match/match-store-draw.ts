@@ -357,7 +357,7 @@ export class MatchDrawStore extends MatchStoreCore {
         [room.id, row.id],
       );
       if (ranked.rows[0] && !ranked.rows[0].eligible)
-        return result(false, "MATCH_DRAW_MIN_MOVES", "Mỗi bên cần đi ít nhất 20 nước để xin hòa.");
+        return result(false, "MATCH_DRAW_MIN_MOVES", "Chỉ xin hòa được sau 20 nước mỗi bên.");
       const state = await this.drawState(scope.client, match, at);
       const undoPending = await scope.client.query(
         "SELECT 1 FROM xiangqi_room.match_undo_offers WHERE match_id=$1 AND sender=$2 AND status='PENDING' AND expires_at>$3",

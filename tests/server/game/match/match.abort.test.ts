@@ -26,7 +26,7 @@ describe.skipIf(!databaseUrl)(
         const s = await start(at, kind);
         const result = await abort(s.room, red, s.matchId);
         if (kind === "RANKED") {
-          expect(result).toMatchObject({ applied: false, error: { code: "MATCH_ABORT_NOT_ALLOWED" }, match: { status: "ACTIVE" } });
+          expect(result).toMatchObject({ applied: false, error: { code: "MATCH_ABORT_RANKED" }, match: { status: "ACTIVE" } });
         } else {
           expect(result).toMatchObject({ applied: true, match: { outcome: { reason: "ABORTED" } } });
         }
