@@ -11,8 +11,8 @@ it("tải Elo trước khi mở menu và giữ số liệu khi mở lại", asyn
     ok: true,
     json: async () => ({ elo: 1200, completed: 0, wins: 0, draws: 0, losses: 0, tier: "Chưa xếp hạng", rank: null, remaining: 5 }),
   });
-  const props = { title: "Sảnh", user: { displayName: "Kỳ thủ", guest: false }, authorizedFetch, ratingUserId: "user-a" };
-  const view = render(createElement(AppShell, props, "Nội dung"));
+  const props = { title: "Sảnh", user: { displayName: "Kỳ thủ", guest: false }, authorizedFetch, ratingUserId: "user-a", children: "Nội dung" };
+  const view = render(createElement(AppShell, props));
   await waitFor(() => expect(authorizedFetch).toHaveBeenCalledTimes(1));
   const trigger = screen.getByRole("button", { name: "Tài khoản: Kỳ thủ" });
   fireEvent.click(trigger);
@@ -23,7 +23,7 @@ it("tải Elo trước khi mở menu và giữ số liệu khi mở lại", asyn
   expect(authorizedFetch).toHaveBeenCalledTimes(1);
 
   authorizedFetch.mockReturnValueOnce(new Promise(() => {}));
-  view.rerender(createElement(AppShell, { ...props, ratingUserId: "user-b" }, "Nội dung"));
+  view.rerender(createElement(AppShell, { ...props, ratingUserId: "user-b" }));
   expect(screen.queryByText(/1200 Elo/)).toBeNull();
   expect(screen.getByText("Đang tải xếp hạng…")).toBeTruthy();
 });

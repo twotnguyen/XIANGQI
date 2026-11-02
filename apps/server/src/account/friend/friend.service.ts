@@ -204,7 +204,11 @@ export class FriendService {
         peer.user_id,
       );
       if (existing)
-        return { ...existing, cooldownUntil: await tx.cooldownUntil(userId) };
+        return {
+          ...existing,
+          roomId,
+          cooldownUntil: await tx.cooldownUntil(userId),
+        };
       if (await tx.cooldownUntil(userId))
         fail("FRIEND_INVITE_COOLDOWN", "Vui lòng chờ trước khi mời tiếp", 429);
       if ((await tx.countPendingInvites(peer.user_id)) >= MAX_PENDING_INVITES)
@@ -217,7 +221,7 @@ export class FriendService {
         fail("FRIEND_ROOM_MISSING", "Phòng không còn khả dụng", 404);
       const invite = await tx.insertRoomInvite(roomId, userId, peer.user_id);
       const cooldownUntil = await tx.bumpCooldown(userId);
-      return { ...invite, cooldownUntil };
+      return { ...invite, roomId, cooldownUntil };
     });
   }
 

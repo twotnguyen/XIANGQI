@@ -21,7 +21,7 @@ export class FriendModule {
     pool: Pool,
     sessions: SessionService,
     rooms: FriendRoomPort,
-    lifecycle: { onModuleDestroy: () => Promise<void> },
+    lifecycle?: { onModuleDestroy: () => Promise<void> },
   ): DynamicModule {
     return {
       module: FriendModule,
@@ -32,7 +32,9 @@ export class FriendModule {
           useValue: new FriendService(new FriendStore(pool), rooms),
         },
         { provide: SessionService, useValue: sessions },
-        { provide: "FRIEND_POOL_LIFECYCLE", useValue: lifecycle },
+        ...(lifecycle
+          ? [{ provide: "FRIEND_POOL_LIFECYCLE", useValue: lifecycle }]
+          : []),
         {
           provide: DirectMessageService,
           useValue: new DirectMessageService(new DirectMessageStore(pool)),
