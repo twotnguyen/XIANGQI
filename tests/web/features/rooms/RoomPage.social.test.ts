@@ -91,6 +91,7 @@ it("lists spectators with capacity and confirms a kick before calling the server
   const fixture = setup(withViewers);
   await fixture.ready();
   expect(screen.getByText("Người xem 1/5")).toBeTruthy();
+  await userEvent.setup().click(screen.getByRole("button", { name: "Người xem A" }));
   await userEvent.setup().click(screen.getByRole("button", { name: "Đuổi" }));
   const dialog = screen.getByRole("dialog", { name: "Đuổi người xem" });
   expect(fixture.client.kickViewer).not.toHaveBeenCalled();

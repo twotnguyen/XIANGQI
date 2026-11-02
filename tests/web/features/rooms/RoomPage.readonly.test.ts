@@ -29,6 +29,7 @@ it("disables room management, leaving, seat changes and spectator commands on a 
   expect(screen.queryByRole("button", { name: "Cài đặt phòng" })).toBeNull();
   const user = userEvent.setup();
   await user.click(screen.getByRole("button", { name: "Quản lý ghế Đen" }));
+  await user.click(screen.getByRole("button", { name: "Người xem" }));
   for (const name of [
     "Rời phòng",
     "Xin đổi bên",

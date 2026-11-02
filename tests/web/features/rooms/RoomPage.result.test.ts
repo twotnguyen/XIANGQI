@@ -156,7 +156,7 @@ it("a disconnected client waits for a fresh authoritative result before opening 
   expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
 });
 
-it("a stale result Leave keeps the final board and modal until fresh realtime sync", async () => {
+it("a stale result Leave keeps the result modal until fresh realtime sync", async () => {
   nativeDialogStub();
   const live = playing();
   const state = terminal(live);
@@ -176,9 +176,10 @@ it("a stale result Leave keeps the final board and modal until fresh realtime sy
     .setup()
     .click(screen.getByRole("dialog").querySelectorAll("button")[1]!);
   expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
+  // Phòng tự tạo đã về WAITING: bàn cũ ẩn phía sau hộp kết quả (xem test "shows the waiting room behind the result").
   expect(
-    screen.getByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" }),
-  ).toBeTruthy();
+    screen.queryByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" }),
+  ).toBeNull();
   expect(f.refresh).toHaveBeenCalledOnce();
   expect(f.onLeft).not.toHaveBeenCalled();
   await act(async () => sync({ ...state, version: state.version + 1 }));

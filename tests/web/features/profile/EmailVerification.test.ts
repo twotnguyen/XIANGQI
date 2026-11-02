@@ -93,7 +93,7 @@ it("shows a banner for a pending email and links to settings", () => {
     }),
   );
   expect(screen.getByText(/chưa được xác minh/)).toBeTruthy();
-  expect(screen.getByRole("link").getAttribute("href")).toBe("/settings");
+  expect(screen.getByRole("link").getAttribute("href")).toBe("/settings#email");
 });
 
 it("shows a banner when the account has no email", () => {

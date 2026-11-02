@@ -155,7 +155,7 @@ it("names spectators to everyone and shows a Guest tag", async () => {
   const f = setup(viewer(), { userId: "w" });
   await f.ready();
   const panel = screen.getByRole("region", { name: "Người xem" });
-  expect(within(panel).getByText("Khách xem (Khách)")).toBeTruthy();
+  expect(within(panel).getByLabelText("Khách xem (Khách)")).toBeTruthy();
   expect(within(panel).queryByRole("button", { name: "Đuổi" })).toBeNull();
 });
 
@@ -248,10 +248,12 @@ it("tells the viewer when the host declined, not when the request merely expired
   });
   await f.ready();
   vi.useFakeTimers();
-  act(() => f.publish({
-    ...viewer({ seatRequestCooldownUntil: "2026-10-11T00:00:10Z" }),
-    version: 10,
-  }));
+  await act(async () => {
+    f.publish({
+      ...viewer({ seatRequestCooldownUntil: "2026-10-11T00:00:10Z" }),
+      version: 10,
+    });
+  });
   expect(screen.getByText("Chủ phòng đã từ chối yêu cầu ngồi ghế.")).toBeTruthy();
   act(() => vi.advanceTimersByTime(2999));
   expect(screen.getByText("Chủ phòng đã từ chối yêu cầu ngồi ghế.")).toBeTruthy();
@@ -270,6 +272,7 @@ it("locks Mời xuống ghế for the host 10 s after an unanswered invite times
     },
   });
   const f = setup(state, { userId: "a" });
+  await act(async () => {});
   act(() => {
     f.reconnect();
     f.publish(state);
