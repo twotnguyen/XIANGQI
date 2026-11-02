@@ -362,10 +362,10 @@ export class FriendTx {
     return Boolean(row);
   }
 
-  async isRoomPlayer(roomId: string, userId: string): Promise<boolean> {
+  async isRoomMember(roomId: string, userId: string): Promise<boolean> {
     const row = (
       await this.client.query(
-        `SELECT 1 FROM public.room_members WHERE room_id=$1 AND user_id=$2 AND role='PLAYER'`,
+        `SELECT 1 FROM public.room_members WHERE room_id=$1 AND user_id=$2 AND (role='PLAYER' OR (role='SPECTATOR' AND (disconnected_at IS NULL OR disconnected_at + interval '5 minutes' > clock_timestamp())))`,
         [roomId, userId],
       )
     ).rows[0];

@@ -192,8 +192,8 @@ export class FriendService {
       await tx.expireStale();
       if (!(await tx.areFriends(userId, peer.user_id)))
         fail("FRIEND_MISSING", "Chỉ mời bạn bè của bạn", 403);
-      if (!(await tx.isRoomPlayer(roomId, userId)))
-        fail("FRIEND_INVITE_FORBIDDEN", "Chỉ người ngồi ghế được mời", 403);
+      if (!(await tx.isRoomMember(roomId, userId)))
+        fail("FRIEND_INVITE_FORBIDDEN", "Chỉ người trong phòng được mời", 403);
       if (!(await tx.isOnline(peer.user_id)))
         fail("FRIEND_OFFLINE", "Bạn bè đang ngoại tuyến", 409);
       if (await tx.isBusy(peer.user_id))

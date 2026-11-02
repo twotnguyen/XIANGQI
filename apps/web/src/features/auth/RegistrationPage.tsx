@@ -689,9 +689,7 @@ export function RegistrationPage({
                   (rateLimited || expirySeconds === 0))
               }
             >
-              {busy ? (
-                "Đang xử lý…"
-              ) : step === 1 ? (
+              {step === 1 ? (
                 <>
                   Tiếp tục: Nhập Email <span aria-hidden="true">❯</span>
                 </>
@@ -773,31 +771,56 @@ export function RegistrationPage({
           open={confirmSkip}
           title="Bỏ qua xác minh email?"
           onClose={() => setConfirmSkip(false)}
-          cancelLabel="Đóng"
+          className="confirm-skip-dialog"
+          footer={
+            <div className="confirm-skip-actions">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setConfirmSkip(false);
+                  void skip();
+                }}
+              >
+                Vẫn bỏ qua
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setConfirmSkip(false);
+                  setStep(2);
+                  setError("");
+                  setAttempted(false);
+                }}
+              >
+                Thêm email
+              </Button>
+            </div>
+          }
         >
-          <p>
-            Nếu không có email đã xác minh, bạn sẽ không thể khôi phục mật khẩu.
-          </p>
-          <div className="xq-stack">
-            <Button
-              onClick={() => {
-                setConfirmSkip(false);
-                void skip();
-              }}
-            >
-              Vẫn bỏ qua
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setConfirmSkip(false);
-                setStep(2);
-                setError("");
-                setAttempted(false);
-              }}
-            >
-              Thêm email
-            </Button>
+          <div className="confirm-skip-body">
+            <div className="confirm-skip-icon-wrap" aria-hidden="true">
+              <svg
+                className="confirm-skip-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="M12 8v4" />
+                <circle cx="12" cy="16" r="0.75" fill="currentColor" />
+              </svg>
+            </div>
+            <div className="confirm-skip-content">
+              <p className="confirm-skip-msg">
+                Nếu không có email đã xác minh, bạn sẽ không thể khôi phục mật khẩu.
+              </p>
+              <p className="confirm-skip-sub">
+                Bạn vẫn có thể liên kết email sau này trong phần Cài đặt tài khoản.
+              </p>
+            </div>
           </div>
         </Dialog>
       </div>

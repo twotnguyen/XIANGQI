@@ -13,6 +13,7 @@ import {
 
 afterEach(() => {
   cleanup();
+  sessionStorage.removeItem("xiangqi.email-banner-dismissed");
 });
 
 const pending: EmailStatusState = {
@@ -110,6 +111,16 @@ it("shows a banner when the account has no email", () => {
     }),
   );
   expect(screen.getByText(/Tài khoản chưa có email/)).toBeTruthy();
+});
+
+it("dismisses the email reminder across remounts in the same tab", async () => {
+  const props = { status: pending, reloadEmailStatus: vi.fn() };
+  const view = render(createElement(EmailStatusBanner, props));
+  await userEvent.setup().click(screen.getByRole("button", { name: "Đóng thông báo" }));
+  expect(screen.queryByText(/chưa được xác minh/)).toBeNull();
+  view.unmount();
+  render(createElement(EmailStatusBanner, props));
+  expect(screen.queryByText(/chưa được xác minh/)).toBeNull();
 });
 
 it("renders nothing for a verified email", () => {

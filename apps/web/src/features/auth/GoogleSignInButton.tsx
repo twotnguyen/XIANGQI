@@ -186,11 +186,11 @@ export function GoogleSignInButton({
     >
       <div ref={host} hidden={state !== "ready" || disabled} />
       {state === "loading" && !disabled && (
-        <p role="status" className="xq-help">
+        <p role="status" className="xq-sr-only">
           Đang kiểm tra đăng nhập Google…
         </p>
       )}
-      {state === "sending" && <p role="status">Đang xác thực Google…</p>}
+      {state === "sending" && <p className="xq-sr-only" role="status">Đang xác thực Google…</p>}
       {state === "disabled" && (
         <Button
           variant="secondary"

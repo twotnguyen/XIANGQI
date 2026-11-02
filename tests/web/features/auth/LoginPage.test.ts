@@ -63,16 +63,22 @@ it("prevents a password-login request while Google authentication is in flight",
         ),
     }),
   );
-  fireEvent.change(screen.getByLabelText("Tên đăng nhập (Username)"), {
-    target: { value: "KyThu" },
-  });
+  fireEvent.change(
+    screen.getByLabelText("Tên đăng nhập hoặc email đã xác minh"),
+    {
+      target: { value: "KyThu" },
+    },
+  );
   fireEvent.change(screen.getByLabelText("Mật khẩu", { exact: true }), {
     target: { value: "Password123" },
   });
   fireEvent.click(screen.getByText("Google inflight"));
   expect(
-    (screen.getByLabelText("Tên đăng nhập (Username)") as HTMLInputElement)
-      .disabled,
+    (
+      screen.getByLabelText(
+        "Tên đăng nhập hoặc email đã xác minh",
+      ) as HTMLInputElement
+    ).disabled,
   ).toBe(true);
   fireEvent.submit(screen.getByRole("form", { name: "Đăng nhập tài khoản" }));
   expect(request).not.toHaveBeenCalled();
@@ -81,7 +87,10 @@ async function fill(
   user: ReturnType<typeof userEvent.setup>,
   username = "KYTHU",
 ) {
-  await user.type(screen.getByLabelText("Tên đăng nhập (Username)"), username);
+  await user.type(
+    screen.getByLabelText("Tên đăng nhập hoặc email đã xác minh"),
+    username,
+  );
   await user.type(
     screen.getByLabelText("Mật khẩu", { exact: true }),
     "password123",
@@ -120,6 +129,19 @@ it("sends username case intact and the checked default, with cookies; delegates 
       ([key, value]) => key === "xiangqi.tab" && /^[a-f0-9-]{36}$/.test(value),
     ),
   ).toBe(true);
+});
+it("submits a verified email through the password login endpoint", async () => {
+  const request = vi.fn().mockResolvedValue(reply(session));
+  vi.stubGlobal("fetch", request);
+  const onLoggedIn = vi.fn();
+  const user = userEvent.setup();
+  render(createElement(LoginPage, { onLoggedIn }));
+  await fill(user, "player@example.com");
+  await user.click(screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }));
+  await vi.waitFor(() => expect(onLoggedIn).toHaveBeenCalled());
+  expect(JSON.parse(request.mock.calls[0]![1].body).username).toBe(
+    "player@example.com",
+  );
 });
 it("sends the unchecked remember choice through the same-origin API", async () => {
   const request = vi.fn().mockResolvedValue(reply(session));
@@ -177,18 +199,13 @@ it.each(["LOGIN_INVALID", "UNKNOWN_USER"])(
     expect(onLoggedIn).not.toHaveBeenCalled();
   },
 );
-it("does not accept email as a username or send an empty form", async () => {
+it("does not send an empty form", async () => {
   const request = vi.fn();
   vi.stubGlobal("fetch", request);
   const user = userEvent.setup();
   render(createElement(LoginPage, { onLoggedIn: vi.fn() }));
   await user.click(screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }));
   expect(await screen.findByRole("alert")).toBeTruthy();
-  await fill(user, "player@example.test");
-  await user.click(screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }));
-  expect(screen.getByRole("alert").textContent).toContain(
-    "Sai tên đăng nhập hoặc mật khẩu",
-  );
   expect(request).not.toHaveBeenCalled();
 });
 it("shows the exact blocked message and never grants a blocked login", async () => {
@@ -250,7 +267,7 @@ it("blocks double submissions while pending and preserves the posted remember ch
   await user.click(screen.getByRole("button", { name: "Đăng nhập vào Sảnh" }));
   expect(
     screen
-      .getByRole("button", { name: "Đang xử lý…" })
+      .getByRole("button", { name: "Đăng nhập vào Sảnh" })
       .getAttribute("aria-disabled"),
   ).toBe("true");
   await user.keyboard("{Enter}{Enter}");

@@ -97,7 +97,7 @@ export function ThemeSettings({
           </label>
         ))}
       </div>
-      <p role="status" aria-live="polite" className="xq-profile-theme-status">
+      <p role="status" aria-live="polite" className="xq-sr-only">
         {saving ? "Đang lưu giao diện…" : null}
       </p>
       {error ? (

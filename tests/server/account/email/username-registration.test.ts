@@ -199,7 +199,7 @@ describe.skipIf(!databaseUrl)("username registration without email", () => {
   });
 
   it("resolves the verified contact email back to the same account for collision checks", async () => {
-    const { registration, store } = service();
+    const { registration, store, auth } = service();
     const result = await registration.register({
       username: "Mai" + randomUUID().slice(0, 8),
       password: "fake-password-fixture",
@@ -215,12 +215,35 @@ describe.skipIf(!databaseUrl)("username registration without email", () => {
       },
       "synthetic-email-test-secret",
     );
+    const loginStore = new PostgresLoginStore(pool);
     await email.send(result.userId, { email: "mai-contact@example.invalid" });
+    expect(
+      await loginStore.accountByVerifiedEmail("mai-contact@example.invalid"),
+    ).toBeNull();
     await email.verify(result.userId, { otp: captured[0]!.otp });
 
     const owner = await store.accountByEmail("mai-contact@example.invalid");
     expect(owner?.userId).toBe(result.userId);
     // Credential email trả về vẫn là email kỹ thuật của Auth.
     expect(owner?.email).toMatch(/@username\.xiangqi\.invalid$/);
+    const login = new LoginService(
+      loginStore,
+      {
+        signInPassword: (credentialEmail) =>
+          auth.signInPassword(credentialEmail),
+      },
+      new SessionService(loginStore, { verifyAccessToken: unused }),
+      () => new Date(),
+      0,
+    );
+    expect(
+      (
+        await login.login({
+          username: "MAI-CONTACT@EXAMPLE.INVALID",
+          password: "fake-password-fixture",
+        })
+      ).userId,
+    ).toBe(result.userId);
+    expect(await loginStore.accountByVerifiedEmail(owner!.email)).toBeNull();
   });
 });

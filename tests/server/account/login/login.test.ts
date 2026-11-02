@@ -99,6 +99,7 @@ describe.skipIf(!url)(
         "20261011000005_google_guest.sql",
         "20261029000001_username_account_email.sql",
         "20261031000001_session_devices.sql",
+        "20261103000013_login_email.sql",
       ]) {
         const client = await pool.connect();
         try {
@@ -153,6 +154,49 @@ describe.skipIf(!url)(
       expect(
         await sessions.requireActive(result.access_token, result.appSession),
       ).toBe(result.userId);
+    });
+    it("uses the verified email and username as one password lockout", async () => {
+      const email = "LOGIN-FIXTURE@EXAMPLE.INVALID";
+      const result = await login.login({
+        username: email,
+        password: "password123",
+      });
+      expect(result.username).toBe("TestPlayer");
+      const failures = await Promise.all(
+        [email, "TestPlayer", email, "TestPlayer", email].map((username) =>
+          login.login({ username, password: "wrong" }).catch((error) => error),
+        ),
+      );
+      expect(failures.map((error) => error.code).sort()).toEqual([
+        "LOGIN_INVALID",
+        "LOGIN_INVALID",
+        "LOGIN_INVALID",
+        "LOGIN_INVALID",
+        "LOGIN_LOCKED",
+      ]);
+      await expect(
+        login.login({ username: "TestPlayer", password: "password123" }),
+      ).rejects.toMatchObject({ code: "LOGIN_LOCKED" });
+      clock = new Date("2026-10-11T00:15:00Z");
+      await login.login({ username: "TestPlayer", password: "password123" });
+    });
+
+    it("locks an unknown email without storing the email address", async () => {
+      const username = "missing@example.invalid";
+      for (let i = 0; i < 4; i++)
+        await expect(
+          login.login({ username, password: "wrong" }),
+        ).rejects.toMatchObject({ code: "LOGIN_INVALID" });
+      await expect(
+        login.login({ username, password: "wrong" }),
+      ).rejects.toMatchObject({ code: "LOGIN_LOCKED" });
+      const rows = await pool.query(
+        "SELECT username_key FROM xiangqi_auth.login_attempts WHERE username_key LIKE 'email:%'",
+      );
+      expect(rows.rows.some((row) => row.username_key.includes(username))).toBe(
+        false,
+      );
+      expect(rows.rowCount).toBeGreaterThan(0);
     });
     it("counts concurrent mixed-case failures for existing and unknown usernames and blocks correct passwords until exactly fifteen minutes", async () => {
       for (const username of ["TESTPLAYER", "UnknownPlayer"]) {

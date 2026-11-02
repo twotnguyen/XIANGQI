@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button, Notice } from "../../shared/ui/primitives.js";
 import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
 import type { EmailStatusState } from "../../shared/account-email.js";
@@ -12,6 +13,9 @@ export function EmailStatusBanner({
   status: EmailStatusState;
   reloadEmailStatus: () => Promise<void>;
 }) {
+  const [dismissed, setDismissed] = useState(
+    () => sessionStorage.getItem("xiangqi.email-banner-dismissed") === "1",
+  );
   if (status.status === "idle" || status.status === "loading") return null;
   if (status.status === "error")
     return (
@@ -26,9 +30,14 @@ export function EmailStatusBanner({
       />
     );
   if (status.emailVerified) return null;
+  if (dismissed) return null;
   const { pendingEmail, email } = status;
   return (
     <Notice
+      onDismiss={() => {
+        sessionStorage.setItem("xiangqi.email-banner-dismissed", "1");
+        setDismissed(true);
+      }}
       message={
         pendingEmail
           ? `Email ${pendingEmail} chưa được xác minh. Nhập mã OTP để hoàn tất.`
@@ -37,7 +46,7 @@ export function EmailStatusBanner({
             : "Tài khoản chưa có email. Thêm và xác minh email trong Cài đặt."
       }
       action={
-        <NavigationLink href="/settings">
+        <NavigationLink href="/settings#email">
           {pendingEmail || email ? "Xác minh email" : "Thêm email"}
         </NavigationLink>
       }

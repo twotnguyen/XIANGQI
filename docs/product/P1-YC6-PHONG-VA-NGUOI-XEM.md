@@ -27,7 +27,7 @@ Nguồn:
 | Quyền truy cập | PUBLIC/CODE_ONLY/LOCKED, Host quản lý, xoay mã khi mở khóa | CODE_ONLY không phải phòng có mật khẩu hoặc chỉ dành bạn bè |
 | Sảnh | Tối đa 50 phòng PUBLIC, nút Vào chơi/Vào xem, cập nhật ≤2 giây | Không thêm queue Casual/Ranked, tìm kiếm/lọc/phân trang nếu chưa duyệt |
 | Sức chứa | 2 ghế + 0–5 chỗ xem; kiểm server, giữ chỗ trong hạn | Không tăng trần hoặc đổi viewerLimit sau tạo |
-| Chuyển vai trò | Người chơi không phải Host xuống xem; Host chuyển người kia/mời người xem xuống ghế | Không hoán đổi trực tiếp, không tự ngồi (chỉ Xin ngồi chờ Host duyệt, mục 17), không đổi vai trong ACTIVE |
+| Chuyển vai trò | Người chơi xuống xem; Host xuống xem khi còn người chơi khác và chuyển quyền Host cho người đó | Không hoán đổi trực tiếp, không tự ngồi (chỉ Xin ngồi chờ Host duyệt, mục 17), không đổi vai trong ACTIVE |
 | Kick | Cả hai người chơi được đuổi người xem; chặn danh tính tới CLOSED | Không đuổi đối thủ giữa ván bằng nút Kick, không ban toàn hệ thống |
 | Đồng bộ | Người xem nhận bàn/lượt/clock/kết quả đúng quyền | Không độ trễ cố ý, không nhận quyền chơi |
 | Chat/media | Thu hồi/cấp lại quyền theo vai trò, Kênh Chung cho người xem | YC7 phụ trách transport/filter/media; lỗi media không dừng ván |
@@ -127,14 +127,14 @@ Danh sách tên/số đếm cần nhất quán với chỗ được giữ, khôn
 
 ### 7.1 Người chơi tự xuống xem
 
-Chỉ người chơi không phải Host, phòng WAITING/sau ván đã về WAITING, chưa đếm bắt đầu, còn chỗ xem. Thành công:
+Người chơi, kể cả Host nếu còn người chơi khác, trong phòng WAITING/sau ván đã về WAITING, chưa đếm bắt đầu, còn chỗ xem. Host chuyển quyền cho người chơi còn lại, giữ nguyên phe của người đó. Thành công:
 
 1. Chuyển membership thành SPECTATOR, bỏ phe/Ready và giải phóng reservation ghế đúng phòng.
 2. Reset Sẵn sàng của đối thủ (Host không có Sẵn sàng, YC2 mục 21.1), hủy countdown/đề nghị ghế hoặc đổi bên không còn hợp lệ.
 3. Mất quyền điều khiển ván và đọc/gửi Kênh Riêng; cập nhật token/track media, không giữ quyền phát cũ.
 4. Tăng phiên bản/phát snapshot sau commit; không xóa toàn bộ chat chung hoặc reset ván cũ sai vòng đời.
 
-Nút của Host ẩn. Với người chơi có quyền tự xuống nhưng N=0/đầy chỗ, nút **disabled kèm lý do “Phòng không còn chỗ cho người xem”**, không biến mất khiến người dùng không biết vì sao.
+Host ngồi một mình không thể xuống xem. Với người chơi có quyền tự xuống nhưng N=0/đầy chỗ, nút **disabled kèm lý do “Phòng không còn chỗ cho người xem”**, không biến mất khiến người dùng không biết vì sao.
 
 ### 7.2 Host chuyển người chơi kia
 
@@ -219,7 +219,7 @@ Thay cặp ghế tạo mốc chat riêng mới, người mới không đọc tin
 
 - Sảnh: danh sách gọn, hiển thị đúng cột/nút; desktop dùng vùng danh sách cuộn nội bộ khi dài, mobile thẻ gọn không cuộn ngang. Không đẩy luật chơi mở rộng và 50 phòng thành trang buộc cuộn dài mặc định.
 - Phòng: panel Người xem x/N, danh sách tối đa 5; hành động theo vai trò, không thêm page quản trị riêng. Cài đặt tái sử dụng modal hiện có, mức giờ/trần xem chỉ đọc.
-- Phân biệt quyền không có với hành động tạm không khả dụng: người xem không thấy Kick; Host không thấy tự xuống; người chơi hết chỗ xem thấy disabled có lý do.
+- Phân biệt quyền không có với hành động tạm không khả dụng: người xem không thấy Kick; Host một mình không thể tự xuống; người chơi hết chỗ xem thấy disabled có lý do.
 - SUCCESS đồng bộ từ server; LOADING khóa gửi lặp; EMPTY giải thích và đường Tạo phòng; ERROR giữ thông tin và có thử lại; DISABLED có lý do truy cập được bằng bàn phím/chạm, không chỉ tooltip hover.
 - Người nhận mời ghế dùng được bằng bàn phím, deadline rõ; khung nonmodal không trap focus, chỉ Chấp nhận/Từ chối, không X/Esc riêng theo BA0.24.
 - Confirm kick/khóa không chồng modal; Hủy an toàn, tên mục tiêu là text thuần. Thông báo tạm không che bàn/Đầu hàng; focus không mất sau cập nhật danh sách.
