@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { expect, it, vi } from "vitest";
-import { act, screen, within } from "@testing-library/react";
+import { act, fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { RoomSnapshot } from "@xiangqi/shared";
 import { setup, snapshot, useRoomPageHooks } from "./RoomPage.test-helper.js";
@@ -103,7 +103,7 @@ it("shows the host each request with the name, a countdown and Đồng ý / Từ
     userId: "a",
   });
   await f.ready();
-  const list = screen.getByRole("list", { name: "Yêu cầu xin ngồi ghế" });
+  const list = screen.getByRole("group", { name: "Yêu cầu xin ngồi ghế" });
   expect(
     within(list).getByText("Khách xem (Khách) xin ngồi ghế · còn 30 giây"),
   ).toBeTruthy();
@@ -175,6 +175,7 @@ it("confirms Mời rời ghế by side, sends the command and cancel sends nothi
   const f = setup(state, { userId: "a" });
   await f.ready();
   const user = userEvent.setup();
+  await user.click(screen.getByRole("button", { name: "Quản lý ghế Đen" }));
   await user.click(screen.getByRole("button", { name: "Mời rời ghế" }));
   const dialog = screen.getByRole("dialog", { name: "Mời rời ghế" });
   expect(
@@ -246,13 +247,16 @@ it("tells the viewer when the host declined, not when the request merely expired
     userId: "w",
   });
   await f.ready();
-  f.publish({
+  vi.useFakeTimers();
+  act(() => f.publish({
     ...viewer({ seatRequestCooldownUntil: "2026-10-11T00:00:10Z" }),
     version: 10,
-  });
-  expect(
-    await screen.findByText("Chủ phòng đã từ chối yêu cầu ngồi ghế."),
-  ).toBeTruthy();
+  }));
+  expect(screen.getByText("Chủ phòng đã từ chối yêu cầu ngồi ghế.")).toBeTruthy();
+  act(() => vi.advanceTimersByTime(2999));
+  expect(screen.getByText("Chủ phòng đã từ chối yêu cầu ngồi ghế.")).toBeTruthy();
+  act(() => vi.advanceTimersByTime(1));
+  expect(screen.queryByText("Chủ phòng đã từ chối yêu cầu ngồi ghế.")).toBeNull();
 });
 
 it("locks Mời xuống ghế for the host 10 s after an unanswered invite times out", async () => {
@@ -273,6 +277,7 @@ it("locks Mời xuống ghế for the host 10 s after an unanswered invite times
   act(() => {
     vi.advanceTimersByTime(3000);
   });
+  fireEvent.click(screen.getByRole("button", { name: "Xem một" }));
   const [first] = screen.getAllByRole("button", { name: "Mời xuống ghế" });
   expect(first!.getAttribute("aria-disabled")).toBe("true");
   expect(screen.getAllByText("Chờ 9 giây để mời lại.").length).toBeGreaterThan(

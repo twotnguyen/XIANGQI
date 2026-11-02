@@ -172,7 +172,7 @@
 }
 .xq-notice {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-3);
   padding: var(--space-4);
   border: 1px solid currentColor;
@@ -180,7 +180,7 @@
   overflow-wrap: anywhere;
   flex-wrap: wrap;
 }
-.xq-notice > span {
+.xq-notice > span:not(.xq-button-group) {
   flex: 1;
   min-inline-size: min(100%, 160px);
 }

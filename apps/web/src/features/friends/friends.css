@@ -272,25 +272,14 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.xq-room-invite-link {
-  width: 100%;
-  min-width: 0;
-  min-height: var(--touch-min);
-  padding: var(--space-2);
-  box-sizing: border-box;
-  color: var(--color-ink);
-  background: var(--color-surface-sunken);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  font: inherit;
-  font-size: var(--text-md);
-}
 .xq-friends-bell {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  min-height: var(--touch-min);
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   color: inherit;
   text-decoration: none;
 }

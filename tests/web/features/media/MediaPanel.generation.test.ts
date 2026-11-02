@@ -117,9 +117,8 @@ describe("media generation fencing", () => {
     const view = render(panel(client));
     await settle();
     await waitFor(() => expect(live.state.rooms[0]?.connected).toBe(true));
-    await userEvent
-      .setup()
-      .click(screen.getByRole("button", { name: "Tắt nhận hình/tiếng" }));
+    await userEvent.setup().click(screen.getByRole("button", { name: "Ẩn camera đối thủ" }));
+    await userEvent.setup().click(screen.getByRole("button", { name: "Tắt tiếng đối thủ" }));
     server.generation = "22222222-2222-4222-8222-222222222222";
     live.state.connectPlan = () => {
       const room = live.state.instances.at(-1)!;

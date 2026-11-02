@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { expect, it } from "vitest";
-import { screen, within } from "@testing-library/react";
+import { expect, it, vi } from "vitest";
+import { act, fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   snapshot,
@@ -18,6 +18,7 @@ it("lets the controlling host move only the opponent into the audience", async (
   expect(
     within(red).queryByRole("button", { name: "Chuyển sang người xem" }),
   ).toBeNull();
+  await userEvent.setup().click(within(black).getByRole("button", { name: "Quản lý ghế Đen" }));
   fixture.client.moveToSpectator.mockResolvedValue({
     ...snapshot,
     version: 4,
@@ -53,6 +54,7 @@ it.each([0, 1])(
       },
     });
     await fixture.ready();
+    await userEvent.setup().click(screen.getByRole("button", { name: "Quản lý ghế Đen" }));
     const button = screen.getByRole("button", {
       name: "Chuyển sang người xem",
     });
@@ -72,10 +74,42 @@ it("does not send the host action from a readonly tab", async () => {
     control: { mode: "readonly", generation: 2, reason: "superseded" },
   });
   await fixture.ready();
+  await userEvent.setup().click(screen.getByRole("button", { name: "Quản lý ghế Đen" }));
   const button = screen.getByRole("button", { name: "Chuyển sang người xem" });
   expect(button.getAttribute("aria-disabled")).toBe("true");
   await userEvent.setup().click(button);
   expect(fixture.client.moveToSpectator).not.toHaveBeenCalled();
+});
+
+it("toggles opponent actions and hides them after five seconds", async () => {
+  const fixture = setup();
+  await fixture.ready();
+  vi.useFakeTimers();
+  const piece = screen.getByRole("button", { name: "Quản lý ghế Đen" });
+  expect(screen.queryByRole("button", { name: "Mời rời ghế" })).toBeNull();
+  fireEvent.click(piece);
+  expect(screen.getByRole("button", { name: "Mời rời ghế" })).toBeTruthy();
+  fireEvent.click(piece);
+  expect(screen.queryByRole("button", { name: "Mời rời ghế" })).toBeNull();
+  fireEvent.click(piece);
+  act(() => vi.advanceTimersByTime(4999));
+  expect(screen.getByRole("button", { name: "Mời rời ghế" })).toBeTruthy();
+  act(() => vi.advanceTimersByTime(1));
+  expect(screen.queryByRole("button", { name: "Mời rời ghế" })).toBeNull();
+});
+
+it("keeps opponent actions available while navigating them by keyboard", async () => {
+  const fixture = setup();
+  await fixture.ready();
+  vi.useFakeTimers();
+  fireEvent.click(screen.getByRole("button", { name: "Quản lý ghế Đen" }));
+  const action = screen.getByRole("button", { name: "Mời rời ghế" });
+  fireEvent.focus(action);
+  act(() => vi.advanceTimersByTime(5000));
+  expect(screen.getByRole("button", { name: "Mời rời ghế" })).toBeTruthy();
+  fireEvent.blur(action);
+  act(() => vi.advanceTimersByTime(5000));
+  expect(screen.queryByRole("button", { name: "Mời rời ghế" })).toBeNull();
 });
 
 it.each(["non-host", "spectator", "playing", "countdown"] as const)(
@@ -95,6 +129,7 @@ it.each(["non-host", "spectator", "playing", "countdown"] as const)(
       },
     });
     await fixture.ready();
+    expect(screen.queryByRole("button", { name: "Quản lý ghế Đen" })).toBeNull();
     expect(
       screen.queryByRole("button", { name: "Chuyển sang người xem" }),
     ).toBeNull();

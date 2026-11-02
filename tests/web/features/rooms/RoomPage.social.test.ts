@@ -144,7 +144,7 @@ it("moves a non-host player to spectator from the viewers panel", async () => {
   await fixture.ready();
   await userEvent
     .setup()
-    .click(screen.getByRole("button", { name: "Chuyển sang xem" }));
+    .click(screen.getByRole("button", { name: "Chuyển sang xem tại chỗ 1" }));
   expect(fixture.client.toSpectator).toHaveBeenCalledWith(
     "room",
     8,
@@ -164,7 +164,6 @@ it("copies the room code or full invite URL without navigating and hides sharing
     configurable: true,
     value: { writeText: vi.fn((value: string) => void copied.push(value)) },
   });
-  await u.click(screen.getByRole("button", { name: "Mời vào phòng" }));
   await u.click(screen.getByRole("button", { name: "Sao chép mã" }));
   expect(copied).toEqual(["70521348"]);
   expect(
@@ -202,6 +201,21 @@ it("copies the room code or full invite URL without navigating and hides sharing
   });
   await waitFor(() => expect(screen.queryByText("70521348")).toBeNull());
 });
+it("lets a spectator share the room but hides the code when locked", async () => {
+  const state: RoomSnapshot = {
+    ...snapshot,
+    role: "spectator",
+    control: { mode: "readonly", generation: 1, reason: "not_allowed" },
+    room: { ...snapshot.room, visibility: "CODE_ONLY", inviteCode: "70521348" },
+  };
+  const fixture = setup(state);
+  await fixture.ready();
+  expect(screen.getByRole("button", { name: "Sao chép mã" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Sao chép link" })).toBeTruthy();
+  fixture.publish({ ...state, version: 9, room: { ...state.room, visibility: "LOCKED", inviteCode: null } });
+  await waitFor(() => expect(screen.queryByRole("button", { name: "Sao chép mã" })).toBeNull());
+});
+
 
 it("reports a rejected clipboard write without navigating or claiming success", async () => {
   const fixture = setup({
@@ -217,7 +231,6 @@ it("reports a rejected clipboard write without navigating or claiming success", 
     },
   });
   const pathBeforeCopy = window.location.href;
-  await u.click(screen.getByRole("button", { name: "Mời vào phòng" }));
   await u.click(screen.getByRole("button", { name: "Sao chép link" }));
   expect(
     await screen.findByText(

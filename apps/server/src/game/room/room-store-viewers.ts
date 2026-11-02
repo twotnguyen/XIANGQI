@@ -42,11 +42,19 @@ export class RoomViewerStore extends RoomRematchStore {
     const { r, members, member } = await this.member(s, id);
     if (r.status !== "WAITING" || member.role !== "PLAYER")
       throw new RoomError("SEAT_MOVE_DENIED", "Chỉ đổi vai khi đang chờ");
-    if (r.owner_id === s.actor.userId)
-      throw new RoomError("HOST_STAYS", "Chủ phòng không tự xuống xem");
+    const successor = r.owner_id === s.actor.userId
+      ? members.find((m) => m.role === "PLAYER" && m.user_id !== s.actor.userId)
+      : undefined;
+    if (r.owner_id === s.actor.userId && !successor)
+      throw new RoomError("HOST_STAYS", "Cần người chơi khác trước khi chủ phòng xuống xem");
     const spectators = members.filter((m) => m.role === "SPECTATOR").length;
     if (spectators >= r.viewer_limit)
       throw new RoomError("ROOM_FULL", "Phòng đã đầy");
+    if (successor)
+      await s.client.query("UPDATE public.rooms SET owner_id=$2 WHERE id=$1", [
+        id,
+        successor.user_id,
+      ]);
     await s.client.query(
       "UPDATE public.room_members SET role='SPECTATOR',side=NULL,ready=false WHERE room_id=$1 AND user_id=$2",
       [id, s.actor.userId],

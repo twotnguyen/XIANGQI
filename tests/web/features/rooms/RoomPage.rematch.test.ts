@@ -170,7 +170,7 @@ it("accepts an incoming side choice inside the result and reveals the authoritat
   expect(fixture.command).not.toHaveBeenCalled();
 });
 
-it("retains a single rematch panel in the waiting room after Stay", async () => {
+it("returns to the waiting room after Stay without a new rematch proposal panel", async () => {
   const fixture = setup(playing(), { isMember: true });
   await fixture.ready();
   fixture.publish(terminal());
@@ -178,8 +178,8 @@ it("retains a single rematch panel in the waiting room after Stay", async () => 
     .setup()
     .click(screen.getByRole("button", { name: "Ở lại phòng" }));
   expect(screen.queryByRole("dialog")).toBeNull();
-  expect(document.querySelectorAll(".xq-rematch-panel")).toHaveLength(1);
-  expect(screen.getByRole("button", { name: "Đề nghị tái đấu" })).toBeTruthy();
+  expect(document.querySelector(".xq-rematch-panel")).toBeNull();
+  expect(screen.queryByRole("button", { name: "Đề nghị tái đấu" })).toBeNull();
   expect(fixture.client.proposeRematch).not.toHaveBeenCalled();
 });
 

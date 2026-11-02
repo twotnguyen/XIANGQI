@@ -185,7 +185,7 @@ function ChatPane({
           if (pinned.current) setUnread(false);
         }}
       >
-        {state.loading && <p role="status">Đang tải tin nhắn…</p>}
+        {state.loading && <p className="xq-sr-only" role="status">Đang tải tin nhắn…</p>}
         {!state.loading &&
           !state.error && state.scopeToken && state.messages.length === 0 && (
             <p className="room-chat__note">Chưa có tin nhắn.</p>
@@ -269,8 +269,8 @@ function ChatPane({
         {connected && !state.canSend && (
           <p className="room-chat__note">Bạn chỉ có quyền đọc ở kênh này.</p>
         )}
-        {busy && <p role="status">Đang gửi…</p>}
-        {status === "sent" && <p role="status">Đã gửi</p>}
+        {busy && <p className="xq-sr-only" role="status">Đang gửi…</p>}
+        {status === "sent" && <p className="xq-sr-only" role="status">Đã gửi</p>}
         {error && (
           <div>
             <p role="alert">{error}</p>

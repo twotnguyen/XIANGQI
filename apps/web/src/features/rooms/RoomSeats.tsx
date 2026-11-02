@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Button, Dialog } from "../../shared/ui/primitives.js";
 import type { RoomView } from "./room-client.js";
 
@@ -45,6 +45,13 @@ export function RoomSeats({
   onInviteLeave?: (userId: string) => void;
 }) {
   const [leaving, setLeaving] = useState<string | null>(null);
+  const [openSeat, setOpenSeat] = useState<string | null>(null);
+  const [actionsFocused, setActionsFocused] = useState(false);
+  useEffect(() => {
+    if (!openSeat || actionsFocused) return;
+    const timer = window.setTimeout(() => setOpenSeat(null), 5000);
+    return () => window.clearTimeout(timer);
+  }, [openSeat, actionsFocused]);
   const leavingPlayer =
     leaving === room.seats.red
       ? room.seatPlayers?.red
@@ -88,9 +95,21 @@ export function RoomSeats({
                 Phe {label} ({side === "red" ? "Đi trước" : "Đi sau"})
               </span>
             )}
-            <span className="xq-seat-piece" aria-hidden="true">
-              {side === "red" ? "帥" : "將"}
-            </span>
+            {canMoveOpponent && (room.kind ?? "CUSTOM") === "CUSTOM" && !playingLayout ? (
+              <button
+                type="button"
+                className="xq-seat-piece xq-seat-piece-button"
+                aria-label={`Quản lý ghế ${label}`}
+                aria-expanded={openSeat === occupant}
+                onClick={() => setOpenSeat(openSeat === occupant ? null : occupant)}
+              >
+                {side === "red" ? "帥" : "將"}
+              </button>
+            ) : (
+              <span className="xq-seat-piece" aria-hidden="true">
+                {side === "red" ? "帥" : "將"}
+              </span>
+            )}
             <div className="xq-room-seat-player">
               <h2>
                 {occupant
@@ -123,11 +142,16 @@ export function RoomSeats({
                         ? "Đã sẵn sàng"
                         : "Chưa sẵn sàng"}
             </p>
-            {!playingLayout && occupant === userId && readyControl}
-            {(room.kind ?? "CUSTOM") === "CUSTOM" && !playingLayout &&
+            {(room.kind ?? "CUSTOM") === "CUSTOM" && !playingLayout && player &&
               occupant !== userId &&
               (canMoveOpponent ? (
-                <div className="xq-room-seat-actions">
+                openSeat === occupant && <div
+                  className="xq-room-seat-actions"
+                  onFocusCapture={() => setActionsFocused(true)}
+                  onBlurCapture={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget)) setActionsFocused(false);
+                  }}
+                >
                   <Button
                     variant="secondary"
                     loading={busy}
@@ -178,8 +202,10 @@ export function RoomSeats({
           <span className="xq-room-vs" aria-hidden="true">
             VS
           </span>
-          {(room.kind ?? "CUSTOM") === "CUSTOM" && room.status === "WAITING" && player && (
-            <div className="xq-room-actions">
+          <div className="xq-room-actions">
+            <div className="xq-room-action-side">
+              {(room.kind ?? "CUSTOM") === "CUSTOM" && room.status === "WAITING" && player && (
+                <>
               {solo && room.hostId === userId && (
                 <Button
                   variant="secondary"
@@ -234,7 +260,19 @@ export function RoomSeats({
                     </Button>
                   </div>
                 )}
-              {!solo && !room.countdown && room.hostId === userId && (
+                  {swapReopenSeconds !== null && (
+                    <Button variant="secondary" onClick={onSwapReopen}>
+                      Xem đề nghị đổi bên ({swapReopenSeconds} giây)
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
+            {!playingLayout && readyControl && (
+              <div className="xq-room-ready-control">{readyControl}</div>
+            )}
+            <div className="xq-room-action-side">
+              {(room.kind ?? "CUSTOM") === "CUSTOM" && room.status === "WAITING" && player && !solo && !room.countdown && room.hostId === userId && (
                 <Button
                   variant="secondary"
                   loading={busy}
@@ -248,13 +286,8 @@ export function RoomSeats({
                   Nhường Host
                 </Button>
               )}
-              {swapReopenSeconds !== null && (
-                <Button variant="secondary" onClick={onSwapReopen}>
-                  Xem đề nghị đổi bên ({swapReopenSeconds} giây)
-                </Button>
-              )}
             </div>
-          )}
+          </div>
         </div>
       )}
       <Dialog

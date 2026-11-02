@@ -13,21 +13,15 @@ import {
 } from "./RoomPage.test-helper.js";
 useRoomPageHooks();
 
-it("keeps the authoritative final board and stops moves when the result arrives", async () => {
+it("shows the waiting room behind the result after a custom game ends", async () => {
   nativeDialogStub();
   const f = setup(playing());
   await f.ready();
   f.publish(terminal());
   expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
-  expect(
-    screen.getByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" }),
-  ).toBeTruthy();
-  expect(
-    screen.queryByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
-  ).toBeNull();
-  expect(screen.getByRole("timer", { name: "Thời gian Đỏ" }).textContent).toBe(
-    "10:00",
-  );
+  expect(screen.queryByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" })).toBeNull();
+  expect(screen.queryByRole("timer", { name: "Thời gian Đỏ" })).toBeNull();
+  expect(document.querySelector(".xq-room-page")?.className).toContain("is-waiting");
   expect(f.command).not.toHaveBeenCalled();
 });
 it("Stay closes only this result and a duplicate or reconnect cannot reopen it", async () => {
@@ -41,6 +35,9 @@ it("Stay closes only this result and a duplicate or reconnect cannot reopen it",
     .setup()
     .click(screen.getByRole("button", { name: "Ở lại phòng" }));
   expect(screen.queryByRole("dialog")).toBeNull();
+  expect(screen.queryByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" })).toBeNull();
+  expect(screen.queryByRole("timer", { name: "Thời gian Đỏ" })).toBeNull();
+  expect(screen.getByRole("region", { name: "Ghế Đỏ" })).toBeTruthy();
   f.publish({ ...state, version: state.version + 1 });
   f.disconnect();
   f.reconnect();
@@ -243,6 +240,7 @@ it("reloading into a finished room keeps the waiting layout and shows no result"
   await f.ready();
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(screen.queryByRole("region", { name: "Kết quả ván cờ" })).toBeNull();
+  expect(screen.queryByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" })).toBeNull();
   expect(document.querySelector(".xq-room-page")?.className).toContain(
     "is-waiting",
   );

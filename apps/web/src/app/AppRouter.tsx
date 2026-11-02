@@ -358,7 +358,12 @@ function Lobby({
         onRetry={() => setAttempt((value) => value + 1)}
       />
       {dialog && (
-        <Dialog open onClose={() => setDialog(false)} title="Tạo phòng">
+        <Dialog
+          open
+          onClose={() => setDialog(false)}
+          title="Tạo phòng"
+          className="xq-create-room-dialog"
+        >
           <Suspense fallback={<p role="status">Đang tải biểu mẫu…</p>}>
             <CreateRoomForm
               allowUnlimited={sessionState.status === "active-member"}
@@ -1018,6 +1023,7 @@ export function AppRouter() {
           active={location.pathname}
           authorizedFetch={session.state.status === "active-member" ? session.authorizedFetch : undefined}
           ratingRevision={ratingRevision}
+          ratingUserId={memberId}
           user={shellUser}
           bell={
             session.state.status === "active-member" ? (

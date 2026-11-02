@@ -72,7 +72,7 @@ export function viewerActionMessage(error: unknown) {
     case "SEAT_FULL":
       return "Ghế đã đủ hai người chơi.";
     case "HOST_STAYS":
-      return "Chủ phòng không tự chuyển xuống xem.";
+      return "Cần người chơi khác trước khi chủ phòng xuống xem.";
     case "KICK_DENIED":
       return "Chỉ người chơi được đuổi người xem.";
     case "SEAT_MOVE_DENIED":

@@ -293,11 +293,11 @@ export function DirectChatDialog({
               disabled={loadingOlder}
               onClick={() => void loadOlder()}
             >
-              {loadingOlder ? "Đang tải…" : "Tải tin cũ"}
+              Tải tin cũ
             </Button>
           ) : null}
           {messages === null ? (
-            !loadFailed && <p className="xq-dm__status">Đang tải…</p>
+            !loadFailed && <p role="status" className="xq-sr-only">Đang tải…</p>
           ) : messages.length === 0 && !revoked && !loadFailed ? (
             <p className="xq-dm__status">Chưa có tin nhắn.</p>
           ) : (

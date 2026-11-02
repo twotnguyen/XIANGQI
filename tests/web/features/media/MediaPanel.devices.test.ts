@@ -18,6 +18,37 @@ const cases = (["OPPONENT", "ALL"] as const).flatMap((level) =>
 );
 
 describe("independent media device updates", () => {
+  it.each(["camera", "mic"] as const)("keeps opponent video and audio while starting %s first", async (kind) => {
+    const { client } = harness();
+    const view = render(panel(client));
+    const user = userEvent.setup();
+    await settle();
+    await waitFor(() => expect(live.state.rooms[0]?.connected).toBe(true));
+    const receiver = live.state.instances[0]!;
+    let video!: HTMLElement;
+    let audio!: HTMLElement;
+    await act(async () => {
+      video = receiver.subscribe("video").element;
+      audio = receiver.subscribe("audio").element;
+    });
+    const gate = deferred<void>();
+    live.state.devicePlan = (device, enabled) =>
+      device === (kind === "camera" ? "video" : "audio") && enabled ? gate.promise : undefined;
+    await user.click(screen.getByRole("button", { name: `Bật ${kind}` }));
+    expect(receiver.record.connected).toBe(true);
+    expect(view.container.contains(video)).toBe(true);
+    expect(view.container.contains(audio)).toBe(true);
+    await act(async () => gate.resolve());
+    await settle();
+    expect(receiver.record.connected).toBe(true);
+    expect(view.container.contains(video)).toBe(true);
+    expect(view.container.contains(audio)).toBe(true);
+    await user.click(screen.getByRole("button", { name: `Tắt ${kind}` }));
+    await settle();
+    expect(receiver.record.connected).toBe(true);
+    expect(view.container.contains(video)).toBe(true);
+    expect(view.container.contains(audio)).toBe(true);
+  });
   it("keeps a stop control outside the hidden camera panel without interrupting capture", async () => {
     const { client } = harness();
     const host = document.createElement("div");
@@ -130,14 +161,14 @@ describe("independent media device updates", () => {
       await settle();
       await user.click(screen.getByRole("button", { name: `Bật ${first}` }));
       await settle();
-      const rooms = live.state.rooms.filter((room) => room.connected);
+      const rooms = live.state.rooms.filter((room) => room.connected && room.tracks.length > 0);
       const tracks = rooms.map((room) => room.tracks[0]!);
       const localVideo = view.container.querySelector(
         '[aria-label="Camera của bạn"]',
       );
       let opponentVideo!: HTMLElement;
       await act(async () => {
-        opponentVideo = live.state.instances[1]!.subscribe("video").element;
+        opponentVideo = live.state.instances[0]!.subscribe("video").element;
       });
       const other = first === "camera" ? "mic" : "camera";
       const gate = deferred<void>();
@@ -155,7 +186,7 @@ describe("independent media device updates", () => {
         ).toBe(localVideo);
       await act(async () => gate.resolve());
       await settle();
-      expect(live.state.rooms.filter((room) => room.connected)).toEqual(rooms);
+      expect(live.state.rooms.filter((room) => room.connected && room.tracks.length > 0)).toEqual(rooms);
       expect(rooms.every((room) => room.camera && room.mic)).toBe(true);
       await user.click(screen.getByRole("button", { name: `Tắt ${other}` }));
       await settle();
@@ -180,7 +211,7 @@ describe("independent media device updates", () => {
       await settle();
       await user.click(screen.getByRole("button", { name: `Bật ${first}` }));
       await settle();
-      const rooms = live.state.rooms.filter((room) => room.connected);
+      const rooms = live.state.rooms.filter((room) => room.connected && room.tracks.length > 0);
       const other = first === "camera" ? "mic" : "camera";
       const otherKind = other === "camera" ? "video" : "audio";
       const gate = deferred<void>();
@@ -210,7 +241,7 @@ describe("independent media device updates", () => {
             1,
         ),
       ).toBe(true);
-      expect(live.state.rooms.filter((room) => room.connected)).toEqual(rooms);
+      expect(live.state.rooms.filter((room) => room.connected && room.tracks.length > 0)).toEqual(rooms);
     },
   );
 
@@ -223,7 +254,7 @@ describe("independent media device updates", () => {
       await settle();
       await user.click(screen.getByRole("button", { name: `Bật ${first}` }));
       await settle();
-      const rooms = live.state.rooms.filter((room) => room.connected);
+      const rooms = live.state.rooms.filter((room) => room.connected && room.tracks.length > 0);
       const tracks = rooms.map((room) => room.tracks[0]!);
       const video = view.container.querySelector(
         '[aria-label="Camera của bạn"]',
@@ -268,7 +299,7 @@ describe("independent media device updates", () => {
       await settle();
       await user.click(screen.getByRole("button", { name: "Bật camera" }));
       await settle();
-      const rooms = live.state.rooms.filter((room) => room.connected);
+      const rooms = live.state.rooms.filter((room) => room.connected && room.tracks.length > 0);
       const gate = deferred<void>();
       live.state.devicePlan = (kind, enabled) =>
         kind === "audio" && enabled ? gate.promise : undefined;

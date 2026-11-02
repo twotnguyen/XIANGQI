@@ -318,7 +318,7 @@ export class MediaAccess {
           const { level } = await this.shareIn(tx, roomId, userId);
           const privateToken = await mint(
             this.config,
-            userId,
+            publishing ? userId : `${userId}:receive:${tabId.toLowerCase()}`,
             {
               roomJoin: true,
               room: privateRoomName(roomId, generation),

@@ -63,6 +63,7 @@ export function Button({
         {...props}
         type={props.type ?? "button"}
         className={`xq-button xq-button-${variant} ${className}`}
+        title={props.title ?? disabledReason}
         aria-disabled={blocked}
         aria-busy={loading}
         aria-describedby={
@@ -78,8 +79,7 @@ export function Button({
           onClick?.(event);
         }}
       >
-        {loading && <Icon kind="loading" />}
-        {loading ? "Đang xử lý…" : children}
+        {children}
       </button>
       {reason && (
         <span className="xq-help" id={id}>
@@ -420,6 +420,8 @@ export function Dialog({
   confirmLabel = "Xác nhận",
   cancelLabel = "Huỷ",
   dismissible = true,
+  footer,
+  className = "",
 }: {
   open: boolean;
   onClose: () => void;
@@ -430,6 +432,8 @@ export function Dialog({
   confirmLabel?: string;
   cancelLabel?: string;
   dismissible?: boolean;
+  footer?: ReactNode;
+  className?: string;
 }) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -448,7 +452,7 @@ export function Dialog({
   return (
     <dialog
       ref={dialog}
-      className="xq-dialog xq-ui"
+      className={`xq-dialog xq-ui ${className}`.trim()}
       aria-labelledby={`${id}-title`}
       aria-describedby={`${id}-content`}
       onCancel={(event) => {
@@ -496,22 +500,33 @@ export function Dialog({
         </Button>
       </header>
       <div id={`${id}-content`}>{children}</div>
-      <footer>
-        <button
-          type="button"
-          ref={cancel}
-          className="xq-button xq-button-secondary"
-          onClick={onClose}
-          disabled={!dismissible}
-        >
-          {cancelLabel}
-        </button>
-        {onConfirm && (
-          <Button variant={danger ? "danger" : "primary"} onClick={onConfirm}>
-            {confirmLabel}
-          </Button>
-        )}
-      </footer>
+      {footer !== null && (
+        <footer>
+          {footer !== undefined ? (
+            footer
+          ) : (
+            <>
+              <button
+                type="button"
+                ref={cancel}
+                className="xq-button xq-button-secondary"
+                onClick={onClose}
+                disabled={!dismissible}
+              >
+                {cancelLabel}
+              </button>
+              {onConfirm && (
+                <Button
+                  variant={danger ? "danger" : "primary"}
+                  onClick={onConfirm}
+                >
+                  {confirmLabel}
+                </Button>
+              )}
+            </>
+          )}
+        </footer>
+      )}
     </dialog>
   );
 }
