@@ -47,6 +47,22 @@ export interface ChatSent {
   sequence: number;
   createdAt: string;
 }
+/** Tin nhắn tạm: server đã kiểm quyền/định dạng nhưng database chưa lưu; chỉ để hiển thị cho đến khi tin thật về. */
+export interface ChatPreview {
+  roomId: string;
+  channel: ChatChannel;
+  commandId: string;
+  senderId: string;
+  content: string;
+  createdAt: string;
+  sender: ChatMessage["sender"];
+}
+/** Hủy tin nhắn tạm khi việc lưu thất bại. */
+export interface ChatPreviewRevert {
+  roomId: string;
+  channel: ChatChannel;
+  commandId: string;
+}
 export type ChatAcknowledgement<T> =
   | { status: "ok"; value: T }
   | { status: "error"; error: { code: string; message: string } };
@@ -78,4 +94,6 @@ export interface ServerChatEvents {
     scopeToken: string;
     canSend: boolean;
   }) => void;
+  "chat.preview": (preview: ChatPreview) => void;
+  "chat.preview.revert": (revert: ChatPreviewRevert) => void;
 }

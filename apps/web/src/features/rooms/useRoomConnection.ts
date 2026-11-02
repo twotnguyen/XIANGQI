@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
-import type { RoomSnapshot } from "@xiangqi/shared";
-import type { Position } from "@xiangqi/xiangqi-core";
+import type { ReadyPreview, RoomSnapshot } from "@xiangqi/shared";
+import { parsePosition, playMove, type Position } from "@xiangqi/xiangqi-core";
 import { useRoomChat } from "../chat/useRoomChat.js";
 import {
   RoomRequestError,
@@ -44,6 +44,7 @@ export function useRoomConnection(options: RoomConnectionOptions) {
   const [actionError, setActionError] = useState("");
   const [retryCount, setRetryCount] = useState(0);
   const [optimistic, setOptimistic] = useState<OptimisticMove | null>(null);
+  const [readyPreview, setReadyPreview] = useState<ReadyPreview | null>(null);
   const [demoEnabled, setDemoEnabled] = useState(false);
   const [demoDisconnected, setDemoDisconnected] = useState(false);
   const demoRequested = useRef(false);
@@ -63,6 +64,7 @@ export function useRoomConnection(options: RoomConnectionOptions) {
     if (commandPending.current) setBusy(false);
     commandPending.current = false;
     setOptimistic(null);
+    setReadyPreview(null);
   }
   function acceptSnapshot(value: RoomSnapshot) {
     const prior = latest.current;
@@ -112,6 +114,9 @@ export function useRoomConnection(options: RoomConnectionOptions) {
       prev && value.match && value.match.version <= prev.matchVersion
         ? prev
         : null,
+    );
+    setReadyPreview((prev) =>
+      prev && value.version > prev.version ? null : prev,
     );
     return true;
   }
@@ -223,6 +228,54 @@ export function useRoomConnection(options: RoomConnectionOptions) {
       onChatChanged: (notice) => {
         if (alive) roomChat.changed(notice);
       },
+      onMovePreview: (preview) => {
+        const current = latest.current;
+        if (
+          !alive ||
+          !current?.match ||
+          current.match.id !== preview.matchId ||
+          current.match.version !== preview.matchVersion ||
+          current.match.status !== "ACTIVE"
+        )
+          return;
+        try {
+          const position = playMove(parsePosition(current.match.position), {
+            from: preview.from,
+            to: preview.to,
+          });
+          setOptimistic({
+            position,
+            lastMove: { from: preview.from, to: preview.to },
+            matchVersion: preview.matchVersion,
+          });
+        } catch {
+          /* Nước không khớp thế cờ hiện có: chờ snapshot chính thức. */
+        }
+      },
+      onMoveRevert: (revert) => {
+        if (alive)
+          setOptimistic((prev) =>
+            prev && prev.matchVersion === revert.matchVersion ? null : prev,
+          );
+      },
+      onReadyPreview: (preview) => {
+        if (alive && latest.current?.version === preview.version)
+          setReadyPreview(preview);
+      },
+      onReadyRevert: (revert) => {
+        if (alive)
+          setReadyPreview((prev) =>
+            prev && prev.side === revert.side && prev.version === revert.version
+              ? null
+              : prev,
+          );
+      },
+      onChatPreview: (preview) => {
+        if (alive) roomChat.preview(preview);
+      },
+      onChatRevert: (revert) => {
+        if (alive) roomChat.revertPreview(revert);
+      },
       onDemoCapability: (enabled) => {
         if (alive) setDemoEnabled(enabled);
       },
@@ -269,6 +322,20 @@ export function useRoomConnection(options: RoomConnectionOptions) {
       if (connection.current === peer) connection.current = null;
     };
   }, [roomId, client, getProof, connect, retryCount]);
+  // Sẵn sàng tạm chỉ áp dụng khi cùng phiên bản phòng với bản chính thức đang giữ.
+  const shownView =
+    view && readyPreview && view.version === readyPreview.version
+      ? {
+          ...view,
+          room: {
+            ...view.room,
+            ready: {
+              ...view.room.ready,
+              [readyPreview.side]: readyPreview.ready,
+            },
+          },
+        }
+      : view;
   return {
     demoEnabled,
     demoDisconnected,
@@ -294,7 +361,7 @@ export function useRoomConnection(options: RoomConnectionOptions) {
       if (demoEnabled && demoDisconnected)
         connection.current?.networkDemo?.reconnect();
     },
-    view,
+    view: shownView,
     setView,
     snapshot,
     setSnapshot,
@@ -309,6 +376,8 @@ export function useRoomConnection(options: RoomConnectionOptions) {
     setActionError,
     optimistic,
     setOptimistic,
+    readyPreview,
+    setReadyPreview,
     roomChat,
     connection,
     connectedRef,

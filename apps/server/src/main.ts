@@ -26,6 +26,7 @@ let registration: Awaited<ReturnType<typeof createRegistrationRuntime>> = null;
 let media: Awaited<ReturnType<typeof createMediaRuntime>> = null;
 let rooms: Awaited<ReturnType<typeof createRoomRuntime>> = null;
 let ai: Awaited<ReturnType<typeof createAiRuntime>> = null;
+let friends: Awaited<ReturnType<typeof createFriendRuntime>> = null;
 let app: Awaited<ReturnType<typeof createApp>> | null = null;
 let closing: Promise<void> | undefined;
 let stopping = false;
@@ -49,6 +50,7 @@ function closeAll(): Promise<void> {
       () => rooms?.close(),
       () => app?.close(),
       () => media?.close(),
+      () => friends?.close(),
       () => registration?.close(),
     ];
     for (const close of steps) {
@@ -103,7 +105,7 @@ async function boot(): Promise<void> {
         : null;
     if (ai && rooms) rooms.attachAiTermination(ai.sessionTermination);
     admit();
-    const friends = await createFriendRuntime(
+    friends = await createFriendRuntime(
       process.env,
       registration,
       rooms?.friendInvites,

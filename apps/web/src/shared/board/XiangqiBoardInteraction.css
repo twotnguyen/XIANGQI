@@ -1,6 +1,5 @@
 .xq-board {
   --board-select: #d4af37;
-  --board-last-move: #1e4f7a;
   --board-check: #ef4444;
   --board-focus: #155e75;
 }
@@ -20,12 +19,15 @@
   stroke: var(--board-hint);
   stroke-width: 2.4;
 }
-.xq-board-last {
-  fill: none;
-  stroke: var(--board-last-move);
+.xq-board-last-line {
+  stroke: currentColor;
   stroke-width: 2.4;
   stroke-linecap: round;
-  filter: drop-shadow(0 1px 2px rgba(35, 18, 5, 0.4));
+}
+.xq-board-last-dot {
+  fill: currentColor;
+  stroke: var(--color-wood-edge);
+  stroke-width: 1;
 }
 
 .xq-board-last-indicators {

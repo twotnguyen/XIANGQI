@@ -109,7 +109,7 @@ it("accepts matching project configuration and a session pooler", () => {
 it("keeps the default pool sizes and accepts bounded overrides from the environment", () => {
   expect(readRegistrationConfig(configured)).toMatchObject({
     poolMax: 5,
-    loginPoolMax: 5,
+    loginPoolMax: 3,
   });
   expect(
     readRegistrationConfig({
@@ -202,6 +202,16 @@ it("refuses enabled login until its private session and counter migration exists
     createRegistrationRuntime({ ...configured, AUTH_LOGIN_ENABLED: "true" }),
   ).rejects.toThrow("Registration migration is not ready");
   expect(pool.end).toHaveBeenCalledOnce();
+});
+it("refuses enabled login when the email counter migration is missing", async () => {
+  pool.query
+    .mockResolvedValueOnce({
+      rows: [{ ready: true, canAssumeRole: true, loginReady: true }],
+    })
+    .mockResolvedValueOnce({ rows: [{ ready: false }] });
+  await expect(
+    createRegistrationRuntime({ ...configured, AUTH_LOGIN_ENABLED: "true" }),
+  ).rejects.toThrow("Registration migration is not ready");
 });
 
 it("keeps borrowed registration pools alive while actual socket disconnect teardown drains", async () => {

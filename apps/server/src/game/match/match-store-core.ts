@@ -48,7 +48,12 @@ export type RoomRow = {
   closed_at: Date | null;
   room_version: string;
 };
-type RoomMatchRow = RoomRow & { seat_side: string | null } & {
+type RoomMatchRow = RoomRow & {
+  seat_side: string | null;
+  has_draw_offers?: boolean;
+  red_undo_pending?: boolean;
+  black_undo_pending?: boolean;
+} & {
   [K in keyof MatchRow as `m_${K}`]: MatchRow[K] | null;
 };
 export const opposite = (side: Side): Side =>
@@ -121,6 +126,11 @@ export type RoomMatch = {
   room: RoomRow;
   row: MatchRow | null;
   seat: string | null;
+  proposals: {
+    hasDraw: boolean;
+    redUndo: boolean;
+    blackUndo: boolean;
+  };
 };
 const roomMatchOf = (r: RoomMatchRow): RoomMatch => {
   const room: RoomRow = {
@@ -153,7 +163,12 @@ const roomMatchOf = (r: RoomMatchRow): RoomMatch => {
           created_at: r.m_created_at,
           rule_set_version: r.m_rule_set_version,
         } as MatchRow);
-  return { room, row, seat: r.seat_side };
+  const proposals = {
+    hasDraw: Boolean(r.has_draw_offers),
+    redUndo: Boolean(r.red_undo_pending),
+    blackUndo: Boolean(r.black_undo_pending),
+  };
+  return { room, row, seat: r.seat_side, proposals };
 };
 /** Kiểm tra khóa giao dịch và quyền điều khiển trước khi đọc dữ liệu ván. */
 export function assertScope(scope: MatchScope): void {
@@ -269,7 +284,7 @@ export class MatchStoreCore {
     roomId: string,
     matchId: string,
     userId: string,
-  ): Promise<{ room: RoomRow; row: MatchRow | null; seat: string | null }> {
+  ): Promise<RoomMatch> {
     const result = await client.query<RoomMatchRow>(
       `WITH lr AS MATERIALIZED (
          SELECT id,status,current_match_id,time_control,closed_at,room_version FROM public.rooms WHERE id=$1 FOR UPDATE
@@ -284,8 +299,11 @@ export class MatchStoreCore {
          lm.version AS m_version,lm.ply AS m_ply,lm.active_move_ids AS m_active_move_ids,lm.clock AS m_clock,
          lm.time_control AS m_time_control,lm.inactivity_extensions AS m_inactivity_extensions,lm.outcome AS m_outcome,lm.ended_at AS m_ended_at,
          lm.created_at AS m_created_at,lm.rule_set_version AS m_rule_set_version,
-         (SELECT side FROM public.room_members WHERE room_id=lr.id AND user_id=$3 AND role='PLAYER') AS seat_side
-       FROM lr LEFT JOIN lm ON true`,
+        (SELECT side FROM public.room_members WHERE room_id=lr.id AND user_id=$3 AND role='PLAYER') AS seat_side,
+        EXISTS(SELECT 1 FROM xiangqi_room.match_draw_offers o WHERE o.match_id=lm.id AND o.status='PENDING') AS has_draw_offers,
+        EXISTS(SELECT 1 FROM xiangqi_room.match_undo_offers o WHERE o.match_id=lm.id AND o.status='PENDING' AND o.sender='RED') AS red_undo_pending,
+        EXISTS(SELECT 1 FROM xiangqi_room.match_undo_offers o WHERE o.match_id=lm.id AND o.status='PENDING' AND o.sender='BLACK') AS black_undo_pending
+      FROM lr LEFT JOIN lm ON true`,
       [roomId, matchId, userId],
     );
     return roomMatchOf(
@@ -508,7 +526,14 @@ export class MatchStoreCore {
       row,
     );
     const match = this.view(row, history.at(-1)!, lastMove);
-    return { room: loaded.room, row, side, history, match };
+    return {
+      room: loaded.room,
+      row,
+      side,
+      history,
+      match,
+      proposals: loaded.proposals,
+    };
   }
   async settleDeadlines(
     scope: MatchScope,

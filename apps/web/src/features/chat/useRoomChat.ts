@@ -1,5 +1,12 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
-import type { ChatChannel, ChatPage, RoomSnapshot } from "@xiangqi/shared";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import { maskForbiddenChat } from "@xiangqi/shared";
+import type {
+  ChatChannel,
+  ChatPage,
+  ChatPreview,
+  ChatPreviewRevert,
+  RoomSnapshot,
+} from "@xiangqi/shared";
 import { isSingleMove } from "../../shared/room-snapshot.js";
 import type { RoomConnection } from "../rooms/room-client.js";
 import type { ChatChanged } from "./chat-client.js";
@@ -20,6 +27,14 @@ interface Work {
   inFlight: Promise<void> | null;
   catchUp: boolean;
   retry: { id: string; content: string; scopeToken: string } | null;
+}
+interface PreviewEntry {
+  id: string;
+  channel: ChatChannel;
+  message: RoomChatChannelState["messages"][number];
+  /** Số thứ tự tin thật lớn nhất đã có lúc tin tạm xuất hiện. */
+  afterSeq: number;
+  own: boolean;
 }
 const work = (): Work => ({
   page: null,
@@ -56,6 +71,10 @@ export function useRoomChat(
   });
   const state = useRef(channels);
   const [pendingSend, setPendingSend] = useState<ChatChannel | null>(null);
+  const [previews, setPreviews] = useState<PreviewEntry[]>([]);
+  const previewTimers = useRef(
+    new Map<string, ReturnType<typeof setTimeout>>(),
+  );
   const pending = useRef<{ channel: ChatChannel } | null>(null);
   const jobs = useRef<Record<ChatChannel, Work>>({
     ROOM_PUBLIC: work(),
@@ -79,6 +98,8 @@ export function useRoomChat(
     alive.current = true;
     return () => {
       alive.current = false;
+      previewTimers.current.forEach((timer) => clearTimeout(timer));
+      previewTimers.current.clear();
       jobs.current = { ROOM_PUBLIC: work(), PLAYERS_PRIVATE: work() };
       pending.current = null;
     };
@@ -250,7 +271,86 @@ export function useRoomChat(
   function refresh(channel: ChatChannel, catchUp = false) {
     void read(channel, catchUp).catch(() => {});
   }
+  const lastSequence = (channel: ChatChannel) =>
+    Math.max(
+      0,
+      ...(state.current[channel]?.messages.map((m) => m.sequence) ?? []),
+    );
+  function addPreview(entry: PreviewEntry) {
+    setPreviews((prev) =>
+      prev.some((p) => p.id === entry.id) ? prev : [...prev, entry],
+    );
+    previewTimers.current.set(
+      entry.id,
+      setTimeout(() => dropPreview(entry.id), 15000),
+    );
+  }
+  function dropPreview(id: string) {
+    clearTimeout(previewTimers.current.get(id));
+    previewTimers.current.delete(id);
+    if (alive.current) setPreviews((prev) => prev.filter((p) => p.id !== id));
+  }
+  function dropAllPreviews() {
+    previewTimers.current.forEach((timer) => clearTimeout(timer));
+    previewTimers.current.clear();
+    if (alive.current) setPreviews([]);
+  }
+  /** Tin của người khác, server đã kiểm quyền nhưng database chưa lưu. */
+  function addRemotePreview(p: ChatPreview) {
+    if (p.roomId !== roomId || !enabled(p.channel)) return;
+    addPreview({
+      id: `${p.channel}:${p.commandId}`,
+      channel: p.channel,
+      afterSeq: lastSequence(p.channel),
+      own: false,
+      message: {
+        messageId: `preview:${p.commandId}`,
+        senderId: p.senderId,
+        roomId: p.roomId,
+        sequence: 0,
+        channel: p.channel,
+        content: p.content,
+        createdAt: p.createdAt,
+        sender: p.sender,
+      },
+    });
+  }
+  /** Hiện ngay tin của chính mình (chỉ khi biết tên hiển thị từ snapshot); trả mã để gỡ nếu gửi lỗi. */
+  function ownPreview(
+    channel: ChatChannel,
+    content: string,
+    commandId: string,
+  ) {
+    const snap = context.current.snapshot;
+    const displayName =
+      snap && snap.role !== "spectator"
+        ? snap.room.seatPlayers?.[snap.role]?.displayName
+        : undefined;
+    if (!snap || snap.role === "spectator" || !displayName) return null;
+    const entry: PreviewEntry = {
+      id: `${channel}:${commandId}`,
+      channel,
+      afterSeq: lastSequence(channel),
+      own: true,
+      message: {
+        messageId: `preview:${commandId}`,
+        roomId,
+        sequence: 0,
+        channel,
+        content: maskForbiddenChat(content),
+        createdAt: new Date().toISOString(),
+        sender: {
+          displayName,
+          isGuest: Boolean(snap.room.seatPlayers?.[snap.role]?.guest),
+          role: snap.role,
+        },
+      },
+    };
+    addPreview(entry);
+    return entry.id;
+  }
   function clear() {
+    dropAllPreviews();
     context.current = {
       snapshot: null,
       connected: false,
@@ -269,6 +369,7 @@ export function useRoomChat(
   function update(snapshot: RoomSnapshot | null, connected: boolean) {
     const prior = context.current;
     if (!connected || !snapshot) {
+      dropAllPreviews();
       context.current = { ...prior, snapshot: null, connected };
       jobs.current = { ROOM_PUBLIC: work(), PLAYERS_PRIVATE: work() };
       pending.current = null;
@@ -399,6 +500,7 @@ export function useRoomChat(
     const attempt = { channel };
     pending.current = attempt;
     setPendingSend(channel);
+    const echo = ownPreview(channel, content, w.retry.id);
     try {
       await peer.sendChat(channel, content, w.retry.id);
       if (!current(channel, w, peer))
@@ -406,6 +508,7 @@ export function useRoomChat(
       w.retry = null;
       refresh(channel, true);
     } catch (error) {
+      if (echo) dropPreview(echo);
       if (current(channel, w, peer)) revoke(channel, error);
       // eslint-disable-next-line preserve-caught-error -- UI errors must not retain private upstream details in cause.
       throw new Error(safeError(error));
@@ -416,13 +519,48 @@ export function useRoomChat(
       }
     }
   }
+  /** Tin tạm chỉ hiện khi chưa có tin thật khớp (cùng nội dung, vai, đến sau lúc tin tạm xuất hiện). */
+  const shownChannels = useMemo(() => {
+    if (!previews.length) return channels;
+    const out = { ...channels };
+    for (const channel of ["ROOM_PUBLIC", "PLAYERS_PRIVATE"] as const) {
+      const s = channels[channel];
+      if (!s?.scopeToken) continue;
+      const extra = previews.filter(
+        (p) =>
+          p.channel === channel &&
+          !s.messages.some(
+            (m) =>
+              m.sequence > p.afterSeq &&
+              m.content === p.message.content &&
+              m.sender.role === p.message.sender.role &&
+              (p.own || m.senderId === p.message.senderId),
+          ),
+      );
+      if (extra.length)
+        out[channel] = {
+          ...s,
+          messages: [
+            ...s.messages,
+            ...extra.map((p, i) => ({
+              ...p.message,
+              sequence: p.afterSeq + 0.5 + i * 0.001,
+            })),
+          ],
+        };
+    }
+    return out;
+  }, [channels, previews]);
   return {
-    channels,
+    channels: shownChannels,
     pendingSend,
     update,
     changed,
     clear,
     onSend,
+    preview: addRemotePreview,
+    revertPreview: (revert: ChatPreviewRevert) =>
+      dropPreview(`${revert.channel}:${revert.commandId}`),
     onLoadMore: (channel: ChatChannel) => read(channel),
   };
 }

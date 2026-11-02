@@ -4,7 +4,7 @@
 
 The caller acquires sorted actor locks (both players plus acting identity), then the room lock, supplies the same `PoolClient` as the room/realtime transaction, and commits receipts before publication. `MatchScope.canControl` is a trusted controller proof from that caller. The store checks current match identity, actual player seats, supplied lock sets, match version, effective history and rules.
 
-`MatchStoreCore.context` reads the locked room, the eligible match and the caller's player seat in one SQL statement. Materialized CTEs keep room → match row-lock order; a mismatched current match is rejected without locking that match. Membership, both player locks, rules and replay validation still run before an action.
+`MatchStoreCore.context` reads the locked room, the eligible match, the caller's player seat and pending proposal existence in one SQL statement. Materialized CTEs keep room → match row-lock order; a mismatched current match is rejected without locking that match. Membership, both player locks, rules and replay validation still run before an action. Normal `move` uses the proposal existence flags to avoid redundant round-trips for draw/undo snapshots and resolution when no proposals are pending.
 
 Draw state reads offers, each side's move count and expired-offer cooldown baselines in one statement. Read-only snapshots sample the database clock inside the same statement; actions retain their explicit deadline sample. Expiry comparisons use the same millisecond cutoff as JavaScript `Date`; mutation deadlines and `drawMoveCount` checks remain unchanged.
 

@@ -5,7 +5,15 @@ import {
   type NetworkDemoClient,
 } from "./network-demo-client.js";
 import { ROOM_REMOVAL_MESSAGES } from "@xiangqi/shared";
-import type { PublicRoomAuthProof } from "@xiangqi/shared";
+import type {
+  ChatPreview,
+  ChatPreviewRevert,
+  MovePreview,
+  MoveRevert,
+  PublicRoomAuthProof,
+  ReadyPreview,
+  ReadyRevert,
+} from "@xiangqi/shared";
 import { handshakeAuth } from "../../shared/realtime-proof.js";
 import type {
   ClientRealtimeEvents,
@@ -682,6 +690,12 @@ export interface RoomConnectionInput {
   onClosed?: (message: string) => void;
   onChatChanged?: (notice: ChatChanged) => void;
   onDemoCapability?: (enabled: boolean) => void;
+  onMovePreview?: (preview: MovePreview) => void;
+  onMoveRevert?: (revert: MoveRevert) => void;
+  onReadyPreview?: (preview: ReadyPreview) => void;
+  onReadyRevert?: (revert: ReadyRevert) => void;
+  onChatPreview?: (preview: ChatPreview) => void;
+  onChatRevert?: (revert: ChatPreviewRevert) => void;
 }
 
 /**
@@ -825,6 +839,80 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
       );
     }
     input.onSnapshot(parsed);
+  });
+  const isSquare = (value: unknown) =>
+    Number.isInteger(value) &&
+    (value as number) >= 0 &&
+    (value as number) <= 89;
+  socket.on("room.move.preview", (value) => {
+    if (
+      closed ||
+      value?.roomId !== input.roomId ||
+      typeof value.matchId !== "string" ||
+      !Number.isSafeInteger(value.matchVersion) ||
+      !isSquare(value.from) ||
+      !isSquare(value.to)
+    )
+      return;
+    input.onMovePreview?.(value);
+  });
+  socket.on("room.move.revert", (value) => {
+    if (
+      closed ||
+      value?.roomId !== input.roomId ||
+      typeof value.matchId !== "string" ||
+      !Number.isSafeInteger(value.matchVersion)
+    )
+      return;
+    input.onMoveRevert?.(value);
+  });
+  const isSide = (value: unknown) => value === "red" || value === "black";
+  socket.on("room.ready.preview", (value) => {
+    if (
+      closed ||
+      value?.roomId !== input.roomId ||
+      !isSide(value.side) ||
+      typeof value.ready !== "boolean" ||
+      !Number.isSafeInteger(value.version)
+    )
+      return;
+    input.onReadyPreview?.(value);
+  });
+  socket.on("room.ready.revert", (value) => {
+    if (
+      closed ||
+      value?.roomId !== input.roomId ||
+      !isSide(value.side) ||
+      !Number.isSafeInteger(value.version)
+    )
+      return;
+    input.onReadyRevert?.(value);
+  });
+  const isChannel = (value: unknown) =>
+    value === "ROOM_PUBLIC" || value === "PLAYERS_PRIVATE";
+  socket.on("chat.preview", (value) => {
+    if (
+      closed ||
+      value?.roomId !== input.roomId ||
+      !isChannel(value.channel) ||
+      typeof value.commandId !== "string" ||
+      typeof value.senderId !== "string" ||
+      typeof value.content !== "string" ||
+      typeof value.createdAt !== "string" ||
+      typeof value.sender?.displayName !== "string"
+    )
+      return;
+    input.onChatPreview?.(value);
+  });
+  socket.on("chat.preview.revert", (value) => {
+    if (
+      closed ||
+      value?.roomId !== input.roomId ||
+      !isChannel(value.channel) ||
+      typeof value.commandId !== "string"
+    )
+      return;
+    input.onChatRevert?.(value);
   });
   socket.on("room.closed", (notice) => {
     const message = notice?.message;

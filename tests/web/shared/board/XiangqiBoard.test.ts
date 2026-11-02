@@ -207,17 +207,39 @@ it("marks cannon captures from legal core and preserves previous-move and check 
   );
   expect(screen.getByText(/Đang bị chiếu/)).toBeTruthy();
   expect(view.container.querySelectorAll(".xq-board-check")).toHaveLength(1);
-  const markers = view.container.querySelectorAll(".xq-board-last");
-  expect(markers).toHaveLength(2);
-  expect(markers[0]!.getAttribute("transform")).toBe("translate(344 144)");
-  expect(markers[1]!.getAttribute("transform")).toBe("translate(344 184)");
-  for (const marker of markers) {
-    expect(marker.querySelector("circle")).toBeNull();
-    const corners = marker.querySelector("path");
-    expect(corners?.getAttribute("d")?.match(/M/g)).toHaveLength(4);
-  }
+  const line = view.container.querySelector(".xq-board-last-line");
+  const dot = view.container.querySelector(".xq-board-last-dot");
+  expect([line?.getAttribute("x1"), line?.getAttribute("y1")]).toEqual([
+    "344",
+    "144",
+  ]);
+  expect([line?.getAttribute("x2"), line?.getAttribute("y2")]).toEqual([
+    "344",
+    "184",
+  ]);
+  expect([dot?.getAttribute("cx"), dot?.getAttribute("cy")]).toEqual([
+    "344",
+    "144",
+  ]);
   expect(screen.queryByRole("button")).toBeNull();
 });
+it.each(["red", "black"] as const)(
+  "uses the previous player's color when %s is to move",
+  (turn) => {
+    const view = renderDom(
+      createElement(XiangqiBoard, {
+        position: { ...initialPosition(), turn },
+        lastMove: { from: 54, to: 45 },
+      }),
+    );
+    const marker = view.container.querySelector(".xq-board-last-indicators");
+    expect(
+      marker?.classList.contains(
+        `xq-board-piece-${turn === "red" ? "black" : "red"}`,
+      ),
+    ).toBe(true);
+  },
+);
 it("selects legal pawn targets, sends intent, and keeps the canonical piece at its source", () => {
   const move = vi.fn();
   renderDom(
