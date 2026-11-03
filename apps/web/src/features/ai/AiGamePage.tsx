@@ -175,6 +175,7 @@ export function AiGamePage({
     audio.current = createGameAudio();
     return () => {
       alive.current = false;
+      audio.current?.close();
       audio.current = null;
     };
   }, []);
