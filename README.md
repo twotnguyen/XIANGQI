@@ -1,165 +1,188 @@
 # XIANGQI · Cờ Tướng Online
 
-Ứng dụng web cờ tướng tiếng Việt dành cho những ván đấu cùng bạn bè và những buổi luyện tập với máy. XIANGQI kết hợp bàn cờ trực tuyến, phòng có người xem, trò chuyện và camera/mic tùy chọn trong giao diện **Kỳ Đài Cổ Phong**.
+Ứng dụng web chơi cờ tướng thời gian thực bằng tiếng Việt: đấu với bạn bè, ghép trận ngẫu nhiên, đánh hạng có Elo, luyện tập với máy, có người xem, chat và camera/mic tùy chọn. Giao diện theo phong cách **Kỳ Đài Cổ Phong**.
 
-Đây là đồ án môn **Quản trị Dự án Công nghệ Thông tin**, thực hiện từ phân tích yêu cầu khách hàng đến lập kế hoạch, xây dựng và nghiệm thu sản phẩm.
+Dự án là đồ án môn **Quản trị Dự án Công nghệ Thông tin**, được quản lý trên [Jira XIAN](https://xiangqi-web.atlassian.net/jira/software/c/projects/XIAN/boards/38).
 
-> **Đang triển khai.** Mã nguồn trên `main` đã có web React/Vite, server NestJS/Socket.IO và các tính năng P1 đã tích hợp (đăng ký/đăng nhập, phòng, ván thời gian thực, chat, ván với máy, bạn bè, media), cùng một phần các Story mang mã `US-P2-*` (lịch sử, replay; mã QR mời đã bỏ). Việc nghiệm thu từng Task vẫn theo Jira và các cổng kiểm chứng trong [BACKLOG-P1.md](docs/product/BACKLOG-P1.md); nhiều Task trên Jira chưa được cập nhật trạng thái, và các kiểm chứng như camera/mic nhiều thiết bị, Google OAuth, RLS trên môi trường thật chưa hoàn tất. Kế hoạch gốc (ảnh chụp Jira 10/10) là **880 giờ**, hạn **04/11/2026**; phạm vi đã mở rộng theo BA 0.18–0.36 và chưa được tái ước lượng. Xem [kế hoạch và tiến độ](docs/planning/KE-HOACH-JIRA.md).
+> **Trạng thái:** đang phát triển. Phạm vi và tiêu chí nghiệm thu nằm ở [BACKLOG-P1.md](docs/product/BACKLOG-P1.md); quyết định nghiệp vụ nằm ở [BA-SCOPE-DECISIONS.md](docs/product/BA-SCOPE-DECISIONS.md).
 
-[Chuẩn bị môi trường](docs/setup/CAU-HINH-MOI-TRUONG.md) · [Đặc tả P1](docs/product/BACKLOG-P1.md) · [Mockup](docs/design/mockups/index.html) · [Jira XIAN](https://xiangqi-web.atlassian.net/jira/software/c/projects/XIAN/boards/38)
+## Mục lục
 
-## Tính năng dự kiến
+- [Tính năng](#tính-năng)
+- [Kiến trúc](#kiến-trúc)
+- [Yêu cầu](#yêu-cầu)
+- [Bắt đầu nhanh](#bắt-đầu-nhanh)
+- [Cấu hình](#cấu-hình)
+- [Lệnh thường dùng](#lệnh-thường-dùng)
+- [Kiểm thử và CI](#kiểm-thử-và-ci)
+- [Cấu trúc thư mục](#cấu-trúc-thư-mục)
+- [Tài liệu](#tài-liệu)
+- [Đóng góp](#đóng-góp)
+- [Bảo mật](#bảo-mật)
+- [Giấy phép](#giấy-phép)
 
-- **Chơi cùng bạn bè:** tạo phòng, mời bạn bằng lời mời trong game hoặc link/mã; hai người chơi và tối đa năm người xem.
-- **Bàn cờ tương tác:** quân chữ Hán, thao tác click hoặc kéo thả, gợi ý ô hợp lệ và âm thanh.
-- **Ván đấu thời gian thực:** máy chủ kiểm luật và nước đi, quản lý đồng hồ, xin hòa, đầu hàng và xử lý mất kết nối.
-- **Giao lưu trong phòng:** chat riêng của hai người chơi, chat chung với người xem; camera/mic mặc định tắt và chia sẻ theo quyền.
-- **Luyện tập với máy:** ba cấp Dễ, Trung bình, Khó; chọn phe và bắt đầu ván mới.
-- **Tài khoản và chế độ Khách:** đăng ký với OTP email, đăng nhập Google hoặc vào nhanh dưới vai trò Khách.
+## Tính năng
 
-Đánh hạng/Elo, ghép ngẫu nhiên, lịch sử và replay đã thuộc P1 theo BA 0.27 (mã QR mời bị loại); phần chưa triển khai xem [trạng thái Story `US-P2-*`](docs/planning/jira/reports/P2-TRANG-THAI-TRIEN-KHAI.md). Phạm vi và luật chi tiết được quản lý tại [quyết định nghiệp vụ](docs/product/BA-SCOPE-DECISIONS.md).
-
-## Công nghệ
-
-| Thành phần | Công nghệ đã chọn |
+| Nhóm | Mô tả |
 |---|---|
-| Ngôn ngữ và workspace | TypeScript, Node.js, pnpm |
-| Giao diện | React, Vite, SVG |
-| API và realtime | NestJS, Socket.IO |
-| Database và xác thực | Supabase PostgreSQL, Supabase Auth, Google OAuth, SMTP ngoài |
-| Camera/mic | LiveKit tự chạy bằng Docker khi phát triển/demo LAN; LiveKit Cloud cho demo Internet |
-| Máy cờ | TypeScript, negamax và alpha-beta, chạy trong tiến trình riêng |
-| Kiểm thử ứng dụng | Vitest, Playwright |
+| Tài khoản | Đăng ký bằng OTP email, đăng nhập username/email/Google, khôi phục mật khẩu, chế độ Khách |
+| Phòng đấu | Tạo phòng, mời bằng mã/link hoặc lời mời bạn bè; 2 người chơi và tối đa 5 người xem |
+| Ván đấu | Máy chủ phân xử nước đi và luật kết thúc, đồng hồ, xin hòa, đầu hàng, đi lại, xử lý mất kết nối |
+| Ghép trận | Đánh Thường ghép ngẫu nhiên; Đánh Hạng có Elo, bảng xếp hạng và giới hạn cặp đấu |
+| Đấu với máy | Ba cấp Dễ / Trung bình / Khó, chọn phe, đi lại |
+| Giao lưu | Chat kênh người chơi và kênh chung, sticker, bạn bè, tin nhắn trực tiếp; camera/mic qua LiveKit |
+| Lịch sử | Lịch sử ván cá nhân, xem lại ván, xuất FEN/PGN |
 
-Socket.IO đồng bộ ván cờ và chat; LiveKit truyền hình/tiếng. Máy chủ phân xử nước đi và cấp quyền truy cập media. Việc lỗi camera/mic không được làm gián đoạn ván cờ.
+## Kiến trúc
 
-## Bắt đầu
+```mermaid
+flowchart LR
+  Web["apps/web<br/>React + Vite"] -- "HTTP /api" --> Server["apps/server<br/>NestJS"]
+  Web -- "Socket.IO" --> Server
+  Web -- "WebRTC" --> LiveKit[(LiveKit)]
+  Server -- "SQL" --> DB[(Supabase PostgreSQL)]
+  Server -- "Auth API" --> Auth[Supabase Auth]
+  Server -- "cấp token" --> LiveKit
+  Server -- "worker thread" --> Engine["packages/engine"]
+```
 
-### 1. Lấy mã nguồn
+- **Máy chủ là nguồn sự thật:** mọi nước đi, đồng hồ và kết quả được kiểm bằng `packages/xiangqi-core`, luật này dùng chung cho cả web và server.
+- **Realtime:** Socket.IO đồng bộ phòng, ván và chat. Ghi trạng thái phòng/ván là transaction Postgres có khóa theo thứ tự; tác dụng phụ đi qua bảng outbox sau khi commit.
+- **Media tách khỏi ván cờ:** lỗi camera/mic không làm gián đoạn ván đấu.
+- **Một runtime cho mỗi database:** server giữ khóa singleton trên Postgres, nên chỉ một instance xử lý phòng/ván tại một thời điểm.
+
+Chi tiết: [kiến trúc server](docs/engineering/server/architecture.md), [realtime](docs/engineering/server/realtime.md), [giao diện web](docs/engineering/web/ui.md).
+
+| Thành phần | Công nghệ |
+|---|---|
+| Ngôn ngữ, workspace | TypeScript, Node.js 22, pnpm 10 |
+| Web | React, Vite, SVG |
+| Server | NestJS, Socket.IO, `pg`, chạy bằng `tsx` |
+| Dữ liệu, xác thực | Supabase PostgreSQL, Supabase Auth, Google OAuth, SMTP |
+| Media | LiveKit (Docker khi chạy local, LiveKit Cloud khi demo Internet) |
+| Máy cờ | Negamax, alpha-beta, tìm sâu dần, chạy trong worker thread |
+| Kiểm thử | Vitest, PostgreSQL 17 cô lập |
+
+## Yêu cầu
+
+- Node.js **22** (≥ 22.13, < 23), theo `.node-version`
+- pnpm **10.34.6**, theo `packageManager` (có thể bật qua `corepack enable`)
+- Một project Supabase (PostgreSQL + Auth) cho các tính năng cần database
+- Tùy chọn: Docker để chạy LiveKit local, PostgreSQL 17 để chạy test database
+
+## Bắt đầu nhanh
 
 ```sh
 git clone https://github.com/twotnguyen/XIANGQI.git
 cd XIANGQI
-```
 
-`develop` là nhánh mặc định và nhánh tích hợp; `main` là nhánh phát hành có branch protection, chỉ nhận PR từ `develop`.
-
-### 2. Chuẩn bị môi trường riêng
-
-```sh
 umask 077
-[ -e .env ] || cp .env.example .env
-mkdir -p apps/web apps/server
-```
-
-Điền `.env` tổng theo [hướng dẫn Supabase, Google OAuth, SMTP và LiveKit](docs/setup/CAU-HINH-MOI-TRUONG.md), rồi đồng bộ:
-
-```sh
+cp .env.example .env            # điền giá trị theo mục Cấu hình
 cp .env apps/web/.env
 cp .env apps/server/.env
-chmod 600 .env apps/web/.env apps/server/.env
-```
 
-Khóa thật không đi kèm repo. Nhận thông tin cần thiết qua kênh riêng của nhóm hoặc dùng dự án dịch vụ riêng. `SUPABASE_ACCESS_TOKEN` là tùy chọn cho công cụ quản trị.
-
-### 3. Chạy bộ khung ứng dụng
-
-Dùng Node.js 22 LTS (tối thiểu 22.13) theo `.node-version` và pnpm 10.34.6 theo `packageManager`. Nếu dùng Corepack: `corepack enable` rồi `corepack install`.
-
-```sh
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Web ở `http://localhost:5173`, server ở `http://localhost:3000`. Chạy `curl http://localhost:3000/health` để kiểm tra HTTP 200; `server` là `ok`, `database` phản ánh kết nối khi bật đăng ký, `engine` vẫn là `not_connected`. `/dev/board` hiển thị bàn cờ; `/dev/register` kiểm giao diện đăng ký ba bước. Socket.IO xác thực handshake bằng phiên thành viên hoặc Khách và chỉ nhận kết nối khi runtime phòng được bật (xem `docs/engineering/server/realtime.md`); `/dev/*` chỉ là route kiểm thành phần, không thay luồng Sảnh/phòng hoàn chỉnh.
+| Dịch vụ | Địa chỉ |
+|---|---|
+| Web | <http://localhost:5173> |
+| Server | <http://localhost:3000> |
+| Kiểm tra sống | `GET /health` |
+| Kiểm tra sẵn sàng | `GET /ready` |
 
-Server nạp `apps/server/.env`; Vite nạp `apps/web/.env` và chỉ công khai tiền tố `VITE_`. Bộ khung dùng mặc định local khi không có file môi trường; PORT, CORS_ORIGINS và LOG_LEVEL được kiểm tra mà không in giá trị lỗi. Secret của dịch vụ chưa tích hợp không bắt buộc để chạy bộ khung.
+Khi chạy dev, các route `/dev/*` hiển thị thư viện thành phần và giao diện mẫu để kiểm tra nhanh.
 
-Nhóm lệnh dưới đây dành cho CI hoặc khi người dùng chủ động yêu cầu; agent xem [quy tắc kiểm chứng](AGENTS.md#kiểm-chứng).
+## Cấu hình
 
-```sh
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
-pnpm format:check
-```
+Biến môi trường được mô tả trong [`.env.example`](.env.example). Hướng dẫn tạo và kiểm chứng từng dịch vụ (Supabase, Google OAuth, SMTP, LiveKit) nằm ở [CAU-HINH-MOI-TRUONG.md](docs/setup/CAU-HINH-MOI-TRUONG.md).
 
-CI trên push/PR `develop` chạy lint/typecheck, build ứng dụng bị ảnh hưởng và unit/core khi đổi mã, không chạy database; chỉ PR `develop` → `main` mới chạy đầy đủ, gồm sáu shard database (push `main` không chạy CI). Chi tiết lệnh và CI xem [hướng dẫn kiểm thử](tests/README.md#commitpush-nhanh-và-ci-theo-phạm-vi). `packages/shared` chứa kiểu dữ liệu dùng chung; `packages/xiangqi-core` chứa luật; `packages/engine` chứa máy cờ. Các package nội bộ xuất TypeScript source; server chạy trực tiếp `src/main.ts` bằng `tsx` (`pnpm --filter @xiangqi/server start`), còn web được Vite đóng gói. `pnpm build:server` kiểm tra kiểu server và build engine cần cho runtime; không tạo `apps/server/dist`.
+- Server đọc `apps/server/.env`; web đọc `apps/web/.env` và chỉ công khai biến có tiền tố `VITE_`.
+- Các tính năng bật/tắt bằng cờ `*_ENABLED` (ví dụ `AUTH_REGISTRATION_ENABLED`, `ROOMS_ENABLED`). Chỉ bật sau khi migration và dịch vụ liên quan đã sẵn sàng.
+- `DIRECT_URL` phải là kết nối trực tiếp hoặc session pooler, **không** dùng transaction pooler (cổng 6543).
+- Migration và rollback nằm trong `supabase/`, xem [supabase/README.md](supabase/README.md).
+- LiveKit local: [infra/livekit/README.md](infra/livekit/README.md).
+- Triển khai server mẫu: [`render.yaml`](render.yaml).
 
-Build web luôn dùng React production, kể cả khi `.env` dùng `NODE_ENV=development` cho server. CI có PostgreSQL 17 riêng để chạy kiểm thử SQL/HTTP đăng ký; chạy local theo [hướng dẫn database](supabase/README.md). Đăng ký mặc định tắt: chỉ bật `AUTH_REGISTRATION_ENABLED=true` sau khi migration, quyền runtime và cấu hình SMTP/OTP trên đúng project đã được kiểm chứng. Runtime dùng `DIRECT_URL` với direct/session pooler, không dùng transaction pooler 6543. Kiểm thử tự động dùng Auth HTTP fixture; nhận OTP thật, hoàn tất vào Sảnh và các cổng nghiệm thu vẫn cần bằng chứng riêng.
+## Lệnh thường dùng
 
-Nhật ký vận hành là JSON trên stdout/stderr, có `time`, `level`, `event`; chỉ chấp nhận mã sự kiện cố định và port dạng số, bỏ chuỗi/payload tùy ý để tránh lộ mật khẩu, OTP, token, chat. Ứng dụng không ghi file hay giữ log bền (thời gian lưu trong ứng dụng là 0 ngày). Nếu triển khai bộ thu log ngoài, phải cấu hình xóa sau tối đa 14 ngày; repo chưa triển khai bộ thu log. Biên lai lệnh (idempotent theo `commandId`) lưu trong Postgres và được xóa sau 24 giờ (T12, xem `docs/engineering/server/realtime.md`).
+| Lệnh | Mô tả |
+|---|---|
+| `pnpm dev` | Chạy web và server ở chế độ phát triển |
+| `pnpm lint` | ESLint toàn repo |
+| `pnpm format:check` | Kiểm tra định dạng Prettier |
+| `pnpm typecheck` | Kiểm tra kiểu mọi package |
+| `pnpm build` | Build web và kiểm tra build server |
+| `pnpm test` | Chạy toàn bộ test Vitest |
+| `pnpm test:unit` | Test web và package, không cần database |
+| `pnpm test:db:<miền>` | Test cần database (`account`, `room`, `match`, `realtime`, `chat-media`, `ai`) |
+| `pnpm --filter @xiangqi/server start` | Chạy server ở chế độ production |
 
-### 4. Chuẩn bị media và xem giao diện
+## Kiểm thử và CI
 
-- [Chạy LiveKit bằng Docker và chuyển local/Cloud](infra/livekit/README.md): cần Python 3, Docker và Docker Compose. Kiểm thử nhiều thiết bị LAN cần HTTPS/WSS và cấu hình mạng phù hợp.
-- Mở [docs/design/mockups/index.html](docs/design/mockups/index.html) trên máy để xem giao diện tham khảo. Đây là mockup, chưa phải ứng dụng kết nối backend.
-- `pnpm dev` chạy bộ khung; các kiểm thử nghiệp vụ và media xuyên suốt ứng dụng sẽ được triển khai theo backlog.
+- Toàn bộ test nằm trong `tests/`, chia theo cấu trúc `apps/` và `packages/`.
+- Test database dùng cụm PostgreSQL 17 cô lập do `tests/server/db.sh` dựng. **Không** trỏ các biến `*_TEST_DATABASE_URL` vào Supabase thật, vì fixture sẽ xóa schema.
+- GitHub Actions ([`ci.yml`](.github/workflows/ci.yml)):
+  - Push hoặc PR vào `develop`: lint, typecheck, build và unit/core khi mã thay đổi.
+  - PR `develop` → `main`: chạy đầy đủ, gồm các shard database.
+
+Chi tiết: [tests/README.md](tests/README.md).
 
 ## Cấu trúc thư mục
 
 ```text
 XIANGQI/
 ├─ apps/
-│  ├─ web/src/               React + Vite
-│  │  ├─ app/                ghép ứng dụng: AppRouter, layouts/, dev/ (thư viện thành phần)
-│  │  ├─ features/           theo tính năng: auth, lobby, rooms (+match), chat, ai, friends,
-│  │  │                      history, media, profile
-│  │  ├─ shared/             dùng chung: ui, board, navigation (route + điều hướng), theme, styles
-│  │  └─ main.tsx
-│  └─ server/src/            NestJS + Socket.IO
-│     ├─ account/            auth, login, session, google, guest, profile, friend
-│     ├─ game/               room (+public), match, clock, realtime, chat, ai, history, media;
-│     │                      game.runtime.ts nối các miền này vào ứng dụng
-│     ├─ core/               config, logger, bộ lọc nội dung riêng tư, schema (kiểm thử SQL/RLS)
-│     └─ main.ts, app.ts     điểm vào
-├─ packages/                 shared (kiểu dùng chung), xiangqi-core (luật), engine (máy cờ)
-├─ tests/                    toàn bộ test, helper và fixture (server/, web/, packages/); xem tests/README.md
-├─ supabase/                 migration, rollback, baseline, kiểm thử SQL, mẫu email
-├─ infra/livekit/            Docker, báo cáo spike và livekit-env.py (chuyển LiveKit local/Cloud)
-├─ docs/
-│  ├─ product/               IDEA, quyết định BA, backlog P1/P2
-│  ├─ design/                DESIGN, danh mục màn hình, mockups/
-│  ├─ planning/              KE-HOACH-JIRA.md và jira/ (dữ liệu, công cụ, báo cáo, kiểm thử)
-│  ├─ engineering/           ghi chú kỹ thuật từng tính năng (server/, web/)
-│  └─ setup/                 hướng dẫn cấu hình môi trường và dịch vụ
-├─ .github/                  CI, CODEOWNERS
-└─ .local/                   ghi chú, log, bản sao lưu cá nhân (Git bỏ qua)
+│  ├─ web/          React + Vite: app/ (router, layout), features/ (theo tính năng), shared/ (UI, bàn cờ, điều hướng)
+│  └─ server/       NestJS + Socket.IO: account/ (tài khoản), game/ (phòng, ván, chat, AI, media, xếp hạng), core/
+├─ packages/
+│  ├─ shared/       Hợp đồng dữ liệu, bộ lọc và kiểm tra dùng chung web/server
+│  ├─ xiangqi-core/ Luật cờ tướng
+│  └─ engine/       Máy cờ
+├─ supabase/        Migration, rollback, kiểm thử SQL, mẫu email
+├─ tests/           Test, helper và fixture
+├─ infra/livekit/   Cấu hình LiveKit local
+├─ docs/            Tài liệu sản phẩm, thiết kế, kỹ thuật, kế hoạch, cài đặt
+└─ .github/         CI và CODEOWNERS
 ```
 
-**Quy ước mỗi tính năng ở server:** `x.types.ts` (kiểu, lỗi), `x.module.ts` (khai báo module và
-`createXRuntime` đọc cờ môi trường/kiểm tra schema), `x.controller.ts` (HTTP và kiểm tra đầu vào),
-`x.service.ts` (nghiệp vụ, không viết SQL); `x.store.ts` (toàn bộ SQL của miền); tính năng lớn có thêm `*-worker.ts`, `*-port.ts`. Test nằm riêng ở `tests/`
-theo cùng cấu trúc thư mục.
+**Quy ước phân tầng:**
 
-**Quy tắc phụ thuộc (web):** `features/*` chỉ import `shared/*`, không import chéo `features` khác (ghép qua `app/`);
-`shared/*` không import `features/*` hay `app/*`; chỉ `app/` được import tất cả.
+- **Server:** Controller → Service → Store; SQL chỉ nằm trong `*.store.ts`.
+- **Web:** `features/*` chỉ import `shared/*`; `shared/*` không import `features/*` hay `app/*`.
 
-## Tài liệu dự án
+## Tài liệu
 
 | Nội dung | Tài liệu |
 |---|---|
-| Mục đích, người dùng và trải nghiệm | [IDEA.md](docs/product/IDEA.md) |
+| Ý tưởng và người dùng mục tiêu | [IDEA.md](docs/product/IDEA.md) |
+| Tổng quan yêu cầu | [TONG-QUAN-YEU-CAU.md](docs/product/TONG-QUAN-YEU-CAU.md) |
 | Quyết định nghiệp vụ và phạm vi | [BA-SCOPE-DECISIONS.md](docs/product/BA-SCOPE-DECISIONS.md) |
-| User Story, tiêu chí nghiệm thu và kiểm thử | [P1](docs/product/BACKLOG-P1.md), [P2](docs/product/BACKLOG-P2.md) |
-| Phạm vi P1/P2 và tiến độ triển khai | [Trạng thái triển khai các Story `US-P2-*`](docs/planning/jira/reports/P2-TRANG-THAI-TRIEN-KHAI.md) |
-| Màn hình và thiết kế | [Danh mục màn hình](docs/design/DANH-MUC-MAN-HINH-XIANGQI.md), [DESIGN.md](docs/design/DESIGN.md) |
-| Phân công, lịch, phụ thuộc và giờ làm | [KE-HOACH-JIRA.md](docs/planning/KE-HOACH-JIRA.md) |
-| Dữ liệu, báo cáo và công cụ Jira | [docs/planning/jira/README.md](docs/planning/jira/README.md) |
-| Cấu hình dịch vụ và kết quả kiểm chứng | [CAU-HINH-MOI-TRUONG.md](docs/setup/CAU-HINH-MOI-TRUONG.md) |
-| Coding agent: chỉ cần [AGENTS.md](AGENTS.md) (và `CLAUDE.md`); không cần đọc README này | [AGENTS.md](AGENTS.md) |
+| User Story và tiêu chí nghiệm thu | [BACKLOG-P1.md](docs/product/BACKLOG-P1.md), [BACKLOG-P2.md](docs/product/BACKLOG-P2.md) |
+| Thiết kế và danh mục màn hình | [DESIGN.md](docs/design/DESIGN.md), [DANH-MUC-MAN-HINH-XIANGQI.md](docs/design/DANH-MUC-MAN-HINH-XIANGQI.md), [mockup](docs/design/mockups/index.html) |
+| Ghi chú kỹ thuật | [docs/engineering/](docs/engineering/) |
+| Kế hoạch và Jira | [KE-HOACH-JIRA.md](docs/planning/KE-HOACH-JIRA.md), [docs/planning/jira/](docs/planning/jira/README.md) |
+| Cấu hình môi trường | [CAU-HINH-MOI-TRUONG.md](docs/setup/CAU-HINH-MOI-TRUONG.md) |
+| Hướng dẫn cho coding agent | [AGENTS.md](AGENTS.md) |
 
 ## Đóng góp
 
-Chọn Task trong Jira, đọc Story và tiêu chí nghiệm thu liên quan trước khi sửa. Theo [quy ước nhánh, commit và PR](AGENTS.md#git-và-pull-request) để truy vết thay đổi về issue. `main` có branch protection và cả hai nhánh tích hợp có ruleset giới hạn người cập nhật (xem `tests/README.md`); thay đổi vẫn được kiểm tra và review trước khi tích hợp.
+1. Chọn Task trên Jira; đọc Story và tiêu chí nghiệm thu liên quan.
+2. Làm trên `develop` (nhánh mặc định và tích hợp), hoặc nhánh riêng `<type>/XIAN-<số>-<mô-tả>`.
+3. Đặt commit theo dạng `<type>(<scope>): XIAN-<số> <mô tả>`, với type là một trong `feat`, `fix`, `docs`, `refactor`, `perf`, `ci`, `chore`, `test`.
+4. `main` là nhánh phát hành có branch protection và chỉ nhận PR từ `develop` khi các check bắt buộc đều đạt.
 
-BA Done thể hiện đặc tả đã chốt, không có nghĩa Task triển khai hoặc sản phẩm đã hoàn thành. Cập nhật tiến độ theo kết quả thực tế.
+Quy ước đầy đủ: [AGENTS.md › Git và pull request](AGENTS.md#git-và-pull-request).
 
 ## Bảo mật
 
-Các file `.env` và `.local/` chỉ giữ trên máy. Chỉ commit mẫu trống; không đưa mật khẩu, token hoặc khóa thật vào mã, log, ảnh chụp hay issue. Biến `VITE_*` và `NEXT_PUBLIC_*` là công khai trên trình duyệt; khóa đặc quyền Supabase, LiveKit và SMTP chỉ được sử dụng phía server hoặc trong công cụ riêng.
+- Không commit `.env`, `.local/` hay bất kỳ khóa, mật khẩu, token nào; chỉ commit file mẫu trống.
+- Biến `VITE_*` và `NEXT_PUBLIC_*` sẽ lộ ra trình duyệt. Khóa đặc quyền của Supabase, LiveKit và SMTP chỉ dùng phía server.
+- Log vận hành là JSON có danh sách sự kiện cố định, không ghi mật khẩu, OTP, token hay nội dung chat.
+
+Nếu phát hiện lỗ hổng, hãy báo riêng cho nhóm dự án, không mở issue công khai.
 
 ## Giấy phép
 
-Dự án chưa chọn giấy phép phân phối. Giấy phép của thư viện, font và tài nguyên bên thứ ba phải được giữ kèm khi sử dụng.
+Dự án chưa chọn giấy phép phân phối. Thư viện, font và tài nguyên bên thứ ba giữ nguyên giấy phép gốc của chúng.
