@@ -16,6 +16,7 @@ Sảnh PR #152 giữ bốn thẻ chế độ và ảnh minh họa local; subgrid
 giữa các thẻ, kể cả khi nút P2 có lý do vô hiệu hóa. Bộ lọc thời gian mỗi bên
 dùng các mức thật 5/10/15 phút và Tất cả, công bố trạng thái qua `aria-pressed`,
 giữ thứ tự snapshot máy chủ. Không hiển thị số online/Elo khi chưa có dữ liệu.
+Bốn nút chế độ ở Sảnh dùng màu riêng theo token; nút Ghép trận và Đánh hạng trải đều, căn giữa như hai nút còn lại.
 Ô mã phòng dùng `TextField` chung để nối nhãn/lỗi; tên chủ Khách giữ `(Khách)`.
 Nút Luật chơi mở disclosure hiện có và chuyển focus tới summary; summary giữ
 vùng chạm tối thiểu 44px. Sảnh dùng token theo chủ đề, giữ nhãn “Không giới hạn”
@@ -86,6 +87,9 @@ nghiệm thu các trang cần tài khoản, phòng/ván thật hay thiết bị 
 - Khung `xq-main` phòng chờ xếp dọc banner email và phòng, tránh banner ép phòng về chiều rộng 0 trên mobile. Nút chia sẻ giữ wrapper/grid-slot cũ khi chuyển nội dung sang Dialog, không bị thanh chọn phòng/camera/chat che.
 - Thành viên có thể đóng nhắc bổ sung/xác minh email trong tab hiện tại; trạng thái đóng giữ qua tải lại và được xóa khi đăng nhập lại. Lỗi kiểm tra email vẫn hiển thị để thử lại.
 - Nhắn tin bạn bè mở `DirectChatDialog` (Dialog chuẩn): log cuộn nội bộ `role="log"` có thể focus, composer có nhãn ẩn và bộ đếm 200 ký tự; poll HTTP 2 giây. Nút "Tải tin cũ" lấy 50 tin trước tin cũ nhất đã tải. Đánh dấu đã đọc theo tin đến có ít nhất 50% hiển thị trong log (IntersectionObserver), chỉ khi tab hiển thị và cửa sổ có focus; mốc đọc không giảm. Bạn đã hủy: dialog xóa lịch sử ngay ở lần poll/gửi đầu tiên nhận `DM_NOT_FRIENDS`, hiện trạng thái thu hồi và khóa composer. `DirectChatHub` (tách khỏi chuông lời mời) hiện badge tổng tin chưa đọc ở mọi route, poll 2 giây, không render khi chưa đăng nhập hoặc là Khách.
+- Tại Sảnh, nút tin nhắn mở danh sách bạn bè bên phải với ô tìm theo tên; chọn bạn mở cửa sổ chat nổi không chặn thao tác với Sảnh. Sidebar và cửa sổ nằm ngoài header để không bị backdrop của header cắt. Các trang khác giữ hộp thoại nhắn tin hiện có.
+- Ô nhắn tin riêng dùng Enter để gửi, Shift+Enter để xuống dòng; cửa sổ nổi có nút sticker hình mặt cười và nút gửi mũi tên.
+- Sảnh cập nhật vị trí thành viên mỗi 2 giây khi đang mở; bấm thoát bắt đầu rời phòng ngay, nhãn cảnh báo đầu hàng nếu ván đang diễn ra. Sau thành công hoặc lỗi, Sảnh đọc lại vị trí từ server; lỗi mạng không được coi là đã rời.
 
 Kiểm local: trình duyệt thật với Nest/Socket.IO, PostgreSQL 17 riêng; chỉ provider Auth là synthetic. Đã đi qua login, đăng ký bỏ email và Khách từ link; mã có số 0 đầu giữ nguyên; clipboard thật, Escape trả focus; nhận nhiều popup, Esc chỉ từ chối một popup, chuyển A→B thất bại/thành công. Đã xem 1366×768 và 360×800; modal không tràn ngang, phòng chờ mobile không cuộn toàn trang. Không thay bằng chứng này cho Google/SMTP/LiveKit production hoặc nghiệm thu PO.
 
@@ -112,6 +116,7 @@ hạn chiều rộng để dễ đọc. Mục Giao diện cuộn cùng trang tha
 
 Elo trong menu tài khoản được tải trước khi mở menu và cập nhật lại sau ván
 xếp hạng; dữ liệu của tài khoản trước không được giữ khi đổi tài khoản.
+Trên bảng xếp hạng, năm vị trí đầu có màu nền và viền riêng; số thứ hạng vẫn hiển thị, không dựa riêng vào màu.
 
 Liên kết thêm hoặc xác minh email mở mục Hồ sơ cá nhân và đưa focus tới phần
 email, kể cả khi đang ở một mục khác trong Cài đặt.
@@ -342,16 +347,20 @@ sang ván. Metadata header dùng `.xq-waiting-meta`, tránh trùng selector th�
 Trong phòng đang đấu, lượt đi nằm giữa sông và không chặn thao tác bàn cờ;
 desktop đặt chú giải bên trái bàn, nút thao tác ván bên phải. Màn hình hẹp
 giữ chú giải và thao tác bên dưới bàn để không che ô cờ.
+Từ 1360px, thông tin và đồng hồ hai bên nằm ở hai phía bàn; nút ván và chú giải ở dưới các thông tin tương ứng. Màn hình hẹp giữ bố cục cũ.
+Bàn cờ trên desktop từ 1360px tận dụng cột giữa và bị giới hạn theo chiều cao màn hình; màn hình hẹp giữ kích thước responsive cũ.
 Phòng đang đấu dành hàng dưới cho mã phòng và người xem; nút thao tác ván gọn,
 chú giải không ngắt dòng. Tắt bóng SVG của quân thường tại phòng đấu để tránh
 ô vuông tối, vẫn giữ hiệu ứng quân đang chọn.
 Dấu nước vừa đi là chấm tại ô xuất phát và đường thẳng tới ô đích, mang màu
 của bên vừa đi; dùng chung cho phòng, ván máy và xem lại, không chặn tương tác.
 Khung thao tác ván trên desktop co theo các nút, có khoảng đệm đồng đều và căn giữa khoảng trống giữa bàn cờ với chat.
+Khi hộp kết quả phòng ghép ngẫu nhiên hoặc Đánh Hạng mở, ẩn khu vực ghế, bàn và đồng hồ phía sau; chat và media vẫn giữ nguyên.
 Khi phòng tự tạo về trạng thái chờ, nền hộp kết quả không còn bàn và đồng hồ
-ván cũ. Sau khi chọn Ở lại phòng, ẩn khung tạo đề nghị tái đấu; vẫn hiện đề
-nghị đang chờ trả lời. Ghế, người xem, chat và media giữ nguyên; phòng ghép
-giữ màn hình sau ván riêng.
+ván cũ. Hộp kết quả tạm thời chỉ hiện kết quả và nút Ở lại phòng/Rời phòng,
+không hiện khung tái đấu. Sau khi chọn Ở lại phòng, ẩn khung tạo đề nghị tái
+đấu nhưng vẫn hiện đề nghị đang chờ trả lời. Ghế, người xem, chat và media giữ
+nguyên; phòng ghép giữ màn hình sau ván riêng.
 Dùng ảnh nền và phông local có sẵn; không thêm dữ liệu mẫu hay tính năng P2.
 
 `RoomInvite` dùng hai nút **Sao chép mã** và **Sao chép link**, không còn liên
@@ -412,6 +421,7 @@ Kết quả ván chỉ hiện khi phòng vừa chuyển sang PLAYING trong phiê
 phòng đã kết thúc giữ bố cục chờ và không mở lại kết quả. Esc trên kết quả ván = Ở lại phòng.
 Khi Rời phòng đang chờ, nút Ở lại và Escape không đóng kết quả. Rời thất bại giữ
 hộp thoại, hiện lỗi đã làm sạch và cho gửi lại; chỉ điều hướng sau khi rời thành công.
+Ván Đánh Thường ghép ngẫu nhiên hoặc Đánh Hạng có kết quả thắng/thua hoặc bị gián đoạn: hiện kết quả 5 giây rồi tự gửi lệnh rời phòng. Nếu phiên bản phòng thay đổi, đồng bộ và thử lại một lần khi vẫn cùng ván đã kết thúc và còn quyền; lỗi khác giữ kết quả và cho Thử lại. Không ảnh hưởng hòa hoặc phòng tự tạo.
 
 ## Banner chống treo ván (US-P2-10)
 
@@ -459,7 +469,8 @@ Người chơi chọn biểu tượng người xem để mở thao tác dành ri
 
 - `AiGame` xếp thẻ Máy/Bạn gọn, lượt/Undo/Đầu hàng trước khay Thông số máy. Khay thu gọn mặc định, chỉ thành viên; chưa có worker sample hiện Chưa có số liệu. Depth/nodes/compute lấy từ snapshot thật, làm tròn thời gian chỉ ở hiển thị. Không `aria-live` cho từng số và không hiện nước dự kiến; ký pháp Nước máy vừa đi dùng helper `shared/board/move-notation.ts` chung với Replay.
 - `AiGamePage` nhận cả cập nhật cùng board version, bỏ telemetry task/metrics cũ. Undo xóa metrics; quota còn lại và số đã dùng hiện rõ. Khách không có Undo/widget; đây không thay kiểm quyền HTTP/socket.
-- Sảnh có Bỏ ván cho vị trí AI của cả thành viên/Khách, xác nhận focus Giữ ván. Không thêm hành động này cho phòng/online. Tab khác chỉ đọc không được tự chiếm quyền để Bỏ ván; tiếp quản phải chủ động ở trang AI. Nếu GET hoặc phản hồi resign còn `FINALIZING`, giữ banner/đường Quay lại và báo chưa hoàn tất, không giả vị trí đã giải phóng.
+- Sảnh có Bỏ ván cho vị trí AI của cả thành viên/Khách, xác nhận focus Giữ ván. Tab khác chỉ đọc không được tự chiếm quyền để Bỏ ván; tiếp quản phải chủ động ở trang AI. Nếu GET hoặc phản hồi resign còn `FINALIZING`, giữ banner/đường Quay lại và báo chưa hoàn tất, không giả vị trí đã giải phóng.
+- Banner ván dở của phòng/online có thêm **Thoát phòng** (yêu cầu 02/11/2026), xác nhận focus Ở lại. Nút mở kết nối tạm (`prepareLeaveFromLobby`) mở sẵn khi hộp xác nhận hiện; khi xác nhận mới chiếm quyền điều khiển nếu phòng đang mở ở tab khác (do chính người dùng bấm), gọi `leave` rồi đóng kết nối (huỷ hộp thì đóng kết nối, không chiếm quyền). Đang trong ván thì tính là đầu hàng như nút Rời phòng. Lỗi giữ nguyên banner và báo "Chưa thể thoát phòng".
 - Guard điều hướng chặn logo/menu/Back trước khi router đổi location khi tab đang điều khiển ACTIVE. Entry do router quản lý mang chỉ số trong history state; hủy Back/Forward nhiều bước quay lại đúng entry nguồn, không push để cắt forward stack. Hủy giữ ván; đồng ý resign rồi điều hướng. Tab readonly được rời không resign. Refresh/đóng tab chỉ áp grace, không beacon resign; AI dùng cùng định danh tab phiên để reconnect/refresh không tự giành lại sau khi bị tiếp quản.
 - Kết quả `FINISHED`/`ABANDONED` của thành viên có Xem lại dẫn tới `/history/:id`; snapshot terminal được server cài sau commit History. Không hiện đường này cho `FINALIZING` hoặc Khách. Tab chỉ đọc vẫn xem được bản lưu của chính tài khoản.
 - Browser local thật (Nest/Socket.IO, PG17 riêng, compiled worker; chỉ provider Auth synthetic): đã xem360×800 và1366×768 không tràn ngang; thử đi/Undo, widget, nhiều tab, mất mạng/nối lại, banner, xác nhận logo/Back/logout, History/Replay/clipboard/PGN. Không thay cho kiểm thiết bị/Cloud hoặc gate chất lượng engine; [YC8 mục18](../../product/P1-YC8-DAU-VOI-MAY.md#18-triển-khai-và-bằng-chứng-local--01112026) ghi kết quả và BLOCKED cụ thể.

@@ -76,6 +76,7 @@ export async function bootAiGuestRuntime(): Promise<AiGuestBoot> {
     guests: rooms.guests,
     withScope: rooms.withScope,
     // Engine never resolves: games stay ACTIVE and the test controls every transition.
+    mergeReply: false,
     engine: {
       ready: vi.fn(async () => {}),
       search: vi.fn(() => new Promise<EngineResult>(() => {})),

@@ -51,7 +51,7 @@ The SQL callback and clock are fixture ports. Actual room/realtime receipt/publi
 
 ## AI game recovery and retention
 
-`AiGames` (`apps/server/src/game/ai/ai-games.ts`) runs one engine search per computed turn. The search output is kept in memory as a `Completion` and is never searched again. A transient SQL failure (`AI_UNAVAILABLE`) on a still-current turn schedules a commit retry with the retained completion: the first retry waits 1s, then 2s, 4s, 8s, 16s, and every later retry waits the 30s cap. Each retry re-checks SQL authority before applying the completion. Lost authority (`RoomError`, changed epoch or version, cancelled game) discards the completion without applying or failing it.
+Khi runtime bật `mergeReply` (mặc định của `createAiRuntime`), `move` tìm trước nước đáp từ ảnh RAM ngoài SQL rồi ghi nước người và nước máy trong một giao dịch (không qua THINKING/settle); lỗi, hết 5 giây hoặc phiên bản đổi thì rơi về luồng dưới đây. `AiGames` (`apps/server/src/game/ai/ai-games.ts`) runs one engine search per computed turn. The search output is kept in memory as a `Completion` and is never searched again. A transient SQL failure (`AI_UNAVAILABLE`) on a still-current turn schedules a commit retry with the retained completion: the first retry waits 1s, then 2s, 4s, 8s, 16s, and every later retry waits the 30s cap. Each retry re-checks SQL authority before applying the completion. Lost authority (`RoomError`, changed epoch or version, cancelled game) discards the completion without applying or failing it.
 
 Undo, resign, drop and close cancel the pending retry timer and abort any running search. Epoch and version fences keep late callbacks from installing output into a newer game or a replacement reservation.
 

@@ -152,6 +152,12 @@ export class SqlAiTransactions implements AiTransactions {
       denied("AUTH_REQUIRED", 401);
     return { status: "active", actor: proof.actor };
   }
+  /** Định danh actor từ chứng chỉ yêu cầu (chưa khóa, chưa cấp quyền): chỉ dùng để chọn owner cho `run`, nơi mọi quyền được kiểm lại trong giao dịch. */
+  resolve(
+    proof: RoomRequestProof,
+  ): ReturnType<RoomSessionAuthorizer["resolve"]> {
+    return this.options.authorizer.resolve(proof);
+  }
   /**
    * Thực thi thao tác đọc chỉ đọc trong giao dịch có xác thực người dùng.
    */

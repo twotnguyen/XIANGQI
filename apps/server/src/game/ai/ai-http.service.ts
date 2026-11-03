@@ -14,7 +14,7 @@ interface Options {
     AiGames,
     "read" | "create" | "move" | "resign" | "retry" | "undo"
   >;
-  transactions: Pick<SqlAiTransactions, "read">;
+  transactions: Pick<SqlAiTransactions, "read" | "resolve">;
   reservations: Pick<AiReservations, "check" | "held">;
   bootId: string;
   control: {
@@ -93,33 +93,30 @@ export class AiHttpService implements AiHttpApi {
   read(origin: Human, gameId: string): Promise<AiHttpResult> {
     return this.result(originCopy(origin), gameId);
   }
+  /**
+   * Một giao dịch duy nhất: `run` khóa actor, kiểm tab điều khiển (TAB_READ_ONLY nếu chỉ xem), kiểm ván còn giữ
+   * và kiểm lại quyền trước COMMIT, nên không cần đọc kiểm trước/sau. Phản hồi là snapshot đã COMMIT.
+   */
   private async mutate(
     supplied: Human,
     work: (owner: string, origin: Human) => Promise<AiSnapshot>,
     memberOnly = false,
   ): Promise<AiHttpResult> {
     const origin = originCopy(supplied);
-    const { owner, control, kind } = await this.options.transactions.read(
-      origin.proof,
-      async (scope, owner) => {
-        // P2 Undo chỉ dành cho thành viên; loại actor lấy từ phiên đã xác thực.
-        if (memberOnly && scope.actor.kind !== "member")
-          sessionNotReady("AI_FORBIDDEN", 403);
-        const control = await this.options.control.inspect(scope, origin);
-        if (control.mode !== "controller") sessionNotReady("TAB_READ_ONLY");
-        return { owner, control, kind: scope.actor.kind };
+    const actor = await this.options.transactions.resolve(origin.proof);
+    // P2 Undo chỉ dành cho thành viên; loại actor lấy từ phiên đã xác thực.
+    if (memberOnly && actor.kind !== "member")
+      sessionNotReady("AI_FORBIDDEN", 403);
+    const committed = await work(actor.userId, origin);
+    return {
+      snapshot: forActor(committed, actor.kind),
+      control: {
+        mode: "controller",
+        reason: null,
+        generation: origin.tab.generation,
       },
-    );
-    const committed = await work(owner, origin);
-    // A terminal commit may have been the guest's final release, which ends its session; this request already proved authority, so return the canonical committed snapshot without re-reading the session.
-    if (committed.status !== "ACTIVE" && committed.status !== "FINALIZING")
-      return {
-        snapshot: forActor(committed, kind),
-        control,
-        serverNow: new Date().toISOString(),
-      };
-    // Reauthorize the response and read canonical RAM; never return a captured pre-commit board.
-    return this.result(origin, committed.id);
+      serverNow: new Date().toISOString(),
+    };
   }
   /**
    * Tạo ván cờ AI mới theo cấp độ và phe lựa chọn.

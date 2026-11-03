@@ -48,6 +48,8 @@ export interface AiOptions {
   engine: Pick<EngineWorker, "ready" | "search">;
   transactions: AiTransactions;
   randomSide?: () => Side;
+  /** Bật: tìm nước đáp của máy trước rồi ghi nước người + nước máy trong một giao dịch (runtime thật bật; mặc định tắt). */
+  mergeReply?: boolean;
 }
 export class AiError extends Error {
   constructor(
@@ -243,7 +245,6 @@ export class AiGames {
         throw new AiError("AI_INPUT_INVALID");
       const id = randomUUID();
       await tx.reserve(id);
-      await tx.check(id);
       if (this.closed) throw new AiError("AI_CLOSED");
       const position = serializePosition(initialPosition());
       const game: Game = {
@@ -504,7 +505,76 @@ export class AiGames {
     return result;
   }
   /**
-   * Người chơi thực hiện một nước đi cờ, kiểm tra luật và kích hoạt engine AI suy nghĩ nước đáp trả nếu ván chưa kết thúc.
+   * Tìm trước nước đáp của máy ngoài SQL và ngoài owner gate, dựa trên ảnh RAM. Kết quả chỉ là đề xuất: giao dịch
+   * `move` kiểm lại phiên bản, quyền và luật rồi mới ghi; mọi lỗi/hết giờ trả `null` để rơi về luồng THINKING + settle.
+   */
+  private async prefetchReply(
+    owner: string,
+    id: string,
+    input: { version: number; move: Move },
+  ): Promise<{
+    position: string;
+    telemetry: AiTelemetry;
+  } | null> {
+    const abort = new AbortController();
+    const timer = setTimeout(() => abort.abort(), 5000);
+    try {
+      const game = this.find(owner, id);
+      const { snapshot } = game;
+      if (
+        this.closed ||
+        snapshot.version !== input.version ||
+        snapshot.status !== "ACTIVE" ||
+        snapshot.engineState !== "IDLE" ||
+        parsePosition(snapshot.position).turn !== snapshot.actualSide
+      )
+        return null;
+      const after = serializePosition(
+        playMove(parsePosition(snapshot.position), input.move),
+      );
+      const history = [...snapshot.history, after];
+      if (ending(history.map(parsePosition))) return null;
+      await this.options.engine.ready();
+      const result = await Promise.race([
+        this.options.engine.search(
+          {
+            position: after,
+            side: parsePosition(after).turn,
+            level: snapshot.level,
+            history,
+            randomSeed: randomInt(0x100000000),
+          },
+          { signal: abort.signal, onProgress: () => {} },
+        ),
+        new Promise<never>((_, reject) =>
+          abort.signal.addEventListener("abort", () => reject(new Error()), {
+            once: true,
+          }),
+        ),
+      ]);
+      if (!result.move || result.terminal) return null;
+      return {
+        position: serializePosition(
+          playMove(parsePosition(after), result.move),
+        ),
+        telemetry: {
+          taskVersion: game.epoch + 1,
+          completedDepth: result.completedDepth,
+          targetDepth: result.targetDepth,
+          nodes: result.nodes,
+          elapsedMs: result.elapsedMs,
+          appliedMove: result.move,
+        },
+      };
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  /**
+   * Người chơi thực hiện một nước đi cờ. Máy tìm nước đáp trước, rồi nước người và nước máy được ghi trong MỘT giao dịch;
+   * nếu không có đề xuất hợp lệ thì ghi THINKING và kích hoạt engine như trước.
    */
   move(
     owner: string,
@@ -514,6 +584,9 @@ export class AiGames {
   ): Promise<AiSnapshot> {
     return this.track(
       (async () => {
+        const reply = this.options.mergeReply
+          ? await this.prefetchReply(owner, id, input)
+          : null;
         const result = await this.run(owner, origin, async (tx) => {
           const game = this.find(owner, id);
           this.check(game, input.version);
@@ -536,7 +609,13 @@ export class AiGames {
           this.apply(draft, serializePosition(next));
           const outcome = ending(draft.history.map(parsePosition));
           if (outcome) this.finalizing(draft, outcome);
-          else this.thinking(draft);
+          else if (reply) {
+            draft.telemetry = reply.telemetry;
+            draft.engineError = null;
+            this.apply(draft, reply.position);
+            const replyOutcome = ending(draft.history.map(parsePosition));
+            if (replyOutcome) this.finalizing(draft, replyOutcome);
+          } else this.thinking(draft);
           return this.staged(game, draft, game.epoch + 1);
         });
         return this.afterTransition(owner, result, origin);

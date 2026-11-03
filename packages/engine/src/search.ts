@@ -29,6 +29,12 @@ const values: Record<PieceType, number> = {
   pawn: 100,
 };
 const MATE = 100000;
+/** Biên điểm (centipawn) để máy chọn ngẫu nhiên giữa các nước gần tốt nhất; khai cuộc nhân đôi. */
+const RANDOM_MARGIN: Record<EngineLevel, number> = {
+  easy: 250,
+  medium: 50,
+  hard: 30,
+};
 const expired = Symbol("search deadline");
 export interface SearchOptions {
   now?: () => number;
@@ -102,36 +108,42 @@ function evaluate(position: Position) {
 function same(a: Move, b: Move | undefined) {
   return b && a.from === b.from && a.to === b.to;
 }
-function moveKey(position: Position, move: Move): string {
-  return position.turn + ":" + move.from + ":" + move.to;
+function moveKey(position: Position, move: Move): number {
+  return (position.turn === "red" ? 0 : 8100) + move.from * 90 + move.to;
 }
 function ordered(
   position: Position,
   moves: Move[],
   preferred?: Move,
   killers: readonly Move[] = [],
-  history?: ReadonlyMap<string, number>,
+  history?: Int32Array,
 ) {
-  const priority = new Map<Move, number>();
-  for (const move of moves)
-    priority.set(
-      move,
-      same(move, preferred)
-        ? 1e9
-        : position.board[move.to]
-          ? 1e8 +
-            10 * values[position.board[move.to]!.type] -
-            values[position.board[move.from]!.type]
-          : same(move, killers[0])
-            ? 1e7
-            : same(move, killers[1])
-              ? 9e6
-              : (history?.get(moveKey(position, move)) ?? 0),
-    );
-  return moves.sort(
+  const board = position.board;
+  const priority = new Float64Array(moves.length);
+  for (let index = 0; index < moves.length; index++) {
+    const move = moves[index]!;
+    const target = board[move.to];
+    priority[index] = same(move, preferred)
+      ? 1e9
+      : target
+        ? 1e8 + 10 * values[target.type] - values[board[move.from]!.type]
+        : same(move, killers[0])
+          ? 1e7
+          : same(move, killers[1])
+            ? 9e6
+            : (history?.[moveKey(position, move)] ?? 0);
+  }
+  const order = Array.from(moves.keys());
+  order.sort(
     (a, b) =>
-      priority.get(b)! - priority.get(a)! || a.from - b.from || a.to - b.to,
+      priority[b]! - priority[a]! ||
+      moves[a]!.from - moves[b]!.from ||
+      moves[a]!.to - moves[b]!.to,
   );
+  const sorted = order.map((index) => moves[index]!);
+  for (let index = 0; index < sorted.length; index++)
+    moves[index] = sorted[index]!;
+  return moves;
 }
 type Entry = {
   depth: number;
@@ -178,7 +190,7 @@ export function searchPosition(
   };
   const table = new Map<string, Entry>();
   const killers = new Map<number, Move[]>();
-  const cutoffHistory = new Map<string, number>();
+  const cutoffHistory = new Int32Array(2 * 8100);
   const serialized = history.map(serializePosition);
   const identity = (fen: string) => fen.split(" ").slice(0, 2).join(" ");
   const occurrences = new Map<string, number>();
@@ -315,9 +327,9 @@ export function searchPosition(
             );
           }
           const historyKey = moveKey(position, candidate);
-          cutoffHistory.set(
-            historyKey,
-            Math.min(1e6, (cutoffHistory.get(historyKey) ?? 0) + depth * depth),
+          cutoffHistory[historyKey] = Math.min(
+            1e6,
+            cutoffHistory[historyKey]! + depth * depth,
           );
         }
         break;
@@ -325,11 +337,14 @@ export function searchPosition(
     }
     check();
     if (rootChoices?.length && move) {
-      // 20 points is one fifth of a pawn; never dilute a proven mate/terminal score.
+      const randomMargin =
+        RANDOM_MARGIN[request.level] * (history.length <= 9 ? 2 : 1);
+      // Chọn ngẫu nhiên trong các nước gần điểm tốt nhất để cùng một khai cuộc không lặp lại nước đi;
+      // không bao giờ làm loãng điểm chiếu bí/kết thúc đã chứng minh.
       const choices = rootChoices.filter((candidate) =>
         Math.abs(score) >= MATE - 1000
           ? candidate.score === score
-          : candidate.score >= score - 20 &&
+          : candidate.score >= score - randomMargin &&
             Math.abs(candidate.score) < MATE - 1000,
       );
       move = choices[Math.floor(random() * choices.length)]!.move;

@@ -698,7 +698,25 @@ export function RoomPage({
       )
         return;
       if (action === "leave") {
-        await client.leave(roomId, view.version, control);
+        const prior = latest.current;
+        try {
+          await client.leave(roomId, view.version, control);
+        } catch (error) {
+          if (!(error instanceof RoomRequestError) || error.code !== "VERSION_STALE" ||
+              (view.room.kind ?? "CUSTOM") === "CUSTOM" || !prior?.match || prior.match.status === "ACTIVE") throw error;
+          const peer = connection.current;
+          if (!peer || !connectedRef.current) throw error;
+          const fresh = await peer.refresh();
+          if (epoch.current !== requestEpoch || connection.current !== peer ||
+              !connectedRef.current || fresh.match?.id !== prior.match.id ||
+              fresh.match.status === "ACTIVE" || fresh.control.mode !== "writable" ||
+              !acceptSnapshot(fresh)) throw error;
+          const freshControl = await peer.getControl();
+          if (epoch.current !== requestEpoch || connection.current !== peer ||
+              !ownsHttpControl() || latest.current?.control.generation !== freshControl.generation ||
+              latest.current?.match?.id !== prior.match.id || latest.current.match.status === "ACTIVE") throw error;
+          await client.leave(roomId, latest.current.version, freshControl);
+        }
         if (epoch.current === requestEpoch) onLeft();
       } else if (action === "switch" || action === "transfer-host") {
         const seatCommand =
@@ -1243,7 +1261,11 @@ export function RoomPage({
         </Dialog>
       </fieldset>
       <div className="xq-room-content">
-        <section className="xq-room-arena" aria-label="Ghế và trạng thái phòng">
+        <section
+          className="xq-room-arena"
+          aria-label="Ghế và trạng thái phòng"
+          style={{ visibility: matched && resultInModal ? "hidden" : undefined }}
+        >
           {error &&
             (connected ? (
               <Notice tone="error" message={error} />
@@ -1682,7 +1704,6 @@ export function RoomPage({
           leaving={busy}
           canLeave={ownsHttpControl()}
           error={leaveError}
-          rematch={rematchPanel}
           onStay={() => {
             setDismissedResult(snapshot.match!.id);
             setLeaveError("");

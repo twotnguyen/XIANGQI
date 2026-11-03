@@ -117,6 +117,8 @@ function AiGameView(props: AiGameProps) {
       ENGINE_FAILURE: "Máy cờ gặp sự cố",
     }[snapshot.outcome.reason];
   let appliedLabel = "Chưa có số liệu";
+  // Nước máy vừa đi chỉ được vẽ vết khi khớp đúng lịch sử đã lưu (không vẽ vết cũ sau nước của người chơi).
+  let engineMove: Move | null = null;
   if (snapshot.telemetry?.appliedMove && snapshot.history.length > 1) {
     try {
       const before = parsePosition(
@@ -126,8 +128,10 @@ function AiGameView(props: AiGameProps) {
       if (
         before.board[move.from] &&
         serializePosition(playMove(before, move)) === snapshot.position
-      )
+      ) {
         appliedLabel = formatPositionMove(before, move);
+        engineMove = move;
+      }
     } catch {
       // Ignore a move that does not match the committed history.
     }
@@ -199,7 +203,7 @@ function AiGameView(props: AiGameProps) {
             playerSide={snapshot.actualSide}
             disabled={!available || !active || snapshot.engineState !== "IDLE"}
             pending={pending || working}
-            lastMove={props.lastMove}
+            lastMove={engineMove ?? props.lastMove}
             onMove={(from, to) => {
               if (active && snapshot.engineState === "IDLE")
                 void request(() => {

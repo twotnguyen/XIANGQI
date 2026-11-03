@@ -89,6 +89,7 @@ async function fixture(custom?: AiSocketDependencies["open"]) {
           takeover: vi.fn(async () => control),
           watch: vi.fn(async () => snapshot(control)),
           read: vi.fn(async () => snapshot(control)),
+          peek: vi.fn(() => null),
           close: vi.fn(async () => {}),
         };
         ports.push(port);
@@ -149,6 +150,7 @@ it("publishes only the allowed telemetry fields to a member socket", async () =>
       takeover: async () => state,
       watch: async () => value,
       read: async () => value,
+      peek: () => null,
       close: async () => {},
     };
   });
@@ -282,6 +284,7 @@ it("closes late disconnected admission exactly once without connecting its port"
     takeover: vi.fn(),
     watch: vi.fn(),
     read: vi.fn(),
+    peek: vi.fn(),
     close: vi.fn(async () => {}),
   };
   gate.resolve(port);
@@ -338,4 +341,44 @@ it("expires fixed sessions with a static message and disconnects", async () => {
     message: "Phiên chơi với máy không hợp lệ",
   });
   await disconnected;
+});
+
+it("pushes a RAM change to the socket without waiting for the SQL read", async () => {
+  let ram = 1;
+  const f = await fixture(async (socket, p) => {
+    const state: AiSocketControl = {
+      tabId: p.tabId,
+      connectionId: socket.id,
+      generation: 1,
+      mode: "controller",
+      gameId: randomUUID(),
+      graceUntil: null,
+    };
+    const stale = snapshot(state);
+    return {
+      connect: async () => state,
+      refresh: async () => state,
+      takeover: async () => state,
+      watch: async () => stale,
+      // Đọc SQL chậm hơn thời hạn kiểm của test.
+      read: () =>
+        new Promise<AiSocketSnapshot>((r) => setTimeout(() => r(stale), 1500)),
+      peek: () => {
+        const { control: _control, ...rest } = snapshot(state);
+        void _control;
+        return { ...rest, snapshot: { ...rest.snapshot, version: ram } };
+      },
+      close: async () => {},
+    };
+  });
+  const client = f.client();
+  const seen: number[] = [];
+  client.on("ai.snapshot", (value: AiSocketSnapshot) =>
+    seen.push(value.snapshot.version),
+  );
+  client.connect();
+  await once(client, "connect");
+  await vi.waitFor(() => expect(seen).toContain(1));
+  ram = 2;
+  await vi.waitFor(() => expect(seen).toContain(2), { timeout: 600 });
 });

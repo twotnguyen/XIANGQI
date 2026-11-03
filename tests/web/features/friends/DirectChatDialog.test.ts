@@ -147,6 +147,18 @@ it("hiển thị URL dạng văn bản và gửi sticker bằng shortcode", asyn
   await waitFor(() => expect(client.sendMessage).toHaveBeenCalledWith(FRIEND, ":clap:", expect.any(String)));
 });
 
+it("gửi bằng Enter, giữ Shift+Enter để xuống dòng và không gửi khi đang gõ IME", async () => {
+  const client = fakeClient({});
+  renderChat(client);
+  const input = screen.getByLabelText("Nội dung tin nhắn") as HTMLTextAreaElement;
+  fireEvent.change(input, { target: { value: "dòng một\ndòng hai" } });
+  fireEvent.keyDown(input, { key: "Enter", shiftKey: true });
+  fireEvent.keyDown(input, { key: "Enter", isComposing: true });
+  expect(client.sendMessage).not.toHaveBeenCalled();
+  fireEvent.keyDown(input, { key: "Enter" });
+  await waitFor(() => expect(client.sendMessage).toHaveBeenCalledWith(FRIEND, "dòng một\ndòng hai", expect.any(String)));
+});
+
 it("rejects an empty draft and preserves the draft after delivery fails", async () => {
   const client = fakeClient({
     sendMessage: vi.fn(async () => {

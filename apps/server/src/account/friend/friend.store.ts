@@ -223,7 +223,7 @@ export class FriendTx {
         `SELECT r.id, p.user_id, p.username, p.display_name, r.created_at, r.expires_at
            FROM xiangqi_social.friend_requests r
            JOIN public.profiles p ON p.user_id = r.${column}
-          WHERE r.status='PENDING' AND r.${other}=$1
+          WHERE r.status='PENDING' AND r.expires_at>clock_timestamp() AND r.${other}=$1
           ORDER BY r.created_at DESC`,
         [userId],
       )

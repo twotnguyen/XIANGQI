@@ -301,6 +301,17 @@
   width: 100%;
   font-size: 12px;
 }
+.card-ai { --mode-button-bg: var(--color-info-bg); --mode-button-border: var(--color-info); }
+.card-quick { --mode-button-bg: var(--color-success-bg); --mode-button-border: var(--color-success); }
+.card-ranked { --mode-button-bg: var(--color-danger-bg); --mode-button-border: var(--color-danger); }
+.xq-mode-card-target .xq-card-btn-wrap .xq-button-secondary {
+  background: var(--mode-button-bg);
+  border-color: var(--mode-button-border);
+}
+.xq-mode-card-target .xq-card-btn-wrap .xq-button-secondary:hover:not([aria-disabled="true"]) {
+  background: color-mix(in srgb, var(--mode-button-bg) 80%, var(--color-ink));
+  border-color: var(--mode-button-border);
+}
 .xq-card-btn-wrap .xq-help {
   font-size: 12px;
 }

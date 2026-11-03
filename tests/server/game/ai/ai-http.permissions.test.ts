@@ -65,6 +65,7 @@ function serviceFor(kind: "member" | "guest") {
       async read(_proof, work) {
         return work(scope, owner);
       },
+      resolve: async () => scope.actor,
     },
     reservations: { check: vi.fn(), held: vi.fn() },
     bootId: "44444444-4444-4444-8444-444444444444",

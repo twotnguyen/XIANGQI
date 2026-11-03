@@ -80,6 +80,11 @@
     filter 180ms ease;
 }
 
+/* Bóng SVG của quân thường vẽ thành ô vuông tối mờ quanh quân; chỉ quân đang chọn/kéo giữ bóng. */
+.xq-board-piece:not(.xq-board-piece-selected):not(.xq-board-ghost) {
+  filter: none;
+}
+
 /* Nhấc nhẹ nhàng đứng tại chỗ với vầng sáng hoàng kim nổi bật */
 .xq-board-piece-selected {
   transform: scale(1.06);

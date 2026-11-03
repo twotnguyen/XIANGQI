@@ -103,9 +103,9 @@ export class FriendService {
 
   /** Lời mời kết bạn đang chờ, hai chiều. */
   async listRequests(userId: string): Promise<FriendRequestView[]> {
-    return this.store.withUser(userId, async (tx) => {
+    // Poll 2 giây/tab: chỉ đọc (lọc hạn trong SQL), không giữ actorLock để không chặn lệnh ván/phòng của chính người này.
+    return this.store.read(async (tx) => {
       await requireMember(tx, userId);
-      await tx.expireStale();
       const incoming = await tx.listPendingRequests(userId, "incoming");
       const outgoing = await tx.listPendingRequests(userId, "outgoing");
       return [
@@ -173,7 +173,7 @@ export class FriendService {
 
   /** Bạn bè kèm trạng thái presence (offline/online/in-match). */
   async listFriends(userId: string): Promise<FriendPeer[]> {
-    return this.store.withUser(userId, async (tx) => {
+    return this.store.read(async (tx) => {
       await requireMember(tx, userId);
       return tx.listFriendRows(userId);
     });
@@ -227,9 +227,8 @@ export class FriendService {
 
   /** Lời mời vào phòng đang chờ người dùng phản hồi. */
   async listRoomInvites(userId: string): Promise<RoomInviteView[]> {
-    return this.store.withUser(userId, async (tx) => {
+    return this.store.read(async (tx) => {
       await requireMember(tx, userId);
-      await tx.expireStale();
       return tx.listPendingRoomInvites(userId);
     });
   }

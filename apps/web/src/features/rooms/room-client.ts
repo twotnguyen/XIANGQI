@@ -1219,3 +1219,85 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
     },
   };
 }
+
+/**
+ * Rời phòng mà không cần mở trang phòng (nút "Thoát phòng" ở Sảnh).
+ * Kết nối tạm và snapshot được mở sẵn ngay khi gọi hàm này (lúc hiện hộp xác nhận)
+ * để `leave()` chỉ còn lệnh rời phòng; quyền điều khiển chỉ bị giành khi `leave()`
+ * được gọi và phòng đang mở ở tab khác. Rời giữa ván vẫn được server tính là đầu hàng.
+ */
+export function prepareLeaveFromLobby(
+  client: RoomClient,
+  getProof: () => Promise<PublicRoomAuthProof>,
+  roomId: string,
+  connect: typeof connectRoom = connectRoom,
+  timeoutMs = 10_000,
+): { leave(): Promise<void>; cancel(): void } {
+  let latest: RoomSnapshot | null = null;
+  let wake: (() => void) | null = null;
+  let failure = "";
+  let closedMessage = "";
+  let running: Promise<void> | null = null;
+  const notify = () => wake?.();
+  const connection = connect({
+    roomId,
+    getProof,
+    onSnapshot: (snapshot) => {
+      failure = "";
+      latest = snapshot;
+      notify();
+    },
+    onConnection: (connected) => {
+      if (!connected) latest = null;
+      notify();
+    },
+    onError: (message) => {
+      failure = message;
+      notify();
+    },
+    onClosed: (message) => {
+      closedMessage = message;
+      notify();
+    },
+  });
+  const until = async (ready: () => boolean, deadline: number) => {
+    while (!ready()) {
+      if (closedMessage) throw new Error(closedMessage);
+      const left = deadline - Date.now();
+      if (left <= 0)
+        throw new Error(failure || "Kết nối phòng quá hạn. Vui lòng thử lại.");
+      await new Promise<void>((resolve) => {
+        const timer = setTimeout(resolve, left);
+        wake = () => {
+          clearTimeout(timer);
+          resolve();
+        };
+      });
+      wake = null;
+    }
+  };
+  const writable = () =>
+    (latest as RoomSnapshot | null)?.control.mode === "writable";
+  async function run() {
+    const deadline = Date.now() + timeoutMs;
+    try {
+      await until(() => latest !== null, deadline);
+      if (!writable()) await connection.takeover();
+      await until(writable, deadline);
+      const snapshot = latest as RoomSnapshot | null;
+      if (!snapshot) throw new Error("Chưa có trạng thái phòng.");
+      await client.leave(
+        roomId,
+        snapshot.version,
+        await connection.getControl(),
+      );
+    } finally {
+      connection.close();
+    }
+  }
+  return {
+    cancel: () => connection.close(),
+    // Bấm xác nhận nhiều lần dùng chung một lần chạy, không gửi lệnh trùng.
+    leave: () => (running ??= run()),
+  };
+}

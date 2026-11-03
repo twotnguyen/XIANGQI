@@ -121,22 +121,45 @@ describe("independent media device updates", () => {
     expect(screen.getByRole("button", { name: "Bật mic" })).toBeTruthy();
   });
 
-  it("stops capture when the document becomes hidden", async () => {
+  it("keeps camera and mic on when the document becomes hidden", async () => {
     const { client } = harness();
     render(panel(client));
     const user = userEvent.setup();
     await settle();
     await user.click(screen.getByRole("button", { name: "Bật camera" }));
     await settle();
-    const rooms = [...live.state.rooms];
+    await user.click(screen.getByRole("button", { name: "Bật mic" }));
+    await settle();
     vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
-    await act(async () =>
-      document.dispatchEvent(new Event("visibilitychange")),
+    await act(async () => document.dispatchEvent(new Event("visibilitychange")));
+    await waitFor(() =>
+      expect(live.state.rooms.some((room) => room.connected && room.camera && room.mic)).toBe(true),
     );
-    expect(
-      rooms.every((room) => room.tracks.every((track) => track.stopped)),
-    ).toBe(true);
-    expect(screen.getByRole("button", { name: "Bật camera" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Tắt camera" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Tắt mic" })).toBeTruthy();
+  });
+
+  it("completes a pending microphone enable when the document becomes hidden", async () => {
+    const { client } = harness();
+    render(panel(client));
+    const user = userEvent.setup();
+    await settle();
+    await user.click(screen.getByRole("button", { name: "Bật camera" }));
+    await settle();
+    const gate = deferred<void>();
+    live.state.devicePlan = (kind, enabled) =>
+      kind === "audio" && enabled ? gate.promise : undefined;
+    await user.click(screen.getByRole("button", { name: "Bật mic" }));
+    vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+    await act(async () => document.dispatchEvent(new Event("visibilitychange")));
+    await act(async () => {
+      gate.resolve();
+      await flush();
+    });
+    await waitFor(() =>
+      expect(live.state.rooms.some((room) => room.connected && room.camera && room.mic)).toBe(true),
+    );
+    expect(screen.getByRole("button", { name: "Tắt mic" })).toBeTruthy();
   });
 
   it("keeps capture on a side swap but stops it when the opponent changes", async () => {

@@ -185,13 +185,6 @@ describe.skipIf(!url)("friendships", () => {
       [sent.id],
     );
     expect(await service.listRequests(b)).toEqual([]);
-    const row = (
-      await pool.query(
-        "SELECT status FROM xiangqi_social.friend_requests WHERE id=$1",
-        [sent.id],
-      )
-    ).rows[0];
-    expect(row.status).toBe("EXPIRED");
     const resent = await service.sendRequest(a, "capfriend");
     expect(resent.id).not.toBe(sent.id);
   });

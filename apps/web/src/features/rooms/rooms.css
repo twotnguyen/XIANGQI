@@ -509,7 +509,8 @@
   font-size: 12px;
 }
 .is-playing .xq-room-board {
-  max-width: 560px;
+  width: 80%;
+  max-width: 448px;
 }
 @media (max-width: 760px) {
   .xq-ui .xq-main:has(.xq-room-page.is-playing) {
@@ -533,9 +534,6 @@
   }
   .is-playing .xq-room-seat h2 {
     font-size: 14px;
-  }
-  .is-playing .xq-room-board {
-    max-width: 560px;
   }
 }
 
@@ -1810,8 +1808,7 @@
     align-content: start;
   }
   .is-playing .xq-room-board {
-    width: 100%;
-    max-width: min(560px, max(240px, calc((100dvh - 430px) * 0.9)));
+    max-width: min(448px, max(192px, calc((100dvh - 430px) * 0.72)));
     justify-self: center;
   }
   .is-playing .xq-room-invite {
@@ -1966,9 +1963,6 @@
   position: relative;
   display: grid;
 }
-.is-playing .xq-room-board .xq-board-piece:not(.xq-board-piece-selected):not(.xq-board-ghost) {
-  filter: none;
-}
 .is-playing .xq-room-board .xq-board-svg,
 .is-playing .xq-room-board .xq-board-turn {
   grid-column: 1;
@@ -2040,5 +2034,70 @@
   .is-playing .xq-room-board .xq-board-legend summary {
     white-space: nowrap;
     font-size: 13px;
+  }
+}
+
+@media (min-width: 1360px) {
+  .is-playing .xq-room-arena {
+    grid-template-columns: minmax(160px, 200px) minmax(0, 1fr) minmax(160px, 200px);
+    grid-template-rows: auto auto auto;
+  }
+  .is-playing .xq-room-arena > :not(.xq-room-seats, .match-clocks, .xq-room-game) {
+    grid-column: 1 / -1;
+  }
+  .is-playing .xq-room-seats,
+  .is-playing .match-clocks,
+  .is-playing .xq-room-game {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    pointer-events: none;
+  }
+  .is-playing .xq-room-seats {
+    gap: 12px;
+    grid-row: 1;
+    z-index: 1;
+  }
+  .is-playing .xq-room-seats > .red,
+  .is-playing .match-clocks__side:first-child {
+    grid-column: 1;
+  }
+  .is-playing .xq-room-seats > .black,
+  .is-playing .match-clocks__side:nth-child(2) {
+    grid-column: 3;
+  }
+  .is-playing .match-clocks {
+    grid-row: 2;
+    z-index: 1;
+  }
+  .is-playing .match-clocks__pair {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+  }
+  .is-playing .match-clocks__notice {
+    grid-column: 1 / -1;
+  }
+  .is-playing .xq-room-game {
+    grid-row: 1 / 4;
+    grid-template-rows: subgrid;
+  }
+  .is-playing .xq-room-board {
+    grid-row: 1 / 4;
+    width: 100%;
+    max-width: min(560px, max(240px, calc((100dvh - 225px) * 0.9)));
+  }
+  .is-playing .xq-room-board .xq-board-legend {
+    top: auto;
+    bottom: 0;
+    max-height: 40%;
+  }
+  .is-playing section.match-actions {
+    grid-row: 3;
+  }
+  .is-playing .xq-room-seats > *,
+  .is-playing .match-clocks__pair > *,
+  .is-playing .xq-room-game > * {
+    pointer-events: auto;
   }
 }

@@ -58,6 +58,8 @@ function newerSnapshot(
     return previous;
   return next;
 }
+// Snapshot do POST tạo ván trả về: trang ván hiện bàn cờ ngay, không chờ GET đọc lại (GET vẫn chạy để đồng bộ).
+const seeds = new Map<string, AiGameSnapshot>();
 
 /**
  * Tạo ván mới trên server (phe và mức do người chơi chọn) và trả về ID ván server cấp.
@@ -79,6 +81,7 @@ export async function startAiGame(
     await connection.getControl();
     const client = makeAiClient(authorizedFetch, () => connection.getControl());
     const response = await client.create(selection);
+    seeds.set(response.snapshot.id, response.snapshot);
     return response.snapshot.id;
   } finally {
     connection.disconnect();
@@ -103,14 +106,27 @@ export async function resignActiveAiGame(
   try {
     await connection.watch(gameId);
     const client = makeAiClient(authorizedFetch, () => connection.getControl());
-    const { snapshot, control } = await client.read(gameId);
-    if (snapshot.status === "FINALIZING")
-      throw Error("Kết quả đang chờ lưu. Quay lại ván để thử lưu lại.");
-    if (snapshot.status !== "ACTIVE") return;
-    if (control.mode !== "controller") throw Error("Tab này chỉ có thể xem.");
-    const response = await client.resign(gameId, snapshot.version);
-    if (response.snapshot.status === "FINALIZING")
-      throw Error("Kết quả đang chờ lưu. Quay lại ván để thử lưu lại.");
+    // Máy có thể vừa đi xong giữa lúc đọc và đầu hàng làm version đổi: đọc lại rồi thử tiếp.
+    for (let attempt = 0; ; attempt++) {
+      const { snapshot, control } = await client.read(gameId);
+      if (snapshot.status === "FINALIZING")
+        throw Error("Kết quả đang chờ lưu. Quay lại ván để thử lưu lại.");
+      if (snapshot.status !== "ACTIVE") return;
+      if (control.mode !== "controller") throw Error("Tab này chỉ có thể xem.");
+      try {
+        const response = await client.resign(gameId, snapshot.version);
+        if (response.snapshot.status === "FINALIZING")
+          throw Error("Kết quả đang chờ lưu. Quay lại ván để thử lưu lại.");
+        return;
+      } catch (error) {
+        const code = (error as { code?: string }).code;
+        if (
+          attempt >= 2 ||
+          (code !== "VERSION_STALE" && code !== "AI_VERSION_STALE")
+        )
+          throw error;
+      }
+    }
   } finally {
     connection.disconnect();
   }
@@ -166,7 +182,10 @@ export function AiGamePage({
   useEffect(() => {
     let live = true;
     let lastControl: AiControl | null = null;
-    setSnapshot(null);
+    const seed = seeds.get(gameId) ?? null;
+    // Giữ tạm để lần chạy effect thứ hai (StrictMode) vẫn thấy seed.
+    setTimeout(() => seeds.delete(gameId), 1000);
+    setSnapshot(seed);
     setControl(null);
     setConnected(false);
     setGone(false);

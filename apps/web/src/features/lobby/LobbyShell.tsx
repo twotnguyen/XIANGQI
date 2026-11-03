@@ -6,7 +6,6 @@ import {
   ErrorState,
   Skeleton,
   TextField,
-  Tooltip,
 } from "../../shared/ui/primitives.js";
 import { AppIcon } from "../../shared/ui/AppIcon.js";
 import "./LobbyShell.css";
@@ -245,11 +244,9 @@ export function LobbyShell({
               <p>Gặp gỡ đối thủ mới trong những ván giao hữu.</p>
             </div>
             <div className="xq-card-btn-wrap">
-              <Tooltip text={blockedReason ?? "Tìm đối thủ ngẫu nhiên"}>
-                <Button variant="secondary" onClick={() => onMatchmaking?.("CASUAL")} disabledReason={blockedReason}>
-                  Ghép trận
-                </Button>
-              </Tooltip>
+              <Button variant="secondary" onClick={() => onMatchmaking?.("CASUAL")} disabledReason={blockedReason}>
+                Ghép trận
+              </Button>
             </div>
           </article>
 
@@ -270,11 +267,9 @@ export function LobbyShell({
               <p>Thi đấu và chinh phục thứ hạng.</p>
             </div>
             <div className="xq-card-btn-wrap">
-              <Tooltip text={blockedReason ?? (guest ? "Đăng ký tài khoản để đánh hạng." : "Tìm trận xếp hạng")}>
-                <Button variant="secondary" onClick={() => onMatchmaking?.("RANKED")} disabledReason={blockedReason ?? (guest ? "Đăng ký tài khoản để đánh hạng." : undefined)}>
-                  Đánh hạng
-                </Button>
-              </Tooltip>
+              <Button variant="secondary" onClick={() => onMatchmaking?.("RANKED")} disabledReason={blockedReason ?? (guest ? "Đăng ký tài khoản để đánh hạng." : undefined)}>
+                Đánh hạng
+              </Button>
             </div>
           </article>
         </div>

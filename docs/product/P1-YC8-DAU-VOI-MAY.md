@@ -99,7 +99,7 @@ Tên kỹ thuật engineState/status cụ thể theo contract hiện có; không
 - Hết ngân sách trước depth mục tiêu: trả nước tốt nhất đã tìm được hợp lệ, ghi depth thực tế; không giả depth6 vì cấu hình target6.
 - Không có một iteration hoàn tất vẫn phải có nước hợp lệ đã xác định theo đường engine thực; không chọn nước bên client hoặc nhận worker kết quả ngoài thế gốc.
 - Budget tìm kiếm, overhead hàng đợi/khởi tạo worker và độ trễ mạng là các số khác nhau. Báo riêng phạm vi đo; không gọi compute2.999ms là end-to-end≤3.000ms nếu còn queue/network chưa đo.
-- Ngưỡng10giây là watchdog sự cố không phản hồi, không thay ngân sách300/1000/3000ms hoặc cách đo p95. Không tăng ngưỡng để “làm xanh” bộ đo.
+- Ngưỡng10giây là watchdog sự cố không phản hồi, không thay ngân sách300/1000/2000ms (Khó giảm xuống 2 giây theo yêu cầu 02/11/2026) hoặc cách đo p95. Không tăng ngưỡng để “làm xanh” bộ đo.
 - Một AI nặng không được chặn event loop xử lý online. Đánh giá contention/queue thật; worker riêng chưa đủ chứng minh không ảnh hưởng tài nguyên chung.
 - Độ khó cảm nhận là mục tiêu, không lời hứa cấp Khó bất bại. Bằng chứng bắt buộc gồm bộ mate độc lập và đấu máy20ván/cặp theo mục13.
 
@@ -367,7 +367,7 @@ Không còn câu hỏi chờ trong bốn mục này. Giữ No Hint, Undo chỉ t
 ### 18.1 Phạm vi mã hiện tại
 
 - Giữ `AiGames` trong RAM, `SqlAiTransactions`/`RoomTransactions.withRoom` và worker hiện có. Không checkpoint ACTIVE, engine ngoài, hint hoặc PV tương lai.
-- `EngineRequest.randomSeed` uint32 do server sinh cho mỗi lượt, cả ba cấp. Chọn trong các nước có điểm chính xác cách tối ưu tối đa20 điểm (1/5 Tốt); chỉ chọn điểm tối ưu khi có điểm mate/terminal. Không seed là đường xác định cho gate; seed cố định tái lập trong test.
+- `EngineRequest.randomSeed` uint32 do server sinh cho mỗi lượt, cả ba cấp. Chọn trong các nước có điểm chính xác cách tối ưu tối đa 250/50/30 điểm theo Dễ/Trung bình/Khó (nhân đôi ở khai cuộc, theo yêu cầu 02/11/2026 để máy đi khác nhau với cùng khai cuộc); chỉ chọn điểm tối ưu khi có điểm mate/terminal. Không seed là đường xác định cho gate; seed cố định tái lập trong test.
 - `onProgress` phát số đo thực sau iteration. `elapsedMs` là compute bên worker; script gate đo thêm wall time toàn bộ `await search()`, không gộp queue/khởi tạo/mạng vào số compute.
 - Snapshot telemetry gồm `taskVersion` (epoch), depth/nodes/compute và `appliedMove`; chỉ chủ thành viên nhận HTTP/socket. Không có số thì widget thu gọn mặc định hiện “Chưa có số liệu”; nước Việt chỉ hiện sau commit. Undo/Resign/Retry/fence loại dữ liệu tác vụ cũ.
 - Banner Sảnh có Bỏ ván cho thành viên và Khách, xác nhận mặc định focus Giữ ván. Tab khác không tự chiếm controller. Tab AI dùng cùng định danh tab của phiên (Web Locks phân biệt tab nhân đôi); refresh giữ quyền hiện hành, tab đã bị tiếp quản không tự giành lại. Sau terminal không còn vị trí, tab mới được tạo ván.

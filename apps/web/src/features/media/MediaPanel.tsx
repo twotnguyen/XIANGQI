@@ -128,7 +128,6 @@ export function MediaPanel({
     player,
     roomId,
     pair: "",
-    visible: true,
   });
   const pair = [seats.red, seats.black].filter(Boolean).sort().join(":");
   authority.current = {
@@ -137,7 +136,6 @@ export function MediaPanel({
     player,
     roomId,
     pair,
-    visible: document.visibilityState !== "hidden",
   };
   const stopIntent = useCallback(() => {
     intent.current = { camera: false, mic: false };
@@ -435,7 +433,6 @@ export function MediaPanel({
         if (
           epoch.current !== id ||
           !now.connected ||
-          !now.visible ||
           now.roomId !== expected.roomId ||
           now.pair !== expected.pair ||
           now.player !== expected.player ||
@@ -493,19 +490,13 @@ export function MediaPanel({
   }, [connected, invalidate, run, setDemand, stopIntent]);
 
   useEffect(() => {
-    const stopWhenHidden = () => {
-      if (document.visibilityState !== "hidden") {
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== "hidden")
         setVisibilityVersion((version) => version + 1);
-        return;
-      }
-      invalidate();
-      stopIntent();
-      setBusy(false);
     };
-    document.addEventListener("visibilitychange", stopWhenHidden);
-    return () =>
-      document.removeEventListener("visibilitychange", stopWhenHidden);
-  }, [invalidate, stopIntent]);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, []);
 
   const previousPair = useRef(pair);
   useEffect(() => {
@@ -546,11 +537,10 @@ export function MediaPanel({
               (devices.camera || devices.mic) &&
               authority.current.player &&
               authority.current.writable &&
-              authority.current.visible &&
               levelRef.current !== "NONE"
             )
               void run({ ...devices, level: levelRef.current });
-            else if (result.available && authority.current.visible)
+            else if (result.available)
               void run({ camera: false, mic: false, level: levelRef.current });
             else {
               invalidate();

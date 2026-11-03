@@ -39,12 +39,12 @@ export interface EngineResult {
  * Cấu hình giới hạn độ sâu tìm kiếm (depth) và thời gian tối đa (milliseconds) theo 3 cấp độ:
  * - easy: độ sâu 2, tối đa 300ms
  * - medium: độ sâu 4, tối đa 1000ms
- * - hard: độ sâu 6, tối đa 3000ms
+ * - hard: độ sâu 6, tối đa 2000ms
  */
 export const ENGINE_LIMITS = {
   easy: { depth: 2, milliseconds: 300 },
   medium: { depth: 4, milliseconds: 1000 },
-  hard: { depth: 6, milliseconds: 3000 },
+  hard: { depth: 6, milliseconds: 2000 },
 } as const;
 
 /**

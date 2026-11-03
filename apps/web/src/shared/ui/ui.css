@@ -375,11 +375,12 @@
   box-shadow: var(--shadow-3);
 }
 .xq-dialog[open] {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-4);
 }
 .xq-dialog > div {
+  flex: 1 1 auto;
   min-inline-size: 0;
   min-block-size: 0;
   overflow: auto;

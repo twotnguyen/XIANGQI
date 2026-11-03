@@ -1,6 +1,16 @@
 .xq-rankings { max-width: 72rem; margin: 0 auto; padding: 1.5rem; }
 .xq-rankings-list { list-style: none; padding: 0; display: grid; gap: .5rem; }
 .xq-ranking-row { display: grid; grid-template-columns: minmax(4rem, auto) minmax(8rem, 1fr) minmax(8rem, auto) minmax(12rem, auto); gap: .75rem; align-items: center; padding: .8rem; border: 1px solid currentColor; border-radius: .5rem; }
+ol.xq-rankings-list > .xq-ranking-row:nth-child(1) { --rank-color: var(--color-warning); }
+ol.xq-rankings-list > .xq-ranking-row:nth-child(2) { --rank-color: var(--color-info); }
+ol.xq-rankings-list > .xq-ranking-row:nth-child(3) { --rank-color: var(--color-danger); }
+ol.xq-rankings-list > .xq-ranking-row:nth-child(4) { --rank-color: var(--color-success); }
+ol.xq-rankings-list > .xq-ranking-row:nth-child(5) { --rank-color: var(--color-border); }
+ol.xq-rankings-list > .xq-ranking-row:nth-child(-n+5) {
+  border-color: var(--rank-color);
+  border-left-width: 4px;
+  background: color-mix(in srgb, var(--rank-color) 14%, var(--color-surface));
+}
 .xq-ranking-row button { min-height: var(--touch-min); text-align: left; font: inherit; font-weight: bold; color: inherit; background: transparent; border: 0; text-decoration: underline; cursor: pointer; }
 .xq-ranking-summary { display: grid; gap: .5rem; }
 .xq-ranking-avatar { display: grid; place-items: center; width: 4rem; height: 4rem; border: 1px solid currentColor; border-radius: 50%; font-size: 1.5rem; }

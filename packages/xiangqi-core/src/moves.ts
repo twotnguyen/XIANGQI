@@ -47,6 +47,21 @@ export function pseudoLegalMoves(position: Position): Move[] {
   return moves;
 }
 
+function add(
+  board: (Piece | null)[],
+  side: Side,
+  from: number,
+  tx: number,
+  ty: number,
+  moves: Move[],
+  target: number | undefined,
+): void {
+  if (!onBoard(tx, ty)) return;
+  const to = ty * 9 + tx;
+  if ((target === undefined || to === target) && board[to]?.side !== side)
+    moves.push({ from, to });
+}
+
 function pieceMoves(
   position: Position,
   piece: Piece,
@@ -54,78 +69,94 @@ function pieceMoves(
   moves: Move[],
   target?: number,
 ): void {
+  const board = position.board;
+  const side = piece.side;
   const x = from % 9;
-  const y = Math.floor(from / 9);
-  const add = (tx: number, ty: number): void => {
-    if (!onBoard(tx, ty)) return;
-    const to = ty * 9 + tx;
-    if (
-      (target === undefined || to === target) &&
-      position.board[to]?.side !== piece.side
-    )
-      moves.push({ from, to });
-  };
+  const y = (from - x) / 9;
   switch (piece.type) {
     case "king":
-    case "advisor":
-      for (const [dx, dy] of piece.type === "king" ? orthogonal : diagonal) {
-        const tx = x + dx;
-        const ty = y + dy;
-        if (inPalace(tx, ty, piece.side)) add(tx, ty);
+    case "advisor": {
+      const steps = piece.type === "king" ? orthogonal : diagonal;
+      for (let index = 0; index < 4; index++) {
+        const tx = x + steps[index]![0];
+        const ty = y + steps[index]![1];
+        if (inPalace(tx, ty, side))
+          add(board, side, from, tx, ty, moves, target);
       }
       break;
+    }
     case "elephant":
-      for (const [dx, dy] of diagonal) {
+      for (let index = 0; index < 4; index++) {
+        const dx = diagonal[index]![0];
+        const dy = diagonal[index]![1];
         const tx = x + 2 * dx;
         const ty = y + 2 * dy;
         if (
           onBoard(tx, ty) &&
-          (piece.side === "red" ? ty >= 5 : ty <= 4) &&
-          !position.board[(y + dy) * 9 + x + dx]
+          (side === "red" ? ty >= 5 : ty <= 4) &&
+          !board[(y + dy) * 9 + x + dx]
         )
-          add(tx, ty);
+          add(board, side, from, tx, ty, moves, target);
       }
       break;
     case "horse":
-      for (const [dx, dy] of horses) {
+      for (let index = 0; index < 8; index++) {
+        const dx = horses[index]![0];
+        const dy = horses[index]![1];
         const legX = x + (Math.abs(dx) === 2 ? Math.sign(dx) : 0);
         const legY = y + (Math.abs(dy) === 2 ? Math.sign(dy) : 0);
-        if (onBoard(legX, legY) && !position.board[legY * 9 + legX]) {
-          add(x + dx, y + dy);
-        }
+        if (onBoard(legX, legY) && !board[legY * 9 + legX])
+          add(board, side, from, x + dx, y + dy, moves, target);
       }
       break;
     case "rook":
     case "cannon":
-      for (const [dx, dy] of orthogonal) {
+      for (let direction = 0; direction < 4; direction++) {
+        const dx = orthogonal[direction]![0];
+        const dy = orthogonal[direction]![1];
         let screened = false;
         for (
           let tx = x + dx, ty = y + dy;
           onBoard(tx, ty);
           tx += dx, ty += dy
         ) {
-          const target = position.board[ty * 9 + tx];
+          const occupant = board[ty * 9 + tx];
           if (!screened) {
-            if (!target) add(tx, ty);
+            if (!occupant) add(board, side, from, tx, ty, moves, target);
             else if (piece.type === "rook") {
-              add(tx, ty);
+              add(board, side, from, tx, ty, moves, target);
               break;
             } else screened = true;
-          } else if (target) {
-            add(tx, ty);
+          } else if (occupant) {
+            add(board, side, from, tx, ty, moves, target);
             break;
           }
         }
       }
       break;
     case "pawn":
-      add(x, y + (piece.side === "red" ? -1 : 1));
-      if (piece.side === "red" ? y <= 4 : y >= 5) {
-        add(x - 1, y);
-        add(x + 1, y);
+      add(board, side, from, x, y + (side === "red" ? -1 : 1), moves, target);
+      if (side === "red" ? y <= 4 : y >= 5) {
+        add(board, side, from, x - 1, y, moves, target);
+        add(board, side, from, x + 1, y, moves, target);
       }
       break;
   }
+}
+
+/** Vị trí Tướng của `side`: tìm trong cung trước (hầu như luôn có), chỉ quét cả bàn khi Tướng ra ngoài cung. */
+function findKing(board: (Piece | null)[], side: Side): number {
+  const top = side === "red" ? 7 : 0;
+  for (let y = top; y < top + 3; y++)
+    for (let index = y * 9 + 3; index < y * 9 + 6; index++) {
+      const piece = board[index];
+      if (piece?.type === "king" && piece.side === side) return index;
+    }
+  for (let index = 0; index < 90; index++) {
+    const piece = board[index];
+    if (piece?.type === "king" && piece.side === side) return index;
+  }
+  return -1;
 }
 
 /**
@@ -133,14 +164,10 @@ function pieceMoves(
  * Xử lý cả luật hai Tướng đối mặt (lộ mặt tướng trên cùng cột mà không có quân cản ở giữa).
  */
 export function isInCheck(position: Position, side: Side): boolean {
-  const king = position.board.findIndex(
-    (piece) => piece?.type === "king" && piece.side === side,
-  );
+  const board = position.board;
+  const king = findKing(board, side);
+  const enemyKing = findKing(board, side === "red" ? "black" : "red");
   if (king < 0) throw new Error("INVALID_POSITION");
-  const opponent: Side = side === "red" ? "black" : "red";
-  const enemyKing = position.board.findIndex(
-    (piece) => piece?.type === "king" && piece.side === opponent,
-  );
   if (enemyKing >= 0 && king % 9 === enemyKing % 9) {
     let facing = true;
     for (
@@ -148,31 +175,90 @@ export function isInCheck(position: Position, side: Side): boolean {
       index < Math.max(king, enemyKing);
       index += 9
     ) {
-      if (position.board[index]) {
+      if (board[index]) {
         facing = false;
         break;
       }
     }
     if (facing) return true;
   }
-  const moves: Move[] = [];
-  const kingX = king % 9,
-    kingY = Math.floor(king / 9);
-  for (let from = 0; from < 90; from++) {
-    const piece = position.board[from];
-    if (!piece || piece.side !== opponent) continue;
-    const dx = Math.abs((from % 9) - kingX);
-    const dy = Math.abs(Math.floor(from / 9) - kingY);
-    // Only prefilter reach; pieceMoves still decides all blocking/palace/river rules.
-    if (piece.type === "rook" || piece.type === "cannon") {
-      if (dx !== 0 && dy !== 0) continue;
-    } else if (piece.type === "horse") {
-      if (!((dx === 2 && dy === 1) || (dx === 1 && dy === 2))) continue;
-    } else if (piece.type === "elephant") {
-      if (dx !== 2 || dy !== 2) continue;
-    } else if (dx > 1 || dy > 1) continue;
-    pieceMoves(position, piece, from, moves, king);
-    if (moves.length) return true;
+  const opponent: Side = side === "red" ? "black" : "red";
+  const kx = king % 9;
+  const ky = (king - kx) / 9;
+  // Mỗi quân đối phương chỉ cần được kiểm tra từ phía ô Tướng: cùng luật chặn/cung/sông như pieceMoves.
+  for (let direction = 0; direction < 4; direction++) {
+    const dx = orthogonal[direction]![0];
+    const dy = orthogonal[direction]![1];
+    let screened = false;
+    for (let tx = kx + dx, ty = ky + dy; onBoard(tx, ty); tx += dx, ty += dy) {
+      const piece = board[ty * 9 + tx];
+      if (!piece) continue;
+      if (!screened) {
+        if (piece.side === opponent && piece.type === "rook") return true;
+        screened = true;
+      } else {
+        if (piece.side === opponent && piece.type === "cannon") return true;
+        break;
+      }
+    }
+  }
+  for (let index = 0; index < 8; index++) {
+    const dx = horses[index]![0];
+    const dy = horses[index]![1];
+    const hx = kx - dx;
+    const hy = ky - dy;
+    if (!onBoard(hx, hy)) continue;
+    const piece = board[hy * 9 + hx];
+    if (piece?.side !== opponent || piece.type !== "horse") continue;
+    const legX = hx + (Math.abs(dx) === 2 ? Math.sign(dx) : 0);
+    const legY = hy + (Math.abs(dy) === 2 ? Math.sign(dy) : 0);
+    if (!board[legY * 9 + legX]) return true;
+  }
+  for (let index = 0; index < 4; index++) {
+    const dx = diagonal[index]![0];
+    const dy = diagonal[index]![1];
+    // Tượng: đứng cách 2 ô chéo, không bị cản mắt và ô Tướng nằm nửa sân của Tượng.
+    const ex = kx + 2 * dx;
+    const ey = ky + 2 * dy;
+    if (onBoard(ex, ey)) {
+      const piece = board[ey * 9 + ex];
+      if (
+        piece?.side === opponent &&
+        piece.type === "elephant" &&
+        (opponent === "red" ? ky >= 5 : ky <= 4) &&
+        !board[(ky + dy) * 9 + kx + dx]
+      )
+        return true;
+    }
+    // Sĩ: sát chéo, ô Tướng nằm trong cung của Sĩ.
+    const ax = kx + dx;
+    const ay = ky + dy;
+    if (onBoard(ax, ay) && inPalace(kx, ky, opponent)) {
+      const piece = board[ay * 9 + ax];
+      if (piece?.side === opponent && piece.type === "advisor") return true;
+    }
+  }
+  if (inPalace(kx, ky, opponent)) {
+    for (let index = 0; index < 4; index++) {
+      const tx = kx + orthogonal[index]![0];
+      const ty = ky + orthogonal[index]![1];
+      if (!onBoard(tx, ty)) continue;
+      const piece = board[ty * 9 + tx];
+      if (piece?.side === opponent && piece.type === "king") return true;
+    }
+  }
+  // Tốt: tiến thẳng, hoặc đi ngang khi đã qua sông.
+  const forward = opponent === "red" ? -1 : 1;
+  if (onBoard(kx, ky - forward)) {
+    const piece = board[(ky - forward) * 9 + kx];
+    if (piece?.side === opponent && piece.type === "pawn") return true;
+  }
+  if (opponent === "red" ? ky <= 4 : ky >= 5) {
+    for (let side2 = -1; side2 <= 1; side2 += 2) {
+      if (!onBoard(kx + side2, ky)) continue;
+      const piece = board[ky * 9 + kx + side2];
+      if (piece?.side === opponent && piece.type === "pawn") return true;
+    }
   }
   return false;
 }
@@ -195,23 +281,38 @@ function applyUnchecked(position: Position, move: Move): Position {
  * Loại bỏ các nước ăn tướng trực tiếp và các nước đi khiến Tướng bên mình bị chiếu.
  */
 export function legalMoves(position: Position): Move[] {
-  return pseudoLegalMoves(position).filter((move) =>
-    isLegalCandidate(position, move),
-  );
+  const moves = pseudoLegalMoves(position);
+  let kept = 0;
+  for (const move of moves)
+    if (isLegalCandidate(position, move)) moves[kept++] = move;
+  moves.length = kept;
+  return moves;
 }
 
+/**
+ * Thử nước đi trực tiếp trên bàn cờ của `position` rồi hoàn tác ngay (đồng bộ, không để lại dấu vết),
+ * tránh sao chép bàn cờ cho mỗi nước ứng viên. Không bao giờ nhận nước ăn Tướng.
+ */
 function isLegalCandidate(position: Position, move: Move): boolean {
-  return (
-    position.board[move.to]?.type !== "king" &&
-    !isInCheck(applyUnchecked(position, move), position.turn)
-  );
+  const board = position.board;
+  const captured = board[move.to];
+  if (captured?.type === "king") return false;
+  const moving = board[move.from]!;
+  board[move.to] = moving;
+  board[move.from] = null;
+  try {
+    return !isInCheck(position, position.turn);
+  } finally {
+    board[move.from] = moving;
+    board[move.to] = captured ?? null;
+  }
 }
 
 // Adjudication only needs one legal reply, not every reply's check evaluation.
 export function hasLegalMove(position: Position): boolean {
-  return pseudoLegalMoves(position).some((move) =>
-    isLegalCandidate(position, move),
-  );
+  for (const move of pseudoLegalMoves(position))
+    if (isLegalCandidate(position, move)) return true;
+  return false;
 }
 
 /**
