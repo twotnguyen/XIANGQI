@@ -161,7 +161,7 @@ export function AiGamePage({
   const [lastMove, setLastMove] = useState<Move | null>(null);
   const connection = useRef<AiConnection | null>(null);
   const api = useRef<Api | null>(null);
-  const audio = useRef<{ unlock(): unknown } | null>(null);
+  const audio = useRef<{ unlock(): unknown; close(): void } | null>(null);
   const alive = useRef(true);
   // Tăng khi kết nối, quyền điều khiển hoặc ván đổi: phản hồi HTTP của epoch cũ bị bỏ.
   const fence = useRef(0);
