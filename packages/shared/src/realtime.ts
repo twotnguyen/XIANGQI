@@ -302,6 +302,33 @@ export interface ClientRealtimeEvents extends ClientChatEvents {
   ) => void;
 }
 
+/** Nước đi tạm: server đã kiểm quyền/lượt/luật trên snapshot đang giữ, nhưng database chưa chốt. Chỉ để hiển thị. */
+export interface MovePreview {
+  roomId: string;
+  matchId: string;
+  matchVersion: number;
+  from: number;
+  to: number;
+}
+/** Hủy nước đi tạm khi việc lưu thất bại; client quay về snapshot chính thức. */
+export interface MoveRevert {
+  roomId: string;
+  matchId: string;
+  matchVersion: number;
+}
+/** Trạng thái Sẵn sàng tạm của một ghế; `version` là phiên bản phòng mà người gửi đang thấy, snapshot mới hơn sẽ thay thế. */
+export interface ReadyPreview {
+  roomId: string;
+  side: "red" | "black";
+  ready: boolean;
+  version: number;
+}
+/** Hủy Sẵn sàng tạm khi việc lưu thất bại. */
+export interface ReadyRevert {
+  roomId: string;
+  side: "red" | "black";
+  version: number;
+}
 /**
  * Danh sách sự kiện Socket.IO Server phát tới Client trong phòng cờ:
  * - `room.snapshot`: Cập nhật snapshot trạng thái phòng toàn diện (bàn cờ, đồng hồ...).
@@ -312,6 +339,10 @@ export interface ClientRealtimeEvents extends ClientChatEvents {
 export interface ServerRealtimeEvents extends ServerChatEvents {
   "room.closed": (notice: RoomClosedNotice) => void;
   "room.snapshot": (snapshot: RoomSnapshot) => void;
+  "room.move.preview": (preview: MovePreview) => void;
+  "room.move.revert": (revert: MoveRevert) => void;
+  "room.ready.preview": (preview: ReadyPreview) => void;
+  "room.ready.revert": (revert: ReadyRevert) => void;
   "session.read_only": (notice: ReadOnlyNotice) => void;
   "engine.failure": (failure: EngineFailureEvent) => void;
 }

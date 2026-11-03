@@ -52,9 +52,8 @@ Không viết lại chức năng đã có chỉ vì đổi tên yêu cầu. Ph�
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
 | Chưa có phiên                              | Được mở link; chọn đăng nhập, đăng ký hoặc Khách trước khi server cho vào phòng                                                        |
 | Thành viên, kể cả chưa xác minh email      | Dùng link/mã, trang Bạn bè và lời mời theo quyền phòng; không lấy email tùy chọn làm cổng khóa YC3                                     |
-| Khách                                      | Vào bằng link/mã; khi ngồi ghế được chia sẻ link/mã. Không tìm/kết bạn, không gửi/nhận lời mời bạn bè; tab bạn bè trong modal ẩn       |
-| Host hoặc người chơi còn lại đang ngồi ghế | Mở Chia sẻ phòng; thành viên được gửi lời mời bạn online. Không chỉ Host mới có quyền này                                              |
-| Người xem                                  | Không có nút Chia sẻ phòng; không được gọi API giả làm người ngồi ghế để gửi lời mời phòng                                             |
+| Khách                                      | Vào bằng link/mã và chia sẻ link/mã khi đang ở phòng chưa khóa. Không tìm/kết bạn, không gửi/nhận lời mời bạn bè |
+| Người chơi hoặc người xem                   | Mở Chia sẻ phòng khi phòng chưa khóa; thành viên được gửi lời mời bạn online |
 | Người đang giữ ghế hoặc ván AI khác        | Không được chiếm vị trí chơi thứ hai; luật phiên/vị trí được kiểm trước auto-redirect và lúc chấp nhận lời mời                         |
 | Máy chủ                                    | Quyết định quan hệ bạn bè, trạng thái có thể mời, deadline, quyền vào, ghế và sức chứa. Client không tự quyết bằng dữ liệu hiển thị cũ |
 
@@ -266,7 +265,7 @@ Bảng dưới giữ **Given/When/Then gốc và mức kiểm bắt buộc theo 
 | AC-03.2.12 | Server nhận biết mất mọi kết nối → Offline kể cả giữ ghế; không mất ràng buộc vị trí                      | E2E     | T49                                  |
 | AC-03.2.13 | Chuông có số đếm, bấm chuyển `/friends` và tự mở tab Lời mời dùng chung                                   | E2E     | T49                                  |
 | AC-03.2.14 | Nhắn tin/Thách đấu hoạt động có kiểm quyền theo AC-P2-18.1–3 và AC-P2-19.1–3; không QR | E2E | T49 và Task mở rộng giữ mã cũ |
-| AC-03.2.15 | Thành viên ngồi ghế có phần mời bạn trong Chia sẻ; người xem không nút Chia sẻ                            | E2E     | T49                                  |
+| AC-03.2.15 | Người trong phòng chưa khóa có khung Chia sẻ; thành viên được mời bạn bè | E2E | T49 |
 | AC-03.2.16 | Online và hết cooldown10giây toàn người gửi mới mời được; Offline/BUSY/cooldown có lý do                  | E2E     | T49                                  |
 | AC-03.2.17 | Nhiều popup đồng thời, tên người thực sự gửi, hạn gốc30giây; người gửi rời ghế/hủy bạn không tự thu hồi. Thêm: tối đa 5 popup đồng thời cho một người nhận, lời mời thứ 6 bị từ chối lúc gửi (AC-YC3-RV-04). | E2E     | T49                                  |
 | AC-03.2.18 | Tham gia kiểm lại chỗ; đang xem A thì nhận B thành công mới rời A, B lỗi vẫn giữ A                        | E2E     | T49                                  |

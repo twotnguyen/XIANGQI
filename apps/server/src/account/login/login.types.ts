@@ -42,6 +42,7 @@ export interface LoginStore {
   saveAttempts(username: string, attempts: LoginAttempts): Promise<void>;
   resetAttempts(username: string): Promise<void>;
   accountByUsername(username: string): Promise<LoginAccount | null>;
+  accountByVerifiedEmail(email: string): Promise<LoginAccount | null>;
   accountById(userId: string): Promise<LoginAccount | null>;
   saveSession(session: AppSession, revokeOthers?: boolean): Promise<void>;
   latestDeviceHash(userId: string): Promise<string | null | undefined>;

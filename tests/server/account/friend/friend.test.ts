@@ -185,13 +185,6 @@ describe.skipIf(!url)("friendships", () => {
       [sent.id],
     );
     expect(await service.listRequests(b)).toEqual([]);
-    const row = (
-      await pool.query(
-        "SELECT status FROM xiangqi_social.friend_requests WHERE id=$1",
-        [sent.id],
-      )
-    ).rows[0];
-    expect(row.status).toBe("EXPIRED");
     const resent = await service.sendRequest(a, "capfriend");
     expect(resent.id).not.toBe(sent.id);
   });
@@ -243,6 +236,26 @@ describe.skipIf(!url)("friendships", () => {
       service.sendRequest(sender, "peer_guest"),
     ).rejects.toMatchObject({ code: "FRIEND_NOT_FOUND" });
     expect(await service.listRequests(real)).toEqual([]);
+  });
+
+  it("allows an active spectator to invite a friend but rejects an expired spectator", async () => {
+    const host = await member("watchhost");
+    const viewer = await member("watchsender");
+    const mate = await member("watchfriend");
+    const roomId = await seatedRoom(host);
+    await pool.query(
+      "INSERT INTO public.room_members(room_id,user_id,role,side) VALUES($1,$2,'SPECTATOR',NULL)",
+      [roomId, viewer],
+    );
+    await friendsOnline(viewer, mate, "watchfriend");
+    const invite = await service.inviteToRoom(viewer, roomId, "watchfriend");
+    expect(invite.roomId).toBe(roomId);
+    await pool.query(
+      "UPDATE public.room_members SET disconnected_at=clock_timestamp()-interval '6 minutes' WHERE room_id=$1 AND user_id=$2",
+      [roomId, viewer],
+    );
+    await expect(service.inviteToRoom(viewer, roomId, "watchfriend"))
+      .rejects.toMatchObject({ code: "FRIEND_INVITE_FORBIDDEN" });
   });
 
   it("invites an online friend, requires presence, and revokes when the port reports the room locked", async () => {

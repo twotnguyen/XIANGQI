@@ -95,7 +95,7 @@ của hệ điều hành và một thao tác lõi đang chạy có thể gây sa
 
 Runtime cấp `randomSeed` uint32 phía server cho cả ba cấp. Seed cố định tái lập
 lựa chọn trong test; bỏ seed giữ đường xác định cho gate. Sau mỗi iteration đủ,
-chọn giữa các nước có điểm cách tốt nhất tối đa **20 điểm** (1/5 giá trị Tốt).
+chọn giữa các nước có điểm cách tốt nhất tối đa **250/50/30 điểm** (Dễ/Trung bình/Khó; nhân đôi trong khai cuộc, ≤ 8 nước đã đi).
 Root cần điểm chính xác cho từng ứng viên, không dùng cận alpha-beta làm điểm
 gần bằng nhau. Khi có điểm terminal/mate (|score| ≥ 99000), chỉ chọn nước bằng
 điểm tối ưu: không làm mất mate hoặc nước tránh mate đã được tìm thấy.

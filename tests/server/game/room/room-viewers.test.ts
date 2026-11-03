@@ -14,9 +14,6 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
   beforeEach(migrateViewers);
   it("moves a non-host player to spectator and back via host invite", async () => {
     const { h, b, roomId } = await fullRoom();
-    await expect(
-      run(h.a, h.proof, [roomId], (s) => store.toSpectator(s, roomId)),
-    ).rejects.toMatchObject({ code: "HOST_STAYS" });
     const moved = await run(b.a, b.proof, [roomId], (s) =>
       store.toSpectator(s, roomId),
     );
@@ -31,6 +28,15 @@ describe.skipIf(!databaseUrl)("room viewers", () => {
     expect(back.room.seats).toEqual({ red: h.a.userId, black: b.a.userId });
     expect(back.room.ready).toEqual({ red: false, black: false });
     expect(back.room.downOffer).toBeNull();
+  });
+  it("transfers host to the remaining player without changing their side", async () => {
+    const { h, b, roomId } = await fullRoom();
+    const moved = await run(h.a, h.proof, [roomId], (s) => store.toSpectator(s, roomId));
+    expect(moved.room.hostId).toBe(b.a.userId);
+    expect(moved.room.seats).toEqual({ red: null, black: b.a.userId });
+    expect(moved.room.spectators?.some((viewer) => viewer.userId === h.a.userId)).toBe(true);
+    await expect(run(b.a, b.proof, [roomId], (s) => store.toSpectator(s, roomId)))
+      .rejects.toMatchObject({ code: "HOST_STAYS" });
   });
   it("host moves the other player and declines expire", async () => {
     const { h, b, roomId } = await fullRoom();

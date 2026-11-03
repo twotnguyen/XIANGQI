@@ -148,6 +148,7 @@ export function RoomPage({
     disconnectDemo,
     reconnectDemo,
     busy,
+    setReadyPreview,
     setBusy,
     actionError,
     setActionError,
@@ -190,7 +191,12 @@ export function RoomPage({
     if (!connected || snapshot?.control.mode !== "writable")
       setLeaveConfirm(null);
   }, [connected, snapshot?.control.mode]);
-  const rankedFinishedId = snapshot?.room.kind === "RANKED" && snapshot.match && snapshot.match.status !== "ACTIVE" ? snapshot.match.id : null;
+  const rankedFinishedId =
+    snapshot?.room.kind === "RANKED" &&
+    snapshot.match &&
+    snapshot.match.status !== "ACTIVE"
+      ? snapshot.match.id
+      : null;
   const reportedRanked = useRef<string | null>(null);
   useEffect(() => {
     if (rankedFinishedId && rankedFinishedId !== reportedRanked.current) {
@@ -201,8 +207,10 @@ export function RoomPage({
   const canRematch =
     view !== null &&
     ((view.room.kind === "CASUAL" && view.room.status === "FINISHED") ||
-      ((view.room.kind ?? "CUSTOM") === "CUSTOM" && view.room.status === "WAITING" &&
-        (view.room.inviteCode !== null || view.room.visibility === "LOCKED"))) &&
+      ((view.room.kind ?? "CUSTOM") === "CUSTOM" &&
+        view.room.status === "WAITING" &&
+        (view.room.inviteCode !== null ||
+          view.room.visibility === "LOCKED"))) &&
     (view.role === "red" || view.role === "black") &&
     Boolean(view.room.seats.red && view.room.seats.black) &&
     snapshot?.match != null &&
@@ -288,6 +296,11 @@ export function RoomPage({
           : "Yêu cầu ngồi ghế đã hết hạn.",
     );
   }, [liveOwn?.expiresAt, view?.role, seatsFull, requestCooldownUntil]);
+  useEffect(() => {
+    if (!seatNotice) return;
+    const timer = window.setTimeout(() => setSeatNotice(""), 3000);
+    return () => window.clearTimeout(timer);
+  }, [seatNotice]);
   const swapOfferOpen = Boolean(
     swapOfferId &&
     view?.room.swapOffer?.responderId === userId &&
@@ -388,6 +401,16 @@ export function RoomPage({
     unlockAudio();
     setBusy(true);
     setError("");
+    if (
+      action !== "start" &&
+      (snapshot.role === "red" || snapshot.role === "black")
+    )
+      setReadyPreview({
+        roomId: snapshot.roomId,
+        side: snapshot.role,
+        ready: !snapshot.room.ready[snapshot.role],
+        version: snapshot.version,
+      });
     try {
       const acknowledgement = await connection.current!.command(
         action === "start"
@@ -414,6 +437,7 @@ export function RoomPage({
           "Chưa nhận được xác nhận Sẵn sàng. Kiểm tra trạng thái phòng trước khi thao tác lại.",
         );
     } finally {
+      if (action !== "start") setReadyPreview(null);
       if (isCurrent()) {
         commandPending.current = false;
         setBusy(false);
@@ -674,7 +698,25 @@ export function RoomPage({
       )
         return;
       if (action === "leave") {
-        await client.leave(roomId, view.version, control);
+        const prior = latest.current;
+        try {
+          await client.leave(roomId, view.version, control);
+        } catch (error) {
+          if (!(error instanceof RoomRequestError) || error.code !== "VERSION_STALE" ||
+              (view.room.kind ?? "CUSTOM") === "CUSTOM" || !prior?.match || prior.match.status === "ACTIVE") throw error;
+          const peer = connection.current;
+          if (!peer || !connectedRef.current) throw error;
+          const fresh = await peer.refresh();
+          if (epoch.current !== requestEpoch || connection.current !== peer ||
+              !connectedRef.current || fresh.match?.id !== prior.match.id ||
+              fresh.match.status === "ACTIVE" || fresh.control.mode !== "writable" ||
+              !acceptSnapshot(fresh)) throw error;
+          const freshControl = await peer.getControl();
+          if (epoch.current !== requestEpoch || connection.current !== peer ||
+              !ownsHttpControl() || latest.current?.control.generation !== freshControl.generation ||
+              latest.current?.match?.id !== prior.match.id || latest.current.match.status === "ACTIVE") throw error;
+          await client.leave(roomId, latest.current.version, freshControl);
+        }
         if (epoch.current === requestEpoch) onLeft();
       } else if (action === "switch" || action === "transfer-host") {
         const seatCommand =
@@ -949,9 +991,11 @@ export function RoomPage({
     : (snapshot?.match?.lastMove ?? null);
   const isHost = room.hostId === userId;
   const opponentSide = view.role === "red" ? "black" : "red";
+  // "Bắt đầu" chỉ mở theo trạng thái chính thức: lệnh bắt đầu cần phiên bản phòng đã lưu, nước Sẵn sàng tạm của đối thủ chưa đủ.
+  const startReady = (snapshot?.room ?? room).ready[opponentSide];
   const readyControl = !matched && room.status === "WAITING" && player && (
     <Button
-      className="xq-room-ready"
+      className={`xq-room-ready${writable && isHost && room.seats.red && room.seats.black && !(startReady && room.connected[opponentSide]) ? " hide-wait-reason" : ""}`}
       loading={busy}
       disabledReason={
         !writable
@@ -960,8 +1004,7 @@ export function RoomPage({
             ? isHost
               ? "Chờ người chơi thứ hai"
               : "Chờ đủ hai người chơi để Sẵn sàng."
-            : isHost &&
-                !(room.ready[opponentSide] && room.connected[opponentSide])
+            : isHost && !(startReady && room.connected[opponentSide])
               ? "Chờ đối thủ sẵn sàng"
               : room.countdown
                 ? "Đang đếm ngược bắt đầu ván."
@@ -976,6 +1019,35 @@ export function RoomPage({
           : "Sẵn sàng"}
     </Button>
   );
+  const spectatorControl =
+    !matched &&
+    view.role === "spectator" &&
+    (liveOwn ? (
+      <p role="status">Đang chờ chủ phòng · còn {liveOwn.seconds} giây</p>
+    ) : (
+      <Button
+        className="xq-room-ready"
+        loading={busy}
+        disabledReason={
+          !ownsHttpControl()
+            ? "Cần kết nối và quyền điều khiển phòng."
+            : room.status !== "WAITING"
+              ? "Đang trong ván"
+              : seatsFull
+                ? "Ghế đã đủ người"
+                : room.countdown
+                  ? "Phòng đang đếm ngược"
+                  : room.occupiedElsewhere
+                    ? "Bạn đang ở trong một ván/phòng khác"
+                    : seatRequestCooldownSeconds > 0
+                      ? `Chờ ${seatRequestCooldownSeconds} giây để xin lại`
+                      : undefined
+        }
+        onClick={() => void viewerAction("request-seat")}
+      >
+        Xin ngồi ghế
+      </Button>
+    ));
   const resultVisible = Boolean(
     connected &&
     snapshot?.match &&
@@ -984,21 +1056,23 @@ export function RoomPage({
     liveMatchId === snapshot.match.id &&
     (snapshot.role === "spectator" || dismissedResult !== snapshot.match.id),
   );
+  const showMatch = matched || room.status !== "WAITING";
   const resultInModal = resultVisible && player;
-  const rematchPanel = kind !== "RANKED" && isMember ? (
-    <RematchPanel
-      offer={isMember ? (room.rematchOffer ?? null) : null}
-      selfId={userId}
-      canPropose={canRematch && isMember && writable}
-      clockSkew={clockSkew}
-      busy={busy}
-      writable={writable}
-      onPropose={(side) => void httpAction("rematch-propose", side)}
-      onRespond={(accept) =>
-        void httpAction(accept ? "rematch-accept" : "rematch-decline")
-      }
-    />
-  ) : null;
+  const rematchPanel =
+    kind !== "RANKED" && isMember ? (
+      <RematchPanel
+        offer={isMember ? (room.rematchOffer ?? null) : null}
+        selfId={userId}
+        canPropose={canRematch && isMember && writable}
+        clockSkew={clockSkew}
+        busy={busy}
+        writable={writable}
+        onPropose={(side) => void httpAction("rematch-propose", side)}
+        onRespond={(accept) =>
+          void httpAction(accept ? "rematch-accept" : "rematch-decline")
+        }
+      />
+    ) : null;
   return (
     <main
       className={`xq-ui xq-room-page${playingLayout ? " is-playing" : " is-waiting"}`}
@@ -1017,7 +1091,7 @@ export function RoomPage({
                   ? "Ván cờ đang diễn ra"
                   : "Phòng chờ thi đấu"}
           </p>
-          {!matched && !playingLayout && (
+          {!matched && (
             <div className="xq-waiting-meta">
               <span>
                 {room.timeMinutes === 0
@@ -1038,7 +1112,8 @@ export function RoomPage({
             {chatOpen ? "Ẩn chat" : "Mở chat"}
             {unreadChat.PLAYERS_PRIVATE > 0 &&
               ` · Riêng ${Math.min(unreadChat.PLAYERS_PRIVATE, 99)}${unreadChat.PLAYERS_PRIVATE > 99 ? "+" : ""}`}
-            {!matched && unreadChat.ROOM_PUBLIC > 0 &&
+            {!matched &&
+              unreadChat.ROOM_PUBLIC > 0 &&
               ` · Chung ${Math.min(unreadChat.ROOM_PUBLIC, 99)}${unreadChat.ROOM_PUBLIC > 99 ? "+" : ""}`}
           </Button>
           <NetworkDemo
@@ -1137,7 +1212,8 @@ export function RoomPage({
           Chat
           {unreadChat.PLAYERS_PRIVATE > 0 &&
             ` · Riêng ${Math.min(unreadChat.PLAYERS_PRIVATE, 99)}${unreadChat.PLAYERS_PRIVATE > 99 ? "+" : ""}`}
-          {!matched && unreadChat.ROOM_PUBLIC > 0 &&
+          {!matched &&
+            unreadChat.ROOM_PUBLIC > 0 &&
             ` · Chung ${Math.min(unreadChat.ROOM_PUBLIC, 99)}${unreadChat.ROOM_PUBLIC > 99 ? "+" : ""}`}
         </label>
         <label>
@@ -1185,14 +1261,77 @@ export function RoomPage({
         </Dialog>
       </fieldset>
       <div className="xq-room-content">
-        <section className="xq-room-arena" aria-label="Ghế và trạng thái phòng">
+        <section
+          className="xq-room-arena"
+          aria-label="Ghế và trạng thái phòng"
+          style={{ visibility: matched && resultInModal ? "hidden" : undefined }}
+        >
           {error &&
             (connected ? (
               <Notice tone="error" message={error} />
             ) : (
               <ErrorState message={error} onRetry={retry} />
             ))}
-          {seatNotice && <Notice message={seatNotice} />}
+          {seatNotice && (
+            <div className="xq-room-feedback">
+              <Notice message={seatNotice} />
+            </div>
+          )}
+          {room.hostId === userId &&
+            room.status === "WAITING" &&
+            !seatsFull &&
+            liveRequests.map((request) => {
+              const watcher = room.spectators?.find(
+                (person) => person.userId === request.userId,
+              );
+              return (
+                <div
+                  key={request.id}
+                  className="xq-down-prompt"
+                  role="group"
+                  aria-label="Yêu cầu xin ngồi ghế"
+                >
+                  <p>
+                    {watcher?.displayName || "Khách"}
+                    {watcher?.guest ? " (Khách)" : ""} xin ngồi ghế · còn{" "}
+                    {request.seconds} giây
+                  </p>
+                  <Button
+                    loading={busy}
+                    disabledReason={
+                      !writable
+                        ? "Cần kết nối và quyền điều khiển phòng."
+                        : undefined
+                    }
+                    onClick={() =>
+                      void viewerAction("respond-seat-request", {
+                        requestId: request.id,
+                        accept: true,
+                      })
+                    }
+                  >
+                    Đồng ý
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    loading={busy}
+                    disabledReason={
+                      !writable
+                        ? "Cần kết nối và quyền điều khiển phòng."
+                        : undefined
+                    }
+                    onClick={() =>
+                      void viewerAction("respond-seat-request", {
+                        requestId: request.id,
+                        accept: false,
+                      })
+                    }
+                  >
+                    Từ chối
+                  </Button>
+                </div>
+              );
+            })}
           {downOffer?.inviteeId === userId && downSeconds > 0 && (
             <div
               className="xq-down-prompt"
@@ -1253,15 +1392,10 @@ export function RoomPage({
             }
             serverNow={view.serverNow}
           />
-          {snapshot?.control.mode === "readonly" && (
-            <Notice
-              message={
-                snapshot.control.reason === "superseded"
-                  ? "Phiên này đã được mở ở tab khác. Tab hiện tại chỉ xem."
-                  : "Bạn đang xem phòng."
-              }
-            />
-          )}
+          {snapshot?.control.mode === "readonly" &&
+            snapshot.control.reason === "superseded" && (
+              <Notice message="Phiên này đã được mở ở tab khác. Tab hiện tại chỉ xem." />
+            )}
           <RoomSeats
             room={room}
             userId={userId}
@@ -1273,7 +1407,7 @@ export function RoomPage({
             swapCooldownSeconds={cooldownSeconds}
             swapReopenSeconds={swapReopenSeconds}
             onSwapReopen={() => setSwapCollapsedId(null)}
-            readyControl={readyControl}
+            readyControl={readyControl || spectatorControl}
             onTransferHost={() => setConfirmTransfer(true)}
             onAction={(action) => void httpAction(action)}
             onMoveToSpectator={(targetId) =>
@@ -1285,7 +1419,7 @@ export function RoomPage({
                 : undefined
             }
           />
-          {clockState?.clocks && (
+          {showMatch && clockState?.clocks && (
             <MatchClocks
               clocks={clockState.clocks}
               matchStatus={clockState.match?.status ?? null}
@@ -1303,70 +1437,73 @@ export function RoomPage({
                 sound={sound}
               />
             )}
-          {activeBoard && (
-            <div className="xq-room-board" aria-label="Bàn cờ đang thi đấu">
-              <XiangqiBoard
-                position={activeBoard}
-                orientation={view.role === "black" ? "black" : "red"}
-                playerSide={view.role === "black" ? "black" : "red"}
-                disabled={
-                  !active ||
-                  !writable ||
-                  !player ||
-                  Boolean(
-                    snapshot?.undo?.offers.some(
-                      (offer) => offer.sender === view.role,
-                    ),
-                  ) ||
-                  (optimistic
-                    ? optimistic.position.turn !== view.role
-                    : snapshot?.match?.turn !== view.role)
+          <div className="xq-room-game">
+            {showMatch && activeBoard && (
+              <div className="xq-room-board" aria-label="Bàn cờ đang thi đấu">
+                <XiangqiBoard
+                  position={activeBoard}
+                  orientation={view.role === "black" ? "black" : "red"}
+                  playerSide={view.role === "black" ? "black" : "red"}
+                  disabled={
+                    !active ||
+                    !writable ||
+                    !player ||
+                    Boolean(
+                      snapshot?.undo?.offers.some(
+                        (offer) => offer.sender === view.role,
+                      ),
+                    ) ||
+                    (optimistic
+                      ? optimistic.position.turn !== view.role
+                      : snapshot?.match?.turn !== view.role)
+                  }
+                  pending={busy}
+                  lastMove={activeLastMove}
+                  onMove={(from, to) => void move(from, to)}
+                />
+              </div>
+            )}
+            {showMatch && snapshot && liveMatch && (
+              <InactivityBanner
+                match={liveMatch}
+                role={snapshot.role}
+                serverNow={snapshot.serverNow}
+                busy={busy}
+                canAct={Boolean(writable && player && active)}
+                onStillHere={() =>
+                  matchAction({
+                    type: "match.still-here",
+                    payload: {
+                      matchId: liveMatch.id,
+                      matchVersion: liveMatch.version,
+                    },
+                  })
                 }
-                pending={busy}
-                lastMove={activeLastMove}
-                onMove={(from, to) => void move(from, to)}
               />
-            </div>
-          )}
-          {snapshot && liveMatch && (
-            <InactivityBanner
-              match={liveMatch}
-              role={snapshot.role}
-              serverNow={snapshot.serverNow}
-              busy={busy}
-              canAct={Boolean(writable && player && active)}
-              onStillHere={() =>
-                matchAction({
-                  type: "match.still-here",
-                  payload: {
-                    matchId: liveMatch.id,
-                    matchVersion: liveMatch.version,
-                  },
-                })
-              }
-            />
-          )}
-          {snapshot && (
-            <MatchActions
-              match={snapshot.match}
-              kind={kind}
-              role={snapshot.role}
-              draw={snapshot.draw}
-              undo={snapshot.undo}
-              serverNow={snapshot.serverNow}
-              canAct={Boolean(writable && player && active)}
-              busy={busy}
-              error={actionError}
-              onAction={matchAction}
-            />
-          )}
+            )}
+            {showMatch && snapshot && (
+              <MatchActions
+                match={snapshot.match}
+                kind={kind}
+                role={snapshot.role}
+                draw={snapshot.draw}
+                undo={snapshot.undo}
+                serverNow={snapshot.serverNow}
+                canAct={Boolean(writable && player && active)}
+                busy={busy}
+                error={actionError}
+                onAction={matchAction}
+              />
+            )}
+          </div>
           {active && !board && (
             <Notice
               tone="error"
               message="Chưa thể hiển thị bàn cờ từ trạng thái máy chủ."
             />
           )}
-          {room.status === "WAITING" &&
+          {showMatch &&
+            room.status === "WAITING" &&
             snapshot?.match &&
             snapshot.match.status !== "ACTIVE" && (
               <Notice
@@ -1379,12 +1516,9 @@ export function RoomPage({
                 }
               />
             )}
-          {playingLayout && readyControl}
-          {view.role === "spectator" && (
-            <p>Bạn đang xem. Chỉ người ngồi ghế mới có thể Sẵn sàng.</p>
-          )}
+          {playingLayout && (readyControl || spectatorControl)}
         </section>
-        {!matched && view.role !== "spectator" && code && room.visibility !== "LOCKED" && (
+        {!matched && code && room.visibility !== "LOCKED" && (
           <RoomInvite
             code={code}
             copying={copying}
@@ -1401,64 +1535,44 @@ export function RoomPage({
         )}
         <aside className="xq-room-info" aria-label="Thông tin phòng">
           <RoomDetails room={room} />
-          {!matched && <SpectatorsPanel
-            spectators={room.spectators ?? []}
-            limit={room.viewerLimit}
-            selfId={userId}
-            canMoveToSpectator={
-              player &&
-              room.hostId !== userId &&
-              room.status === "WAITING" &&
-              !room.countdown
-            }
-            canInviteDown={
-              player &&
-              room.hostId === userId &&
-              room.status === "WAITING" &&
-              !(room.seats.red && room.seats.black)
-            }
-            canKick={player}
-            downOfferInviteeId={
-              downOffer && downSeconds > 0 ? downOffer.inviteeId : null
-            }
-            inviteCooldownSeconds={inviteCooldownSeconds}
-            seatRequests={
-              room.hostId === userId
-                ? liveRequests
-                : liveRequests.filter((q) => q.userId === userId)
-            }
-            canRespondRequests={
-              room.hostId === userId && room.status === "WAITING" && !seatsFull
-            }
-            canRequestSeat={view.role === "spectator"}
-            requestSeatReason={
-              room.status !== "WAITING"
-                ? "Đang trong ván"
-                : seatsFull
-                  ? "Ghế đã đủ người"
-                  : room.countdown
-                    ? "Phòng đang đếm ngược"
-                    : room.occupiedElsewhere
-                      ? "Bạn đang ở trong một ván/phòng khác"
-                      : seatRequestCooldownSeconds > 0
-                        ? `Chờ ${seatRequestCooldownSeconds} giây để xin lại`
-                        : undefined
-            }
-            onRequestSeat={() => void viewerAction("request-seat")}
-            onRespondRequest={(requestId, accept) =>
-              void viewerAction("respond-seat-request", { requestId, accept })
-            }
-            busy={busy}
-            // Tab người xem luôn readonly/not_allowed nhưng vẫn là chủ HTTP của chính mình.
-            writable={
-              writable || (view.role === "spectator" && ownsHttpControl())
-            }
-            onMoveToSpectator={() => void viewerAction("to-spectator")}
-            onInviteDown={(target) =>
-              void viewerAction("invite-down", { targetId: target })
-            }
-            onKick={(target) => void viewerAction("kick", { targetId: target })}
-          />}
+          {!matched && (
+            <SpectatorsPanel
+              spectators={room.spectators ?? []}
+              limit={room.viewerLimit}
+              selfId={userId}
+              canMoveToSpectator={
+                player && room.status === "WAITING" && !room.countdown
+              }
+              moveToSpectatorReason={
+                room.hostId === userId && !(room.seats.red && room.seats.black)
+                  ? "Cần người chơi khác trước khi chủ phòng xuống xem"
+                  : undefined
+              }
+              canInviteDown={
+                player &&
+                room.hostId === userId &&
+                room.status === "WAITING" &&
+                !(room.seats.red && room.seats.black)
+              }
+              canKick={player}
+              downOfferInviteeId={
+                downOffer && downSeconds > 0 ? downOffer.inviteeId : null
+              }
+              inviteCooldownSeconds={inviteCooldownSeconds}
+              busy={busy}
+              // Tab người xem luôn readonly/not_allowed nhưng vẫn là chủ HTTP của chính mình.
+              writable={
+                writable || (view.role === "spectator" && ownsHttpControl())
+              }
+              onMoveToSpectator={() => void viewerAction("to-spectator")}
+              onInviteDown={(target) =>
+                void viewerAction("invite-down", { targetId: target })
+              }
+              onKick={(target) =>
+                void viewerAction("kick", { targetId: target })
+              }
+            />
+          )}
           <div className="xq-room-slots">
             <div className="xq-room-chat-slot">
               {chat ?? (
@@ -1477,7 +1591,10 @@ export function RoomPage({
               )}
               {connected &&
                 snapshot &&
-                (matched ? (["PLAYERS_PRIVATE"] as const) : (["PLAYERS_PRIVATE", "ROOM_PUBLIC"] as const)).map((channel) =>
+                (matched
+                  ? (["PLAYERS_PRIVATE"] as const)
+                  : (["PLAYERS_PRIVATE", "ROOM_PUBLIC"] as const)
+                ).map((channel) =>
                   roomChat.channels[channel]?.error ? (
                     <Button
                       key={channel}
@@ -1555,26 +1672,30 @@ export function RoomPage({
           họ đồng ý. Ghế và phe giữ nguyên.
         </p>
       </Dialog>
-      {!matched && <RoomSettings
-        open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        room={room}
-        canManage={canManage}
-        busy={busy}
-        error={settingsError}
-        status={settingsStatus}
-        onChange={changeVisibility}
-      />}
-      {!resultInModal && rematchPanel}
-      {!matched && <SwapPrompt
-        open={swapModalOpen}
-        seconds={swapSeconds}
-        writable={writable}
-        busy={busy}
-        onAccept={() => void httpAction("swap-accept")}
-        onDecline={() => void httpAction("swap-decline")}
-        onCollapse={() => setSwapCollapsedId(swapOfferId)}
-      />}
+      {!matched && (
+        <RoomSettings
+          open={settingsOpen}
+          onClose={() => setSettingsOpen(false)}
+          room={room}
+          canManage={canManage}
+          busy={busy}
+          error={settingsError}
+          status={settingsStatus}
+          onChange={changeVisibility}
+        />
+      )}
+      {!resultInModal && (matched || room.rematchOffer) && rematchPanel}
+      {!matched && (
+        <SwapPrompt
+          open={swapModalOpen}
+          seconds={swapSeconds}
+          writable={writable}
+          busy={busy}
+          onAccept={() => void httpAction("swap-accept")}
+          onDecline={() => void httpAction("swap-decline")}
+          onCollapse={() => setSwapCollapsedId(swapOfferId)}
+        />
+      )}
       {resultVisible && snapshot?.match && (
         <MatchResult
           match={snapshot.match}
@@ -1583,7 +1704,6 @@ export function RoomPage({
           leaving={busy}
           canLeave={ownsHttpControl()}
           error={leaveError}
-          rematch={rematchPanel}
           onStay={() => {
             setDismissedResult(snapshot.match!.id);
             setLeaveError("");

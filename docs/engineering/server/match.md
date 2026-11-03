@@ -4,7 +4,7 @@
 
 The caller acquires sorted actor locks (both players plus acting identity), then the room lock, supplies the same `PoolClient` as the room/realtime transaction, and commits receipts before publication. `MatchScope.canControl` is a trusted controller proof from that caller. The store checks current match identity, actual player seats, supplied lock sets, match version, effective history and rules.
 
-`MatchStoreCore.context` reads the locked room, the eligible match and the caller's player seat in one SQL statement. Materialized CTEs keep room → match row-lock order; a mismatched current match is rejected without locking that match. Membership, both player locks, rules and replay validation still run before an action.
+`MatchStoreCore.context` reads the locked room, the eligible match, the caller's player seat and pending proposal existence in one SQL statement. Materialized CTEs keep room → match row-lock order; a mismatched current match is rejected without locking that match. Membership, both player locks, rules and replay validation still run before an action. Normal `move` uses the proposal existence flags to avoid redundant round-trips for draw/undo snapshots and resolution when no proposals are pending.
 
 Draw state reads offers, each side's move count and expired-offer cooldown baselines in one statement. Read-only snapshots sample the database clock inside the same statement; actions retain their explicit deadline sample. Expiry comparisons use the same millisecond cutoff as JavaScript `Date`; mutation deadlines and `drawMoveCount` checks remain unchanged.
 
@@ -51,7 +51,7 @@ The SQL callback and clock are fixture ports. Actual room/realtime receipt/publi
 
 ## AI game recovery and retention
 
-`AiGames` (`apps/server/src/game/ai/ai-games.ts`) runs one engine search per computed turn. The search output is kept in memory as a `Completion` and is never searched again. A transient SQL failure (`AI_UNAVAILABLE`) on a still-current turn schedules a commit retry with the retained completion: the first retry waits 1s, then 2s, 4s, 8s, 16s, and every later retry waits the 30s cap. Each retry re-checks SQL authority before applying the completion. Lost authority (`RoomError`, changed epoch or version, cancelled game) discards the completion without applying or failing it.
+Khi runtime bật `mergeReply` (mặc định của `createAiRuntime`), `move` tìm trước nước đáp từ ảnh RAM ngoài SQL rồi ghi nước người và nước máy trong một giao dịch (không qua THINKING/settle); lỗi, hết 5 giây hoặc phiên bản đổi thì rơi về luồng dưới đây. `AiGames` (`apps/server/src/game/ai/ai-games.ts`) runs one engine search per computed turn. The search output is kept in memory as a `Completion` and is never searched again. A transient SQL failure (`AI_UNAVAILABLE`) on a still-current turn schedules a commit retry with the retained completion: the first retry waits 1s, then 2s, 4s, 8s, 16s, and every later retry waits the 30s cap. Each retry re-checks SQL authority before applying the completion. Lost authority (`RoomError`, changed epoch or version, cancelled game) discards the completion without applying or failing it.
 
 Undo, resign, drop and close cancel the pending retry timer and abort any running search. Epoch and version fences keep late callbacks from installing output into a newer game or a replacement reservation.
 

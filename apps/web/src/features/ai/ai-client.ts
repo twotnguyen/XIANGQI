@@ -5,7 +5,7 @@ import {
 } from "@xiangqi/xiangqi-core";
 import type { AiGameSnapshot } from "./AiGame.js";
 import type { AiSetupSelection } from "./AiSetupDialog.js";
-import type { AuthorizedFetch } from "../rooms/room-client.js";
+import type { AuthorizedFetch } from "../../shared/api.js";
 export interface AiControlProof {
   tabId: string;
   connectionId: string;

@@ -28,13 +28,12 @@ function invite(overrides: Record<string, unknown> = {}) {
 }
 
 async function open() {
-  await userEvent.click(screen.getByRole("button", { name: "Mời vào phòng" }));
+  await userEvent.click(screen.getByRole("button", { name: "Mời bạn bè" }));
 }
 
 describe("room invite", () => {
   it("blocks a second copy while one is in progress", async () => {
     const props = invite({ copying: true });
-    await open();
     const buttons = screen.getAllByRole("button", { name: /Sao chép/ });
     expect(
       buttons.every(
@@ -48,17 +47,17 @@ describe("room invite", () => {
     expect(props.onCopyLink).not.toHaveBeenCalled();
   });
 
-  it("shows a read-only join link with the room code", async () => {
-    invite();
-    await open();
-    const link = screen.getByDisplayValue(/\/rooms\/join\?token=12345678$/);
-    expect(link).toHaveProperty("readOnly", true);
-  });
-
-  it("shows the friends tab only when a friends slot is provided", async () => {
+  it("opens the friends list directly without share tabs", async () => {
     invite({ friends: createElement("p", null, "Danh sách bạn bè") });
     await open();
-    await userEvent.click(screen.getByRole("tab", { name: "Bạn bè" }));
     expect(screen.getByText("Danh sách bạn bè")).toBeTruthy();
+    expect(screen.queryByRole("tablist")).toBeNull();
+  });
+
+  it("keeps quick sharing available when friends are unavailable", () => {
+    invite();
+    expect(screen.queryByRole("button", { name: "Mời bạn bè" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Sao chép mã" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Sao chép link" })).toBeTruthy();
   });
 });

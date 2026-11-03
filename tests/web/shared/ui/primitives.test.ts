@@ -42,9 +42,8 @@ it.each([{ disabledReason: "Sắp ra mắt" }, { loading: true }])(
     await user.keyboard("{Enter} ");
     expect(action).not.toHaveBeenCalled();
     expect(button.getAttribute("aria-disabled")).toBe("true");
-    expect(
-      screen.getByText(props.loading ? "Đang xử lý…" : "Sắp ra mắt"),
-    ).toBeTruthy();
+    if ("disabledReason" in props) expect(screen.getByText("Sắp ra mắt")).toBeTruthy();
+    expect(button.getAttribute("aria-busy")).toBe(props.loading ? "true" : "false");
   },
 );
 

@@ -15,7 +15,7 @@ import {
   settle,
 } from "./MediaPanel.test-helper.js";
 describe("media generation fencing", () => {
-  it("resumes reception on visible without restoring local capture", async () => {
+  it("keeps camera running while the document is hidden and visible again", async () => {
     const { client } = harness();
     render(panel(client));
     await settle();
@@ -23,25 +23,26 @@ describe("media generation fencing", () => {
     await settle();
     const visibility = vi.spyOn(document, "visibilityState", "get");
     visibility.mockReturnValue("hidden");
-    await act(async () =>
-      document.dispatchEvent(new Event("visibilitychange")),
-    );
-    expect(
-      live.state.rooms.every((room) => !room.connected && !room.camera),
-    ).toBe(true);
+    await act(async () => document.dispatchEvent(new Event("visibilitychange")));
+    expect(live.state.rooms.some((room) => room.connected && room.camera)).toBe(true);
     visibility.mockReturnValue("visible");
-    await act(async () =>
-      document.dispatchEvent(new Event("visibilitychange")),
+    await act(async () => document.dispatchEvent(new Event("visibilitychange")));
+    expect(screen.getByRole("button", { name: "Tắt camera" })).toBeTruthy();
+  });
+
+  it("recovers camera after a generation change while hidden", async () => {
+    const { client, server } = harness();
+    render(panel(client));
+    await settle();
+    await userEvent.setup().click(cameraButton());
+    await settle();
+    vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+    await act(async () => document.dispatchEvent(new Event("visibilitychange")));
+    server.generation = "22222222-2222-4222-8222-222222222222";
+    await act(async () => live.state.instances.at(-1)!.emitDisconnected());
+    await waitFor(() =>
+      expect(live.state.rooms.some((room) => room.connected && room.camera)).toBe(true),
     );
-    await waitFor(
-      () => expect(live.state.rooms.some((room) => room.connected)).toBe(true),
-      { timeout: 2500 },
-    );
-    expect(
-      live.state.rooms
-        .filter((room) => room.connected)
-        .every((room) => !room.camera && !room.mic),
-    ).toBe(true);
   });
 
   it("clears pending connection state when a rotation has no remaining source", async () => {
@@ -117,9 +118,8 @@ describe("media generation fencing", () => {
     const view = render(panel(client));
     await settle();
     await waitFor(() => expect(live.state.rooms[0]?.connected).toBe(true));
-    await userEvent
-      .setup()
-      .click(screen.getByRole("button", { name: "Tắt nhận hình/tiếng" }));
+    await userEvent.setup().click(screen.getByRole("button", { name: "Ẩn camera đối thủ" }));
+    await userEvent.setup().click(screen.getByRole("button", { name: "Tắt tiếng đối thủ" }));
     server.generation = "22222222-2222-4222-8222-222222222222";
     live.state.connectPlan = () => {
       const room = live.state.instances.at(-1)!;
@@ -162,7 +162,7 @@ describe("media generation fencing", () => {
     );
   });
 
-  it.each(["disconnect", "controller", "pair", "hidden", "unmount"] as const)(
+  it.each(["disconnect", "controller", "pair", "unmount"] as const)(
     "does not restore devices when %s interrupts a generation lookup",
     async (boundary) => {
       const { client, raw, server } = harness();
@@ -179,12 +179,6 @@ describe("media generation fencing", () => {
         view.rerender(panel(client, { writable: false }));
       if (boundary === "pair")
         view.rerender(panel(client, { seats: { red: "a", black: "c" } }));
-      if (boundary === "hidden") {
-        vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
-        await act(async () =>
-          document.dispatchEvent(new Event("visibilitychange")),
-        );
-      }
       if (boundary === "unmount") view.unmount();
       server.generation = "22222222-2222-4222-8222-222222222222";
       await act(async () => {

@@ -194,7 +194,7 @@ export function readRegistrationConfig(
       loginEnabled: loginEnabled === "true",
       // Pool chính gồm 1 kết nối giữ khóa runtime; phần còn lại phục vụ phòng, AI, lịch sử, bạn bè.
       poolMax: poolSize(env.DB_POOL_MAX, 5, 5, 20),
-      loginPoolMax: poolSize(env.LOGIN_POOL_MAX, 5, 2, 20),
+      loginPoolMax: poolSize(env.LOGIN_POOL_MAX, 3, 2, 20),
     };
   } catch {
     throw new Error("Invalid registration configuration");
@@ -264,6 +264,13 @@ export async function createRegistrationRuntime(
       throw new Error();
     }
     if (settings.loginEnabled) {
+      const emailLoginSchema = await pool.query(
+        "SELECT EXISTS(SELECT 1 FROM pg_catalog.pg_constraint WHERE conrelid=to_regclass('xiangqi_auth.login_attempts') AND conname='login_attempts_identifier_key_check') AS ready",
+      );
+      if (!emailLoginSchema.rows[0]?.ready) {
+        schemaReady = false;
+        throw new Error();
+      }
       // Registration keeps its connection while invoking password/session work.
       // A separate pool prevents five concurrent registrations exhausting their own nested calls.
       // Login pool: each new connection is already app_server; this pool is never reset to another role.

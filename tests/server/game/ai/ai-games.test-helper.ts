@@ -124,3 +124,16 @@ export function fixture(randomSide?: () => "red" | "black") {
     ...driver,
   };
 }
+export function mergedFixture() {
+  const driver = memoryTransactions();
+  const engine = fixture().engine;
+  return {
+    games: new AiGames({
+      engine,
+      transactions: driver.transactions,
+      mergeReply: true,
+    }),
+    engine,
+    ...driver,
+  };
+}

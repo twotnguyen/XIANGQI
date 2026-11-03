@@ -58,6 +58,7 @@ Tái đấu phòng tùy chỉnh (`room-store-rematch.ts`, bảng `xiangqi_room.r
 Thành phần ghế đổi phải đi qua `cancel` (hủy countdown, reset Sẵn sàng cả phòng)
 và đóng đề nghị đổi ghế đang chờ. Cả `toSpectator` và `moveToSpectator` dùng cùng
 cleanup này; không chỉ reset cờ của người vừa rời ghế.
+`toSpectator` cho Host xuống xem khi còn người chơi khác và còn chỗ xem; cập nhật owner sang người còn lại trong cùng giao dịch, không đổi phe của người đó. Host một mình bị từ chối.
 Nếu bảng biến mất sau khi đã dò, lỗi SQL được trả lên, không retry trong giao dịch
 đã lỗi. Gateway gửi snapshot đã commit từ admission, không đọc lại toàn bộ phòng.
 

@@ -2,7 +2,6 @@
 import { expect, it, vi } from "vitest";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { RoomRequestError } from "@web/features/rooms/room-client.js";
 import {
   setup,
   playing,
@@ -48,15 +47,19 @@ it("notifies once when a ranked match reaches its terminal snapshot", async () =
   expect(onRankedFinished).toHaveBeenCalledOnce();
 });
 
-it("allows a member to rematch from a finished casual room", async () => {
+it("hides rematch in the result and retains it after staying in a casual room", async () => {
   const state = playing();
   state.room = { ...state.room, kind: "CASUAL" };
   const fixture = setup(state, { isMember: true });
   await fixture.ready();
   const finished = terminal(state);
+  finished.match = { ...finished.match!, winner: null, result: "DRAW_AGREEMENT" };
   finished.room = { ...finished.room, kind: "CASUAL", status: "FINISHED" };
   fixture.publish(finished);
-  expect(within(screen.getByRole("dialog")).getByRole("button", { name: "Đề nghị tái đấu" })).toBeTruthy();
+  const modal = screen.getByRole("dialog");
+  expect(within(modal).queryByRole("button", { name: "Đề nghị tái đấu" })).toBeNull();
+  await userEvent.setup().click(within(modal).getByRole("button", { name: "Ở lại phòng" }));
+  expect(screen.getByRole("button", { name: "Đề nghị tái đấu" })).toBeTruthy();
 });
 
 it("shows ranked opponent identity and actual rating", async () => {
@@ -79,51 +82,8 @@ it("shows an initial avatar when the ranked opponent has no image", async () => 
 });
 
 
-it.each(["SWAP", "KEEP"] as const)(
-  "offers %s from the result modal and keeps one panel while waiting for the opponent",
-  async (side) => {
-    const state = terminal();
-    const fixture = setup(playing(), { isMember: true });
-    await fixture.ready();
-    fixture.publish(state);
-    const modal = screen.getByRole("dialog", { name: "Bạn thắng!" });
-    const choice = within(modal).getByRole("radio", { name: "Đổi phe" });
-    expect((choice as HTMLInputElement).checked).toBe(true);
-    const user = userEvent.setup();
-    if (side === "KEEP")
-      await user.click(within(modal).getByRole("radio", { name: "Giữ phe" }));
-    fixture.client.proposeRematch.mockResolvedValue({
-      ...state,
-      version: state.version + 1,
-      room: {
-        ...state.room,
-        rematchOffer: {
-          id: "offer",
-          proposerId: "a",
-          responderId: "b",
-          side,
-          expiresAt: "2026-10-11T00:00:30Z",
-        },
-      },
-    });
-    await user.click(
-      within(modal).getByRole("button", { name: "Đề nghị tái đấu" }),
-    );
-    expect(fixture.client.proposeRematch).toHaveBeenCalledExactlyOnceWith(
-      "room",
-      state.version,
-      side,
-      fixture.control,
-    );
-    expect(
-      await within(modal).findByText(/Đang chờ đối thủ trả lời/),
-    ).toBeTruthy();
-    expect(document.querySelectorAll(".xq-rematch-panel")).toHaveLength(1);
-    expect(screen.getByRole("dialog")).toBe(modal);
-  },
-);
 
-it("accepts an incoming side choice inside the result and reveals the authoritative countdown", async () => {
+it("accepts an incoming rematch after leaving the result and reveals the authoritative countdown", async () => {
   const completed = terminal();
   const state = {
     ...completed,
@@ -142,9 +102,9 @@ it("accepts an incoming side choice inside the result and reveals the authoritat
   await fixture.ready();
   fixture.publish(state);
   const modal = screen.getByRole("dialog", { name: "Bạn thắng!" });
-  expect(
-    within(modal).getByText(/Đối thủ đề nghị tái đấu: Giữ phe/),
-  ).toBeTruthy();
+  expect(within(modal).queryByText(/Đối thủ đề nghị tái đấu/)).toBeNull();
+  await userEvent.setup().click(within(modal).getByRole("button", { name: "Ở lại phòng" }));
+  expect(screen.getByText(/Đối thủ đề nghị tái đấu: Giữ phe/)).toBeTruthy();
   fixture.client.respondRematch.mockResolvedValue({
     ...state,
     version: state.version + 1,
@@ -156,7 +116,7 @@ it("accepts an incoming side choice inside the result and reveals the authoritat
   });
   await userEvent
     .setup()
-    .click(within(modal).getByRole("button", { name: "Đồng ý" }));
+    .click(screen.getByRole("button", { name: "Đồng ý" }));
   expect(fixture.client.respondRematch).toHaveBeenCalledExactlyOnceWith(
     "room",
     state.version,
@@ -170,7 +130,7 @@ it("accepts an incoming side choice inside the result and reveals the authoritat
   expect(fixture.command).not.toHaveBeenCalled();
 });
 
-it("retains a single rematch panel in the waiting room after Stay", async () => {
+it("returns to the waiting room after Stay without a new rematch proposal panel", async () => {
   const fixture = setup(playing(), { isMember: true });
   await fixture.ready();
   fixture.publish(terminal());
@@ -178,41 +138,22 @@ it("retains a single rematch panel in the waiting room after Stay", async () => 
     .setup()
     .click(screen.getByRole("button", { name: "Ở lại phòng" }));
   expect(screen.queryByRole("dialog")).toBeNull();
-  expect(document.querySelectorAll(".xq-rematch-panel")).toHaveLength(1);
-  expect(screen.getByRole("button", { name: "Đề nghị tái đấu" })).toBeTruthy();
+  expect(document.querySelector(".xq-rematch-panel")).toBeNull();
+  expect(screen.queryByRole("button", { name: "Đề nghị tái đấu" })).toBeNull();
   expect(fixture.client.proposeRematch).not.toHaveBeenCalled();
 });
 
-it("keeps rematch available for a locked custom room without exposing the invite code", async () => {
+it("keeps the result free of rematch controls in a locked custom room", async () => {
   const live = playing();
   live.room = { ...live.room, visibility: "LOCKED", inviteCode: null };
   const fixture = setup(live, { isMember: true });
   await fixture.ready();
   fixture.publish(terminal(live));
-  expect(
-    within(screen.getByRole("dialog")).getByRole("button", {
-      name: "Đề nghị tái đấu",
-    }),
-  ).toBeTruthy();
+  const modal = screen.getByRole("dialog");
+  expect(within(modal).queryByRole("button", { name: "Đề nghị tái đấu" })).toBeNull();
   expect(screen.queryByText("70521348")).toBeNull();
 });
 
-it("shows a rejected rematch inside the result without closing it", async () => {
-  const fixture = setup(playing(), { isMember: true });
-  await fixture.ready();
-  fixture.publish(terminal());
-  fixture.client.proposeRematch.mockRejectedValue(
-    new RoomRequestError("PLAYER_DISCONNECTED", 409),
-  );
-  const modal = screen.getByRole("dialog");
-  await userEvent
-    .setup()
-    .click(within(modal).getByRole("button", { name: "Đề nghị tái đấu" }));
-  expect(within(modal).getByRole("alert").textContent).toContain(
-    "Có người chơi chưa kết nối",
-  );
-  expect(screen.getByRole("dialog")).toBe(modal);
-});
 
 it("keeps the rematch action out of a guest result", async () => {
   const fixture = setup(playing(), { isMember: false });

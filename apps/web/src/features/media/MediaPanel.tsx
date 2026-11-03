@@ -8,103 +8,18 @@ import {
   Track,
   type RemoteTrackPublication,
 } from "livekit-client";
-import { Button, Dialog, Notice } from "../../shared/ui/primitives.js";
+import { Button, Dialog } from "../../shared/ui/primitives.js";
 import {
   MediaRequestError,
   type MediaClient,
   type ShareLevel,
 } from "./media-client.js";
-import { MediaSeats, type MediaFeed } from "./MediaSeats.js";
+import { CameraIcon, MediaSeats, MicIcon, type MediaFeed } from "./MediaSeats.js";
 const LABELS: Record<ShareLevel, string> = {
   NONE: "Không chia sẻ",
   OPPONENT: "Chỉ đối thủ",
   ALL: "Cả đối thủ và người xem",
 };
-
-function CameraIcon({ off }: { off?: boolean }) {
-  if (off) {
-    return (
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        className="xq-media-icon"
-      >
-        <line x1="2" y1="2" x2="22" y2="22" />
-        <path d="M10.41 10.41a2 2 0 0 0 2.83 2.83" />
-        <path d="M16 16v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2" />
-        <path d="m22 7-5 4v2l5 4V7z" />
-      </svg>
-    );
-  }
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="xq-media-icon"
-    >
-      <path d="m22 7-5 4v6l5 4V7z" />
-      <rect x="2" y="5" width="15" height="14" rx="2" ry="2" />
-    </svg>
-  );
-}
-
-function MicIcon({ off }: { off?: boolean }) {
-  if (off) {
-    return (
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-        className="xq-media-icon"
-      >
-        <line x1="2" y1="2" x2="22" y2="22" />
-        <path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2" />
-        <path d="M5 10v2a7 7 0 0 0 12 5" />
-        <path d="M15 9.34V5a3 3 0 0 0-5.68-1.33" />
-        <path d="M9 9v3a3 3 0 0 0 5.12 2.12" />
-        <line x1="12" y1="19" x2="12" y2="22" />
-      </svg>
-    );
-  }
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="xq-media-icon"
-    >
-      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-      <line x1="12" y1="19" x2="12" y2="22" />
-    </svg>
-  );
-}
 
 const DEFAULT_MEDIA_ERROR = "Chưa thể kết nối hình tiếng. Vui lòng thử lại.";
 
@@ -213,7 +128,6 @@ export function MediaPanel({
     player,
     roomId,
     pair: "",
-    visible: true,
   });
   const pair = [seats.red, seats.black].filter(Boolean).sort().join(":");
   authority.current = {
@@ -222,7 +136,6 @@ export function MediaPanel({
     player,
     roomId,
     pair,
-    visible: document.visibilityState !== "hidden",
   };
   const stopIntent = useCallback(() => {
     intent.current = { camera: false, mic: false };
@@ -235,12 +148,13 @@ export function MediaPanel({
   const running = useRef(false);
   const receiverMuted = useRef<readonly string[]>(kind === "RANKED" ? [seats.red, seats.black].filter((identity): identity is string => identity !== null && identity !== userId) : []);
   const receiveRoom = useRef<Room | null>(null);
+  const receiveOnly = useRef(false);
   const applyReceiverChoice = useCallback((identities: readonly string[]) => {
     receiverMuted.current = identities;
     if (receiveRoom.current)
       for (const participant of receiveRoom.current.remoteParticipants.values())
-        receive(participant, !identities.includes(participant.identity));
-  }, []);
+        receive(participant, participant.identity !== userId && !identities.includes(participant.identity));
+  }, [userId]);
 
   const confirmLevel = useCallback((next: ShareLevel) => {
     levelRef.current = next;
@@ -253,6 +167,7 @@ export function MediaPanel({
     const live = rooms.current;
     rooms.current = [];
     receiveRoom.current = null;
+    receiveOnly.current = false;
     running.current = false;
     publishReady.current = false;
     generation.current = null;
@@ -320,11 +235,15 @@ export function MediaPanel({
       roomName: string,
       publish: { camera: boolean; mic: boolean },
       canReceive: boolean,
+      attempt: { cancelled: boolean },
     ) => {
-      const current = () => epoch.current === id;
+      const current = () => epoch.current === id && !attempt.cancelled;
       const live = new Room({ adaptiveStream: true, dynacast: true });
       rooms.current.push(live);
-      if (canReceive) receiveRoom.current = live;
+      if (canReceive) {
+        receiveRoom.current = live;
+        receiveOnly.current = !publish.camera && !publish.mic;
+      }
       live.on(RoomEvent.Disconnected, () => {
         if (!current()) return;
         const previous = generation.current;
@@ -343,7 +262,7 @@ export function MediaPanel({
         for (const participant of live.remoteParticipants.values())
           receive(
             participant,
-            !receiverMuted.current.includes(participant.identity),
+            participant.identity !== userId && !receiverMuted.current.includes(participant.identity),
           );
       };
       live.on(RoomEvent.TrackPublished, subscribe);
@@ -351,7 +270,7 @@ export function MediaPanel({
       live.on(RoomEvent.Reconnected, subscribe);
       live.on(RoomEvent.TrackSubscribed, (track, _publication, participant) => {
         if (!current() || !canReceive) return;
-        if (receiverMuted.current.includes(participant.identity)) {
+        if (participant.identity === userId || receiverMuted.current.includes(participant.identity)) {
           receive(participant, false);
           return;
         }
@@ -379,6 +298,7 @@ export function MediaPanel({
           if (
             publication.track &&
             canReceive &&
+            participant.identity !== userId &&
             !receiverMuted.current.includes(participant.identity)
           )
             attachTrack(publication.track, participant, roomName);
@@ -414,7 +334,12 @@ export function MediaPanel({
       next: { camera: boolean; mic: boolean; level: ShareLevel },
       notice?: string,
     ) => {
-      const id = invalidate();
+      const preserveReceiver = Boolean(
+        (next.camera || next.mic) && receiveRoom.current && !publishReady.current && !running.current,
+      );
+      const id = preserveReceiver ? epoch.current : invalidate();
+      const existingRooms = preserveReceiver ? [...rooms.current] : [];
+      const attempt = { cancelled: false };
       running.current = true;
       const current = () => epoch.current === id;
       setBusy(true);
@@ -423,6 +348,12 @@ export function MediaPanel({
       try {
         const ticket = await client.token(roomId, next.camera, next.mic, tabId);
         if (!current()) return;
+        if (preserveReceiver && generation.current !== ticket.generation) {
+          invalidate();
+          stopIntent();
+          setBusy(false);
+          return;
+        }
         generation.current = ticket.generation;
         const enabled = next.camera || next.mic;
         const canPublish = enabled && player && next.level !== "NONE";
@@ -437,7 +368,8 @@ export function MediaPanel({
               camera: next.camera && canPublish,
               mic: next.mic && canPublish,
             },
-            true,
+            !preserveReceiver,
+            attempt,
           ),
           stage && canPublish && next.level === "ALL"
             ? connect(
@@ -450,6 +382,7 @@ export function MediaPanel({
                   mic: next.mic,
                 },
                 false,
+                attempt,
               )
             : Promise.resolve(),
         ]);
@@ -465,6 +398,16 @@ export function MediaPanel({
         );
       } catch (error) {
         if (!current()) return;
+        attempt.cancelled = true;
+        if (preserveReceiver) {
+          const added = rooms.current.filter((room) => !existingRooms.includes(room));
+          rooms.current = existingRooms;
+          for (const room of added) releaseRoom(room);
+          stopIntent();
+          setFeeds((previous) => previous.filter((feed) => feed.key !== `local:${userId}`));
+          setStatus(mediaErrorMessage(error, true));
+          return;
+        }
         // Lỗi một phần: dừng mọi phòng/track đã mở, không giữ publish dở dang.
         invalidate();
         stopIntent();
@@ -490,7 +433,6 @@ export function MediaPanel({
         if (
           epoch.current !== id ||
           !now.connected ||
-          !now.visible ||
           now.roomId !== expected.roomId ||
           now.pair !== expected.pair ||
           now.player !== expected.player ||
@@ -548,20 +490,13 @@ export function MediaPanel({
   }, [connected, invalidate, run, setDemand, stopIntent]);
 
   useEffect(() => {
-    const stopWhenHidden = () => {
-      if (document.visibilityState !== "hidden") {
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== "hidden")
         setVisibilityVersion((version) => version + 1);
-        return;
-      }
-      invalidate();
-      stopIntent();
-      setBusy(false);
-      setStatus("Camera và mic đã tắt khi trang ở chế độ nền.");
     };
-    document.addEventListener("visibilitychange", stopWhenHidden);
-    return () =>
-      document.removeEventListener("visibilitychange", stopWhenHidden);
-  }, [invalidate, stopIntent]);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, []);
 
   const previousPair = useRef(pair);
   useEffect(() => {
@@ -602,11 +537,10 @@ export function MediaPanel({
               (devices.camera || devices.mic) &&
               authority.current.player &&
               authority.current.writable &&
-              authority.current.visible &&
               levelRef.current !== "NONE"
             )
               void run({ ...devices, level: levelRef.current });
-            else if (result.available && authority.current.visible)
+            else if (result.available)
               void run({ camera: false, mic: false, level: levelRef.current });
             else {
               invalidate();
@@ -709,7 +643,7 @@ export function MediaPanel({
       return;
     }
     const id = epoch.current;
-    const liveRooms = rooms.current;
+    const liveRooms = rooms.current.filter((room) => !receiveOnly.current || room !== receiveRoom.current);
     devicePending.current = { ...devicePending.current, [kind]: true };
     setPendingDevices(devicePending.current);
     setStatus("");
@@ -943,9 +877,9 @@ export function MediaPanel({
         <p>Người xem chỉ nhận hình tiếng theo mức chia sẻ của người chơi.</p>
       )}
       {canPublish && !writable && (
-        <Notice message="Tab này chỉ có thể xem. Camera và mic đang tắt; bật lại sẽ hỏi chuyển thiết bị sang tab này." />
+        <span className="xq-sr-only">Tab này chỉ có thể xem. Camera và mic đang tắt; bật lại sẽ hỏi chuyển thiết bị sang tab này.</span>
       )}
-      {status && <Notice message={status} />}
+      {status && <span className="xq-sr-only" role="status">{status}</span>}
       {mediaFailed && (
         <Button
           variant="secondary"

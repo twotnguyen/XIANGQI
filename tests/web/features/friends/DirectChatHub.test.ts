@@ -110,6 +110,24 @@ it("opens the friend list and then the chat with the chosen friend", async () =>
   expect(client.messages).toHaveBeenCalledWith(FRIEND);
 });
 
+it("opens a non-modal friend sidebar and a floating conversation in the lobby", async () => {
+  const client = fakeClient();
+  render(createElement(DirectChatHub, { client, userId: ME, floating: true }));
+  fireEvent.click(await screen.findByRole("button", { name: /Tin nhắn/ }));
+  expect(screen.getByRole("complementary", { name: "Danh sách bạn bè" })).toBeTruthy();
+  // Danh sách tải bất đồng bộ: lọc trước khi có dữ liệu chỉ thấy trạng thái đang tải.
+  await screen.findByRole("button", { name: /Nhắn tin với Bạn A/ });
+  fireEvent.change(screen.getByRole("textbox", { name: "Tìm kiếm bạn bè" }), { target: { value: "không có" } });
+  expect(screen.getByText("Không tìm thấy bạn bè.")).toBeTruthy();
+  fireEvent.change(screen.getByRole("textbox", { name: "Tìm kiếm bạn bè" }), { target: { value: "bạn a" } });
+  fireEvent.click(await screen.findByRole("button", { name: /Nhắn tin với Bạn A/ }));
+  expect(screen.queryByRole("complementary", { name: "Danh sách bạn bè" })).toBeNull();
+  expect(await screen.findByRole("dialog", { name: "Nhắn tin với Bạn A" })).toBeTruthy();
+  expect(await screen.findByRole("log", { name: "Lịch sử với Bạn A" })).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Đóng cuộc trò chuyện" }));
+  expect(screen.queryByRole("dialog", { name: "Nhắn tin với Bạn A" })).toBeNull();
+});
+
 it("shows a recoverable error instead of an endless loader when the initial friend list fails", async () => {
   const client = fakeClient();
   vi.mocked(client.list).mockRejectedValueOnce(

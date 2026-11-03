@@ -14,7 +14,7 @@ import { RoomError, type RoomScope } from "../room/room.types.js";
 import type { RoomAuthorization } from "../room/room-transactions.js";
 import { AiControl } from "./ai-control.js";
 import { createCompiledAiEngine, type AiEngine } from "./ai-engine.js";
-import { AiGames } from "./ai-games.js";
+import { AiGames, type AiSnapshot } from "./ai-games.js";
 import { AiHistoryStore } from "./ai-history-store.js";
 import { AiHttpService } from "./ai-http.service.js";
 import { AiPresence, type AiAttachment } from "./ai-presence.js";
@@ -93,6 +93,8 @@ export interface AiRuntimeOptions {
   withScope: <T>(scope: RoomScope, work: () => Promise<T>) => Promise<T>;
   /** Test seam; production uses the compiled engine worker outside the HTTP main thread. */
   engine?: AiEngine;
+  /** Test seam; mặc định bật: ghi nước người và nước máy trong một giao dịch. */
+  mergeReply?: boolean;
 }
 
 export interface AiRuntime {
@@ -159,7 +161,11 @@ export async function createAiRuntime(
     bootId,
     control,
   });
-  const games = new AiGames({ engine, transactions });
+  const games = new AiGames({
+    engine,
+    transactions,
+    mergeReply: options.mergeReply ?? true,
+  });
   const http = new AiHttpService({
     games,
     transactions,
@@ -362,6 +368,21 @@ export async function createAiRuntime(
       tab: { tabId, connectionId: socket.id, generation },
     });
 
+    const project = (
+      snapshot: AiSnapshot,
+      kind: RoomScope["actor"]["kind"],
+    ): Omit<AiSocketSnapshot, "control"> => {
+      const { ownerId: _owner, telemetry, ...publicSnapshot } = snapshot;
+      void _owner;
+      return {
+        snapshot:
+          kind === "member"
+            ? { ...publicSnapshot, telemetry: telemetry ?? null }
+            : publicSnapshot,
+        serverNow: new Date().toISOString(),
+      };
+    };
+
     const sample = (gameId: string) =>
       transactions.read(session, async (scope, ownerId) => {
         const snapshot = games.read(ownerId, gameId);
@@ -370,14 +391,8 @@ export async function createAiRuntime(
           await control.assertRetained(scope, gameId);
         }
         const inspected = await control.inspect(scope, origin());
-        const { ownerId: _owner, telemetry, ...publicSnapshot } = snapshot;
-        void _owner;
         return {
-          snapshot:
-            scope.actor.kind === "member"
-              ? { ...publicSnapshot, telemetry: telemetry ?? null }
-              : publicSnapshot,
-          serverNow: new Date().toISOString(),
+          ...project(snapshot, scope.actor.kind),
           control: inspected,
         } satisfies AiSocketSnapshot;
       });
@@ -415,6 +430,16 @@ export async function createAiRuntime(
         return value;
       },
       read: async () => (watched ? sample(watched) : null),
+      peek: () =>
+        watched && owner
+          ? (() => {
+              try {
+                return project(games.read(owner.userId, watched), owner.kind);
+              } catch {
+                return null; // ván đã bị gỡ khỏi RAM: vòng đọc SQL báo lỗi chuẩn.
+              }
+            })()
+          : null,
       close: async () => {
         control.unbind(socket);
         if (owner === null || generation === 0) return;

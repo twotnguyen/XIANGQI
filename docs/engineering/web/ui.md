@@ -16,6 +16,7 @@ Sảnh PR #152 giữ bốn thẻ chế độ và ảnh minh họa local; subgrid
 giữa các thẻ, kể cả khi nút P2 có lý do vô hiệu hóa. Bộ lọc thời gian mỗi bên
 dùng các mức thật 5/10/15 phút và Tất cả, công bố trạng thái qua `aria-pressed`,
 giữ thứ tự snapshot máy chủ. Không hiển thị số online/Elo khi chưa có dữ liệu.
+Bốn nút chế độ ở Sảnh dùng màu riêng theo token; nút Ghép trận và Đánh hạng trải đều, căn giữa như hai nút còn lại.
 Ô mã phòng dùng `TextField` chung để nối nhãn/lỗi; tên chủ Khách giữ `(Khách)`.
 Nút Luật chơi mở disclosure hiện có và chuyển focus tới summary; summary giữ
 vùng chạm tối thiểu 44px. Sảnh dùng token theo chủ đề, giữ nhãn “Không giới hạn”
@@ -63,6 +64,8 @@ vẫn cần được kiểm xuyên suốt trước bàn giao đầy đủ.
 - Form tạo phòng trong Dialog không lặp tiêu đề và khung; standalone vẫn giữ
   thẻ riêng. Mã phòng sai tại Sảnh hiển thị lỗi trong luồng, không đè trợ giúp
   hoặc thẻ bên dưới.
+- Dialog Tạo phòng tại Sảnh giới hạn chiều cao, xếp thời gian thành hai cột,
+  làm rõ ô chọn và giữ nút Tạo/Hủy cùng chiều rộng; nội dung vẫn cuộn khi màn thấp.
 - Auth tăng vùng bấm và cỡ chữ trợ giúp; input mobile giữ 16px. Hồ sơ và bạn
   bè cho nội dung dài co/ngắt dòng. YC3 bổ sung popup lời mời không modal ở góc
   màn hình, nhiều lời mời độc lập; chi tiết và kiểm chứng ở mục YC3 dưới đây.
@@ -78,11 +81,15 @@ nghiệm thu các trang cần tài khoản, phòng/ván thật hay thiết bị 
 
 - Trang Bạn bè hai cột trên desktop, một cột dưới 800px; danh sách/kết quả tìm kiếm cuộn riêng. Giữ token/phông/component sẵn có, không thêm thư viện. Tìm kiếm bỏ phản hồi cũ khi đổi input; quan hệ đã là bạn/pending đổi hành động, không tạo lời mời trùng.
 - Chuông mở `/friends?tab=requests`; `Tabs.defaultId` chọn danh sách Lời mời dùng chung, kể cả bấm lại chuông khi đang ở Bạn bè. Poll 2 giây cập nhật quan hệ, presence và số đếm; lỗi cập nhật giữ danh sách cũ kèm cảnh báo, không giả thành rỗng.
-- Người ngồi ghế mở Dialog **Mời vào phòng**: mã/link có thể chọn, hai nút clipboard chỉ báo thành công sau ghi thật. Thành viên có tab Bạn bè; Khách không có; người xem không có nút mở. `RoomPage` nhận slot `renderInviteFriends` từ app, không import chéo feature.
+- Người trong phòng có mã phòng và hai nút sao chép nhanh, chỉ báo thành công sau khi clipboard ghi thật. Thành viên có nút **Mời bạn bè** mở trực tiếp danh sách bạn bè; Khách không có nút này. Phòng khóa và phòng ghép không có khung mời. `RoomPage` nhận slot `renderInviteFriends` từ app, không import chéo feature.
 - Popup xếp cùng lúc ở góc màn hình trong vùng tối đa 50dvh có cuộn; không giành focus hoặc bẫy focus, bàn cờ/chat vẫn hoạt động. Esc/X trên popup đang tương tác = Từ chối đúng invite. Deadline tuyệt đối từ server, không reset khi reload. API accept trả chỗ đã cấp thật; lỗi B giữ route/phòng A và báo ngay trong popup.
-- Phản hồi từ chối hiện cả khi người gửi đã rời phòng; trong Dialog đang mở, tab Bạn bè cũng hiển thị phản hồi và cooldown toàn tài khoản. Thông báo có ack, không trộn vào chuông kết bạn.
+- Phản hồi từ chối hiện cả khi người gửi đã rời phòng; trong Dialog đang mở, danh sách bạn bè cũng hiển thị phản hồi và cooldown toàn tài khoản. Thông báo có ack, không trộn vào chuông kết bạn.
 - Khung `xq-main` phòng chờ xếp dọc banner email và phòng, tránh banner ép phòng về chiều rộng 0 trên mobile. Nút chia sẻ giữ wrapper/grid-slot cũ khi chuyển nội dung sang Dialog, không bị thanh chọn phòng/camera/chat che.
+- Thành viên có thể đóng nhắc bổ sung/xác minh email trong tab hiện tại; trạng thái đóng giữ qua tải lại và được xóa khi đăng nhập lại. Lỗi kiểm tra email vẫn hiển thị để thử lại.
 - Nhắn tin bạn bè mở `DirectChatDialog` (Dialog chuẩn): log cuộn nội bộ `role="log"` có thể focus, composer có nhãn ẩn và bộ đếm 200 ký tự; poll HTTP 2 giây. Nút "Tải tin cũ" lấy 50 tin trước tin cũ nhất đã tải. Đánh dấu đã đọc theo tin đến có ít nhất 50% hiển thị trong log (IntersectionObserver), chỉ khi tab hiển thị và cửa sổ có focus; mốc đọc không giảm. Bạn đã hủy: dialog xóa lịch sử ngay ở lần poll/gửi đầu tiên nhận `DM_NOT_FRIENDS`, hiện trạng thái thu hồi và khóa composer. `DirectChatHub` (tách khỏi chuông lời mời) hiện badge tổng tin chưa đọc ở mọi route, poll 2 giây, không render khi chưa đăng nhập hoặc là Khách.
+- Tại Sảnh, nút tin nhắn mở danh sách bạn bè bên phải với ô tìm theo tên; chọn bạn mở cửa sổ chat nổi không chặn thao tác với Sảnh. Sidebar và cửa sổ nằm ngoài header để không bị backdrop của header cắt. Các trang khác giữ hộp thoại nhắn tin hiện có.
+- Ô nhắn tin riêng dùng Enter để gửi, Shift+Enter để xuống dòng; cửa sổ nổi có nút sticker hình mặt cười và nút gửi mũi tên.
+- Sảnh cập nhật vị trí thành viên mỗi 2 giây khi đang mở; bấm thoát bắt đầu rời phòng ngay, nhãn cảnh báo đầu hàng nếu ván đang diễn ra. Sau thành công hoặc lỗi, Sảnh đọc lại vị trí từ server; lỗi mạng không được coi là đã rời.
 
 Kiểm local: trình duyệt thật với Nest/Socket.IO, PostgreSQL 17 riêng; chỉ provider Auth là synthetic. Đã đi qua login, đăng ký bỏ email và Khách từ link; mã có số 0 đầu giữ nguyên; clipboard thật, Escape trả focus; nhận nhiều popup, Esc chỉ từ chối một popup, chuyển A→B thất bại/thành công. Đã xem 1366×768 và 360×800; modal không tràn ngang, phòng chờ mobile không cuộn toàn trang. Không thay bằng chứng này cho Google/SMTP/LiveKit production hoặc nghiệm thu PO.
 
@@ -103,6 +110,16 @@ Màu nằm ở token `:root` và `:root[data-theme="paper-light"]` trong `../sty
 cờ ghim palette riêng trong `.xq-board` nên không đổi theo chủ đề. Khách chỉ thấy thông tin
 phiên và Đăng xuất; không gọi API hồ sơ thành viên. Luồng xác nhận đăng xuất
 khi đang đấu giữ nguyên.
+
+Form đổi mật khẩu xếp các trường và hành động theo một nhịp khoảng cách, giới
+hạn chiều rộng để dễ đọc. Mục Giao diện cuộn cùng trang thay vì trong khung riêng.
+
+Elo trong menu tài khoản được tải trước khi mở menu và cập nhật lại sau ván
+xếp hạng; dữ liệu của tài khoản trước không được giữ khi đổi tài khoản.
+Trên bảng xếp hạng, năm vị trí đầu có màu nền và viền riêng; số thứ hạng vẫn hiển thị, không dựa riêng vào màu.
+
+Liên kết thêm hoặc xác minh email mở mục Hồ sơ cá nhân và đưa focus tới phần
+email, kể cả khi đang ở một mục khác trong Cài đặt.
 
 Tab Hồ sơ cá nhân (30/10/2026): tên đăng nhập/email chỉ đọc nằm cùng hàng trên
 desktop, form tên hiển thị ở dưới; mobile xếp một cột. Nút sao chép chỉ báo thành
@@ -246,19 +263,38 @@ Không gửi OTP giả, không hiển thị Elo mẫu hoặc coi route có tên 
 
 ## Phòng chờ thi đấu
 
+Các nút dùng chung giữ nguyên nhãn khi đang xử lý, khóa thao tác lặp bằng
+`aria-disabled`/`aria-busy`. Trạng thái gửi chat và lưu giao diện được ẩn
+khỏi bố cục nhưng vẫn thông báo cho trình đọc màn hình; lỗi và cảnh báo
+mất kết nối quan trọng vẫn hiển thị.
+Phản hồi từ chối/hết hạn xin ghế hiện nổi giữa màn hình trong 3 giây, không
+chiếm chỗ trong bố cục. Lý do khóa nút phòng vẫn có qua trình đọc màn hình
+và tooltip, không thêm dòng làm dịch chuyển giao diện.
 `RoomPage.tsx` và `features/rooms/rooms.css` dùng token Kỳ Đài Cổ Phong.
 Desktop dùng toàn bộ chiều ngang, không giới hạn 1440px hay căn giữa; cột
 camera sát mép trái màn hình. Bố cục giữ **ba cột**:
 
 - **Trái:** camera đối thủ ở trên, camera của bạn ở dưới (theo người chơi,
   không cố định theo phe); người xem giữ thứ tự Đỏ/Đen. Các điều khiển media
-  nằm dưới; cuối cột là mã phòng và hai nút Sao chép mã / Sao chép link.
-- **Giữa:** hai ghế Đỏ/Đen xếp dọc, cụm đổi ghế/bên nằm giữa hai ghế;
-  danh sách người xem ở cuối cột.
+  nằm dưới; cuối cột là mã phòng, hai nút sao chép nhanh và nút Mời bạn bè.
+- **Giữa:** quân tướng Đỏ và Đen đối diện trái–phải, thông tin dưới mỗi quân.
+  Xin đổi bên và Nhường Host nằm hai bên nút Sẵn sàng hoặc Bắt đầu, sát phía
+  trên danh sách người xem. Khi chờ đối thủ sẵn sàng, lý do khóa nút không hiện
+  bằng chữ nhưng vẫn được cung cấp cho trình đọc màn hình.
+  Khung người xem hiện số lượng và các ô tròn theo giới hạn phòng; ô có người
+  hiện chữ đầu tên và giữ danh sách cùng các thao tác quản lý người xem.
+  Người chơi bấm ô trống để chuyển sang xem; Host một mình không thể xuống xem.
+  Người xem xin ngồi ghế bằng nút ở giữa phía trên khung người xem; trạng thái
+  chờ chủ phòng và lý do không khả dụng hiển thị tại cùng vị trí.
+  Chủ phòng thấy từng yêu cầu xin ngồi ở đầu vùng phòng chờ, kèm thời gian và
+  nút Đồng ý/Từ chối; không đặt yêu cầu trong khung người xem có chiều cao giới hạn.
+  Chủ phòng bấm quân tướng đối thủ để hiện hai thao tác quản lý ghế phía trên;
+  bấm lại hoặc sau 5 giây không tương tác thì ẩn. Khi đang dùng bàn phím trên
+  các thao tác, thời gian chờ bắt đầu lại sau khi focus rời khỏi chúng.
 - **Phải:** khung chat chạy suốt chiều cao hai hàng của grid.
   Trên desktop, nhãn và mã phòng nằm cùng một hàng; mã dùng số tabular trong ô
-  nền riêng, hai nút sao chép chia đều chiều rộng. Khối mã phòng gọn khoảng
-  114px, không giữ khoảng trống cho thông báo thành công đã bỏ.
+  nền riêng, hai nút sao chép chia đều chiều rộng; nút Mời bạn bè mở trực tiếp
+  danh sách bạn bè. Không giữ khoảng trống cho thông báo thành công.
   Sao chép thành công chỉ hiện dấu tích trong đúng nút vừa bấm trong 1,5 giây,
   sau đó trở lại nhãn cũ; không hiện dòng thông báo thành công bên dưới.
   Hiệu ứng vẽ dấu tích tôn trọng `prefers-reduced-motion`, kích thước nút không đổi.
@@ -276,27 +312,25 @@ chiều rộng cột. Desktop thấp (≤740px) giảm padding media và chiều
 Ở chiều cao này, ghế người chơi dùng padding/avatar/nút gọn hơn; chữ chờ camera
 giới hạn một dòng có ellipsis để không bị cắt dọc trong khung hình nhỏ.
 Các khối nằm trong viewport, không đẩy trang cuộn xuống; camera không cuộn riêng.
-Không hiện thông báo mặc định
-“Camera và mic đang tắt.”; lỗi thiết bị/kết nối vẫn hiển thị.
-Nút camera/mic chỉ có icon, không có spinner. Hai nhóm nút của bạn và đối thủ
-đều căn giữa bên dưới khung hình tương ứng; trên desktop nút tròn 36px,
-icon 18px. Nút đối thủ ẩn/hiện camera và tắt/bật tiếng chỉ trên máy bạn,
-không đổi kích thước khung hình. Tắt tiếng áp dụng cả với audio track mới; không gửi lệnh
-tắt thiết bị của đối thủ, không thay đổi mức chia sẻ. Người xem không có các
-nút dành riêng cho đối thủ. Hai nút luôn hiện ở khung đối diện, kể cả ghế
-trống; có thể chọn trước và giữ tùy chọn khi đối thủ vào phòng.
+Không hiện banner trạng thái camera/mic; trạng thái vẫn có cho trình đọc màn
+hình và nút thử lại vẫn xuất hiện khi kết nối media lỗi.
+Nút camera/mic của bạn là icon dưới khung của bạn. Người chơi có hai nút icon
+ẩn/hiện camera và tắt/bật tiếng đối thủ dưới khung đối diện, kể cả khi ghế trống.
+Hai lựa chọn giữ trong tab, độc lập với nhau và chỉ ảnh hưởng hình/tiếng trên
+máy bạn; không điều khiển thiết bị hoặc mức chia sẻ của đối thủ. Người xem có
+hai nút riêng dưới mỗi khung, khóa khi ghế trống; phòng xếp hạng giữ nút bật nhận
+hình/tiếng đối thủ mặc định ẩn.
 Shell chia một chiều cao `100dvh` cho thanh điều hướng và nội dung phòng;
-không cộng thêm một viewport cho trang con. Đã kiểm tra trạng thái phòng chờ
-thông thường ở 1728×958, 1366×768, 1280×720 và 1024×640: vùng nội dung không
-tràn dọc. Chat/danh sách dài vẫn có cuộn nội bộ; hai kênh chat xếp dọc,
+không cộng thêm một viewport cho trang con. Chat/danh sách dài có cuộn nội bộ;
+hai kênh chat xếp dọc,
 ô nhập và nút gửi nằm cùng hàng.
 CSS desktop đặt trong `@media (min-width: 1024px)`, tách khỏi khối mobile
-`@media (max-width: 1023px)`. Ưu tiên hoàn thiện desktop; mobile giữ bố cục
-cũ với lề ngang và camera co giãn, chưa thiết kế lại theo desktop. Hai giao
-diện vẫn dùng chung component, dữ liệu và kết nối, không dựng hai phiên media.
+`@media (max-width: 1023px)`. Mobile giữ hai quân tướng cạnh nhau, đặt các
+thao tác đổi bên dưới hai người chơi. Hai giao diện dùng chung component,
+dữ liệu và kết nối, không dựng hai phiên media.
 Dưới 1024px, bộ chọn Phòng chờ / Camera / Trò chuyện dùng radio native
 (có điều hướng bàn phím), chuyển khu vực trong cùng khung thay vì xếp dài trang.
-Dưới 600px, hai ghế nằm cạnh nhau. Khu vực không chọn chỉ ẩn bằng CSS:
+Dưới 600px, hai ghế thu gọn. Khu vực không chọn chỉ ẩn bằng CSS:
 chat/media vẫn mounted, không mất bản nháp hay ngắt kết nối khi chuyển mục.
 Trên mobile, mã phòng ở trên và hai nút sao chép ở hàng dưới để không đè lên
 mã; ẩn đoạn hướng dẫn dài. Các khối phòng chờ xếp sát nhau theo chiều cao
@@ -306,9 +340,27 @@ phóng to vẫn truy cập được bằng cuộn nội bộ, không cắt bằn
 Nút Sẵn sàng nằm trong ghế của người đang điều khiển; dữ liệu,
 quyền thao tác và trạng thái kết nối vẫn lấy từ luồng phòng hiện có.
 
-CSS phòng chờ giới hạn bằng `.is-waiting`, không đổi bố cục màn đang đấu.
-Chat/media giữ cùng vị trí trong cây React khi chuyển sang ván. Metadata
-header dùng `.xq-waiting-meta`, tránh trùng selector thẻ phòng ở Sảnh.
+Phòng đang đấu dùng cùng bố cục ba cột, giữ camera/mic và mã phòng bên trái,
+người xem phía dưới và chat bên phải; giữa là bàn cờ cùng thông tin người chơi,
+đồng hồ và thao tác ván. Chat/media giữ cùng vị trí trong cây React khi chuyển
+sang ván. Metadata header dùng `.xq-waiting-meta`, tránh trùng selector thẻ phòng ở Sảnh.
+Trong phòng đang đấu, lượt đi nằm giữa sông và không chặn thao tác bàn cờ;
+desktop đặt chú giải bên trái bàn, nút thao tác ván bên phải. Màn hình hẹp
+giữ chú giải và thao tác bên dưới bàn để không che ô cờ.
+Từ 1360px, thông tin và đồng hồ hai bên nằm ở hai phía bàn; nút ván và chú giải ở dưới các thông tin tương ứng. Màn hình hẹp giữ bố cục cũ.
+Bàn cờ trên desktop từ 1360px tận dụng cột giữa và bị giới hạn theo chiều cao màn hình; màn hình hẹp giữ kích thước responsive cũ.
+Phòng đang đấu dành hàng dưới cho mã phòng và người xem; nút thao tác ván gọn,
+chú giải không ngắt dòng. Tắt bóng SVG của quân thường tại phòng đấu để tránh
+ô vuông tối, vẫn giữ hiệu ứng quân đang chọn.
+Dấu nước vừa đi là chấm tại ô xuất phát và đường thẳng tới ô đích, mang màu
+của bên vừa đi; dùng chung cho phòng, ván máy và xem lại, không chặn tương tác.
+Khung thao tác ván trên desktop co theo các nút, có khoảng đệm đồng đều và căn giữa khoảng trống giữa bàn cờ với chat.
+Khi hộp kết quả phòng ghép ngẫu nhiên hoặc Đánh Hạng mở, ẩn khu vực ghế, bàn và đồng hồ phía sau; chat và media vẫn giữ nguyên.
+Khi phòng tự tạo về trạng thái chờ, nền hộp kết quả không còn bàn và đồng hồ
+ván cũ. Hộp kết quả tạm thời chỉ hiện kết quả và nút Ở lại phòng/Rời phòng,
+không hiện khung tái đấu. Sau khi chọn Ở lại phòng, ẩn khung tạo đề nghị tái
+đấu nhưng vẫn hiện đề nghị đang chờ trả lời. Ghế, người xem, chat và media giữ
+nguyên; phòng ghép giữ màn hình sau ván riêng.
 Dùng ảnh nền và phông local có sẵn; không thêm dữ liệu mẫu hay tính năng P2.
 
 `RoomInvite` dùng hai nút **Sao chép mã** và **Sao chép link**, không còn liên
@@ -331,14 +383,14 @@ rời ghế thì hình cũ không còn hiển thị. Audio không tạo thêm ô
 Nhận hình/tiếng không phụ thuộc việc bật thiết bị của người nhận. Sau khi join,
 panel đối chiếu các remote track đã subscribe với sự kiện đến sau, gắn mỗi track
 một lần để không bỏ sót track đến trong lúc kết nối hoặc phát tiếng trùng.
-Khi mở phòng hoặc kết nối lại, panel chỉ join receive-only
-(camera/mic tắt, token không publish); người xem vào phòng stage và không bao
-giờ publish. Chỉ khi người chơi bấm bật thiết bị mới publish: phòng riêng khi
-mức đã xác nhận khác `NONE`, và phòng stage chỉ khi mức đã xác nhận là `ALL`.
-Sau lần cấp quyền phát đầu tiên, bật/tắt thiết bị chỉ cập nhật track tương ứng
-trên các kết nối hiện có; không rejoin, không ngắt thiết bị còn lại hoặc luồng
-đối thủ. Khi bật một thiết bị thất bại, tắt riêng thiết bị đó trên mọi phòng media,
-giữ thiết bị còn lại. Tắt cả hai vẫn giữ kết nối nhận; đổi mức chia sẻ buộc lấy
+Khi có nguồn được phép nhận, panel join receive-only (camera/mic tắt, token
+không publish); người xem vào phòng stage và không bao giờ publish. Nếu người
+chơi đang nhận rồi bật thiết bị, panel giữ kết nối nhận và mở kết nối phát riêng
+với identity khác để không ngắt hình/tiếng đang nhận. Phát phòng riêng khi mức
+đã xác nhận khác `NONE`, thêm phòng stage khi mức là `ALL`; kết nối nhận không
+subscribe vào luồng phát của chính mình. Bật/tắt từng thiết bị chỉ cập nhật track
+tương ứng; khi bật thất bại, dừng các track phát dở và giữ kết nối nhận.
+Tắt cả hai vẫn giữ kết nối nhận khi còn nguồn; đổi mức chia sẻ buộc lấy
 ticket mới trước khi phát lại, không dùng quyền phát của mức cũ.
 Tab không giữ quyền điều khiển (`writable=false`) không publish: bấm bật camera/mic mở hộp thoại `MODAL-MEDIA-TAB-SWITCH` (“Chuyển thiết bị sang tab này” / “Hủy bỏ”, Esc đóng, focus trap). Chỉ xác nhận mới gọi `onTakeover`; hủy, Esc, kết nối lại hoặc mất phiên không chuyển quyền. Khi quyền chuyển đi, panel dừng camera/mic và rejoin receive-only; tab mới luôn bắt đầu với thiết bị tắt. Lỗi thiết bị không dừng ván.
 
@@ -369,6 +421,7 @@ Kết quả ván chỉ hiện khi phòng vừa chuyển sang PLAYING trong phiê
 phòng đã kết thúc giữ bố cục chờ và không mở lại kết quả. Esc trên kết quả ván = Ở lại phòng.
 Khi Rời phòng đang chờ, nút Ở lại và Escape không đóng kết quả. Rời thất bại giữ
 hộp thoại, hiện lỗi đã làm sạch và cho gửi lại; chỉ điều hướng sau khi rời thành công.
+Ván Đánh Thường ghép ngẫu nhiên hoặc Đánh Hạng có kết quả thắng/thua hoặc bị gián đoạn: hiện kết quả 5 giây rồi tự gửi lệnh rời phòng. Nếu phiên bản phòng thay đổi, đồng bộ và thử lại một lần khi vẫn cùng ván đã kết thúc và còn quyền; lỗi khác giữ kết quả và cho Thử lại. Không ảnh hưởng hòa hoặc phòng tự tạo.
 
 ## Banner chống treo ván (US-P2-10)
 
@@ -408,6 +461,7 @@ Kiểm Chromium với RoomPage thật qua harness tạm nối Nest/Socket.IO/Pos
 ## YC6: người xem, Xin ngồi ghế và bộ lọc Sảnh (31/10/2026)
 
 `SpectatorsPanel` hiện danh sách tên cho mọi vai trò (kèm “(Khách)”); chỉ người chơi thấy Đuổi. Host thấy hàng yêu cầu Xin ngồi ghế (tên, đếm ngược theo giờ server, Đồng ý/Từ chối), người xem chỉ thấy yêu cầu của mình (“Đang chờ chủ phòng · còn N giây”). Nút Xin ngồi ghế luôn hiện cho người xem và bị khóa kèm lý do (ghế đủ người, đang đếm ngược, “Chờ N giây để xin lại”); Mời xuống ghế khóa khi đang có lời mời hoặc trong 10 giây cooldown. Lời mời xuống ghế và yêu cầu gắn `offerId`/`requestId`; khung lời mời nonmodal, chỉ Chấp nhận/Từ chối, có đếm ngược, hết hạn thì ẩn. Nếu yêu cầu của mình biến mất khi vẫn là người xem, hiện “Ghế đã có người.” hoặc “Yêu cầu ngồi ghế đã kết thúc.”
+Người chơi chọn biểu tượng người xem để mở thao tác dành riêng cho người đó; chọn lại để đóng hoặc chọn biểu tượng khác để đổi đối tượng. Khung thao tác nổi không đẩy bố cục.
 
 `RoomSeats` thêm Mời rời ghế cho Host (WAITING, đủ hai người) với hộp xác nhận mặc định focus Hủy và câu “vẫn có thể vào lại nếu phòng chưa bị khóa”. Người bị Đuổi hoặc Mời rời ghế nhận `room.closed` với lý do riêng và quay về Sảnh kèm thông báo. `LobbyShell` thêm hai nút lọc Đang chờ / Còn chỗ xem (tắt mặc định, lọc phía client trên ≤50 phòng, giữ thứ tự mới nhất).
 
@@ -415,7 +469,8 @@ Kiểm Chromium với RoomPage thật qua harness tạm nối Nest/Socket.IO/Pos
 
 - `AiGame` xếp thẻ Máy/Bạn gọn, lượt/Undo/Đầu hàng trước khay Thông số máy. Khay thu gọn mặc định, chỉ thành viên; chưa có worker sample hiện Chưa có số liệu. Depth/nodes/compute lấy từ snapshot thật, làm tròn thời gian chỉ ở hiển thị. Không `aria-live` cho từng số và không hiện nước dự kiến; ký pháp Nước máy vừa đi dùng helper `shared/board/move-notation.ts` chung với Replay.
 - `AiGamePage` nhận cả cập nhật cùng board version, bỏ telemetry task/metrics cũ. Undo xóa metrics; quota còn lại và số đã dùng hiện rõ. Khách không có Undo/widget; đây không thay kiểm quyền HTTP/socket.
-- Sảnh có Bỏ ván cho vị trí AI của cả thành viên/Khách, xác nhận focus Giữ ván. Không thêm hành động này cho phòng/online. Tab khác chỉ đọc không được tự chiếm quyền để Bỏ ván; tiếp quản phải chủ động ở trang AI. Nếu GET hoặc phản hồi resign còn `FINALIZING`, giữ banner/đường Quay lại và báo chưa hoàn tất, không giả vị trí đã giải phóng.
+- Sảnh có Bỏ ván cho vị trí AI của cả thành viên/Khách, xác nhận focus Giữ ván. Tab khác chỉ đọc không được tự chiếm quyền để Bỏ ván; tiếp quản phải chủ động ở trang AI. Nếu GET hoặc phản hồi resign còn `FINALIZING`, giữ banner/đường Quay lại và báo chưa hoàn tất, không giả vị trí đã giải phóng.
+- Banner ván dở của phòng/online có thêm **Thoát phòng** (yêu cầu 02/11/2026), xác nhận focus Ở lại. Nút mở kết nối tạm (`prepareLeaveFromLobby`) mở sẵn khi hộp xác nhận hiện; khi xác nhận mới chiếm quyền điều khiển nếu phòng đang mở ở tab khác (do chính người dùng bấm), gọi `leave` rồi đóng kết nối (huỷ hộp thì đóng kết nối, không chiếm quyền). Đang trong ván thì tính là đầu hàng như nút Rời phòng. Lỗi giữ nguyên banner và báo "Chưa thể thoát phòng".
 - Guard điều hướng chặn logo/menu/Back trước khi router đổi location khi tab đang điều khiển ACTIVE. Entry do router quản lý mang chỉ số trong history state; hủy Back/Forward nhiều bước quay lại đúng entry nguồn, không push để cắt forward stack. Hủy giữ ván; đồng ý resign rồi điều hướng. Tab readonly được rời không resign. Refresh/đóng tab chỉ áp grace, không beacon resign; AI dùng cùng định danh tab phiên để reconnect/refresh không tự giành lại sau khi bị tiếp quản.
 - Kết quả `FINISHED`/`ABANDONED` của thành viên có Xem lại dẫn tới `/history/:id`; snapshot terminal được server cài sau commit History. Không hiện đường này cho `FINALIZING` hoặc Khách. Tab chỉ đọc vẫn xem được bản lưu của chính tài khoản.
 - Browser local thật (Nest/Socket.IO, PG17 riêng, compiled worker; chỉ provider Auth synthetic): đã xem360×800 và1366×768 không tràn ngang; thử đi/Undo, widget, nhiều tab, mất mạng/nối lại, banner, xác nhận logo/Back/logout, History/Replay/clipboard/PGN. Không thay cho kiểm thiết bị/Cloud hoặc gate chất lượng engine; [YC8 mục18](../../product/P1-YC8-DAU-VOI-MAY.md#18-triển-khai-và-bằng-chứng-local--01112026) ghi kết quả và BLOCKED cụ thể.

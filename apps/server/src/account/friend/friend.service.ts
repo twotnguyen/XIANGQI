@@ -103,9 +103,9 @@ export class FriendService {
 
   /** Lời mời kết bạn đang chờ, hai chiều. */
   async listRequests(userId: string): Promise<FriendRequestView[]> {
-    return this.store.withUser(userId, async (tx) => {
+    // Poll 2 giây/tab: chỉ đọc (lọc hạn trong SQL), không giữ actorLock để không chặn lệnh ván/phòng của chính người này.
+    return this.store.read(async (tx) => {
       await requireMember(tx, userId);
-      await tx.expireStale();
       const incoming = await tx.listPendingRequests(userId, "incoming");
       const outgoing = await tx.listPendingRequests(userId, "outgoing");
       return [
@@ -173,7 +173,7 @@ export class FriendService {
 
   /** Bạn bè kèm trạng thái presence (offline/online/in-match). */
   async listFriends(userId: string): Promise<FriendPeer[]> {
-    return this.store.withUser(userId, async (tx) => {
+    return this.store.read(async (tx) => {
       await requireMember(tx, userId);
       return tx.listFriendRows(userId);
     });
@@ -192,8 +192,8 @@ export class FriendService {
       await tx.expireStale();
       if (!(await tx.areFriends(userId, peer.user_id)))
         fail("FRIEND_MISSING", "Chỉ mời bạn bè của bạn", 403);
-      if (!(await tx.isRoomPlayer(roomId, userId)))
-        fail("FRIEND_INVITE_FORBIDDEN", "Chỉ người ngồi ghế được mời", 403);
+      if (!(await tx.isRoomMember(roomId, userId)))
+        fail("FRIEND_INVITE_FORBIDDEN", "Chỉ người trong phòng được mời", 403);
       if (!(await tx.isOnline(peer.user_id)))
         fail("FRIEND_OFFLINE", "Bạn bè đang ngoại tuyến", 409);
       if (await tx.isBusy(peer.user_id))
@@ -204,7 +204,11 @@ export class FriendService {
         peer.user_id,
       );
       if (existing)
-        return { ...existing, cooldownUntil: await tx.cooldownUntil(userId) };
+        return {
+          ...existing,
+          roomId,
+          cooldownUntil: await tx.cooldownUntil(userId),
+        };
       if (await tx.cooldownUntil(userId))
         fail("FRIEND_INVITE_COOLDOWN", "Vui lòng chờ trước khi mời tiếp", 429);
       if ((await tx.countPendingInvites(peer.user_id)) >= MAX_PENDING_INVITES)
@@ -217,15 +221,14 @@ export class FriendService {
         fail("FRIEND_ROOM_MISSING", "Phòng không còn khả dụng", 404);
       const invite = await tx.insertRoomInvite(roomId, userId, peer.user_id);
       const cooldownUntil = await tx.bumpCooldown(userId);
-      return { ...invite, cooldownUntil };
+      return { ...invite, roomId, cooldownUntil };
     });
   }
 
   /** Lời mời vào phòng đang chờ người dùng phản hồi. */
   async listRoomInvites(userId: string): Promise<RoomInviteView[]> {
-    return this.store.withUser(userId, async (tx) => {
+    return this.store.read(async (tx) => {
       await requireMember(tx, userId);
-      await tx.expireStale();
       return tx.listPendingRoomInvites(userId);
     });
   }

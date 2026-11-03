@@ -4,7 +4,7 @@ import type { MatchClock } from "./match.types.js";
 export const UNLIMITED_TIME_CONTROL = 0;
 export const INACTIVITY_PROMPT_MS = 180_000;
 export const INACTIVITY_GRACE_MS = 30_000;
-export const INACTIVITY_MAX_CONFIRMS = 2;
+const INACTIVITY_MAX_CONFIRMS = 2;
 
 /** Đồng hồ của ván không giới hạn: không đếm giờ, `runningSinceEpochMs` là mốc nước đi/xác nhận gần nhất. */
 export function unlimitedClock(at: Date): MatchClock {

@@ -93,7 +93,7 @@ export function LoginPage({
     event.preventDefault();
     if (sending.current || googleSending.current || complete) return;
     setError("");
-    if (!/^[A-Za-z0-9_]{3,20}$/.test(username) || !password) {
+    if (!username.trim() || !password) {
       setError(invalid);
       return;
     }
@@ -197,7 +197,7 @@ export function LoginPage({
           >
             <div className="field-row">
               <label className="field-lbl" htmlFor="login-username">
-                Tên đăng nhập (Username)
+                Tên đăng nhập hoặc email đã xác minh
               </label>
               <div className="input-box">
                 <span className="input-ico" aria-hidden="true">
@@ -218,7 +218,7 @@ export function LoginPage({
                 />
               </div>
               <p className="field-hint" id="login-username-help">
-                Dùng tên tài khoản, không dùng Email.
+                Nhập username hoặc email đã xác minh của tài khoản.
               </p>
             </div>
             <div className="field-row">
@@ -287,15 +287,9 @@ export function LoginPage({
                 if (busy) event.preventDefault();
               }}
             >
-              {busy ? (
-                "Đang xử lý…"
-              ) : (
-                <>
-                  <span aria-hidden="true">🏛️</span>
-                  Đăng nhập vào Sảnh
-                  <span aria-hidden="true">❯</span>
-                </>
-              )}
+              <span aria-hidden="true">🏛️</span>
+              Đăng nhập vào Sảnh
+              <span aria-hidden="true">❯</span>
             </button>
           </form>
           <div className="divider">hoặc tiếp tục với</div>

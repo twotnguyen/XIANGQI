@@ -220,9 +220,9 @@
 | AC-01.1.14 | Credentials hợp lệ, ở bước Email hoặc OTP | Bấm "Bỏ qua email, vào Sảnh" | Tạo tài khoản thành viên, tự đăng nhập; không đánh dấu email đã xác minh; tài khoản không bị dọn như bản đăng ký tạm | I, E2E |
 | AC-01.1.15 | Đã bỏ qua email/OTP | Đăng xuất và đăng nhập lại bằng username + mật khẩu | Thành công; giữ cùng user_id và dữ liệu | I, E2E |
 
-#### US-01.2 · Đăng nhập bằng Username + Mật khẩu và khoá thử sai
-**Là** người dùng, **tôi muốn** đăng nhập bằng username và mật khẩu an toàn, **để** vào ứng dụng mà tài khoản không bị dò mật khẩu.
-*Nguồn:* BA 0.2, 1.8. *Màn hình:* `SCR-LOGIN`. *Ghi chú kỹ thuật:* Supabase Auth đăng nhập bằng email, nên máy chủ tra email từ username rồi xác thực; không trả email hay sự tồn tại của username về client.
+#### US-01.2 · Đăng nhập bằng username hoặc email đã xác minh + mật khẩu
+**Là** người dùng, **tôi muốn** đăng nhập bằng username hoặc email đã xác minh và mật khẩu an toàn, **để** vào ứng dụng mà tài khoản không bị dò mật khẩu.
+*Nguồn:* BA 0.2, 1.8. *Màn hình:* `SCR-LOGIN`. Máy chủ tra credential Auth của cùng tài khoản, không trả email hay sự tồn tại của định danh về client.
 *Sprint thi công:* S1, S2. *Story Points:* **7** (tổng điểm 3 Task, 32 giờ).
 
 | AC | Given | When | Then | Kiểm |
@@ -236,6 +236,8 @@
 | AC-01.2.7 | Ô "Ghi nhớ đăng nhập" mặc định tick | Đăng nhập | Phiên hết hạn cố định sau 30 ngày; bỏ tick thì hết khi đóng trình duyệt hoặc sau 12 giờ, tuỳ cái nào trước | I, M |
 | AC-01.2.8 | Đã đăng nhập | Mở `/login` hoặc `/register` | Tự chuyển về `/lobby` | E2E |
 | AC-01.2.9 | Username đang bị chặn do sai mật khẩu 5 lần | Chủ tài khoản đăng nhập thành công bằng Google | Vẫn vào được bằng Google; bộ đếm sai mật khẩu **không** bị xoá, đăng nhập bằng mật khẩu vẫn bị chặn tới hết 15 phút (BA 0.15) | I |
+| AC-01.2.10 | Email liên hệ đã xác minh | Đăng nhập bằng email và mật khẩu đúng | Vào cùng tài khoản; email pending và email kỹ thuật không đăng nhập được | I, E2E |
+| AC-01.2.11 | Cùng tài khoản nhập sai xen kẽ username và email | Đạt 5 lần sai | Cả hai cách đăng nhập mật khẩu cùng bị khóa 15 phút | I |
 
 #### US-01.3 · Đăng ký/đăng nhập bằng Google và chế độ Khách
 **Là** người dùng mới, **tôi muốn** vào ứng dụng nhanh bằng tài khoản Google hoặc bằng tên tạm (Khách), **để** không mất thời gian đăng ký.

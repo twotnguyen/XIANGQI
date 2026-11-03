@@ -3,6 +3,7 @@ import { io, type Socket } from "socket.io-client";
 import type { MatchmakingCommand, MatchmakingMode, MatchmakingState, PublicRoomAuthProof } from "@xiangqi/shared";
 import { getApiBaseUrl } from "../../shared/api.js";
 import { isSfxEnabled } from "../../shared/preferences.js";
+import { parseRealtimeProof } from "../../shared/realtime-proof.js";
 
 type Intent = { queueId: string; bootId: string };
 type Input = { userId: string | null; getProof: () => Promise<PublicRoomAuthProof>; onMatched: (roomId: string) => void };
@@ -24,14 +25,6 @@ export interface Matchmaking {
 const unavailable = "Chưa thể kết nối tìm trận. Vui lòng thử lại.";
 const active = ["SEARCHING", "CONFIRMING", "WAITING", "COUNTDOWN"];
 const statuses = ["IDLE", ...active, "MATCHED", "TIMED_OUT", "CANCELLED"];
-function validProof(value: unknown): value is PublicRoomAuthProof {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
-  const row = value as Record<string, unknown>;
-  const cap = (v: unknown) => typeof v === "string" && /^[A-Za-z0-9_-]{43}$/.test(v);
-  return row.kind === "member"
-    ? Object.keys(row).length === 3 && typeof row.accessToken === "string" && row.accessToken.length > 0 && row.accessToken.length <= 8192 && !/\s/.test(row.accessToken) && cap(row.appSession)
-    : row.kind === "guest" && Object.keys(row).length === 2 && cap(row.guestCapability);
-}
 function parseState(value: unknown): MatchmakingState | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const row = value as Record<string, unknown>;
@@ -88,6 +81,8 @@ export function useMatchmaking({ userId, getProof, onMatched }: Input): Matchmak
   const key = userId ? `xiangqi.matchmaking.${userId}` : "";
   const sendRef = useRef<(type: MatchmakingCommand["type"], selected?: MatchmakingMode) => void>(() => {});
 
+  useEffect(() => () => { void audio.current?.close().catch(() => {}); audio.current = null; }, []);
+
   useEffect(() => {
     generation.current++;
     const run = generation.current;
@@ -111,7 +106,7 @@ export function useMatchmaking({ userId, getProof, onMatched }: Input): Matchmak
       path: `${api.pathname}/matchmaking/socket.io`, transports: ["websocket"], withCredentials: true, autoConnect: false,
       auth: (done) => {
         const attempt = ++epoch;
-        void refs.current.getProof().then((proof) => { if (!closed && attempt === epoch) { if (validProof(proof)) done(proof); else { report("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."); client.disconnect(); } } }, () => { if (!closed && attempt === epoch) { report(unavailable); client.disconnect(); } });
+        void refs.current.getProof().then((value) => { if (!closed && attempt === epoch) { const proof = parseRealtimeProof(value); if (proof) done(proof); else { report("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại."); client.disconnect(); } } }, () => { if (!closed && attempt === epoch) { report(unavailable); client.disconnect(); } });
       },
     });
     socket.current = client;

@@ -1,5 +1,6 @@
 import { isThemeChoice, type ThemeChoice } from "@xiangqi/shared";
-import { ProfileRequestError, type AuthorizedFetch } from "./profile-client.js";
+import type { AuthorizedFetch } from "../../shared/api.js";
+import { ProfileRequestError } from "./profile-client.js";
 
 /**
  * Hợp đồng client đọc/lưu chủ đề theo tài khoản (GET/PUT /profile/theme).

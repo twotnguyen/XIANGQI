@@ -9,7 +9,7 @@ import {
 } from "./direct-message.store.js";
 
 const MAX_CHARS = 200;
-export const DM_PAGE_SIZE = 50;
+const DM_PAGE_SIZE = 50;
 
 /** Nghiệp vụ tin nhắn riêng giữa hai người bạn: lọc nội dung, băm fingerprint, rồi giao cho store. */
 export class DirectMessageService {

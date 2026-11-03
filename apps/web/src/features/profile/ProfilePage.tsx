@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { isValidDisplayName, normalizeDisplayName } from "@xiangqi/shared";
+import { subscribeLocation } from "../../shared/navigation/navigation.js";
 import {
   Button,
   Dialog,
@@ -15,7 +16,7 @@ import {
   type ProfileView,
 } from "./profile-client.js";
 import { PasswordChangeForm } from "./PasswordChangeForm.js";
-import type { AuthorizedFetch } from "./profile-client.js";
+import type { AuthorizedFetch } from "../../shared/api.js";
 import { ThemeSettings } from "./ThemeSettings.js";
 import { UsernameSettings } from "./UsernameSettings.js";
 import {
@@ -118,6 +119,7 @@ export function ProfilePage({
   const [section, setSection] =
     useState<(typeof SETTINGS_SECTIONS)[number]["id"]>("profile");
   const activeSection = guest ? "session" : section;
+  const [focusEmail, setFocusEmail] = useState(false);
   const [profile, setProfile] = useState<ProfileView | null>(null);
   const [location, setLocation] = useState<ProfileLocation | null>(null);
   const [failed, setFailed] = useState(false);
@@ -193,6 +195,24 @@ export function ProfilePage({
       savingRef.current = false;
     };
   }, [client, guest]);
+
+  useEffect(() => {
+    const openEmail = () => {
+      if (!guest && window.location.pathname === "/settings" && window.location.hash === "#email") {
+        setSection("profile");
+        setFocusEmail(true);
+      }
+    };
+    openEmail();
+    return subscribeLocation(openEmail);
+  }, [guest]);
+
+  useEffect(() => {
+    if (focusEmail && activeSection === "profile" && profile && emailRef.current) {
+      emailRef.current.focus();
+      setFocusEmail(false);
+    }
+  }, [focusEmail, activeSection, profile, emailSection]);
 
   async function save() {
     if (savingRef.current || guest || !profile) return;

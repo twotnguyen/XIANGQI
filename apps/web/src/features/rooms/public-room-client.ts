@@ -1,6 +1,5 @@
 import { io } from "socket.io-client";
 import type { PublicRoomAuthProof, PublicRoomView } from "@xiangqi/shared";
-import type { AuthorizedFetch } from "./room-client.js";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const invalid = "Phản hồi danh sách phòng không hợp lệ. Vui lòng tải lại.";
 const unavailable = "Chưa thể tải danh sách phòng. Vui lòng thử lại.";
@@ -60,7 +59,7 @@ function date(value: unknown): value is string {
  * Kiểm tra và parse mảng danh sách phòng cờ công khai từ dữ liệu máy chủ.
  * Đảm bảo tính hợp lệ của từng trường (roomId, host, thời gian, số người xem, trạng thái ghế...).
  */
-export function parsePublicRooms(value: unknown): PublicRoomView[] {
+function parsePublicRooms(value: unknown): PublicRoomView[] {
   if (!Array.isArray(value) || value.length > 50) fail();
   const ids = new Set<string>();
   return value.map((item) => {
@@ -194,33 +193,8 @@ export interface PublicRoomsConnectionInput {
   onConnection: (ready: boolean) => void;
   onError: (message: string) => void;
 }
-function proof(value: unknown): PublicRoomAuthProof {
-  const row = record(value),
-    cap = (v: unknown) =>
-      typeof v === "string" && /^[A-Za-z0-9_-]{43}$/.test(v);
-  if (
-    row.kind === "member" &&
-    Object.keys(row).length === 3 &&
-    typeof row.accessToken === "string" &&
-    row.accessToken.length > 0 &&
-    row.accessToken.length <= 8192 &&
-    !/\s/.test(row.accessToken) &&
-    cap(row.appSession)
-  )
-    return {
-      kind: "member",
-      accessToken: row.accessToken,
-      appSession: row.appSession as string,
-    };
-  if (
-    row.kind === "guest" &&
-    Object.keys(row).length === 2 &&
-    cap(row.guestCapability)
-  )
-    return { kind: "guest", guestCapability: row.guestCapability as string };
-  throw Error(expired);
-}
-import { getApiBaseUrl } from "../../shared/api.js";
+import { getApiBaseUrl, type AuthorizedFetch } from "../../shared/api.js";
+import { parseRealtimeProof } from "../../shared/realtime-proof.js";
 
 /**
  * Thiết lập kết nối Socket.IO tới namespace `/public-rooms` để nhận dữ liệu danh sách phòng công khai theo thời gian thực.
@@ -244,10 +218,8 @@ export function connectPublicRooms(input: PublicRoomsConnectionInput) {
       void input.getProof().then(
         (value) => {
           if (!current() || attempt !== epoch) return;
-          let safe: PublicRoomAuthProof;
-          try {
-            safe = proof(value);
-          } catch {
+          const safe = parseRealtimeProof(value);
+          if (!safe) {
             denied = true;
             input.onConnection(false);
             input.onError(expired);

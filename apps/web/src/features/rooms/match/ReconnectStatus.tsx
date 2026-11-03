@@ -135,6 +135,8 @@ export function ReconnectStatus({
         )}
       </dialog>
     );
+  if (connected && waitingForSnapshot)
+    return <span className="xq-sr-only" role="status">Đang đồng bộ trạng thái máy chủ.</span>;
   if (unsynced)
     return (
       <section

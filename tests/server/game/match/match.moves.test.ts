@@ -189,4 +189,77 @@ describe.skipIf(!databaseUrl)("match transactions", () => {
       ).toBe(true);
     },
   );
+  it("denies move when the acting player has a pending undo offer", async () => {
+    const s = await start();
+    const first = await run(s.room, red, (scope) =>
+      store().move(scope, {
+        matchId: s.matchId,
+        matchVersion: 0,
+        from: 54,
+        to: 45,
+      }),
+    );
+    const offered = await run(s.room, red, (scope) =>
+      store().offerUndo(scope, {
+        matchId: s.matchId,
+        matchVersion: first.match.version,
+      }),
+    );
+    expect(offered.applied).toBe(true);
+    const r = await run(s.room, red, (scope) =>
+      store().move(scope, {
+        matchId: s.matchId,
+        matchVersion: offered.match.version,
+        from: 45,
+        to: 36,
+      }),
+    );
+    expect(r).toMatchObject({
+      applied: false,
+      error: { code: "MATCH_UNDO_PENDING" },
+    });
+  });
+  it("allows sender to move after its pending undo offer has expired", async () => {
+    const s = await start();
+    const first = await run(s.room, red, (scope) =>
+      store().move(scope, {
+        matchId: s.matchId,
+        matchVersion: 0,
+        from: 54,
+        to: 45,
+      }),
+    );
+    const offered = await run(s.room, red, (scope) =>
+      store().offerUndo(scope, {
+        matchId: s.matchId,
+        matchVersion: first.match.version,
+      }),
+    );
+    expect(offered.applied).toBe(true);
+    await pool.query(
+      `WITH t AS MATERIALIZED(SELECT date_trunc('milliseconds',clock_timestamp())-interval '1 second' deadline)
+       UPDATE xiangqi_room.match_undo_offers
+       SET created_at=t.deadline-interval '30 seconds', expires_at=t.deadline
+       FROM t WHERE id=$1`,
+      [offered.undo.offers[0]!.id],
+    );
+    const blackMove = await run(s.room, black, (scope) =>
+      store().move(scope, {
+        matchId: s.matchId,
+        matchVersion: offered.match.version,
+        from: 27,
+        to: 36,
+      }),
+    );
+    expect(blackMove.applied).toBe(true);
+    const redMove = await run(s.room, red, (scope) =>
+      store().move(scope, {
+        matchId: s.matchId,
+        matchVersion: blackMove.match.version,
+        from: 45,
+        to: 36,
+      }),
+    );
+    expect(redMove.applied).toBe(true);
+  });
 });

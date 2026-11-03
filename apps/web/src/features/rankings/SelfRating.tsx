@@ -8,7 +8,6 @@ export function SelfRating({ authorizedFetch, guest, revision = 0 }: { authorize
   useEffect(() => {
     if (guest) return;
     let active = true;
-    setState(null);
     void readSelfRating(authorizedFetch).then(
       (rating) => { if (active) setState({ fetch: authorizedFetch, rating, error: false }); },
       () => { if (active) setState({ fetch: authorizedFetch, rating: null, error: true }); },

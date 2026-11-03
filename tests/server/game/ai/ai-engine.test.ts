@@ -118,20 +118,19 @@ try{await engine.ready();const result=await engine.search(input);console.log(JSO
 `);
   expect(value).toEqual({ legal: true, depth: 2 });
 });
-it("maps compiled busy and cancellation errors to the AI service's source error contract", () => {
+it("queues a second search behind the running one and keeps the cancellation contract", () => {
   const value = execute(`${imports}
 const engine=await createCompiledAiEngine(),abort=new AbortController();
 try {
  await engine.ready();const pending=engine.search({...input,level:'hard'},{signal:abort.signal}).catch(error=>({code:error.code,typed:error instanceof EngineError}));
- let busy;try{await engine.search(input);}catch(error){busy={code:error.code,typed:error instanceof EngineError};}
- abort.abort();const cancelled=await pending;await engine.ready();const next=await engine.search(input);
- console.log(JSON.stringify({busy,cancelled,recovered:next.completedDepth===2}));
+ const queued=engine.search(input);
+ abort.abort();const cancelled=await pending;const next=await queued;
+ console.log(JSON.stringify({cancelled,queued:next.completedDepth===2}));
 }finally{await engine.close();}
 `);
   expect(value).toEqual({
-    busy: { code: "ENGINE_BUSY", typed: true },
     cancelled: { code: "ENGINE_CANCELLED", typed: true },
-    recovered: true,
+    queued: true,
   });
 });
 it("maps actual compiled readiness timeout and closed errors without leaving a live worker", () => {

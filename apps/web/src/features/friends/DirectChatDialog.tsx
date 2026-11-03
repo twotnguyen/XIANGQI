@@ -20,7 +20,7 @@ const POLL_MS = 2000;
 const MAX_CHARS = 200;
 const PAGE = 50;
 
-type Friend = Pick<FriendPeer, "userId" | "username" | "displayName">;
+type Friend = Pick<FriendPeer, "userId" | "username" | "displayName"> & Partial<Pick<FriendPeer, "status">>;
 
 /** Gộp trang mới nhất vào lịch sử đã tải: giữ tin cũ đã tải thêm, thay phần mới bằng bản từ server. */
 function mergeLatest(prev: DirectMessage[], latest: DirectMessage[]) {
@@ -36,10 +36,12 @@ export function DirectChatDialog({
   client,
   friend,
   onClose,
+  floating = false,
 }: {
   client: FriendClient;
   friend: Friend;
   onClose: () => void;
+  floating?: boolean;
 }) {
   const inputId = useId();
   const [messages, setMessages] = useState<DirectMessage[] | null>(null);
@@ -253,13 +255,7 @@ export function DirectChatDialog({
     draft.trim() !== "";
   const showOlder = !revoked && !olderDone && (messages?.length ?? 0) >= PAGE;
 
-  return (
-    <Dialog
-      open
-      onClose={onClose}
-      title={`Nhắn tin với ${friend.displayName}`}
-      cancelLabel="Đóng"
-    >
+  const content = (
       <div className="xq-dm">
         {revoked ? (
           <p className="xq-dm__status" role="status">
@@ -293,11 +289,11 @@ export function DirectChatDialog({
               disabled={loadingOlder}
               onClick={() => void loadOlder()}
             >
-              {loadingOlder ? "Đang tải…" : "Tải tin cũ"}
+              Tải tin cũ
             </Button>
           ) : null}
           {messages === null ? (
-            !loadFailed && <p className="xq-dm__status">Đang tải…</p>
+            !loadFailed && <p role="status" className="xq-sr-only">Đang tải…</p>
           ) : messages.length === 0 && !revoked && !loadFailed ? (
             <p className="xq-dm__status">Chưa có tin nhắn.</p>
           ) : (
@@ -338,28 +334,57 @@ export function DirectChatDialog({
           <label htmlFor={inputId} className="xq-sr-only">
             Nội dung tin nhắn
           </label>
-          <input
-            id={inputId}
-            className="xq-dm__input"
-            value={draft}
-            disabled={revoked}
-            aria-describedby={`${inputId}-count`}
-            aria-invalid={length > MAX_CHARS}
-            autoComplete="off"
-            onChange={(event) => setDraft(event.target.value)}
-          />
+          <div className="xq-dm__input-wrap">
+            <textarea
+              id={inputId}
+              className="xq-dm__input"
+              rows={Math.min(4, draft.split("\n").length)}
+              value={draft}
+              disabled={revoked}
+              aria-describedby={`${inputId}-count`}
+              aria-invalid={length > MAX_CHARS}
+              placeholder={floating ? "Aa" : undefined}
+              onChange={(event) => setDraft(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+                  event.preventDefault();
+                  void sendContent(draft);
+                }
+              }}
+            />
+            <StickerPicker disabled={revoked || sending} label="tin nhắn" onSelect={(content) => void sendContent(content)} />
+          </div>
           <span
             id={`${inputId}-count`}
-            className={`xq-dm__count${length > MAX_CHARS ? " xq-dm__count--over" : ""}`}
+            className={`${floating && length <= MAX_CHARS ? "xq-sr-only " : ""}xq-dm__count${length > MAX_CHARS ? " xq-dm__count--over" : ""}`}
           >
             {length}/{MAX_CHARS}
           </span>
-          <StickerPicker disabled={revoked || sending} label="tin nhắn" onSelect={(content) => void sendContent(content)} />
-          <Button type="submit" disabled={!canSend}>
-            Gửi
-          </Button>
+          {floating ? (
+            <button className="xq-dm__send" type="submit" disabled={!canSend} aria-label="Gửi">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m8 4 8 8-8 8" /></svg>
+            </button>
+          ) : (
+            <Button type="submit" disabled={!canSend}>Gửi</Button>
+          )}
         </form>
       </div>
+  );
+  return floating ? (
+    <section className="xq-dm-popup" role="dialog" aria-label={`Nhắn tin với ${friend.displayName}`} onKeyDown={(event) => { if (event.key === "Escape") onClose(); }}>
+      <header className="xq-dm-popup__header">
+        <span className="xq-dm-sidebar__avatar" aria-hidden="true">{Array.from(friend.displayName)[0]}{friend.status === "online" && <span className="xq-dm-sidebar__online" />}</span>
+        <div className="xq-dm-popup__identity">
+          <strong>{friend.displayName}</strong>
+          {friend.status && <small>{friend.status === "online" ? "Đang trực tuyến" : friend.status === "in-match" ? "Đang chơi" : "Ngoại tuyến"}</small>}
+        </div>
+        <button type="button" onClick={onClose} aria-label="Đóng cuộc trò chuyện">×</button>
+      </header>
+      {content}
+    </section>
+  ) : (
+    <Dialog open onClose={onClose} title={`Nhắn tin với ${friend.displayName}`} cancelLabel="Đóng">
+      {content}
     </Dialog>
   );
 }

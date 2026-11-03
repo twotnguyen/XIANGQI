@@ -57,7 +57,10 @@ export class DirectMessageStore {
         )
       ).rows[0];
       if (prior) {
-        if (prior.fingerprint !== input.fingerprint || ![prior.user_low, prior.user_high].includes(input.peer))
+        if (
+          prior.fingerprint !== input.fingerprint ||
+          ![prior.user_low, prior.user_high].includes(input.peer)
+        )
           throw new FriendError(
             "DM_COMMAND_ID_REUSED",
             "Mã lệnh đã dùng cho tin khác",
@@ -139,8 +142,8 @@ export class DirectMessageStore {
 
   /** Số tin chưa đọc từ từng bạn hiện tại; bạn đã hủy hoặc tin của chính mình không được tính. */
   unreadByFriend(viewer: string): Promise<DirectMessageUnread[]> {
+    // Một SELECT nhất quán, được poll liên tục: không giữ khóa actor để không chặn lệnh ván của người chơi.
     return transaction(this.pool, async (client) => {
-      await actorLock(client, viewer);
       const rows = (
         await client.query(
           `SELECT CASE WHEN f.user_a=$1 THEN f.user_b ELSE f.user_a END AS peer_id,

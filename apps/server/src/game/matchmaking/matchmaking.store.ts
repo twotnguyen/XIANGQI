@@ -57,7 +57,8 @@ export class MatchmakingStore implements MatchmakingPort {
   }
   private async pairAllowed(scope: RoomScope, a: QueueIdentity, b: QueueIdentity, at: Date) {
     if (!this.pairLimitEnabled) return true;
-    const result=await scope.client.query<{count:number}>(`SELECT count(*)::int AS count FROM public.matches m JOIN public.rooms r ON r.id=m.room_id WHERE r.kind='RANKED' AND ((m.red_user_id=$1 AND m.black_user_id=$2) OR (m.red_user_id=$2 AND m.black_user_id=$1)) AND m.created_at>$3::timestamptz-interval '24 hours' AND m.created_at<=$3`,[a.actor.userId,b.actor.userId,at]);
+    // m.mode='ONLINE' khớp partial index matches_ranked_pair_started; mọi ván Ranked đều là ONLINE.
+    const result=await scope.client.query<{count:number}>(`SELECT count(*)::int AS count FROM public.matches m JOIN public.rooms r ON r.id=m.room_id WHERE r.kind='RANKED' AND m.mode='ONLINE' AND ((m.red_user_id=$1 AND m.black_user_id=$2) OR (m.red_user_id=$2 AND m.black_user_id=$1)) AND m.created_at>$3::timestamptz-interval '24 hours' AND m.created_at<=$3`,[a.actor.userId,b.actor.userId,at]);
     return result.rows[0]!.count<3;
   }
   canPair(a: QueueIdentity,b: QueueIdentity) {

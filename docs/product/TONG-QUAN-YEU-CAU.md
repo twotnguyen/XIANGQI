@@ -105,8 +105,8 @@ Nguồn: BA 0.3, 2.8, 4.1–4.2, 11.
 - Username duy nhất, không phân biệt hoa thường; 3–20 ký tự theo `^[a-zA-Z0-9_]{3,20}$`; từ chối từ cấm tại bước nhập và kiểm lại khi hoàn tất.
 - Mật khẩu tối thiểu 8 ký tự. Đóng tab khi chưa hoàn tất không được coi là chủ động bỏ qua email/OTP.
 - Google: OAuth thật → onboarding đặt username và mật khẩu, không OTP; không tự gộp tài khoản cùng email.
-- Đăng nhập bằng username, không dùng email làm tên đăng nhập. Sai username/mật khẩu trả thông báo chung.
-- Sai 5 lần trong 15 phút, kể cả username không tồn tại → chặn đăng nhập bằng mật khẩu cho username chuẩn hóa trong 15 phút từ lần sai thứ năm.
+- Đăng nhập bằng username hoặc email liên hệ đã xác minh và mật khẩu; không dùng email đang chờ hoặc credential kỹ thuật. Sai định danh/mật khẩu trả thông báo chung.
+- Sai 5 lần trong 15 phút → chặn đăng nhập mật khẩu 15 phút từ lần sai thứ năm; username và email của cùng tài khoản dùng chung bộ đếm, định danh không tồn tại có bộ đếm riêng.
 - Google không bị bộ đếm khóa mật khẩu chặn và không xóa bộ đếm. Mật khẩu đúng chỉ reset sau khi đăng nhập bằng mật khẩu thành công, không vượt qua thời gian đang khóa.
 
 ### 4.2 Email và hồ sơ

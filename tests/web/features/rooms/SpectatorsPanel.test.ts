@@ -59,11 +59,38 @@ describe("spectators panel", () => {
     expect(screen.queryByRole("button", { name: "Đuổi" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Mời xuống ghế" })).toBeNull();
   });
+  it("shows occupied and empty places according to the room capacity", () => {
+    const { rerender, props } = panel();
+    expect(screen.getByRole("img", { name: "Người xem A" })).toBeTruthy();
+    expect(screen.getAllByRole("img", { name: /Chỗ xem trống/ })).toHaveLength(3);
+    rerender(createElement(SpectatorsPanel, { ...props, limit: 2 }));
+    expect(screen.queryByRole("img", { name: /Chỗ xem trống/ })).toBeNull();
+  });
+  it("lets a player select an empty place and blocks a lone host", async () => {
+    const { props, rerender } = panel({ spectators: [], canMoveToSpectator: true });
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Chuyển sang xem tại chỗ 1" }));
+    expect(props.onMoveToSpectator).toHaveBeenCalledOnce();
+    rerender(createElement(SpectatorsPanel, { ...props, moveToSpectatorReason: "Cần người chơi khác" }));
+    await user.click(screen.getByRole("button", { name: "Chuyển sang xem tại chỗ 1" }));
+    expect(props.onMoveToSpectator).toHaveBeenCalledOnce();
+  });
+  it("opens actions only for the selected spectator and switches or closes on selection", async () => {
+    const { props } = panel({ canInviteDown: true, canKick: true });
+    const user = userEvent.setup();
+    expect(screen.queryByRole("button", { name: "Đuổi" })).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Người xem A" }));
+    await user.click(screen.getByRole("button", { name: "Người xem B" }));
+    await user.click(screen.getByRole("button", { name: "Mời xuống ghế" }));
+    expect(props.onInviteDown).toHaveBeenCalledWith("w2");
+    await user.click(screen.getByRole("button", { name: "Người xem B" }));
+    expect(screen.queryByRole("button", { name: "Đuổi" })).toBeNull();
+  });
   it("requires a named confirmation before kicking and defaults to cancel", async () => {
     const { props } = panel({ canKick: true });
-    await userEvent
-      .setup()
-      .click(screen.getAllByRole("button", { name: "Đuổi" })[0]!);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Người xem A" }));
+    await user.click(screen.getByRole("button", { name: "Đuổi" }));
     const dialog = screen.getByRole("dialog", { name: "Đuổi người xem" });
     expect(
       within(dialog).getByText("Người xem A", { exact: false }),
@@ -79,69 +106,27 @@ describe("spectators panel", () => {
       canInviteDown: true,
       canMoveToSpectator: true,
     });
-    await userEvent
-      .setup()
-      .click(screen.getAllByRole("button", { name: "Mời xuống ghế" })[1]!);
+    await userEvent.setup().click(screen.getByRole("button", { name: "Người xem B" }));
+    await userEvent.setup().click(screen.getByRole("button", { name: "Mời xuống ghế" }));
     expect(props.onInviteDown).toHaveBeenCalledWith("w2");
     await userEvent
       .setup()
-      .click(screen.getByRole("button", { name: "Chuyển sang xem" }));
+      .click(screen.getByRole("button", { name: "Chuyển sang xem tại chỗ 3" }));
     expect(props.onMoveToSpectator).toHaveBeenCalledOnce();
   });
-  it("labels Guests and shows the host each request with its countdown", async () => {
-    const { props } = panel({
-      spectators: [
-        { userId: "w1", displayName: "Người xem A", guest: true },
-        { userId: "w2", displayName: "Người xem B" },
-      ],
-      canInviteDown: true,
-      canRespondRequests: true,
-      seatRequests: [{ id: "q1", userId: "w1", seconds: 21 }],
-    });
-    const list = screen.getByRole("list", { name: "Yêu cầu xin ngồi ghế" });
-    expect(
-      within(list).getByText("Người xem A (Khách) xin ngồi ghế · còn 21 giây"),
-    ).toBeTruthy();
-    const user = userEvent.setup();
-    await user.click(within(list).getByRole("button", { name: "Đồng ý" }));
-    await user.click(within(list).getByRole("button", { name: "Từ chối" }));
-    expect(props.onRespondRequest.mock.calls).toEqual([
-      ["q1", true],
-      ["q1", false],
-    ]);
-  });
-  it("keeps the invite button disabled with a reason while an invite is pending or cooling down", () => {
+  it("keeps the invite button disabled with a reason while an invite is pending or cooling down", async () => {
     panel({
       canInviteDown: true,
       downOfferInviteeId: "w1",
       inviteCooldownSeconds: 4,
     });
-    const [first] = screen.getAllByRole("button", { name: "Mời xuống ghế" });
-    expect(first!.getAttribute("aria-disabled")).toBe("true");
-    expect(
-      screen.getAllByText("Đang có lời mời xuống ghế chờ trả lời."),
-    ).toHaveLength(2);
+    await userEvent.setup().click(screen.getByRole("button", { name: "Người xem A" }));
+    const first = screen.getByRole("button", { name: "Mời xuống ghế" });
+    expect(first.getAttribute("aria-disabled")).toBe("true");
+    expect(screen.getByText("Đang có lời mời xuống ghế chờ trả lời.")).toBeTruthy();
     cleanup();
     panel({ canInviteDown: true, inviteCooldownSeconds: 4 });
-    expect(screen.getAllByText("Chờ 4 giây để mời lại.")).toHaveLength(2);
-  });
-  it("gives a viewer a visible disabled Xin ngồi ghế or the waiting state, and never shows other requests", () => {
-    panel({
-      canRequestSeat: true,
-      requestSeatReason: "Ghế đã đủ người",
-      seatRequests: [{ id: "q2", userId: "w2", seconds: 9 }],
-    });
-    const ask = screen.getByRole("button", { name: "Xin ngồi ghế" });
-    expect(ask.getAttribute("aria-disabled")).toBe("true");
-    expect(screen.getByText("Ghế đã đủ người")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Đồng ý" })).toBeNull();
-    cleanup();
-    panel({
-      canRequestSeat: true,
-      selfId: "w2",
-      seatRequests: [{ id: "q2", userId: "w2", seconds: 9 }],
-    });
-    expect(screen.getByText("Đang chờ chủ phòng · còn 9 giây")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Xin ngồi ghế" })).toBeNull();
+    await userEvent.setup().click(screen.getByRole("button", { name: "Người xem A" }));
+    expect(screen.getByText("Chờ 4 giây để mời lại.")).toBeTruthy();
   });
 });

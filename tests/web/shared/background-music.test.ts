@@ -3,127 +3,74 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as music from "@web/shared/background-music";
 import * as prefs from "@web/shared/preferences";
 
-const oscillators: { start: ReturnType<typeof vi.fn> }[] = [];
-const gains: { disconnect: ReturnType<typeof vi.fn> }[] = [];
-const contexts: MockAudioContext[] = [];
-let nextState: "running" | "suspended" = "running";
-let pendingResume: Promise<void> | null = null;
-
-class MockAudioContext {
-  state = nextState;
+class MockAudio {
+  src: string;
+  loop = false;
+  volume = 1;
+  preload = "";
   currentTime = 0;
-  destination = {};
-  resume = vi.fn(async () => {
-    if (pendingResume) await pendingResume;
-    if (nextState === "running") this.state = "running";
-  });
-  close = vi.fn(async () => {
-    this.state = "suspended";
-  });
-  constructor() {
-    contexts.push(this);
-  }
-  createOscillator() {
-    const oscillator = {
-      type: "sine",
-      frequency: { value: 0 },
-      start: vi.fn(),
-      stop: vi.fn(),
-      connect: vi.fn(),
-      disconnect: vi.fn(),
-      onended: null as (() => void) | null,
-    };
-    oscillators.push(oscillator);
-    return oscillator;
-  }
-  createGain() {
-    const gain = {
-      gain: {
-        value: 1,
-        setValueAtTime: vi.fn(),
-        exponentialRampToValueAtTime: vi.fn(),
-      },
-      connect: vi.fn(),
-      disconnect: vi.fn(),
-    };
-    gains.push(gain);
-    return gain;
+  play = vi.fn().mockResolvedValue(undefined);
+  pause = vi.fn();
+  static instances: MockAudio[] = [];
+
+  constructor(src?: string) {
+    this.src = src ?? "";
+    MockAudio.instances.push(this);
   }
 }
 
-const gesture = () => window.dispatchEvent(new Event("pointerdown"));
-
 beforeEach(() => {
-  vi.useFakeTimers();
   localStorage.clear();
-  nextState = "running";
-  pendingResume = null;
-  oscillators.length = 0;
-  gains.length = 0;
-  contexts.length = 0;
-  vi.stubGlobal("AudioContext", MockAudioContext);
+  MockAudio.instances = [];
+  vi.stubGlobal("Audio", MockAudio);
 });
+
 afterEach(() => {
-  vi.useRealTimers();
   vi.unstubAllGlobals();
 });
 
 describe("background music runtime", () => {
-  it("creates no AudioContext before a user gesture, then plays after one", async () => {
+  it("creates no Audio before a user gesture, then plays after one", () => {
     prefs.setMusicEnabled(true);
     const dispose = music.startBackgroundMusic();
-    expect(contexts).toHaveLength(0);
-    gesture();
-    expect(contexts).toHaveLength(1);
-    expect(oscillators.length).toBeGreaterThan(0);
+    expect(MockAudio.instances).toHaveLength(0);
+    window.dispatchEvent(new Event("pointerdown"));
+    expect(MockAudio.instances).toHaveLength(1);
+    expect(MockAudio.instances[0]!.play).toHaveBeenCalledOnce();
+    expect(MockAudio.instances[0]!.src).toBe(music.BGM_URL);
+    expect(MockAudio.instances[0]!.loop).toBe(true);
     dispose();
   });
 
-  it("stops scheduling and disconnects once music is turned off", async () => {
+  it("pauses and resets time once music is turned off", () => {
     prefs.setMusicEnabled(true);
     const dispose = music.startBackgroundMusic();
-    gesture();
-    const before = oscillators.length;
+    window.dispatchEvent(new Event("pointerdown"));
+    const audio = MockAudio.instances[0]!;
+    expect(audio.play).toHaveBeenCalledOnce();
     prefs.setMusicEnabled(false);
-    expect(gains[0]!.disconnect).toHaveBeenCalled();
-    vi.advanceTimersByTime(5000);
-    expect(oscillators).toHaveLength(before);
+    expect(audio.pause).toHaveBeenCalledOnce();
+    expect(audio.currentTime).toBe(0);
     dispose();
   });
 
-  it("cleans up listeners and timers on dispose", async () => {
+  it("cleans up listeners and pauses on dispose", () => {
     prefs.setMusicEnabled(true);
     const dispose = music.startBackgroundMusic();
-    gesture();
-    const before = oscillators.length;
+    window.dispatchEvent(new Event("pointerdown"));
+    const audio = MockAudio.instances[0]!;
     dispose();
-    vi.advanceTimersByTime(5000);
-    expect(oscillators).toHaveLength(before);
-    gesture();
-    expect(oscillators).toHaveLength(before);
-    expect(contexts[0]!.close).toHaveBeenCalledOnce();
+    expect(audio.pause).toHaveBeenCalledOnce();
+    expect(audio.src).toBe("");
   });
 
-  it("stays silent without throwing when autoplay keeps the context suspended", async () => {
-    nextState = "suspended";
+  it("stays silent without throwing when autoplay is blocked", () => {
     prefs.setMusicEnabled(true);
     const dispose = music.startBackgroundMusic();
-    expect(() => gesture()).not.toThrow();
-    await vi.advanceTimersByTimeAsync(0);
-    expect(oscillators).toHaveLength(0);
+    MockAudio.prototype.play = vi
+      .fn()
+      .mockRejectedValue(new Error("Autoplay prevented"));
+    expect(() => window.dispatchEvent(new Event("pointerdown"))).not.toThrow();
     dispose();
-  });
-  it("does not restart after disposal while an autoplay resume is pending", async () => {
-    nextState = "suspended";
-    prefs.setMusicEnabled(true);
-    const { promise, resolve } = Promise.withResolvers<void>();
-    pendingResume = promise;
-    const dispose = music.startBackgroundMusic();
-    gesture();
-    dispose();
-    contexts[0]!.state = "running";
-    resolve();
-    await vi.advanceTimersByTimeAsync(0);
-    expect(oscillators).toHaveLength(0);
   });
 });

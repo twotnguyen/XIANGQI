@@ -1,5 +1,6 @@
 import { Module, type DynamicModule } from "@nestjs/common";
-import type { Pool } from "pg";
+import { Pool, type PoolConfig } from "pg";
+import { logEvent } from "../../core/logger.js";
 import { FriendStore } from "./friend.store.js";
 import { FriendService } from "./friend.service.js";
 import { DirectMessageStore } from "./direct-message.store.js";
@@ -20,6 +21,7 @@ export class FriendModule {
     pool: Pool,
     sessions: SessionService,
     rooms: FriendRoomPort,
+    lifecycle?: { onModuleDestroy: () => Promise<void> },
   ): DynamicModule {
     return {
       module: FriendModule,
@@ -30,6 +32,9 @@ export class FriendModule {
           useValue: new FriendService(new FriendStore(pool), rooms),
         },
         { provide: SessionService, useValue: sessions },
+        ...(lifecycle
+          ? [{ provide: "FRIEND_POOL_LIFECYCLE", useValue: lifecycle }]
+          : []),
         {
           provide: DirectMessageService,
           useValue: new DirectMessageService(new DirectMessageStore(pool)),
@@ -39,6 +44,22 @@ export class FriendModule {
     };
   }
 }
+/** Tổng kết nối phải nhỏ hơn pool size của Supabase pooler: 5 chính + 3 đăng nhập + 3 media + 3 bạn bè = 14 < 15. */
+const SOCIAL_POOL_MAX = 3;
+function createSocialPool(connection: PoolConfig): Pool {
+  const pool = new Pool({
+    ...connection,
+    max: SOCIAL_POOL_MAX,
+    connectionTimeoutMillis: 10000,
+  });
+  pool.on("error", () => {
+    process.stderr.write(logEvent("error", "social_pool_failed") + "\n");
+  });
+  pool.on("connect", (client) => {
+    client.on("error", () => {});
+  });
+  return pool;
+}
 /**
  * Khởi tạo runtime cho hệ thống bạn bè nếu biến môi trường FRIENDS_ENABLED được kích hoạt.
  * Thẩm định quyền schema xiangqi_social và các bảng liên quan trước khi khởi chạy.
@@ -47,10 +68,16 @@ export async function createFriendRuntime(
   env: Record<string, string | undefined>,
   registration: {
     pool: Pool;
+    connection?: PoolConfig;
     sessions: SessionService | null;
   } | null,
   rooms?: FriendRoomPort,
-): Promise<{ module: DynamicModule; store: FriendStore } | null> {
+): Promise<{
+  module: DynamicModule;
+  store: FriendStore;
+  /** Đóng pool bạn bè riêng. Idempotent. */
+  close: () => Promise<void>;
+} | null> {
   const enabled = env.FRIENDS_ENABLED ?? "false";
   if (enabled === "false") return null;
   if (
@@ -80,9 +107,19 @@ export async function createFriendRuntime(
   } catch {
     throw new Error("Friend schema is not ready");
   }
-  const store = new FriendStore(pool);
+  // Presence, danh sách bạn và thông báo poll vài lần mỗi giây; pool riêng để chúng không chiếm kết nối của phòng/ván.
+  const socialPool = registration.connection
+    ? createSocialPool(registration.connection)
+    : pool;
+  let closing: Promise<void> | undefined;
+  const close = () =>
+    socialPool === pool ? Promise.resolve() : (closing ??= socialPool.end());
+  const store = new FriendStore(socialPool);
   return {
-    module: FriendModule.forRoot(pool, registration.sessions, rooms),
+    module: FriendModule.forRoot(socialPool, registration.sessions, rooms, {
+      onModuleDestroy: close,
+    }),
     store,
+    close,
   };
 }

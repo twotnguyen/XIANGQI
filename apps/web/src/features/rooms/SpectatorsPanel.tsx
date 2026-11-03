@@ -5,11 +5,6 @@ export interface SpectatorSeat {
   displayName: string;
   guest?: boolean;
 }
-export interface SeatRequestRow {
-  id: string;
-  userId: string;
-  seconds: number;
-}
 
 const BUSY = "Cần kết nối và quyền điều khiển phòng.";
 const nameOf = (watcher: SpectatorSeat | undefined) =>
@@ -25,61 +20,93 @@ export function SpectatorsPanel({
   limit,
   selfId,
   canMoveToSpectator,
+  moveToSpectatorReason,
   canInviteDown,
   canKick,
   downOfferInviteeId,
   inviteCooldownSeconds = 0,
-  seatRequests = [],
-  canRequestSeat = false,
-  canRespondRequests = false,
-  requestSeatReason,
   busy,
   writable = true,
   onMoveToSpectator,
   onInviteDown,
-  onRequestSeat,
-  onRespondRequest,
   onKick,
 }: {
   spectators: SpectatorSeat[];
   limit: number;
   selfId: string;
   canMoveToSpectator: boolean;
+  moveToSpectatorReason?: string;
   canInviteDown: boolean;
   canKick: boolean;
   downOfferInviteeId: string | null;
   inviteCooldownSeconds?: number;
-  /** Host: mọi yêu cầu còn hạn; người xem: chỉ yêu cầu của chính mình. */
-  seatRequests?: SeatRequestRow[];
-  canRequestSeat?: boolean;
-  canRespondRequests?: boolean;
-  /** Có lý do thì nút Xin ngồi ghế bị khóa nhưng vẫn hiện. */
-  requestSeatReason?: string;
   busy: boolean;
   writable?: boolean;
   onMoveToSpectator: () => void;
   onInviteDown: (userId: string) => void;
-  onRequestSeat?: () => void;
-  onRespondRequest?: (requestId: string, accept: boolean) => void;
   onKick: (userId: string) => void;
 }) {
   const [pendingKick, setPendingKick] = useState<SpectatorSeat | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   useEffect(() => {
     if (!writable) setPendingKick(null);
   }, [writable]);
-  const mine = seatRequests.find((q) => q.userId === selfId);
-  const byId = new Map(spectators.map((w) => [w.userId, w]));
-  const hostRequests = canRespondRequests;
   return (
     <section className="xq-viewers" aria-label="Người xem">
       <h2>
         Người xem {spectators.length}/{limit}
       </h2>
-      {spectators.length === 0 ? (
-        <p>Chưa có người xem.</p>
-      ) : (
-        <ul>
-          {spectators.map((watcher) => (
+      <div className="xq-viewer-slots" aria-label="Chỗ người xem">
+        {Array.from({ length: limit }, (_, index) => {
+          const watcher = spectators[index];
+          if (!watcher && canMoveToSpectator) {
+            return (
+              <button
+                key={`empty-${index}`}
+                type="button"
+                className="xq-viewer-slot xq-viewer-slot-button"
+                aria-label={`Chuyển sang xem tại chỗ ${index + 1}`}
+                aria-disabled={busy || !writable || Boolean(moveToSpectatorReason)}
+                title={!writable ? BUSY : moveToSpectatorReason}
+                onClick={() => {
+                  if (!busy && writable && !moveToSpectatorReason) onMoveToSpectator();
+                }}
+              >
+                +
+              </button>
+            );
+          }
+          if (watcher && (canInviteDown || (canKick && watcher.userId !== selfId))) {
+            return (
+              <button
+                key={watcher.userId}
+                type="button"
+                className="xq-viewer-slot xq-viewer-slot-button is-occupied"
+                aria-label={nameOf(watcher)}
+                aria-expanded={selectedId === watcher.userId}
+                title={nameOf(watcher)}
+                onClick={() => setSelectedId(selectedId === watcher.userId ? null : watcher.userId)}
+              >
+                {Array.from(watcher.displayName.trim())[0]?.toUpperCase()}
+              </button>
+            );
+          }
+          return (
+            <span
+              key={watcher?.userId ?? `empty-${index}`}
+              className={`xq-viewer-slot${watcher ? " is-occupied" : ""}`}
+              aria-label={watcher ? nameOf(watcher) : `Chỗ xem trống ${index + 1}`}
+              role="img"
+              title={watcher ? nameOf(watcher) : "Chỗ xem trống"}
+            >
+              {watcher ? Array.from(watcher.displayName.trim())[0]?.toUpperCase() : "+"}
+            </span>
+          );
+        })}
+      </div>
+      {spectators.some((watcher) => watcher.userId === selectedId) && (
+        <ul className="xq-viewer-actions">
+          {spectators.filter((watcher) => watcher.userId === selectedId).map((watcher) => (
             <li key={watcher.userId}>
               <span>
                 {nameOf(watcher)}
@@ -119,61 +146,6 @@ export function SpectatorsPanel({
             </li>
           ))}
         </ul>
-      )}
-      {hostRequests && seatRequests.length > 0 && (
-        <ul aria-label="Yêu cầu xin ngồi ghế" className="xq-seat-requests">
-          {seatRequests.map((q) => (
-            <li key={q.id}>
-              <span>
-                {nameOf(byId.get(q.userId))} xin ngồi ghế · còn {q.seconds} giây
-              </span>{" "}
-              <Button
-                loading={busy}
-                disabledReason={!writable ? BUSY : undefined}
-                onClick={() => onRespondRequest?.(q.id, true)}
-              >
-                Đồng ý
-              </Button>{" "}
-              <Button
-                variant="secondary"
-                loading={busy}
-                disabledReason={!writable ? BUSY : undefined}
-                onClick={() => onRespondRequest?.(q.id, false)}
-              >
-                Từ chối
-              </Button>
-            </li>
-          ))}
-        </ul>
-      )}
-      {canRequestSeat &&
-        (mine ? (
-          <p role="status">Đang chờ chủ phòng · còn {mine.seconds} giây</p>
-        ) : (
-          <Button
-            variant="secondary"
-            loading={busy}
-            disabledReason={!writable ? BUSY : requestSeatReason}
-            onClick={() => onRequestSeat?.()}
-          >
-            Xin ngồi ghế
-          </Button>
-        ))}
-      {canMoveToSpectator && (
-        <Button
-          variant="secondary"
-          loading={busy}
-          disabledReason={
-            !writable
-              ? BUSY
-              : spectators.length >= limit
-                ? "Phòng không còn chỗ cho người xem"
-                : undefined
-          }
-          onClick={onMoveToSpectator}
-        >
-          Chuyển sang xem
-        </Button>
       )}
       <Dialog
         open={Boolean(pendingKick)}

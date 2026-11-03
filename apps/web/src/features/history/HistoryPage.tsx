@@ -223,7 +223,7 @@ export function HistoryPage({ client, onReplay }: HistoryPageProps) {
         ))}
       </nav>
       <div aria-busy={loading} className="xq-history-results">
-        {loading && <p role="status">Đang tải lịch sử…</p>}
+        {loading && <p className="xq-sr-only" role="status">Đang tải lịch sử…</p>}
         {error && (
           <div className="xq-history-error">
             <p role="alert">{error}</p>

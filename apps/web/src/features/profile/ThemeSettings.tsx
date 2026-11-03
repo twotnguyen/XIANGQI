@@ -8,7 +8,7 @@ import {
   useAppliedTheme,
 } from "../../shared/theme/useTheme.js";
 import { playClickSound } from "../../shared/preferences.js";
-import type { AuthorizedFetch } from "./profile-client.js";
+import type { AuthorizedFetch } from "../../shared/api.js";
 import { createThemeClient } from "./theme-client.js";
 
 const THEME_DESCRIPTIONS: Record<ThemeChoice, string> = {
@@ -97,7 +97,7 @@ export function ThemeSettings({
           </label>
         ))}
       </div>
-      <p role="status" aria-live="polite" className="xq-profile-theme-status">
+      <p role="status" aria-live="polite" className="xq-sr-only">
         {saving ? "Đang lưu giao diện…" : null}
       </p>
       {error ? (

@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useId, type ReactNode } from "react";
 import { Button, Dialog } from "../../shared/ui/primitives.js";
 import { AppIcon } from "../../shared/ui/AppIcon.js";
 import { SelfRating } from "../../features/rankings/SelfRating.js";
-import type { AuthorizedFetch } from "../../features/profile/profile-client.js";
+import type { AuthorizedFetch } from "../../shared/api.js";
 import "./AppShell.css";
 export interface ShellUser {
   displayName: string;
@@ -21,6 +21,7 @@ export function AppShell({
   bell,
   authorizedFetch,
   ratingRevision = 0,
+  ratingUserId,
 }: {
   title: string;
   user?: ShellUser;
@@ -30,6 +31,7 @@ export function AppShell({
   bell?: ReactNode;
   authorizedFetch?: AuthorizedFetch;
   ratingRevision?: number;
+  ratingUserId?: string | null;
 }) {
   const [menu, setMenu] = useState(false);
   const [userDropdown, setUserDropdown] = useState(false);
@@ -173,10 +175,9 @@ export function AppShell({
                   ⌄
                 </span>
               </button>
-              {!user.guest && authorizedFetch && <SelfRating authorizedFetch={authorizedFetch} guest={false} revision={ratingRevision} />}
-              {userDropdown && (
                 <div
                   className="xq-user-dropdown"
+                  hidden={!userDropdown}
                   id={userDropdownId}
                   role="region"
                   aria-label="Tài khoản cá nhân"
@@ -193,6 +194,16 @@ export function AppShell({
                       <span className="xq-dropdown-role">
                         {user.guest ? "Tài khoản Khách" : "Kỳ thủ Kỳ Đài"}
                       </span>
+                      {!user.guest && authorizedFetch && (
+                        <div className="xq-dropdown-rating">
+                          <SelfRating
+                            key={ratingUserId}
+                            authorizedFetch={authorizedFetch}
+                            guest={false}
+                            revision={ratingRevision}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="xq-dropdown-divider" />
@@ -235,7 +246,6 @@ export function AppShell({
                     </button>
                   </div>
                 </div>
-              )}
             </div>
           )}
           <span className="xq-mobile-menu">

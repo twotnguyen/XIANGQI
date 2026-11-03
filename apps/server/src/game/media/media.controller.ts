@@ -59,7 +59,7 @@ function hasMemberCredential(request: MediaRequest): boolean {
  * Khách chỉ dùng header; trộn với thông tin xác thực thành viên bị từ chối.
  */
 @Injectable()
-export class MediaPrincipalGuard implements CanActivate {
+class MediaPrincipalGuard implements CanActivate {
   constructor(
     @Inject(SessionGuard) private readonly member: SessionGuard,
     @Optional() @Inject(GuestService) private readonly guests?: GuestService,

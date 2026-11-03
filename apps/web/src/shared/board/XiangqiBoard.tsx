@@ -377,25 +377,22 @@ export function XiangqiBoard({
               const [fromX, fromY] = point(lastMove.from);
               const [toX, toY] = point(lastMove.to);
               return (
-                <g className="xq-board-last-indicators">
-                  <g
-                    className="xq-board-last"
-                    transform={`translate(${fromX} ${fromY})`}
-                  >
-                    <path
-                      className="xq-board-last-corners"
-                      d="M-11-18H-18V-11M11-18H18V-11M18 11V18H11M-11 18H-18V11"
-                    />
-                  </g>
-                  <g
-                    className="xq-board-last"
-                    transform={`translate(${toX} ${toY})`}
-                  >
-                    <path
-                      className="xq-board-last-corners"
-                      d="M-11-18H-18V-11M11-18H18V-11M18 11V18H11M-11 18H-18V11"
-                    />
-                  </g>
+                <g
+                  className={`xq-board-last-indicators xq-board-piece-${position.turn === "red" ? "black" : "red"}`}
+                >
+                  <line
+                    className="xq-board-last-line"
+                    x1={fromX}
+                    y1={fromY}
+                    x2={toX}
+                    y2={toY}
+                  />
+                  <circle
+                    className="xq-board-last-dot"
+                    cx={fromX}
+                    cy={fromY}
+                    r="6"
+                  />
                 </g>
               );
             })()}

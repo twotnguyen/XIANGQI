@@ -12,6 +12,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ProfilePage } from "@web/features/profile/ProfilePage.js";
+import { EmailStatusBanner } from "@web/features/profile/EmailStatusBanner.js";
 import {
   ProfileRequestError,
   type ProfileClient,
@@ -73,6 +74,32 @@ function authorizedFetchStub() {
 }
 
 describe("profile page", () => {
+  it("opens and focuses email from the banner even when the link is used again", async () => {
+    window.history.replaceState({}, "", "/settings");
+    render(
+      createElement("div", null,
+        createElement(EmailStatusBanner, {
+          status: { status: "ready", email: null, pendingEmail: null, emailVerified: false, expiresAt: null, resendAt: null },
+          reloadEmailStatus: vi.fn(),
+        }),
+        createElement(ProfilePage, {
+          client: client(), guest: false, authorizedFetch: authorizedFetchStub(),
+          onSaved: vi.fn(), onLogout: vi.fn(),
+          emailSection: createElement("p", null, "Form email"),
+        }),
+      ),
+    );
+    await screen.findByText("Form email");
+    for (let i = 0; i < 2; i++) {
+      fireEvent.click(screen.getByRole("button", { name: "Phiên đăng nhập" }));
+      fireEvent.click(screen.getByRole("link", { name: "Thêm email" }));
+      await waitFor(() => {
+        expect(screen.getByRole("button", { name: "Hồ sơ cá nhân" }).getAttribute("aria-pressed")).toBe("true");
+        expect(document.activeElement?.getAttribute("aria-label")).toBe("Thêm hoặc xác minh email");
+      });
+    }
+    window.history.replaceState({}, "", "/");
+  });
   it("renders the rating summary supplied by the app inside the profile section", async () => {
     render(createElement(ProfilePage, { client: client(), guest: false, authorizedFetch: authorizedFetchStub(), onSaved: vi.fn(), onLogout: vi.fn(), ratingSummary: createElement("span", null, "1200 Elo · hạng thử") }));
     expect(await screen.findByText("1200 Elo · hạng thử")).toBeTruthy();

@@ -1,3 +1,4 @@
+import type { AuthorizedFetch } from "../../shared/api.js";
 export interface ProfileView {
   userId: string;
   username: string;
@@ -11,10 +12,6 @@ export interface ProfileLocation {
   roomId: string | null;
   matchId: string | null;
 }
-export type AuthorizedFetch = (
-  path: string,
-  init?: RequestInit,
-) => Promise<Response>;
 export class ProfileRequestError extends Error {
   constructor(
     public readonly code: string,

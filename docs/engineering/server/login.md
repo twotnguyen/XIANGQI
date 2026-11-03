@@ -1,10 +1,22 @@
-# Đăng nhập bằng Username — XIAN-45 / T09
+# Đăng nhập bằng username hoặc email đã xác minh — XIAN-45 / T09
 
 > **Lưu ý (31/10/2026):** phần rà soát YC1/BA 0.28 đã có mã trong lượt triển khai này, xem mục cuối về phiên theo tab và quota OTP. Các quyết định YC khác trong BA 0.27–0.36 vẫn theo trạng thái riêng của từng YC. Có mã không thay bằng chứng nghiệm thu, áp migration hoặc kiểm dịch vụ thật.
 
-`POST /auth/login` nhận `{ username, password, remember? }`; `remember` mặc định
-`true`. Username được chuẩn hoá chữ thường để tra tài khoản và dùng chung bộ đếm.
-Email chỉ dùng nội bộ, không nằm trong phản hồi đăng nhập hoặc thông tin phiên.
+`POST /auth/login` nhận `{ username, password, remember? }`; trường `username`
+có thể chứa username hoặc email liên hệ đã xác minh, không phân biệt hoa thường.
+`remember` mặc định `true`. Email đang chờ và credential kỹ thuật không được dùng.
+Server tra credential Auth nội bộ của cùng tài khoản; không trả email trong phản hồi.
+Username và email của cùng tài khoản dùng chung khóa và bộ đếm username; email
+chưa thuộc tài khoản có bộ đếm riêng theo SHA-256, không lưu địa chỉ thô.
+
+Migration `20261103000013_login_email.sql` phải áp dụng trước khi bật runtime.
+Rollback từ chối nếu còn bản ghi thử sai email; cần giữ chúng cho đến khi hết
+thời gian khóa và xử lý theo chính sách vận hành trước khi rollback.
+
+Đã áp migration lên Supabase XIANGQI theo xác nhận của người dùng; lịch sử
+migration và ràng buộc mới đã được kiểm tra. Trên `/dev/login`, tài khoản thử
+đã nhận phiên bằng cả email đã xác minh lẫn username. Chưa kiểm tra khóa sai
+hoặc email đang chờ trên CSDL ứng dụng.
 
 Sai tên và sai mật khẩu cùng trả `LOGIN_INVALID`. Năm lần sai trong cửa sổ
 15 phút chặn đến 15 phút sau lần sai thứ năm; yêu cầu trong thời gian chặn không

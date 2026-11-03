@@ -200,11 +200,11 @@ it("asks before logging out of a live online match and logs out only after confi
     matchId: "fixture-match",
   };
   render(createElement(AppRouter));
-  fireEvent.click(await screen.findByText("Đăng xuất"));
+  fireEvent.click((await screen.findAllByText("Đăng xuất"))[0]!);
   expect(await screen.findByText("Đăng xuất khi đang có ván?")).toBeTruthy();
   fireEvent.click(screen.getByText("Ở lại"));
   expect(mock.logout).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByText("Đăng xuất"));
+  fireEvent.click(screen.getAllByText("Đăng xuất")[0]!);
   fireEvent.click(await screen.findByText("Đầu hàng và đăng xuất"));
   await vi.waitFor(() => expect(mock.logout).toHaveBeenCalledWith(true));
 });

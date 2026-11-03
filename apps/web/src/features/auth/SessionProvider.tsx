@@ -288,6 +288,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         return;
       }
       const result = parse(value);
+      sessionStorage.removeItem("xiangqi.email-banner-dismissed");
       invalidateRequest();
       loggingOut.current = null;
       install(result);

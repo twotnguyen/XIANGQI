@@ -272,25 +272,14 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.xq-room-invite-link {
-  width: 100%;
-  min-width: 0;
-  min-height: var(--touch-min);
-  padding: var(--space-2);
-  box-sizing: border-box;
-  color: var(--color-ink);
-  background: var(--color-surface-sunken);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-md);
-  font: inherit;
-  font-size: var(--text-md);
-}
 .xq-friends-bell {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  min-height: var(--touch-min);
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   color: inherit;
   text-decoration: none;
 }
@@ -423,6 +412,16 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
+.xq-dm__input-wrap {
+  display: flex;
+  flex: 1 1 160px;
+  align-items: end;
+  min-width: 0;
+}
+.xq-dm__input-wrap .xq-dm__input {
+  width: 100%;
+  resize: vertical;
+}
 .xq-dm__input {
   flex: 1 1 160px;
   min-width: 0;
@@ -446,6 +445,238 @@
 }
 .xq-dm__composer .xq-button {
   min-height: var(--touch-min);
+}
+
+.xq-dm-sidebar,
+.xq-dm-popup {
+  position: fixed;
+  z-index: 100;
+  right: var(--space-4);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px #0006;
+  box-sizing: border-box;
+}
+.xq-dm-sidebar {
+  top: 70px;
+  bottom: var(--space-4);
+  width: min(420px, calc(100vw - 2 * var(--space-4)));
+  padding: var(--space-4);
+  overflow-y: auto;
+}
+.xq-dm-sidebar__header,
+.xq-dm-popup__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.xq-dm-sidebar__header h2 {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 24px;
+}
+.xq-dm-sidebar__search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+  padding: 0 var(--space-3);
+  border-radius: 999px;
+  background: var(--color-surface-sunken);
+  color: var(--color-ink-muted);
+  font-size: 24px;
+}
+.xq-dm-sidebar__search input {
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  outline-offset: -2px;
+  background: transparent;
+  color: var(--color-ink);
+  font: inherit;
+  font-size: var(--text-md);
+}
+.xq-dm-sidebar__filter {
+  display: inline-block;
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-2);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-gold) 20%, var(--color-surface));
+  color: var(--color-gold-light);
+  font-weight: 600;
+}
+.xq-dm-sidebar__header button,
+.xq-dm-popup__header button {
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  border: 0;
+  background: transparent;
+  color: var(--color-ink);
+  font-size: 24px;
+  cursor: pointer;
+}
+.xq-dm-sidebar .xq-dm-list {
+  max-height: none;
+}
+.xq-dm-sidebar__friend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.xq-dm-sidebar__friend:hover,
+.xq-dm-sidebar__friend:focus-visible {
+  background: var(--color-surface-sunken);
+}
+.xq-dm-sidebar__avatar {
+  display: grid;
+  position: relative;
+  place-items: center;
+  flex: 0 0 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  color: var(--color-btn-primary-fg);
+  font-weight: 600;
+}
+.xq-dm-sidebar__online {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--color-surface);
+  border-radius: 50%;
+  background: var(--color-success);
+}
+.xq-dm-sidebar__name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.xq-dm-sidebar__name small {
+  display: block;
+  color: var(--color-ink-muted);
+}
+.xq-dm-popup {
+  bottom: 0;
+  right: clamp(16px, 6vw, 100px);
+  width: min(380px, calc(100vw - 2 * var(--space-4)));
+  height: min(560px, calc(100dvh - 90px));
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.xq-dm-popup__header {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-divider);
+}
+.xq-dm-popup__header .xq-dm-sidebar__avatar {
+  flex-basis: 40px;
+  height: 40px;
+}
+.xq-dm-popup__identity {
+  flex: 1;
+  min-width: 0;
+}
+.xq-dm-popup__identity small {
+  display: block;
+  color: var(--color-ink-muted);
+}
+.xq-dm-popup .xq-dm {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-2);
+}
+.xq-dm-popup .xq-dm__log {
+  flex: 1;
+  height: auto;
+  max-height: none;
+  border: 0;
+  background: transparent;
+}
+.xq-dm-popup .xq-dm__bubble {
+  border: 0;
+  border-radius: 18px;
+  background: var(--color-surface-sunken);
+}
+.xq-dm-popup .xq-dm__row--mine .xq-dm__bubble {
+  background: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-fg);
+}
+.xq-dm-popup .xq-dm__composer {
+  flex-wrap: nowrap;
+  align-items: end;
+}
+.xq-dm-popup .xq-dm__input-wrap {
+  flex: 1 1 0;
+  align-items: end;
+  border-radius: 22px;
+  background: var(--color-surface-sunken);
+}
+.xq-dm-popup .xq-dm__input {
+  flex: 1 1 0;
+  min-height: 44px;
+  max-height: 120px;
+  padding: 11px 0 9px 14px;
+  border: 0;
+  background: transparent;
+  resize: none;
+}
+.xq-dm-popup .xq-chat-sticker > button,
+.xq-dm__send {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-gold);
+  cursor: pointer;
+}
+.xq-dm-popup .xq-chat-sticker > button span {
+  display: none;
+}
+.xq-dm-popup .xq-chat-sticker__face,
+.xq-dm__send svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.xq-dm__send:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.xq-dm__send:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+.xq-dm-popup .xq-chat-sticker__picker {
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  width: 240px;
+  z-index: 1;
 }
 
 .xq-dm-list {

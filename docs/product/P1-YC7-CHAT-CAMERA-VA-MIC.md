@@ -170,7 +170,7 @@ Không thêm SLA chat bằng số chưa được BA duyệt. Ngưỡng nước �
 | Mất media riêng | Báo lỗi riêng, ván/clock/chat hoạt động; không tạo DISCONNECT ván chỉ vì LiveKit lỗi |
 | Mất Socket.IO/phiên | Tab nhận biết mất Socket.IO phòng phải dừng capture/phát và ngắt nhận media dù LiveKit còn nối. Nối lại xác thực quyền mới; chỉ tự nhận nguồn chưa Tắt nhận, không tự bật camera/mic. Phiên mất quyền vẫn theo YC1/YC5 |
 | Đổi panel Ván/Chat/Camera | Giữ media đang bật, chỉ thay bố cục; luôn có chỉ báo đang phát và đường tắt thiết bị |
-| Browser báo trang bị ẩn | Dừng capture/phát, hai nút Tắt; quay lại cần chủ động bật. Không nhầm với ẩn panel trong ứng dụng, không tự đổi trạng thái ghế/ván |
+| Browser báo trang bị ẩn | Camera và mic đang bật tiếp tục phát. Không nhầm với ẩn panel trong ứng dụng, không tự đổi trạng thái ghế/ván |
 
 ### 10.1 Chuyển giữa tab
 
@@ -329,11 +329,11 @@ Lựa chọn nhận là cục bộ, không thêm đồng bộ tài khoản như 
 
 ### 15.3 Ba quyết định làm rõ thêm — Q6–Q8
 
-| Câu hỏi | PO chọn | Hệ quả |
+| Câu hỏi | Quyết định | Hệ quả |
 |---|---|---|
 | Q6 — Đổi vai và lịch sử Chung | **Giữ mốc xuyên suốt lần ở phòng** | Lên/xuống ghế không mở tin trước lúc vào hoặc làm mất tin Chung đang được đọc; Riêng vẫn theo cặp |
 | Q7 — Mất Socket.IO nhưng LiveKit còn nối | **Dừng media, nối lại không tự phát** | Dừng capture/phát và nhận tại tab mất kết nối. Nối lại reauthorize; chỉ nhận nguồn chưa Tắt nhận, phát cần bật lại |
-| Q8 — Ẩn panel hoặc xuống nền | **Giữ khi đổi panel, tắt khi xuống nền** | Ván/Chat/Camera nội bộ giữ phát và có chỉ báo; browser báo trang hidden thì dừng capture/phát, trở lại không tự bật |
+| Q8 — Ẩn panel hoặc xuống nền | **Giữ camera và mic khi đổi panel hoặc xuống nền** | Ván/Chat/Camera nội bộ giữ phát và có chỉ báo; browser báo trang hidden không tự tắt camera hay mic |
 
 Không còn câu hỏi chờ cho ba mục này. Không mở rộng thành tự đầu hàng khi ẩn trang, tự nhả ghế hoặc thay ân hạn YC5. Q8 chỉ quyết định capture/phát, không tự thêm chính sách ngắt nhận audio nền.
 

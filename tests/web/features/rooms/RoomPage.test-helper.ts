@@ -12,11 +12,11 @@ import { initialPosition, serializePosition } from "@xiangqi/xiangqi-core";
 import { RoomPage } from "@web/features/rooms/RoomPage.js";
 import { type RoomConnectionInput } from "@web/features/rooms/room-client.js";
 
-export const originalDialogShow = Object.getOwnPropertyDescriptor(
+const originalDialogShow = Object.getOwnPropertyDescriptor(
   HTMLDialogElement.prototype,
   "showModal",
 );
-export const originalDialogClose = Object.getOwnPropertyDescriptor(
+const originalDialogClose = Object.getOwnPropertyDescriptor(
   HTMLDialogElement.prototype,
   "close",
 );

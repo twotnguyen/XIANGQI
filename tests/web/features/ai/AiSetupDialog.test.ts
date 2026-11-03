@@ -135,7 +135,7 @@ it("parent pending also blocks submit and dismiss without inventing a server res
   render(createElement(AiSetupDialog, p));
   await userEvent
     .setup()
-    .click(screen.getByRole("button", { name: "Đang xử lý…" }));
+    .click(screen.getByRole("button", { name: "Bắt đầu" }));
   fireEvent.submit(screen.getByRole("dialog").querySelector("form")!);
   await userEvent
     .setup()

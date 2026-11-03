@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { screen, act, fireEvent, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { RoomSnapshot } from "@xiangqi/shared";
@@ -13,21 +13,118 @@ import {
 } from "./RoomPage.test-helper.js";
 useRoomPageHooks();
 
-it("keeps the authoritative final board and stops moves when the result arrives", async () => {
+it.each([["CASUAL", "red"], ["CASUAL", "black"], ["RANKED", "red"], ["RANKED", "black"]] as const)("automatically leaves after a %s %s win", async (kind, winner) => {
+  const live = playing();
+  live.room = { ...live.room, kind };
+  const f = setup(live);
+  await f.ready();
+  vi.useFakeTimers();
+  const state = terminal(live);
+  state.room = { ...state.room, kind, status: "FINISHED" };
+  state.match = { ...state.match!, winner };
+  f.publish(state);
+  const modal = screen.getByRole("dialog", { name: winner === "red" ? "Bạn thắng!" : "Bạn thua" });
+  expect(within(modal).queryByRole("button", { name: "Ở lại phòng" })).toBeNull();
+  expect(within(modal).queryByRole("button", { name: "Rời phòng" })).toBeNull();
+  await act(async () => { await vi.advanceTimersByTimeAsync(4999); });
+  expect(f.client.leave).not.toHaveBeenCalled();
+  await act(async () => { await vi.advanceTimersByTimeAsync(1); });
+  expect(f.client.leave).toHaveBeenCalledExactlyOnceWith("room", state.version, f.control);
+  expect(f.onLeft).toHaveBeenCalledOnce();
+});
+
+it.each(["CASUAL", "RANKED"] as const)("returns to the lobby after an interrupted %s match", async (kind) => {
+  const live = playing();
+  live.room = { ...live.room, kind };
+  const f = setup(live);
+  await f.ready();
+  vi.useFakeTimers();
+  const state = terminal(live);
+  state.room = { ...state.room, kind, status: "FINISHED" };
+  state.match = { ...state.match!, status: "INTERRUPTED", result: "SERVER_RESTART", winner: null };
+  f.publish(state);
+  const modal = screen.getByRole("dialog", { name: "Ván bị gián đoạn" });
+  expect(within(modal).queryByRole("button", { name: "Ở lại phòng" })).toBeNull();
+  expect(within(modal).queryByRole("button", { name: "Rời phòng" })).toBeNull();
+  await act(async () => { await vi.advanceTimersByTimeAsync(5000); });
+  expect(f.client.leave).toHaveBeenCalledExactlyOnceWith("room", state.version, f.control);
+  expect(f.onLeft).toHaveBeenCalledOnce();
+});
+
+it("keeps the casual result and permits retry if leaving fails", async () => {
+  const live = playing();
+  live.room = { ...live.room, kind: "CASUAL" };
+  const f = setup(live);
+  await f.ready();
+  f.client.leave.mockRejectedValueOnce(new Error("private")).mockResolvedValueOnce({ roomId: "room", left: true });
+  vi.useFakeTimers();
+  const state = terminal(live);
+  state.room = { ...state.room, kind: "CASUAL", status: "FINISHED" };
+  f.publish(state);
+  await act(async () => { await vi.advanceTimersByTimeAsync(5000); });
+  expect(within(screen.getByRole("dialog", { name: "Bạn thắng!" })).getByRole("alert").textContent).toContain("Thao tác chưa thực hiện được");
+  expect(f.onLeft).not.toHaveBeenCalled();
+  await act(async () => { fireEvent.click(screen.getByRole("button", { name: "Thử lại" })); });
+  expect(f.onLeft).toHaveBeenCalledOnce();
+});
+
+it.each(["CASUAL", "RANKED"] as const)("retries automatic %s leave after the room version changes", async (kind) => {
+  const live = playing();
+  live.room = { ...live.room, kind };
+  const f = setup(live);
+  await f.ready();
+  const state = terminal(live);
+  state.room = { ...state.room, kind, status: "FINISHED" };
+  state.match = { ...state.match!, status: "INTERRUPTED", result: "SERVER_RESTART", winner: null };
+  f.refresh.mockResolvedValue({ ...state, version: state.version + 1 });
+  f.client.leave.mockRejectedValueOnce(new RoomRequestError("VERSION_STALE", 409))
+    .mockResolvedValueOnce({ roomId: "room", left: true });
+  vi.useFakeTimers();
+  f.publish(state);
+  await act(async () => { await vi.advanceTimersByTimeAsync(5000); });
+  expect(f.client.leave).toHaveBeenCalledTimes(2);
+  expect(f.client.leave).toHaveBeenLastCalledWith("room", state.version + 1, f.control);
+  expect(f.onLeft).toHaveBeenCalledOnce();
+});
+
+it("does not retry an automatic leave into a new active match", async () => {
+  const live = playing();
+  live.room = { ...live.room, kind: "CASUAL" };
+  const f = setup(live);
+  await f.ready();
+  const state = terminal(live);
+  state.room = { ...state.room, kind: "CASUAL", status: "FINISHED" };
+  f.refresh.mockResolvedValue({ ...live, version: state.version + 1, match: { ...live.match!, id: "new-match" } });
+  f.client.leave.mockRejectedValue(new RoomRequestError("VERSION_STALE", 409));
+  vi.useFakeTimers();
+  f.publish(state);
+  await act(async () => { await vi.advanceTimersByTimeAsync(5000); });
+  expect(f.client.leave).toHaveBeenCalledOnce();
+  expect(f.onLeft).not.toHaveBeenCalled();
+});
+
+it.each(["CASUAL", "RANKED"] as const)("hides the %s playing area behind the result without hiding chat", async (kind) => {
+  const live = playing();
+  live.room = { ...live.room, kind };
+  const f = setup(live);
+  await f.ready();
+  const state = terminal(live);
+  state.room = { ...state.room, kind, status: "FINISHED" };
+  f.publish(state);
+  expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
+  expect(screen.queryByRole("region", { name: "Ghế và trạng thái phòng" })).toBeNull();
+  expect(screen.getByRole("complementary", { name: "Trò chuyện trong phòng" })).toBeTruthy();
+});
+
+it("shows the waiting room behind the result after a custom game ends", async () => {
   nativeDialogStub();
   const f = setup(playing());
   await f.ready();
   f.publish(terminal());
   expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
-  expect(
-    screen.getByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" }),
-  ).toBeTruthy();
-  expect(
-    screen.queryByRole("button", { name: "Tốt đỏ, cột 1 hàng 7" }),
-  ).toBeNull();
-  expect(screen.getByRole("timer", { name: "Thời gian Đỏ" }).textContent).toBe(
-    "10:00",
-  );
+  expect(screen.queryByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" })).toBeNull();
+  expect(screen.queryByRole("timer", { name: "Thời gian Đỏ" })).toBeNull();
+  expect(document.querySelector(".xq-room-page")?.className).toContain("is-waiting");
   expect(f.command).not.toHaveBeenCalled();
 });
 it("Stay closes only this result and a duplicate or reconnect cannot reopen it", async () => {
@@ -41,6 +138,9 @@ it("Stay closes only this result and a duplicate or reconnect cannot reopen it",
     .setup()
     .click(screen.getByRole("button", { name: "Ở lại phòng" }));
   expect(screen.queryByRole("dialog")).toBeNull();
+  expect(screen.queryByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" })).toBeNull();
+  expect(screen.queryByRole("timer", { name: "Thời gian Đỏ" })).toBeNull();
+  expect(screen.getByRole("region", { name: "Ghế Đỏ" })).toBeTruthy();
   f.publish({ ...state, version: state.version + 1 });
   f.disconnect();
   f.reconnect();
@@ -159,7 +259,7 @@ it("a disconnected client waits for a fresh authoritative result before opening 
   expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
 });
 
-it("a stale result Leave keeps the final board and modal until fresh realtime sync", async () => {
+it("a stale result Leave keeps the result modal until fresh realtime sync", async () => {
   nativeDialogStub();
   const live = playing();
   const state = terminal(live);
@@ -179,9 +279,10 @@ it("a stale result Leave keeps the final board and modal until fresh realtime sy
     .setup()
     .click(screen.getByRole("dialog").querySelectorAll("button")[1]!);
   expect(screen.getByRole("dialog", { name: "Bạn thắng!" })).toBeTruthy();
+  // Phòng tự tạo đã về WAITING: bàn cũ ẩn phía sau hộp kết quả (xem test "shows the waiting room behind the result").
   expect(
-    screen.getByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" }),
-  ).toBeTruthy();
+    screen.queryByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" }),
+  ).toBeNull();
   expect(f.refresh).toHaveBeenCalledOnce();
   expect(f.onLeft).not.toHaveBeenCalled();
   await act(async () => sync({ ...state, version: state.version + 1 }));
@@ -243,6 +344,7 @@ it("reloading into a finished room keeps the waiting layout and shows no result"
   await f.ready();
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(screen.queryByRole("region", { name: "Kết quả ván cờ" })).toBeNull();
+  expect(screen.queryByRole("group", { name: "Bàn cờ tướng — Đỏ ở phía dưới" })).toBeNull();
   expect(document.querySelector(".xq-room-page")?.className).toContain(
     "is-waiting",
   );

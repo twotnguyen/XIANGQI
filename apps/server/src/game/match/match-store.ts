@@ -216,7 +216,7 @@ export class MatchStore extends MatchUndoStore {
       input.from === input.to
     )
       reject("MATCH_INVALID_INPUT", "Ô cờ không hợp lệ.", 400);
-    const { room, row, side, history, match } = await this.context(
+    const { room, row, side, history, match, proposals } = await this.context(
       scope,
       input,
     );
@@ -272,13 +272,16 @@ export class MatchStore extends MatchUndoStore {
         "Thời gian suy nghĩ đã hết.",
       );
     }
-    const undo = await this.undoSnapshot(scope, { matchId: row.id });
-    if (undo.offers.some((offer) => offer.sender === side))
-      return this.denied(
-        match,
-        "MATCH_UNDO_PENDING",
-        "Hãy rút đề nghị đi lại trước khi đi.",
-      );
+    const hasMyUndo = side === "red" ? proposals.redUndo : proposals.blackUndo;
+    if (hasMyUndo) {
+      const undo = await this.undoSnapshot(scope, { matchId: row.id });
+      if (undo.offers.some((offer) => offer.sender === side))
+        return this.denied(
+          match,
+          "MATCH_UNDO_PENDING",
+          "Hãy rút đề nghị đi lại trước khi đi.",
+        );
+    }
     if (side !== match.turn)
       return this.denied(match, "MATCH_NOT_YOUR_TURN", "Chưa đến lượt bạn.");
     let next: Position;
@@ -386,15 +389,20 @@ export class MatchStore extends MatchUndoStore {
       lastMove,
     });
     if (!outcome) {
-      // Đề nghị hòa còn chờ kết thúc cùng giao dịch với nước đi; phiên bản ván tăng theo từng đề nghị.
-      const afterOffers = await this.closeDrawOffersOnMove(scope, {
-        matchId: row.id,
-      });
-      if (afterOffers) {
-        this.historyCache.delete(row.id);
-        result = afterOffers;
+      if (proposals.hasDraw) {
+        // Đề nghị hòa còn chờ kết thúc cùng giao dịch với nước đi; phiên bản ván tăng theo từng đề nghị.
+        const afterOffers = await this.closeDrawOffersOnMove(scope, {
+          matchId: row.id,
+        });
+        if (afterOffers) {
+          this.historyCache.delete(row.id);
+          result = afterOffers;
+        }
       }
-      if (result.status === "ACTIVE") {
+      if (
+        result.status === "ACTIVE" &&
+        (proposals.redUndo || proposals.blackUndo)
+      ) {
         const afterUndo = await this.closeUndoOffersOnMove(scope, {
           matchId: row.id,
         });

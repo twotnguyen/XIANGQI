@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef } from "react";
 import type { RoomStateSnapshot } from "@xiangqi/shared";
 import "../../../shared/styles/tokens.css";
 import "./MatchResult.css";
@@ -12,7 +12,6 @@ export interface MatchResultProps {
   leaving?: boolean;
   canLeave?: boolean;
   error?: string;
-  rematch?: ReactNode;
 }
 const reasons: Readonly<Record<string, string>> = {
   CHECKMATE: "Chiếu hết",
@@ -49,24 +48,38 @@ export function MatchResult({
   leaving = false,
   canLeave = true,
   error = "",
-  rematch,
 }: MatchResultProps) {
   const id = useId();
   const dialog = useRef<HTMLDialogElement>(null);
   const stay = useRef<HTMLButtonElement>(null);
   const terminal = Boolean(match && match.status !== "ACTIVE");
   const player = role !== "spectator";
+  const autoLeave = kind !== "CUSTOM" && player && terminal && match?.result !== "ABORTED" &&
+    (match?.status === "INTERRUPTED" || match?.result === "SERVER_RESTART" ||
+      (match?.status === "FINISHED" && Boolean(match.winner)));
+  const leaveRef = useRef(onLeave);
+  leaveRef.current = onLeave;
+  const attemptedMatch = useRef<string | null>(null);
+  useEffect(() => {
+    if (!autoLeave || !match || !canLeave || leaving || error || attemptedMatch.current === match.id) return;
+    const timer = window.setTimeout(() => {
+      attemptedMatch.current = match.id;
+      leaveRef.current();
+    }, 5000);
+    return () => window.clearTimeout(timer);
+  }, [autoLeave, match?.id, canLeave, leaving, error]);
   useEffect(() => {
     const element = dialog.current;
     if (!terminal || !player || !element) return;
     const priorFocus = document.activeElement as HTMLElement | null;
     element.showModal();
-    stay.current?.focus();
+    if (autoLeave) element.focus();
+    else stay.current?.focus();
     return () => {
       element.close();
       if (priorFocus?.isConnected) priorFocus.focus();
     };
-  }, [match?.id, terminal, player]);
+  }, [match?.id, terminal, player, autoLeave]);
   if (!match || !terminal) return null;
 
   const aborted = match.result === "ABORTED";
@@ -126,12 +139,13 @@ export function MatchResult({
   return (
     <dialog
       ref={dialog}
+      tabIndex={-1}
       className="xq-ui match-result"
       aria-labelledby={`${id}-title`}
       aria-describedby={`${id}-reason`}
       onCancel={(event) => {
         event.preventDefault();
-        if (!leaving) onStay();
+        if (!leaving && !autoLeave) onStay();
       }}
       onKeyDown={(event) => {
         if (event.key !== "Tab") return;
@@ -153,8 +167,12 @@ export function MatchResult({
     >
       {content}
       {error && <p role="alert">{error}</p>}
-      {rematch}
-      <footer className="match-result__actions">
+      {autoLeave ? (
+        <>
+          {!error && <p role="status">{canLeave ? "Đang đưa bạn về sảnh sau 5 giây." : "Chờ kết nối và quyền điều khiển phòng để về sảnh."}</p>}
+          {error && <button type="button" disabled={!canLeave || leaving} onClick={onLeave}>Thử lại</button>}
+        </>
+      ) : <footer className="match-result__actions">
         <button
           ref={stay}
           type="button"
@@ -179,7 +197,7 @@ export function MatchResult({
         >
           Rời phòng
         </button>
-      </footer>
+      </footer>}
     </dialog>
   );
 }

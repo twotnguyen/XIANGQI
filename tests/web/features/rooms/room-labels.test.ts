@@ -40,7 +40,7 @@ describe("room labels", () => {
     ["ALREADY_SEATED", "Bạn đang ở trong một ván/phòng khác."],
     ["ROOM_FULL", "Phòng đã đầy chỗ xem."],
     ["SEAT_FULL", "Ghế đã đủ hai người chơi."],
-    ["HOST_STAYS", "Chủ phòng không tự chuyển xuống xem."],
+    ["HOST_STAYS", "Cần người chơi khác trước khi chủ phòng xuống xem."],
     ["KICK_DENIED", "Chỉ người chơi được đuổi người xem."],
     ["SEAT_MOVE_DENIED", "Không thể đổi chỗ khi ván đang diễn ra."],
   ])("maps viewer action error %s", (code, message) => {

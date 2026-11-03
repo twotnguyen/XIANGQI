@@ -31,12 +31,14 @@ vi.mock("socket.io-client", () => ({
 const id = "11111111-1111-4111-8111-111111111111";
 const other = "22222222-2222-4222-8222-222222222222";
 const fen = serializePosition(initialPosition());
+// Proof phải đúng định dạng server cấp (43 ký tự base64url) mới qua kiểm tra handshake.
+const cap = "c".repeat(43);
 const peers: Array<ReturnType<typeof connectAi>> = [];
 async function observer(
   getProof = vi.fn().mockResolvedValue({
     kind: "member",
     accessToken: "token",
-    appSession: "cap",
+    appSession: cap,
   }),
   waitForAuth = true,
 ) {
@@ -106,19 +108,19 @@ it("uses an isolated authenticated namespace with one tab identity and fresh han
     .mockResolvedValueOnce({
       kind: "member",
       accessToken: "first",
-      appSession: "cap",
+      appSession: cap,
     })
     .mockResolvedValueOnce({
       kind: "member",
       accessToken: "rotated",
-      appSession: "cap",
+      appSession: cap,
     });
   const f = await observer(proof);
   fixture.auth!(f.done);
   await vi.waitFor(() => expect(f.done).toHaveBeenCalledTimes(2));
   expect(f.done.mock.calls.map((call) => call[0])).toEqual([
-    { accessToken: "first", appSession: "cap", tabId: f.control.tabId },
-    { accessToken: "rotated", appSession: "cap", tabId: f.control.tabId },
+    { accessToken: "first", appSession: cap, tabId: f.control.tabId },
+    { accessToken: "rotated", appSession: cap, tabId: f.control.tabId },
   ]);
 });
 it("waits for this socket's valid control and allows readonly proof for REST reads", async () => {
@@ -218,7 +220,7 @@ it("refreshes with current proof and takeover emits no client authority metadata
   const proof = vi.fn().mockResolvedValue({
     kind: "member",
     accessToken: "first",
-    appSession: "cap",
+    appSession: cap,
   });
   const f = await observer(proof);
   deliver("ai.control", f.control);
@@ -226,13 +228,13 @@ it("refreshes with current proof and takeover emits no client authority metadata
   proof.mockResolvedValue({
     kind: "member",
     accessToken: "renewed",
-    appSession: "cap",
+    appSession: cap,
   });
   await f.peer.refresh();
   deliver("ai.control", f.control);
   await f.peer.takeover();
   expect(fixture.emit.mock.calls.map((call) => call.slice(0, -1))).toEqual([
-    ["ai.refresh", { accessToken: "renewed", appSession: "cap" }],
+    ["ai.refresh", { accessToken: "renewed", appSession: cap }],
     ["ai.takeover"],
   ]);
 });
@@ -258,7 +260,7 @@ it("cancels pending proof and late callbacks on final disconnect", async () => {
     f.onError.mock.calls.length,
     f.onConnection.mock.calls.length,
   ];
-  finish({ kind: "member", accessToken: "late", appSession: "cap" });
+  finish({ kind: "member", accessToken: "late", appSession: cap });
   await Promise.resolve();
   deliver("connect");
   deliver("ai.control", f.control);
@@ -358,7 +360,7 @@ it("rejects a takeover whose authority is revoked before the takeover is emitted
 });
 
 it("authorizes an AI socket with the guest capability and no member token", async () => {
-  const guestCapability = "guest-capability-synthetic-0123456789abcdefghijk";
+  const guestCapability = "g".repeat(43);
   connectAi({
     getProof: async () => ({ kind: "guest", guestCapability }),
     onControl: vi.fn(),
@@ -376,12 +378,35 @@ it("authorizes an AI socket with the guest capability and no member token", asyn
   expect(payload).not.toHaveProperty("appSession");
 });
 
+it("refuses a malformed session proof before the handshake, like the room sockets", async () => {
+  const onError = vi.fn();
+  connectAi({
+    getProof: async () => ({
+      kind: "member",
+      accessToken: "token",
+      appSession: "short",
+    }),
+    onControl: vi.fn(),
+    onSnapshot: vi.fn(),
+    onConnection: vi.fn(),
+    onError,
+  });
+  const done = vi.fn();
+  fixture.auth!(done);
+  await vi.waitFor(() =>
+    expect(onError).toHaveBeenCalledWith(
+      "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+    ),
+  );
+  expect(done).not.toHaveBeenCalled();
+});
+
 it("keeps a control request made before the first handshake until the server grants control", async () => {
   const peer = connectAi({
     getProof: vi.fn().mockResolvedValue({
       kind: "member",
       accessToken: "token",
-      appSession: "cap",
+      appSession: cap,
     }),
     onControl: vi.fn(),
     onSnapshot: vi.fn(),

@@ -117,11 +117,11 @@ Không thêm yêu cầu mật khẩu có chữ hoa/số/ký tự đặc biệt h
 - OAuth bị hủy/lỗi không được báo đã đăng nhập hoặc tạo tài khoản hoàn tất giả.
 - Hai luồng đổi/reset mật khẩu chỉ đổi mật khẩu ứng dụng; không thay mật khẩu Google hoặc vô hiệu phương thức Google hợp lệ.
 
-## 6. Đăng nhập username/mật khẩu
+## 6. Đăng nhập bằng mật khẩu
 
-- Chỉ nhận username làm tên đăng nhập, không dùng Display Name/email. So username không phân biệt hoa thường; mật khẩu giữ nguyên.
-- Sai username hoặc mật khẩu đều báo “Sai tên đăng nhập hoặc mật khẩu”; không trả email hay trạng thái tồn tại qua endpoint đăng nhập.
-- Đếm sai theo username chuẩn hóa chữ thường, cả tên không tồn tại. Sai 5 lần trong 15 phút → khóa đăng nhập mật khẩu 15 phút từ lần thứ năm.
+- Nhận username hoặc email liên hệ đã xác minh, không dùng Display Name, email đang chờ hay email kỹ thuật. So định danh không phân biệt hoa thường; mật khẩu giữ nguyên.
+- Sai định danh hoặc mật khẩu đều báo “Sai tên đăng nhập hoặc mật khẩu”; không trả email hay trạng thái tồn tại qua endpoint đăng nhập.
+- Username và email xác minh cùng tài khoản dùng chung bộ đếm username chuẩn hóa; định danh không tồn tại vẫn có bộ đếm riêng. Sai 5 lần trong 15 phút → khóa đăng nhập mật khẩu 15 phút từ lần thứ năm.
 - Đang khóa: cả mật khẩu đúng cũng không đăng nhập; báo “Bạn đã thử quá nhiều lần, vui lòng thử lại sau 15 phút”.
 - Mật khẩu đúng sau khi đủ điều kiện đăng nhập thành công reset bộ đếm. Google không bị bộ đếm chặn và thành công Google không xóa bộ đếm.
 - Ghi nhớ đăng nhập mặc định bật: 30 ngày; bỏ chọn: hết khi đóng trình duyệt hoặc sau 12 giờ, tùy mốc nào trước.

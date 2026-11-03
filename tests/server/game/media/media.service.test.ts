@@ -164,6 +164,8 @@ describe.skipIf(!url)("media access", () => {
     expect(
       (decodeJwt(off.token).video as Record<string, unknown>).canPublish,
     ).toBe(false);
+    expect(decodeJwt(on.token).sub).toBe(a.userId);
+    expect(decodeJwt(off.token).sub).not.toBe(a.userId);
     expect(on.stage).toBeNull();
   });
   it("opens the stage room only at ALL and keeps viewers publish-free", async () => {

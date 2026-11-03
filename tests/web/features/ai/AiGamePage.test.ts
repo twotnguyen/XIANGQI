@@ -54,8 +54,9 @@ vi.mock("@web/features/ai/ai-socket-client.js", () => ({
     };
   },
 }));
+const closeAudio = vi.hoisted(() => vi.fn());
 vi.mock("@web/features/rooms/game-audio.js", () => ({
-  createGameAudio: () => ({ unlock: () => undefined }),
+  createGameAudio: () => ({ unlock: () => undefined, close: closeAudio }),
 }));
 
 const id = "11111111-1111-4111-8111-111111111111";
@@ -209,6 +210,12 @@ it("shows the loading status until the first authoritative snapshot arrives", ()
   const pending = deferred<Response>();
   mount(fetchWith(() => pending.promise));
   expect(screen.getByRole("status").textContent).toBe("Đang tải ván với máy…");
+});
+
+it("closes the game audio when the page unmounts", () => {
+  const pending = deferred<Response>();
+  mount(fetchWith(() => pending.promise)).unmount();
+  expect(closeAudio).toHaveBeenCalledTimes(1);
 });
 
 it("shows the server-side undo count from the snapshot", async () => {

@@ -5,7 +5,15 @@ import {
   type NetworkDemoClient,
 } from "./network-demo-client.js";
 import { ROOM_REMOVAL_MESSAGES } from "@xiangqi/shared";
-import type { PublicRoomAuthProof } from "@xiangqi/shared";
+import type {
+  ChatPreview,
+  ChatPreviewRevert,
+  MovePreview,
+  MoveRevert,
+  PublicRoomAuthProof,
+  ReadyPreview,
+  ReadyRevert,
+} from "@xiangqi/shared";
 import { handshakeAuth } from "../../shared/realtime-proof.js";
 import type {
   ClientRealtimeEvents,
@@ -42,10 +50,6 @@ export interface RoomEntry {
   inviteCode?: string;
   notice?: string;
 }
-export type AuthorizedFetch = (
-  path: string,
-  init?: RequestInit,
-) => Promise<Response>;
 
 /**
  * Lớp lỗi xử lý các lỗi yêu cầu HTTP liên quan đến phòng cờ (quyền chủ phòng, đủ người để khóa, phiên hết hạn...).
@@ -87,7 +91,7 @@ export class RoomRequestError extends Error {
   }
 }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-import { getApiBaseUrl } from "../../shared/api.js";
+import { getApiBaseUrl, type AuthorizedFetch } from "../../shared/api.js";
 import { generateUuid } from "../../shared/uuid.js";
 
 function invalidResponse(): never {
@@ -682,6 +686,12 @@ export interface RoomConnectionInput {
   onClosed?: (message: string) => void;
   onChatChanged?: (notice: ChatChanged) => void;
   onDemoCapability?: (enabled: boolean) => void;
+  onMovePreview?: (preview: MovePreview) => void;
+  onMoveRevert?: (revert: MoveRevert) => void;
+  onReadyPreview?: (preview: ReadyPreview) => void;
+  onReadyRevert?: (revert: ReadyRevert) => void;
+  onChatPreview?: (preview: ChatPreview) => void;
+  onChatRevert?: (revert: ChatPreviewRevert) => void;
 }
 
 /**
@@ -825,6 +835,80 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
       );
     }
     input.onSnapshot(parsed);
+  });
+  const isSquare = (value: unknown) =>
+    Number.isInteger(value) &&
+    (value as number) >= 0 &&
+    (value as number) <= 89;
+  socket.on("room.move.preview", (value) => {
+    if (
+      closed ||
+      value?.roomId !== input.roomId ||
+      typeof value.matchId !== "string" ||
+      !Number.isSafeInteger(value.matchVersion) ||
+      !isSquare(value.from) ||
+      !isSquare(value.to)
+    )
+      return;
+    input.onMovePreview?.(value);
+  });
+  socket.on("room.move.revert", (value) => {
+    if (
+      closed ||
+      value?.roomId !== input.roomId ||
+      typeof value.matchId !== "string" ||
+      !Number.isSafeInteger(value.matchVersion)
+    )
+      return;
+    input.onMoveRevert?.(value);
+  });
+  const isSide = (value: unknown) => value === "red" || value === "black";
+  socket.on("room.ready.preview", (value) => {
+    if (
+      closed ||
+      value?.roomId !== input.roomId ||
+      !isSide(value.side) ||
+      typeof value.ready !== "boolean" ||
+      !Number.isSafeInteger(value.version)
+    )
+      return;
+    input.onReadyPreview?.(value);
+  });
+  socket.on("room.ready.revert", (value) => {
+    if (
+      closed ||
+      value?.roomId !== input.roomId ||
+      !isSide(value.side) ||
+      !Number.isSafeInteger(value.version)
+    )
+      return;
+    input.onReadyRevert?.(value);
+  });
+  const isChannel = (value: unknown) =>
+    value === "ROOM_PUBLIC" || value === "PLAYERS_PRIVATE";
+  socket.on("chat.preview", (value) => {
+    if (
+      closed ||
+      value?.roomId !== input.roomId ||
+      !isChannel(value.channel) ||
+      typeof value.commandId !== "string" ||
+      typeof value.senderId !== "string" ||
+      typeof value.content !== "string" ||
+      typeof value.createdAt !== "string" ||
+      typeof value.sender?.displayName !== "string"
+    )
+      return;
+    input.onChatPreview?.(value);
+  });
+  socket.on("chat.preview.revert", (value) => {
+    if (
+      closed ||
+      value?.roomId !== input.roomId ||
+      !isChannel(value.channel) ||
+      typeof value.commandId !== "string"
+    )
+      return;
+    input.onChatRevert?.(value);
   });
   socket.on("room.closed", (notice) => {
     const message = notice?.message;
@@ -1129,5 +1213,87 @@ export function connectRoom(input: RoomConnectionInput): RoomConnection {
       socket.removeAllListeners();
       socket.disconnect();
     },
+  };
+}
+
+/**
+ * Rời phòng mà không cần mở trang phòng (nút "Thoát phòng" ở Sảnh).
+ * Kết nối tạm và snapshot được mở sẵn ngay khi gọi hàm này (lúc hiện hộp xác nhận)
+ * để `leave()` chỉ còn lệnh rời phòng; quyền điều khiển chỉ bị giành khi `leave()`
+ * được gọi và phòng đang mở ở tab khác. Rời giữa ván vẫn được server tính là đầu hàng.
+ */
+export function prepareLeaveFromLobby(
+  client: RoomClient,
+  getProof: () => Promise<PublicRoomAuthProof>,
+  roomId: string,
+  connect: typeof connectRoom = connectRoom,
+  timeoutMs = 10_000,
+): { leave(): Promise<void>; cancel(): void } {
+  let latest: RoomSnapshot | null = null;
+  let wake: (() => void) | null = null;
+  let failure = "";
+  let closedMessage = "";
+  let running: Promise<void> | null = null;
+  const notify = () => wake?.();
+  const connection = connect({
+    roomId,
+    getProof,
+    onSnapshot: (snapshot) => {
+      failure = "";
+      latest = snapshot;
+      notify();
+    },
+    onConnection: (connected) => {
+      if (!connected) latest = null;
+      notify();
+    },
+    onError: (message) => {
+      failure = message;
+      notify();
+    },
+    onClosed: (message) => {
+      closedMessage = message;
+      notify();
+    },
+  });
+  const until = async (ready: () => boolean, deadline: number) => {
+    while (!ready()) {
+      if (closedMessage) throw new Error(closedMessage);
+      const left = deadline - Date.now();
+      if (left <= 0)
+        throw new Error(failure || "Kết nối phòng quá hạn. Vui lòng thử lại.");
+      await new Promise<void>((resolve) => {
+        const timer = setTimeout(resolve, left);
+        wake = () => {
+          clearTimeout(timer);
+          resolve();
+        };
+      });
+      wake = null;
+    }
+  };
+  const writable = () =>
+    (latest as RoomSnapshot | null)?.control.mode === "writable";
+  async function run() {
+    const deadline = Date.now() + timeoutMs;
+    try {
+      await until(() => latest !== null, deadline);
+      if (!writable()) await connection.takeover();
+      await until(writable, deadline);
+      const snapshot = latest as RoomSnapshot | null;
+      if (!snapshot) throw new Error("Chưa có trạng thái phòng.");
+      await client.leave(
+        roomId,
+        snapshot.version,
+        await connection.getControl(),
+      );
+    } finally {
+      connection.close();
+    }
+  }
+  return {
+    cancel: () => connection.close(),
+    // Bấm xác nhận nhiều lần dùng chung một lần chạy, không gửi lệnh trùng.
+    leave: () => (running ??= run()),
   };
 }

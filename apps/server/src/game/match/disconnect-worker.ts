@@ -47,7 +47,7 @@ export async function dueDisconnectMatches(
 /**
  * Xác định người chơi mất kết nối sớm nhất và hạn chót tương ứng trong phòng (chỉ gọi khi đã giữ đủ khóa).
  */
-export async function earliestDisconnect(
+async function earliestDisconnect(
   client: PoolClient,
   roomId: string,
   redId: string,

@@ -7,7 +7,7 @@ import {
   currentAppliedTheme,
   setAppliedTheme,
 } from "../../shared/theme/useTheme.js";
-import type { AuthorizedFetch } from "./profile-client.js";
+import type { AuthorizedFetch } from "../../shared/api.js";
 import { createThemeClient } from "./theme-client.js";
 
 /** Chu kỳ kiểm tra thay đổi chủ đề từ thiết bị khác khi tài khoản đang mở. */

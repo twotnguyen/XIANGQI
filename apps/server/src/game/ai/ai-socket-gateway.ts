@@ -28,6 +28,8 @@ export interface AiSocketAdmission {
   takeover(): Promise<AiSocketControl>;
   watch(gameId: string): Promise<AiSocketSnapshot>;
   read(): Promise<AiSocketSnapshot | null>;
+  /** Ảnh RAM hiện tại của ván đang xem, không chạm SQL; quyền đã được `read` định kỳ kiểm lại. */
+  peek(): Omit<AiSocketSnapshot, "control"> | null;
   close(): Promise<void>;
 }
 export interface AiSocketDependencies {
@@ -268,6 +270,8 @@ export function attachAiSocketGateway(
     ended: boolean;
     epoch: number;
     polling: boolean;
+    /** `id:version` snapshot cuối đã phát, để vòng đẩy nhanh chỉ phát khi RAM đổi. */
+    sent?: string;
     closed?: Promise<void>;
   };
   const peers = new Set<Peer>(),
@@ -335,6 +339,7 @@ export function attachAiSocketGateway(
       generation: value.control.generation,
       gameId: value.snapshot.id,
     });
+    peer.sent = `${value.snapshot.id}:${value.snapshot.version}`;
     peer.socket.emit("ai.snapshot", value);
   }
   function enqueue(
@@ -485,13 +490,41 @@ export function attachAiSocketGateway(
         }
       });
     }
-  }, 1000);
+    // Chỉ kiểm lại quyền/lease (mỗi lượt giữ khóa actor nhiều round trip); thay đổi ván đi qua vòng RAM 100ms.
+  }, 5000);
   timer.unref();
+  // Ván đổi trong RAM (máy vừa đi) được đẩy ngay, không chờ vòng đọc SQL.
+  const fast = setInterval(() => {
+    for (const peer of peers) {
+      if (!peer.state || !alive(peer, peer.epoch)) continue;
+      const value = peer.port!.peek();
+      if (
+        !value ||
+        `${value.snapshot.id}:${value.snapshot.version}` === peer.sent
+      )
+        continue;
+      if (value.snapshot.id !== peer.state.gameId) continue;
+      try {
+        publish(peer, {
+          ...value,
+          control: {
+            mode: peer.state.mode,
+            reason: peer.state.mode === "readonly" ? "other_tab" : null,
+            generation: peer.state.generation,
+          },
+        });
+      } catch {
+        /* Vòng đọc SQL kế tiếp xử lý lỗi. */
+      }
+    }
+  }, 100);
+  fast.unref();
   return {
     close(): Promise<void> {
       if (closing) return closing;
       stopping = true;
       clearInterval(timer);
+      clearInterval(fast);
       namespace.disconnectSockets(true);
       io.engine.close();
       events.forEach((event, index) =>

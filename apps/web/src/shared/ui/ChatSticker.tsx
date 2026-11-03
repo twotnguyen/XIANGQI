@@ -29,7 +29,7 @@ export function ChatContent({ content }: { content: string }) {
 export function StickerPicker({ disabled, label, onSelect }: { disabled: boolean; label: string; onSelect: (content: string) => void }) {
   const [open, setOpen] = useState(false);
   return <div className="xq-chat-sticker">
-    <button type="button" disabled={disabled} aria-expanded={open} aria-label={`Sticker ${label}`} onClick={() => setOpen(!open)}>Sticker</button>
+    <button type="button" disabled={disabled} aria-expanded={open} aria-label={`Sticker ${label}`} onClick={() => setOpen(!open)}><span>Sticker</span><svg className="xq-chat-sticker__face" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8 10h.01M16 10h.01M8 14c1 2 3 3 4 3s3-1 4-3" /></svg></button>
     {open && <div className="xq-chat-sticker__picker" role="group" aria-label="Chọn sticker">
       {CHAT_STICKERS.map((sticker) => <button type="button" key={sticker.code} disabled={disabled} aria-label={sticker.label} onClick={() => { setOpen(false); onSelect(`:${sticker.code.replaceAll(":", "")}:`); }}><StickerImage {...sticker} /></button>)}
       <button type="button" onClick={() => setOpen(false)}>Đóng</button>

@@ -12,7 +12,7 @@ import {
   type MatchStartPort,
 } from "./room.types.js";
 import { CommandLimiter, type RoomCommandKind } from "./command-limiter.js";
-export const alphabet = "0123456789";
+const alphabet = "0123456789";
 export const uuid =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** Chờ 10 giây sau Từ chối/hết hạn (lời mời ghế theo Host–phòng, Xin ngồi theo người xem), tính từ mốc server. */

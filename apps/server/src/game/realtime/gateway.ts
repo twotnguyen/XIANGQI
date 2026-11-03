@@ -1,11 +1,14 @@
 import type { Server as HttpServer } from "node:http";
 import { randomUUID } from "node:crypto";
+import { parsePosition, playMove } from "@xiangqi/xiangqi-core";
 import { Server, type Socket } from "socket.io";
 import type {
   ClientRealtimeEvents,
   ServerRealtimeEvents,
   RoomSnapshot,
   ChatChannel,
+  MovePreview,
+  ReadyPreview,
   RoomClosedMessage,
 } from "@xiangqi/shared";
 import { bindRoomChat, type RoomChatGateway } from "../chat/chat-gateway.js";
@@ -74,6 +77,7 @@ export function attachRealtime(
     initialSnapshot?: RoomSnapshot;
     version: number;
     generation: number;
+    latest?: RoomSnapshot;
     disconnect: () => Promise<void>;
   };
   const io = new Server<ClientRealtimeEvents, ServerRealtimeEvents>(
@@ -167,7 +171,136 @@ export function attachRealtime(
       return false;
     peer.version = snapshot.version;
     peer.generation = snapshot.control.generation;
+    peer.latest = snapshot;
     return true;
+  }
+  /**
+   * Kiểm quyền/lượt/phiên bản/luật bằng snapshot gần nhất đã giao cho chính người đi, rồi báo ngay cho các tab khác trong phòng.
+   * Bất kỳ điều kiện nào không khớp thì không phát; server vẫn kiểm lại đầy đủ trong giao dịch.
+   */
+  function previewMove(peer: Peer, input: unknown): MovePreview | null {
+    const s = peer.latest;
+    let command;
+    try {
+      command = parseCommand(input);
+    } catch {
+      return null;
+    }
+    if (command.action.type !== "match.move" || !s?.match) return null;
+    const { matchId, matchVersion, from, to } = command.action.payload;
+    if (
+      command.roomId !== s.roomId ||
+      command.expectedVersion !== s.version ||
+      matchId !== s.match.id ||
+      matchVersion !== s.match.version ||
+      s.match.status !== "ACTIVE" ||
+      s.room.status !== "PLAYING" ||
+      s.control.mode !== "writable" ||
+      s.role !== s.match.turn
+    )
+      return null;
+    try {
+      playMove(parsePosition(s.match.position), { from, to });
+    } catch {
+      return null;
+    }
+    const preview = { roomId: s.roomId, matchId, matchVersion, from, to };
+    toOthers(peer, s.roomId, (other) =>
+      other.socket.emit("room.move.preview", preview),
+    );
+    return preview;
+  }
+  function revertMove(peer: Peer, preview: MovePreview) {
+    const revert = {
+      roomId: preview.roomId,
+      matchId: preview.matchId,
+      matchVersion: preview.matchVersion,
+    };
+    toOthers(peer, preview.roomId, (other) =>
+      other.socket.emit("room.move.revert", revert),
+    );
+  }
+  /** Sẵn sàng của người không phải chủ phòng khi phòng đang chờ; server vẫn kiểm lại trong giao dịch. */
+  function previewReady(peer: Peer, input: unknown): ReadyPreview | null {
+    const s = peer.latest;
+    let command;
+    try {
+      command = parseCommand(input);
+    } catch {
+      return null;
+    }
+    if (command.action.type !== "room.ready" || !s) return null;
+    if (
+      command.roomId !== s.roomId ||
+      command.expectedVersion !== s.version ||
+      s.room.status !== "WAITING" ||
+      s.room.countdown ||
+      s.control.mode !== "writable" ||
+      (s.role !== "red" && s.role !== "black") ||
+      s.room.hostId === peer.connection.identity.userId
+    )
+      return null;
+    const preview = {
+      roomId: s.roomId,
+      side: s.role,
+      ready: command.action.payload.ready,
+      version: s.version,
+    };
+    toOthers(peer, s.roomId, (other) =>
+      other.socket.emit("room.ready.preview", preview),
+    );
+    return preview;
+  }
+  function revertReady(peer: Peer, preview: ReadyPreview) {
+    const revert = {
+      roomId: preview.roomId,
+      side: preview.side,
+      version: preview.version,
+    };
+    toOthers(peer, preview.roomId, (other) =>
+      other.socket.emit("room.ready.revert", revert),
+    );
+  }
+  /** Xem trước chỉ là phần thêm: lỗi bất kỳ ở đây không được ảnh hưởng lệnh thật. */
+  function safely<T>(run: () => T): T | null {
+    try {
+      return run();
+    } catch {
+      return null;
+    }
+  }
+  function toOthers(peer: Peer, roomId: string, send: (other: Peer) => void) {
+    for (const other of peers.values())
+      if (
+        other !== peer &&
+        other.socket.connected &&
+        other.connection.roomId === roomId
+      )
+        send(other);
+  }
+  const isPlayer = (peer: Peer) =>
+    peer.latest?.role === "red" || peer.latest?.role === "black";
+  /** Danh tính hiển thị của người gửi theo snapshot gần nhất đã giao cho chính socket này. */
+  function selfOf(peer: Peer) {
+    const s = peer.latest;
+    if (!s) return null;
+    const userId = peer.connection.identity.userId;
+    const seated =
+      s.role === "spectator" ? undefined : s.room.seatPlayers?.[s.role];
+    const viewer =
+      s.role === "spectator"
+        ? s.room.spectators.find((v) => v.userId === userId)
+        : undefined;
+    const named = seated ?? viewer;
+    return named
+      ? {
+          roomId: s.roomId,
+          userId,
+          role: s.role,
+          displayName: named.displayName,
+          isGuest: Boolean(named.guest),
+        }
+      : null;
   }
   function sendSnapshot(peer: Peer, snapshot: RoomSnapshot) {
     if (recordDelivered(peer, snapshot))
@@ -480,6 +613,19 @@ export function attachRealtime(
         changed: publishChat,
         stopping: () => stopping,
         track,
+        preview: {
+          self: () => selfOf(peer),
+          send: (channel, preview) =>
+            toOthers(peer, preview.roomId, (other) => {
+              if (channel === "ROOM_PUBLIC" || isPlayer(other))
+                other.socket.emit("chat.preview", preview);
+            }),
+          revert: (channel, revert) =>
+            toOthers(peer, revert.roomId, (other) => {
+              if (channel === "ROOM_PUBLIC" || isPlayer(other))
+                other.socket.emit("chat.preview.revert", revert);
+            }),
+        },
       });
     socket.on("disconnect", () => {
       peers.delete(socket.id);
@@ -491,6 +637,9 @@ export function attachRealtime(
         acknowledge(errorAcknowledgement(publicationFailure()));
         return;
       }
+      // Hiển thị tạm cho đối thủ ngay, không chờ database; trạng thái chính thức vẫn chỉ sau commit.
+      const preview = safely(() => previewMove(peer, input));
+      const ready = safely(() => previewReady(peer, input));
       void track(async () => {
         let response;
         try {
@@ -505,6 +654,10 @@ export function attachRealtime(
         // The command transaction has committed; publication is an independent
         // side effect and must not delay delivery of its durable receipt.
         acknowledge(response);
+        if (response.status === "error") {
+          if (preview) revertMove(peer, preview);
+          if (ready) revertReady(peer, ready);
+        }
         if (response.snapshot && !stopping) {
           // The ack delivered this snapshot to the origin; recording it lets the
           // version floor skip the origin, while other recipients are re-read.

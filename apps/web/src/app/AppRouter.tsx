@@ -46,6 +46,7 @@ import { FriendsPresence } from "../features/friends/FriendsPresence.js";
 import { RoomFriendInvite } from "../features/friends/RoomFriendInvite.js";
 import {
   createRoomClient,
+  prepareLeaveFromLobby,
   type RoomClient,
   type RoomEntry,
 } from "../features/rooms/room-client.js";
@@ -65,7 +66,10 @@ import {
   type Route,
 } from "../shared/navigation/routes.js";
 import { makeHistoryClient } from "../features/history/history-client.js";
-import { useMatchmaking, MatchmakingModal } from "../features/matchmaking/index.js";
+import {
+  useMatchmaking,
+  MatchmakingModal,
+} from "../features/matchmaking/index.js";
 
 // Keep non-current feature graphs out of the session/lobby bootstrap.
 const LoginPage = lazy(() =>
@@ -348,7 +352,11 @@ function Lobby({
         onJoinCode={(code) =>
           navigate(`/rooms/join?token=${encodeURIComponent(code)}`)
         }
-        onPlayAI={() => setAiDialog(true)}
+        onPlayAI={() => {
+          // Tải sẵn chunk trang ván trong lúc người chơi chọn cấp độ.
+          void import("../features/ai/AiGamePage.js").catch(() => undefined);
+          setAiDialog(true);
+        }}
         onMatchmaking={onMatchmaking}
         guest={sessionState.status === "guest"}
         admissionReady={admissionReady}
@@ -358,7 +366,12 @@ function Lobby({
         onRetry={() => setAttempt((value) => value + 1)}
       />
       {dialog && (
-        <Dialog open onClose={() => setDialog(false)} title="Tạo phòng">
+        <Dialog
+          open
+          onClose={() => setDialog(false)}
+          title="Tạo phòng"
+          className="xq-create-room-dialog"
+        >
           <Suspense fallback={<p role="status">Đang tải biểu mẫu…</p>}>
             <CreateRoomForm
               allowUnlimited={sessionState.status === "active-member"}
@@ -450,7 +463,10 @@ export function AppRouter() {
       : null;
   const currentIdentity = useRef(identity);
   const [ratingRevision, setRatingRevision] = useState(0);
-  const refreshRating = useCallback(() => setRatingRevision((value) => value + 1), []);
+  const refreshRating = useCallback(
+    () => setRatingRevision((value) => value + 1),
+    [],
+  );
   const matchmaking = useMatchmaking({
     userId: identity,
     getProof: session.getRealtimeProof,
@@ -495,6 +511,9 @@ export function AppRouter() {
     owner: string;
     gameId: string;
   } | null>(null);
+  /** Thao tác banner đang chạy nền (nút hiện trạng thái xử lý ngay khi bấm xác nhận). */
+  const [busyAction, setBusyAction] = useState<"ai" | "room" | null>(null);
+  const [locationRevision, setLocationRevision] = useState(0);
   const profileName =
     storedProfileName?.userId === memberId
       ? storedProfileName.displayName
@@ -538,7 +557,14 @@ export function AppRouter() {
     navigate(`/rooms/${entry.roomId}`);
   };
   const [location, setLocation] = useState(getLocation);
-  useEffect(() => { matchmaking.sync(); }, [location.pathname, matchmaking.sync]);
+  useEffect(() => {
+    matchmaking.sync();
+  }, [location.pathname, matchmaking.sync]);
+  const leavePlan = useRef<{ cancel(): void } | null>(null);
+  useEffect(() => () => {
+    leavePlan.current?.cancel();
+    leavePlan.current = null;
+  }, [identity]);
   const pending = useRef<string | null>(getAuthDestination());
   const [googleFlow, setGoogleFlow] = useState(0);
   const container = useRef<HTMLDivElement>(null);
@@ -654,24 +680,27 @@ export function AppRouter() {
     if (!memberId) return;
     const lookup = ++locationLookup.current;
     let alive = true;
-    queueMicrotask(() => {
-      if (!alive) return;
+    let inFlight = false;
+    const refresh = () => {
+      if (!alive || inFlight) return;
+      inFlight = true;
       void profileClient.location().then(
         (value) => {
-          if (
-            alive &&
-            locationLookup.current === lookup &&
-            currentIdentity.current === identity
-          )
+          if (alive && locationLookup.current === lookup && currentIdentity.current === identity)
             setWhere({ userId: memberId, value });
         },
         () => undefined,
-      );
-    });
+      ).finally(() => { inFlight = false; });
+    };
+    queueMicrotask(refresh);
+    const timer = route.name === "lobby" && busyAction !== "room"
+      ? window.setInterval(refresh, 2000)
+      : null;
     return () => {
       alive = false;
+      if (timer !== null) window.clearInterval(timer);
     };
-  }, [profileClient, memberId, identity, location.pathname]);
+  }, [profileClient, memberId, identity, location.pathname, route.name, busyAction, locationRevision]);
   useEffect(() => {
     if (session.state.status !== "guest" || !identity || route.name !== "lobby")
       return;
@@ -691,7 +720,9 @@ export function AppRouter() {
           lookup === locationLookup.current &&
           currentIdentity.current === identity
         )
-          setGuestAi(result.gameId ? { owner: identity, gameId: result.gameId } : null);
+          setGuestAi(
+            result.gameId ? { owner: identity, gameId: result.gameId } : null,
+          );
       })
       .catch(() => undefined);
     return () => {
@@ -815,7 +846,12 @@ export function AppRouter() {
         onMatchmaking={matchmaking.join}
         performLogout={performSessionLogout}
         blockedReason={
-          (where && where.kind !== "none") || matchmaking.state?.occupiedElsewhere || (matchmaking.state && ["SEARCHING", "CONFIRMING", "WAITING", "COUNTDOWN"].includes(matchmaking.state.status))
+          (where && where.kind !== "none") ||
+          matchmaking.state?.occupiedElsewhere ||
+          (matchmaking.state &&
+            ["SEARCHING", "CONFIRMING", "WAITING", "COUNTDOWN"].includes(
+              matchmaking.state.status,
+            ))
             ? "Bạn đang ở trong một ván/phòng khác."
             : undefined
         }
@@ -823,7 +859,7 @@ export function AppRouter() {
           where && where.kind !== "none" ? (
             <section className="xq-rejoin-banner" role="status">
               <p>
-                Bạn có ván đang chơi dở.{" "}
+                {where.kind === "waiting" ? "Bạn đang ở trong phòng. " : "Bạn có ván đang chơi dở. "}
                 <NavigationLink
                   href={
                     where.kind === "playing-ai" && where.matchId
@@ -837,11 +873,43 @@ export function AppRouter() {
               {where.kind === "playing-ai" && where.matchId && identity && (
                 <Button
                   variant="danger"
+                  loading={busyAction === "ai"}
                   onClick={() =>
                     setAbandonAi({ owner: identity, gameId: where.matchId! })
                   }
                 >
                   Bỏ ván
+                </Button>
+              )}
+              {where.kind !== "playing-ai" && where.roomId && identity && (
+                <Button
+                  variant="danger"
+                  loading={busyAction === "room"}
+                  onClick={() => {
+                    if (leavePlan.current || !where.roomId) return;
+                    const owner = identity;
+                    const plan = prepareLeaveFromLobby(client, session.getRealtimeProof, where.roomId);
+                    leavePlan.current = plan;
+                    setBusyAction("room");
+                    void plan.leave().then(() => {
+                      if (currentIdentity.current !== owner) return;
+                      locationLookup.current++;
+                      setWhere(null);
+                      setRoomNotice("");
+                      matchmaking.sync();
+                    }).catch(() => {
+                      if (currentIdentity.current === owner)
+                        setRoomNotice("Chưa thể thoát phòng. Vui lòng thử lại.");
+                    }).finally(() => {
+                      if (leavePlan.current === plan) leavePlan.current = null;
+                      if (currentIdentity.current === owner) {
+                        setBusyAction(null);
+                        setLocationRevision((value) => value + 1);
+                      }
+                    });
+                  }}
+                >
+                  {where.kind === "playing-online" ? "Đầu hàng và thoát phòng" : "Thoát phòng"}
                 </Button>
               )}
             </section>
@@ -860,7 +928,12 @@ export function AppRouter() {
         authorizedFetch={session.authorizedFetch}
         client={profileClient}
         guest={session.state.status === "guest"}
-        ratingSummary={<SelfRating authorizedFetch={session.authorizedFetch} guest={session.state.status === "guest"} />}
+        ratingSummary={
+          <SelfRating
+            authorizedFetch={session.authorizedFetch}
+            guest={session.state.status === "guest"}
+          />
+        }
         onSaved={(displayName) => {
           if (memberId && currentIdentity.current === identity) {
             profileLookup.current++;
@@ -891,7 +964,12 @@ export function AppRouter() {
         rooms={client}
         onEntered={enterRoom}
         blockedReason={
-          (where && where.kind !== "none") || matchmaking.state?.occupiedElsewhere || (matchmaking.state && ["SEARCHING", "CONFIRMING", "WAITING", "COUNTDOWN"].includes(matchmaking.state.status))
+          (where && where.kind !== "none") ||
+          matchmaking.state?.occupiedElsewhere ||
+          (matchmaking.state &&
+            ["SEARCHING", "CONFIRMING", "WAITING", "COUNTDOWN"].includes(
+              matchmaking.state.status,
+            ))
             ? "Bạn đang ở trong một ván/phòng khác."
             : undefined
         }
@@ -939,7 +1017,9 @@ export function AppRouter() {
       <RankingsPage
         authorizedFetch={session.authorizedFetch}
         guest={session.state.status === "guest"}
-        onMessage={(userId) => navigate(`/friends?message=${encodeURIComponent(userId)}`)}
+        onMessage={(userId) =>
+          navigate(`/friends?message=${encodeURIComponent(userId)}`)
+        }
       />
     );
   else if (route.name === "room" && actor)
@@ -1016,8 +1096,13 @@ export function AppRouter() {
         <AppShell
           title={title}
           active={location.pathname}
-          authorizedFetch={session.state.status === "active-member" ? session.authorizedFetch : undefined}
+          authorizedFetch={
+            session.state.status === "active-member"
+              ? session.authorizedFetch
+              : undefined
+          }
           ratingRevision={ratingRevision}
+          ratingUserId={memberId}
           user={shellUser}
           bell={
             session.state.status === "active-member" ? (
@@ -1027,6 +1112,7 @@ export function AppRouter() {
                   <DirectChatHub
                     client={friendClient}
                     userId={session.state.userId}
+                    floating={route.name === "lobby"}
                   />
                 </Suspense>
               </Fragment>
@@ -1051,7 +1137,7 @@ export function AppRouter() {
       ) : (
         page
       )}
-      {abandonAi && abandonAi.owner === identity && (
+      {abandonAi && abandonAi.owner === identity && busyAction !== "ai" && (
         <Dialog
           open
           danger
@@ -1060,6 +1146,7 @@ export function AppRouter() {
           confirmLabel="Bỏ ván"
           onClose={() => setAbandonAi(null)}
           onConfirm={() => {
+            setBusyAction("ai");
             const gate = abandonAi;
             void import("../features/ai/AiGamePage.js")
               .then(async ({ resignActiveAiGame }) => {
@@ -1067,6 +1154,7 @@ export function AppRouter() {
                   currentIdentity.current !== gate.owner ||
                   currentAiGame.current !== gate.gameId
                 ) {
+                  setBusyAction(null);
                   setAbandonAi(null);
                   return;
                 }
@@ -1084,9 +1172,12 @@ export function AppRouter() {
                 setWhere(null);
                 setGuestAi(null);
                 setAbandonAi(null);
+                setBusyAction(null);
+                matchmaking.sync();
               })
               .catch(() => {
                 if (currentIdentity.current !== gate.owner) return;
+                setBusyAction(null);
                 setAbandonAi(null);
                 setRoomNotice(
                   "Chưa thể đầu hàng ván đang chơi. Vui lòng thử lại.",

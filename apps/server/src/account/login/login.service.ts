@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { performance } from "node:perf_hooks";
 import { setTimeout } from "node:timers/promises";
 import { RegistrationError, type Session } from "../auth/registration.types.js";
@@ -129,17 +129,42 @@ export class LoginService {
     } = input as Record<string, unknown>;
     if (
       typeof username !== "string" ||
-      !/^[A-Za-z0-9_]{3,20}$/.test(username) ||
       typeof password !== "string" ||
       !password ||
       typeof remember !== "boolean"
     )
       throw invalidLogin();
-    const key = username.toLowerCase();
+    const identifier = username.trim().toLowerCase();
+    const email = identifier.includes("@");
+    if (
+      email
+        ? identifier.length > 254 ||
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)
+        : !/^[a-z0-9_]{3,20}$/.test(identifier) ||
+          identifier !== username.toLowerCase()
+    )
+      throw invalidLogin();
+    const resolved = email
+      ? await this.store.accountByVerifiedEmail(identifier)
+      : null;
+    const key = email
+      ? (resolved?.username.toLowerCase() ??
+        `email:${createHash("sha256").update(identifier).digest("hex")}`)
+      : identifier;
     return this.serialized(key, () =>
       this.withResponseFloor(() =>
         this.store.withUsernameLock(key, async (store) => {
-          const account = await store.accountByUsername(key);
+          const account = email
+            ? resolved && (await store.accountByVerifiedEmail(identifier))
+            : await store.accountByUsername(key);
+          if (
+            email &&
+            resolved &&
+            (!account ||
+              account.userId !== resolved.userId ||
+              account.username.toLowerCase() !== key)
+          )
+            throw unavailable();
           const provider = await this.passwordAttempt(
             key,
             account?.active ? account : null,

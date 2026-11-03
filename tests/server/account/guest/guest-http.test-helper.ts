@@ -24,7 +24,7 @@ interface Row {
 export type Seat =
   { kind: "room"; roomId: string } | { kind: "ai"; matchId: string };
 
-export class MemoryGuestStore {
+class MemoryGuestStore {
   readonly rows = new Map<string, Row>();
   insertFailure: Error | undefined;
   transaction<T>(work: (c: PoolClient) => Promise<T>): Promise<T> {
@@ -58,7 +58,7 @@ export class MemoryGuestStore {
   }
 }
 
-export class MemoryRooms implements GuestRoomPort {
+class MemoryRooms implements GuestRoomPort {
   readonly seats = new Map<string, Seat>();
   // Ván online đang diễn ra: logout phải xác nhận đầu hàng.
   readonly liveGames = new Set<string>();

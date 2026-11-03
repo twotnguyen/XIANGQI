@@ -1,7 +1,7 @@
 /** Cookie HttpOnly giữ capability Khách; server quyết định hạn thật, cookie chỉ là bản sao để khôi phục. */
-export const GUEST_COOKIE = "xiangqi_guest";
+const GUEST_COOKIE = "xiangqi_guest";
 /** Max-Age của cookie: dài hơn hạn server 12 giờ để ván đang ngồi (deferred) vẫn khôi phục được. */
-export const GUEST_COOKIE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60;
+const GUEST_COOKIE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60;
 
 const CAPABILITY = /^[A-Za-z0-9_-]{43}$/;
 const COOKIE_NAME = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;

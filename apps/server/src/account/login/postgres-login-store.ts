@@ -112,6 +112,21 @@ export class PostgresLoginStore implements LoginStore {
       ).rows[0] ?? null
     );
   }
+  async accountByVerifiedEmail(email: string): Promise<LoginAccount | null> {
+    return (
+      (
+        await this.query(
+          `${accountSelect}
+           JOIN xiangqi_auth.account_origins o ON o.user_id=u.id AND o.email_key=$1
+           LEFT JOIN xiangqi_auth.username_accounts c ON c.user_id=u.id
+           WHERE CASE WHEN c.user_id IS NOT NULL THEN c.verified_at IS NOT NULL AND c.email=$1
+             ELSE u.email_confirmed_at IS NOT NULL AND lower(u.email)=$1
+               AND u.email NOT LIKE '%.xiangqi.invalid' END`,
+          [email],
+        )
+      ).rows[0] ?? null
+    );
+  }
   async accountById(userId: string): Promise<LoginAccount | null> {
     return (
       (await this.query(`${accountSelect} WHERE u.id=$1`, [userId])).rows[0] ??

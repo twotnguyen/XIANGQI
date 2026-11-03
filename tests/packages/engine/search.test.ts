@@ -68,7 +68,7 @@ it("uses the three exact half-ply targets and budgets", () => {
   expect(ENGINE_LIMITS).toEqual({
     easy: { depth: 2, milliseconds: 300 },
     medium: { depth: 4, milliseconds: 1000 },
-    hard: { depth: 6, milliseconds: 3000 },
+    hard: { depth: 6, milliseconds: 2000 },
   });
 });
 it("selects a mate-in-one with an independently verified terminal oracle", () => {

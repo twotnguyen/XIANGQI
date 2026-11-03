@@ -171,3 +171,14 @@ test.each(["SEARCHING", "CONFIRMING"])("offline %s can be dismissed without losi
   expect(hook.result.current.state?.status).toBe(status);
   hook.unmount();
 });
+
+test("closes the match sound AudioContext on unmount", () => {
+  const close = vi.fn(async () => {});
+  vi.stubGlobal("AudioContext", class { resume = async () => {}; close = close; });
+  try {
+    const hook = setup(); connect(); ack(state);
+    act(() => hook.result.current.join("CASUAL"));
+    hook.unmount();
+    expect(close).toHaveBeenCalledTimes(1);
+  } finally { vi.unstubAllGlobals(); }
+});

@@ -1,4 +1,57 @@
-# Database đăng ký email — XIAN-40
+# Database XIANGQI
+
+Thư mục này chứa toàn bộ schema PostgreSQL của dự án dưới dạng SQL:
+
+| Thư mục/file | Vai trò |
+|---|---|
+| `baseline/20260913_legacy_public.sql` | Schema xuất phát (19 bảng `public`, chỉ cấu trúc); điểm bắt đầu khi dựng database trống. Xem [baseline/README.md](baseline/README.md) |
+| `migrations/` | Các bước nâng cấp schema; áp theo thứ tự tên file |
+| `rollback/` | Bản hoàn tác của từng migration; tự từ chối khi có thể làm mất dữ liệu |
+| `rebuild.sh` | Dựng toàn bộ schema trên database trống (`pnpm db:rebuild`) |
+| `tests/auth-baseline.sql` | Fixture kiểm thử SQL; **không** chạy trên Supabase |
+| `templates/confirm-sign-up.html` | Mẫu email OTP đăng ký cho Supabase Auth |
+| `certs/prod-ca-2021.crt` | CA công khai của Supabase để server xác minh TLS |
+
+## Dựng lại database trống (`pnpm db:rebuild`)
+
+Script áp baseline rồi toàn bộ migration theo thứ tự tên file, sau đó in số bảng của từng schema. Script **không xóa gì**: nếu database đã có bảng của dự án (`public.profiles` hoặc schema `xiangqi_auth`), nó dừng ngay. Cần `psql` (PostgreSQL client); đặt `PGBIN` nếu `psql` không có trong `PATH`.
+
+Kết quả mong đợi: 7 schema với `public` 19 bảng, `xiangqi_auth` 20, `xiangqi_room` 15, `xiangqi_social` 9, `xiangqi_chat` 6, `xiangqi_ai` 4, `xiangqi_realtime` 3. Database dựng xong **không có dữ liệu mẫu**.
+
+### Trên project Supabase mới
+
+1. Tạo project mới (database trống). Supabase đã có sẵn schema `auth` và các role `postgres`, `anon`, `authenticated`, `service_role`.
+2. Tạo role ứng dụng `app_server` trong **SQL Editor** của project (chạy một lần):
+
+   ```sql
+   CREATE ROLE app_server NOLOGIN NOBYPASSRLS;
+   ```
+
+   Server không đăng nhập bằng `app_server`: nó kết nối bằng `postgres` rồi `SET ROLE app_server` cho từng truy vấn. Migration đầu tiên tự cấp quyền `SET ROLE` này cho `postgres` và cấp quyền bảng cho `app_server`. Vì vậy role chỉ cần `NOLOGIN`, và `NOBYPASSRLS` để mọi truy vấn của ứng dụng vẫn chịu RLS.
+3. Lấy chuỗi kết nối **direct** hoặc **session pooler (cổng 5432)** của user `postgres` ở mục *Connect*. Script từ chối transaction pooler 6543.
+4. Chạy:
+
+   ```sh
+   REBUILD_DATABASE_URL='postgresql://postgres.<project-ref>:<mật-khẩu>@<host>:5432/postgres' pnpm db:rebuild
+   ```
+
+5. Điền `DIRECT_URL` cùng chuỗi kết nối đó vào `.env`, rồi bật các cờ `*_ENABLED` cần dùng (xem [CAU-HINH-MOI-TRUONG.md](../docs/setup/CAU-HINH-MOI-TRUONG.md)).
+
+### Trên PostgreSQL thường (không có Supabase)
+
+Dùng để xem schema, thử SQL hoặc phát triển offline. Thêm `--local-auth` để script tạo bản giả lập `auth.users` và các role từ `tests/server/fixtures/managed-auth.test-fixture.sql`. Cần kết nối bằng superuser, vào một database trống, **không** có schema `auth`:
+
+```sh
+createdb xiangqi_local
+REBUILD_DATABASE_URL='postgresql://localhost:5432/xiangqi_local' pnpm db:rebuild --local-auth
+```
+
+Auth giả lập không đăng ký, gửi OTP hay đăng nhập được. Các luồng tài khoản vẫn cần Supabase Auth thật.
+
+> [!WARNING]
+> Chỉ dùng script cho database **mới**. Với project đang chạy, chỉ áp từng migration mới sau khi review, không chạy lại baseline. Migration `20261019053133_idle_in_transaction_timeout.sql` đặt cấu hình trên role `postgres`, là cấu hình cấp cluster. Vì vậy dựng database thứ hai trong **cùng một cluster** sẽ dừng ở migration này; khi đó hãy dùng một cluster riêng.
+
+## Đăng ký email — XIAN-40
 
 Migration `20261011000001_email_registration.sql` nâng cấp schema đã audit, không tạo lại database. Migration thêm trạng thái hoàn tất trên `profiles`, ledger riêng cho đăng ký đang chờ, chỉ mục username không phân biệt hoa/thường và trigger chặn đổi email. Các profile cũ có username hợp lệ và email đã xác minh được giữ hoạt động; danh tính cũ chưa xác minh không được tự nhận là tài khoản tạm của server để xóa.
 
