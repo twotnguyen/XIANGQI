@@ -118,6 +118,9 @@ export function bindRoomChat(
   socket: Socket<ClientChatEvents>,
   dependencies: RoomChatGateway,
 ) {
+  // Cùng quota server (5 tin/10 giây): preview phát trước DB nên phải tự chặn, không thì spam tràn màn người khác.
+  // shortcut: đếm theo socket, nhiều tab của một người cộng dồn; chuyển sang đếm theo actor nếu thấy lạm dụng nhiều tab.
+  const previews: number[] = [];
   socket.on("chat.read", (input, acknowledge) => {
     if (typeof acknowledge !== "function") return;
     if (dependencies.stopping()) {
@@ -148,10 +151,15 @@ export function bindRoomChat(
     }
     // Hiển thị tạm cho người cùng kênh ngay, không chờ database; tin chính thức vẫn chỉ có sau commit.
     let sent: ChatPreview | null = null;
-    try {
-      sent = previewSend(dependencies.preview, input);
-    } catch {
-      /* Xem trước chỉ là phần thêm; không được ảnh hưởng việc gửi thật. */
+    const now = Date.now();
+    while (previews.length && previews[0]! <= now - 10_000) previews.shift();
+    if (previews.length < 5) {
+      try {
+        sent = previewSend(dependencies.preview, input);
+      } catch {
+        /* Xem trước chỉ là phần thêm; không được ảnh hưởng việc gửi thật. */
+      }
+      if (sent) previews.push(now);
     }
     void dependencies
       .track(async () => {

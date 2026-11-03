@@ -228,4 +228,25 @@ describe("chat tạm qua gateway", () => {
       await f.close();
     }
   });
+
+  it("chỉ báo tạm tối đa 5 tin trong 10 giây, cùng quota gửi tin", async () => {
+    const f = await setup("ok");
+    try {
+      const guest = await f.peer("black"),
+        viewer = await f.peer("spectator");
+      const seen: unknown[] = [];
+      viewer.on("chat.preview", (p) => seen.push(p));
+      f.release();
+      for (let i = 0; i < 7; i++)
+        await guest.emitWithAck(
+          "chat.send",
+          chatInput("ROOM_PUBLIC", `tin ${i}`),
+        );
+      // Ack của viewer đi sau mọi preview đã phát trên cùng socket đó.
+      await viewer.emitWithAck("chat.read", {});
+      expect(seen).toHaveLength(5);
+    } finally {
+      await f.close();
+    }
+  });
 });
