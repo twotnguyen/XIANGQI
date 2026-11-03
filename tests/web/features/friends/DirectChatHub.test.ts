@@ -115,6 +115,8 @@ it("opens a non-modal friend sidebar and a floating conversation in the lobby", 
   render(createElement(DirectChatHub, { client, userId: ME, floating: true }));
   fireEvent.click(await screen.findByRole("button", { name: /Tin nhắn/ }));
   expect(screen.getByRole("complementary", { name: "Danh sách bạn bè" })).toBeTruthy();
+  // Danh sách tải bất đồng bộ: lọc trước khi có dữ liệu chỉ thấy trạng thái đang tải.
+  await screen.findByRole("button", { name: /Nhắn tin với Bạn A/ });
   fireEvent.change(screen.getByRole("textbox", { name: "Tìm kiếm bạn bè" }), { target: { value: "không có" } });
   expect(screen.getByText("Không tìm thấy bạn bè.")).toBeTruthy();
   fireEvent.change(screen.getByRole("textbox", { name: "Tìm kiếm bạn bè" }), { target: { value: "bạn a" } });
