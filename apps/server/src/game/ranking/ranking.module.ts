@@ -5,7 +5,7 @@ import { RoomError } from "../room/room.types.js";
 import { RankingHttpService } from "./ranking-http.service.js";
 
 @Controller("rankings")
-export class RankingController {
+class RankingController {
   constructor(@Inject("RANKING_HTTP_SERVICE") private readonly service: RankingHttpService) {}
   private async respond(work: () => Promise<unknown>) {
     try { return await work(); } catch (error) {

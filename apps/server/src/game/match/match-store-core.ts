@@ -83,7 +83,7 @@ export function validClock(clock: MatchClock): MatchClock {
     runningSinceEpochMs: clock.runningSinceEpochMs,
   };
 }
-export function storedOutcome(value: unknown): MatchOutcome | null {
+function storedOutcome(value: unknown): MatchOutcome | null {
   if (value === null) return null;
   if (
     !record(value) ||
@@ -115,7 +115,7 @@ export function storedOutcome(value: unknown): MatchOutcome | null {
       value.winner === null ? null : value.winner === "RED" ? "red" : "black",
   };
 }
-export function dbOutcome(value: MatchOutcome) {
+function dbOutcome(value: MatchOutcome) {
   return {
     reason: value.reason,
     winner:

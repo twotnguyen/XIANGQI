@@ -33,7 +33,7 @@ import { scopeContext } from "../room/guest-scope.test-helper.js";
 export const loginPool = createLoginPool({
   connectionString: process.env.ROOM_TEST_DATABASE_URL,
 });
-export const coordinator = new RoomTransactions(pool);
+const coordinator = new RoomTransactions(pool);
 const scopes = scopeContext();
 export async function resetExpiry() {
   await pool.query("DROP SCHEMA IF EXISTS xiangqi_chat CASCADE");

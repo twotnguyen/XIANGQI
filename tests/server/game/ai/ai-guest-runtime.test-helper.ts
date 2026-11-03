@@ -18,16 +18,12 @@ import {
   resetBase as reset,
 } from "../game.runtime.test-helper.js";
 import {
-  createGuest,
-  guestCall,
   type GuestBoot,
   type GuestFixture,
   type MemberFixture,
 } from "../guest-runtime.test-helper.js";
 
-export { databaseUrl, pool };
-
-export const AI_ORIGIN = "http://localhost:5173";
+const AI_ORIGIN = "http://localhost:5173";
 
 /** Drops AI-owned schemas (not dropped by the shared reset) and rebuilds the schema with AI tables. */
 export async function resetAiGuestDatabase(): Promise<void> {
@@ -224,8 +220,6 @@ export async function createGuestAiGame(
   const body = (await response.json()) as { snapshot: { id: string } };
   return body.snapshot.id;
 }
-
-export { createGuest, guestCall, type GuestFixture };
 
 export async function countRows(
   table: string,

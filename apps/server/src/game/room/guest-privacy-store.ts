@@ -7,7 +7,7 @@ const GUEST_LABEL = "Khách";
  * Thay tên hiển thị của đúng khách trong cấu trúc JSON (so khớp theo userId, không theo chuỗi).
  * Chỉ đổi nhánh chứa `{userId: guestId, displayName}`; mọi trường khác và người khác giữ nguyên.
  */
-export function redactGuestDisplayName(
+function redactGuestDisplayName(
   value: unknown,
   guestId: string,
 ): { changed: boolean; value: unknown } {

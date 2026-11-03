@@ -45,7 +45,7 @@ export class FriendModule {
   }
 }
 /** Tổng kết nối phải nhỏ hơn pool size của Supabase pooler: 5 chính + 3 đăng nhập + 3 media + 3 bạn bè = 14 < 15. */
-export const SOCIAL_POOL_MAX = 3;
+const SOCIAL_POOL_MAX = 3;
 function createSocialPool(connection: PoolConfig): Pool {
   const pool = new Pool({
     ...connection,

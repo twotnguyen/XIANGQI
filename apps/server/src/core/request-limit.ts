@@ -11,7 +11,7 @@ export interface RequestLimitRule {
   windowMs: number;
 }
 
-export const PUBLIC_POST_RULES: readonly RequestLimitRule[] = [
+const PUBLIC_POST_RULES: readonly RequestLimitRule[] = [
   {
     name: "login",
     matches: (path) => path === "/auth/login",

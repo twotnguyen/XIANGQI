@@ -42,7 +42,7 @@ function fail(message: string): never { throw new RoomError("MATCHMAKING_CONFLIC
 const restart = "Hàng đợi đã bị huỷ, hãy tìm lại";
 function reportFailure() { process.stderr.write(logEvent("error","matchmaking_pair_failed")+"\n"); }
 
-export function parseMatchmakingCommand(value: unknown): MatchmakingCommand {
+function parseMatchmakingCommand(value: unknown): MatchmakingCommand {
   if (!value || typeof value !== "object" || Array.isArray(value)) fail("Lệnh tìm trận không hợp lệ");
   const row = value as Record<string, unknown>;
   if (Object.keys(row).some(key => !["commandId", "type", "mode", "queueId", "offerId", "bootId"].includes(key)) ||

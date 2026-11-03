@@ -163,7 +163,7 @@ export function memberHeaders(m: MemberFixture) {
   };
 }
 
-export function guestHeaders(cap: string) {
+function guestHeaders(cap: string) {
   return {
     "Content-Type": "application/json",
     Authorization: "Guest " + cap,

@@ -20,5 +20,3 @@ export interface ProfileLocation {
   roomId: string | null;
   matchId: string | null;
 }
-export const DISPLAY_NAME_MIN = 2;
-export const DISPLAY_NAME_MAX = 30;

@@ -59,7 +59,7 @@ function date(value: unknown): value is string {
  * Kiểm tra và parse mảng danh sách phòng cờ công khai từ dữ liệu máy chủ.
  * Đảm bảo tính hợp lệ của từng trường (roomId, host, thời gian, số người xem, trạng thái ghế...).
  */
-export function parsePublicRooms(value: unknown): PublicRoomView[] {
+function parsePublicRooms(value: unknown): PublicRoomView[] {
   if (!Array.isArray(value) || value.length > 50) fail();
   const ids = new Set<string>();
   return value.map((item) => {
