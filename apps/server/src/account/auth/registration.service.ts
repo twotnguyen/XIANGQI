@@ -38,6 +38,8 @@ function times(draft: Draft) {
     resendAt: new Date(draft.lastSentAt.getTime() + 60000).toISOString(),
   };
 }
+// shortcut: đếm sai OTP trong bộ nhớ, đúng vì chỉ một runtime chạy (khóa runtime); restart thì đếm lại, cần cột DB khi chạy nhiều instance.
+const OTP_ATTEMPTS = 5;
 /**
  * Dịch vụ xử lý toàn bộ logic nghiệp vụ đăng ký tài khoản:
  * Điều phối xác thực email, kiểm tra trùng lặp thông tin, mã hóa dữ liệu nháp và bảo trì dọn dẹp.
@@ -61,6 +63,7 @@ export class RegistrationService {
         ) => Promise<Session>)
       | null = null,
   ) {}
+  private readonly otpFailures = new Map<string, number>();
   /**
    * Kiểm tra xem username đã tồn tại trong hệ thống chưa (bước 1 luồng đăng ký).
    */
@@ -196,6 +199,7 @@ export class RegistrationService {
         );
       this.checkResend(draft);
       await this.auth.resend(draft.email);
+      this.otpFailures.delete(draft.userId);
       await store.updateSentAt(draft.tokenHash, this.now());
       draft.lastSentAt = this.now();
       return times(draft);
@@ -257,6 +261,15 @@ export class RegistrationService {
             "Mã xác minh cần 6 chữ số",
           );
         if (
+          !account.verified &&
+          (this.otpFailures.get(draft.userId) ?? 0) >= OTP_ATTEMPTS
+        )
+          throw new RegistrationError(
+            "OTP_RATE_LIMIT",
+            "Nhập sai quá nhiều lần, vui lòng gửi lại mã",
+            429,
+          );
+        if (
           account.verified &&
           (typeof input.password !== "string" || input.password.length < 8)
         )
@@ -276,7 +289,23 @@ export class RegistrationService {
                   input.password!,
                 )
               : this.auth.signInPassword(draft.email, input.password!))
-          : await this.auth.verify(draft.email, input.otp);
+          : await this.auth.verify(draft.email, input.otp).catch((error) => {
+              if (
+                error instanceof RegistrationError &&
+                error.code === "OTP_INVALID"
+              ) {
+                // Map giữ thứ tự chèn: vượt trần thì bỏ mục cũ nhất để không phình vô hạn.
+                if (this.otpFailures.size >= 10_000)
+                  this.otpFailures.delete(
+                    this.otpFailures.keys().next().value!,
+                  );
+                this.otpFailures.set(
+                  draft.userId,
+                  (this.otpFailures.get(draft.userId) ?? 0) + 1,
+                );
+              }
+              throw error;
+            });
         if (
           session.user.id !== draft.userId ||
           !session.user.email_confirmed_at ||
@@ -297,6 +326,7 @@ export class RegistrationService {
             deviceToken,
           );
           await store.removeDraft(draft.userId);
+          this.otpFailures.delete(draft.userId);
           await store.removeIntent(draft.email);
         } catch (error) {
           if (

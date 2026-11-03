@@ -719,6 +719,30 @@ describe.skipIf(!url)(
         }),
       ).rejects.toMatchObject({ code: "OTP_INVALID" });
     });
+    it("locks verification after five wrong OTPs until a new code is sent", async () => {
+      const registration = await service.email({
+        ...credentials(),
+        email: email(),
+      });
+      const verify = (otp: string) =>
+        service.verify({
+          registrationToken: registration.registrationToken,
+          otp,
+        });
+      for (let attempt = 0; attempt < 5; attempt++)
+        await expect(verify("654321")).rejects.toMatchObject({
+          code: "OTP_INVALID",
+        });
+      await expect(verify("123456")).rejects.toMatchObject({
+        code: "OTP_RATE_LIMIT",
+        status: 429,
+      });
+      clock = new Date(clock.getTime() + 180001);
+      await service.resend({
+        registrationToken: registration.registrationToken,
+      });
+      expect((await verify("123456")).access_token).toBeTruthy();
+    });
     it("returns username collision to step one before consuming verification", async () => {
       const name = credentials().username;
       const first = await service.email({
