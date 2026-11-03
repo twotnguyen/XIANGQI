@@ -24,7 +24,8 @@
     "test:db:match": "tests/server/db.sh test tests/server/game/match tests/server/game/clock",
     "test:db:realtime": "tests/server/db.sh test tests/server/game/realtime",
     "test:db:chat-media": "tests/server/db.sh test tests/server/game/chat tests/server/game/media",
-    "test:db:ai": "tests/server/db.sh test tests/server/game/ai"
+    "test:db:ai": "tests/server/db.sh test tests/server/game/ai",
+    "db:rebuild": "supabase/rebuild.sh"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
