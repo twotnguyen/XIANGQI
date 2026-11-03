@@ -25,10 +25,17 @@ export async function createCompiledAiEngine(
   const worker = await translate(
     async () => new compiled.EngineWorker(options),
   );
+  // shortcut: một worker chạy lần lượt (FIFO) cho mọi ván AI; nhiều ván cùng nghĩ thì xếp hàng, cần pool worker khi chờ vượt ngân sách 10 giây.
+  let tail: Promise<unknown> = Promise.resolve();
   return {
     ready: () => translate(() => worker.ready()),
-    search: (request, settings) =>
-      translate(() => worker.search(request, settings)),
+    search: (request, settings) => {
+      const run = tail.then(() =>
+        translate(() => worker.search(request, settings)),
+      );
+      tail = run.catch(() => {});
+      return run;
+    },
     close: () => translate(() => worker.close()),
   };
 }
