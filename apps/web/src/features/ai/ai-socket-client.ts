@@ -1,6 +1,10 @@
 import { io } from "socket.io-client";
 import type { PublicRoomAuthProof } from "@xiangqi/shared";
-import { handshakeAuth, proofCapability } from "../../shared/realtime-proof.js";
+import {
+  handshakeAuth,
+  parseRealtimeProof,
+  proofCapability,
+} from "../../shared/realtime-proof.js";
 import { getTabSessionId } from "../../shared/tab-session.js";
 import {
   parseAiResponse,
@@ -55,32 +59,6 @@ function utc(value: unknown): value is string {
     new Date(value).toISOString().slice(0, 19) === value.slice(0, 19)
   );
 }
-function proof(value: unknown): PublicRoomAuthProof {
-  const row =
-    value && typeof value === "object"
-      ? (value as Record<string, unknown>)
-      : {};
-  if (
-    row.kind === "member" &&
-    typeof row.accessToken === "string" &&
-    row.accessToken &&
-    typeof row.appSession === "string" &&
-    row.appSession
-  )
-    return {
-      kind: "member",
-      accessToken: row.accessToken,
-      appSession: row.appSession,
-    };
-  if (
-    row.kind === "guest" &&
-    typeof row.guestCapability === "string" &&
-    row.guestCapability
-  )
-    return { kind: "guest", guestCapability: row.guestCapability };
-  throw Error(expired);
-}
-
 /**
  * Thiết lập kết nối Socket.IO thời gian thực cho ván cờ với máy AI (quản lý quyền tab điều khiển, đồng bộ snapshot và takeover).
  */
@@ -305,7 +283,8 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
           try {
             tabId = await getTabSessionId();
             if (disposed || currentEpoch !== epoch) return;
-            const fresh = proof(value);
+            const fresh = parseRealtimeProof(value);
+            if (!fresh) throw Error(expired);
             if (capability !== null && proofCapability(fresh) !== capability) {
               close(expired);
               return;
@@ -397,16 +376,16 @@ export function connectAi(options: AiConnectionOptions): AiConnection {
       if (disposed || !socket.connected) throw Error(unavailable);
       revoke();
       const currentEpoch = epoch;
-      const fresh = await task<ReturnType<typeof proof>>((resolve, reject) => {
+      const fresh = await task<PublicRoomAuthProof>((resolve, reject) => {
         void options.getProof().then(
           (value) => {
             if (disposed || currentEpoch !== epoch) {
               reject(unavailable);
               return;
             }
-            try {
-              resolve(proof(value));
-            } catch {
+            const parsed = parseRealtimeProof(value);
+            if (parsed) resolve(parsed);
+            else {
               close(expired);
               reject(expired);
             }

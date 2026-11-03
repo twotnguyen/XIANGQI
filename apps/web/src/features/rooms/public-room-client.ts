@@ -193,33 +193,8 @@ export interface PublicRoomsConnectionInput {
   onConnection: (ready: boolean) => void;
   onError: (message: string) => void;
 }
-function proof(value: unknown): PublicRoomAuthProof {
-  const row = record(value),
-    cap = (v: unknown) =>
-      typeof v === "string" && /^[A-Za-z0-9_-]{43}$/.test(v);
-  if (
-    row.kind === "member" &&
-    Object.keys(row).length === 3 &&
-    typeof row.accessToken === "string" &&
-    row.accessToken.length > 0 &&
-    row.accessToken.length <= 8192 &&
-    !/\s/.test(row.accessToken) &&
-    cap(row.appSession)
-  )
-    return {
-      kind: "member",
-      accessToken: row.accessToken,
-      appSession: row.appSession as string,
-    };
-  if (
-    row.kind === "guest" &&
-    Object.keys(row).length === 2 &&
-    cap(row.guestCapability)
-  )
-    return { kind: "guest", guestCapability: row.guestCapability as string };
-  throw Error(expired);
-}
 import { getApiBaseUrl, type AuthorizedFetch } from "../../shared/api.js";
+import { parseRealtimeProof } from "../../shared/realtime-proof.js";
 
 /**
  * Thiết lập kết nối Socket.IO tới namespace `/public-rooms` để nhận dữ liệu danh sách phòng công khai theo thời gian thực.
@@ -243,10 +218,8 @@ export function connectPublicRooms(input: PublicRoomsConnectionInput) {
       void input.getProof().then(
         (value) => {
           if (!current() || attempt !== epoch) return;
-          let safe: PublicRoomAuthProof;
-          try {
-            safe = proof(value);
-          } catch {
+          const safe = parseRealtimeProof(value);
+          if (!safe) {
             denied = true;
             input.onConnection(false);
             input.onError(expired);
