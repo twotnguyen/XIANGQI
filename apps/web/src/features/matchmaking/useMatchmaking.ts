@@ -88,6 +88,8 @@ export function useMatchmaking({ userId, getProof, onMatched }: Input): Matchmak
   const key = userId ? `xiangqi.matchmaking.${userId}` : "";
   const sendRef = useRef<(type: MatchmakingCommand["type"], selected?: MatchmakingMode) => void>(() => {});
 
+  useEffect(() => () => { void audio.current?.close().catch(() => {}); audio.current = null; }, []);
+
   useEffect(() => {
     generation.current++;
     const run = generation.current;
