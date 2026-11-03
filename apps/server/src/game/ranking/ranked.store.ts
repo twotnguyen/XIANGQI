@@ -23,12 +23,12 @@ function project(row: RatingRow, minimum: number): RankedRating {
 }
 export async function readRatings(client: PoolClient, userIds: string[], minimumGames = 5): Promise<Map<string, RankedRating>> {
   if (!userIds.length) return new Map();
-  const rows = await client.query<RatingRow>(`WITH ranked AS (
-    SELECT user_id,row_number() OVER (ORDER BY elo DESC,wins DESC,achieved_at ASC,user_id ASC) AS rank
-    FROM xiangqi_room.ratings WHERE completed >= $2
-  ) SELECT p.id AS user_id,COALESCE(r.elo,1200)::int AS elo,COALESCE(r.completed,0)::int AS completed,
-    COALESCE(r.wins,0)::int AS wins,COALESCE(r.draws,0)::int AS draws,COALESCE(r.losses,0)::int AS losses,ranked.rank
-    FROM xiangqi_auth.principals p LEFT JOIN xiangqi_room.ratings r ON r.user_id=p.id LEFT JOIN ranked ON ranked.user_id=p.id
+  // Hạng = 1 + số người đủ điều kiện đứng trước theo cùng thứ tự bảng xếp hạng; chỉ đếm cho người được hỏi, không xếp cả bảng.
+  const rows = await client.query<RatingRow>(`SELECT p.id AS user_id,COALESCE(r.elo,1200)::int AS elo,COALESCE(r.completed,0)::int AS completed,
+    COALESCE(r.wins,0)::int AS wins,COALESCE(r.draws,0)::int AS draws,COALESCE(r.losses,0)::int AS losses,
+    CASE WHEN r.completed >= $2 THEN 1+(SELECT count(*) FROM xiangqi_room.ratings o WHERE o.completed >= $2
+      AND (-o.elo,-o.wins,o.achieved_at,o.user_id) < (-r.elo,-r.wins,r.achieved_at,r.user_id)) END AS rank
+    FROM xiangqi_auth.principals p LEFT JOIN xiangqi_room.ratings r ON r.user_id=p.id
     WHERE p.kind='member' AND p.auth_user_id=p.id AND p.id=ANY($1::uuid[])`, [userIds, minimumGames]);
   return new Map(rows.rows.map(row => [row.user_id, project(row, minimumGames)]));
 }

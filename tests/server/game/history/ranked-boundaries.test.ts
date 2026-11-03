@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { initialPosition } from "@xiangqi/xiangqi-core";
 import { encodePosition } from "@server/game/match/position-codec.js";
-import { calculateRating, ratingTier, readLeaderboard, settleRanked } from "@server/game/ranking/ranked.store.js";
+import { calculateRating, ratingTier, readLeaderboard, readRatings, settleRanked } from "@server/game/ranking/ranked.store.js";
 import { RoomTransactions } from "@server/game/room/room-transactions.js";
 import type { RoomActor, RoomScope } from "@server/game/room/room.types.js";
 import { apply, databaseUrl, pool, resetBase as reset } from "../match/match.test-helper.js";
@@ -103,6 +103,15 @@ describe.skipIf(!databaseUrl)("ranked database boundaries", () => {
     await pool.query("UPDATE xiangqi_room.ratings SET completed=5,draws=draws+1 WHERE user_id=$1", [under.userId]);
     view = await run(under, [], scope => readLeaderboard(scope.client, under.userId));
     expect(view.self.rating).toMatchObject({rank:52,remaining:0});
+  });
+  it("ranks by Elo first and earlier achievement on ties, matching the leaderboard order", async () => {
+    const [high, early, late] = await Promise.all([member(), member(), member()]);
+    for (const [actor, elo, achieved] of [[high, 1500, "2026-03-01"], [early, 1400, "2026-01-01"], [late, 1400, "2026-02-01"]] as const)
+      await pool.query("INSERT INTO xiangqi_room.ratings(user_id,elo,completed,wins,draws,losses,achieved_at) VALUES($1,$2,5,3,2,0,$3)", [actor.userId, elo, achieved]);
+    const ratings = await run(high, [], scope => readRatings(scope.client, [high.userId, early.userId, late.userId]));
+    expect([high, early, late].map(actor => ratings.get(actor.userId)?.rank)).toEqual([1, 2, 3]);
+    const board = await run(high, [], scope => readLeaderboard(scope.client, high.userId));
+    expect(board.players.map(p => p.userId)).toEqual([high.userId, early.userId, late.userId]);
   });
   it("denies direct access to ratings and results for external roles", async () => {
     for (const role of ["anon", "authenticated", "service_role"]) {
