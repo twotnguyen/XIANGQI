@@ -4,7 +4,7 @@ import {
   serializePosition,
   type Side,
 } from "@xiangqi/xiangqi-core";
-import type { AuthorizedFetch } from "../rooms/room-client.js";
+import type { AuthorizedFetch } from "../../shared/api.js";
 export interface ReplayRecord {
   id: string;
   mode: "CASUAL" | "AI";

@@ -1,4 +1,4 @@
-import type { AuthorizedFetch } from "../rooms/room-client.js";
+import type { AuthorizedFetch } from "../../shared/api.js";
 export interface HistoryCursor {
   endedAt: string;
   matchId: string;

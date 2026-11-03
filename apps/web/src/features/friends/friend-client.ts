@@ -1,3 +1,4 @@
+import type { AuthorizedFetch } from "../../shared/api.js";
 export type PresenceStatus = "online" | "in-match" | "offline";
 export interface FriendPeer {
   userId: string;
@@ -63,11 +64,6 @@ export interface DirectUnread {
   total: number;
   peers: { peerId: string; unread: number }[];
 }
-export type AuthorizedFetch = (
-  path: string,
-  init?: RequestInit,
-) => Promise<Response>;
-
 export interface FriendClient {
   search(q: string): Promise<Omit<FriendPeer, "status">[]>;
   list(): Promise<FriendPeer[]>;

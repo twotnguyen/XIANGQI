@@ -1,6 +1,5 @@
 import { io } from "socket.io-client";
 import type { PublicRoomAuthProof, PublicRoomView } from "@xiangqi/shared";
-import type { AuthorizedFetch } from "./room-client.js";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const invalid = "Phản hồi danh sách phòng không hợp lệ. Vui lòng tải lại.";
 const unavailable = "Chưa thể tải danh sách phòng. Vui lòng thử lại.";
@@ -220,7 +219,7 @@ function proof(value: unknown): PublicRoomAuthProof {
     return { kind: "guest", guestCapability: row.guestCapability as string };
   throw Error(expired);
 }
-import { getApiBaseUrl } from "../../shared/api.js";
+import { getApiBaseUrl, type AuthorizedFetch } from "../../shared/api.js";
 
 /**
  * Thiết lập kết nối Socket.IO tới namespace `/public-rooms` để nhận dữ liệu danh sách phòng công khai theo thời gian thực.

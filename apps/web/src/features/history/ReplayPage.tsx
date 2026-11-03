@@ -9,7 +9,7 @@ import { ReplayViewer } from "./ReplayViewer.js";
 import { replayMoveLabels } from "./replay-notation.js";
 import { NavigationLink } from "../../shared/navigation/NavigationLink.js";
 import { ErrorState } from "../../shared/ui/primitives.js";
-import type { AuthorizedFetch } from "../rooms/room-client.js";
+import type { AuthorizedFetch } from "../../shared/api.js";
 
 /**
  * Component định tuyến trung gian khởi tạo ReplayClient có xác thực để tải ván đấu.

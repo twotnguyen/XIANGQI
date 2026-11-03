@@ -1,9 +1,6 @@
 import type { RoomControlProof } from "@xiangqi/shared";
+import type { AuthorizedFetch } from "../../shared/api.js";
 export type ShareLevel = "NONE" | "OPPONENT" | "ALL";
-export type AuthorizedFetch = (
-  path: string,
-  init?: RequestInit,
-) => Promise<Response>;
 export interface MediaToken {
   url: string;
   token: string;

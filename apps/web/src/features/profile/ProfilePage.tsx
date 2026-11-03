@@ -16,7 +16,7 @@ import {
   type ProfileView,
 } from "./profile-client.js";
 import { PasswordChangeForm } from "./PasswordChangeForm.js";
-import type { AuthorizedFetch } from "./profile-client.js";
+import type { AuthorizedFetch } from "../../shared/api.js";
 import { ThemeSettings } from "./ThemeSettings.js";
 import { UsernameSettings } from "./UsernameSettings.js";
 import {

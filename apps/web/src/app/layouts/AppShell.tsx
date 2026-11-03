@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useId, type ReactNode } from "react";
 import { Button, Dialog } from "../../shared/ui/primitives.js";
 import { AppIcon } from "../../shared/ui/AppIcon.js";
 import { SelfRating } from "../../features/rankings/SelfRating.js";
-import type { AuthorizedFetch } from "../../features/profile/profile-client.js";
+import type { AuthorizedFetch } from "../../shared/api.js";
 import "./AppShell.css";
 export interface ShellUser {
   displayName: string;

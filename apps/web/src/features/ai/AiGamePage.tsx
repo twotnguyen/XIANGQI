@@ -9,7 +9,7 @@ import {
   type AiControl,
 } from "./ai-socket-client.js";
 import { createGameAudio } from "../rooms/game-audio.js";
-import type { AuthorizedFetch } from "../rooms/room-client.js";
+import type { AuthorizedFetch } from "../../shared/api.js";
 import type { PublicRoomAuthProof } from "@xiangqi/shared";
 import {
   navigate,

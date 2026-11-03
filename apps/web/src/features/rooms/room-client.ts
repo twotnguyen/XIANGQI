@@ -50,10 +50,6 @@ export interface RoomEntry {
   inviteCode?: string;
   notice?: string;
 }
-export type AuthorizedFetch = (
-  path: string,
-  init?: RequestInit,
-) => Promise<Response>;
 
 /**
  * Lớp lỗi xử lý các lỗi yêu cầu HTTP liên quan đến phòng cờ (quyền chủ phòng, đủ người để khóa, phiên hết hạn...).
@@ -95,7 +91,7 @@ export class RoomRequestError extends Error {
   }
 }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-import { getApiBaseUrl } from "../../shared/api.js";
+import { getApiBaseUrl, type AuthorizedFetch } from "../../shared/api.js";
 import { generateUuid } from "../../shared/uuid.js";
 
 function invalidResponse(): never {
